@@ -1,0 +1,44 @@
+[workspace]
+resolver = "3"
+members = [
+    "apps/*",
+    "crates/core/*",
+    "crates/engine/*",
+    "crates/islands/*",
+    "crates/platform/*",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace.dependencies]
+dokka-contracts = { path = "crates/core/dokka-contracts" }
+dokka-dock = { path = "crates/islands/dokka-dock" }
+dokka-events = { path = "crates/core/dokka-events" }
+dokka-model = { path = "crates/core/dokka-model" }
+dokka-scene = { path = "crates/engine/dokka-scene" }
+dokka-state = { path = "crates/core/dokka-state" }
+dokka-win-apps = { path = "crates/platform/dokka-win-apps" }
+dokka-win-composition = { path = "crates/platform/dokka-win-composition" }
+dokka-win-surface = { path = "crates/platform/dokka-win-surface" }
+dokka-win-tracking = { path = "crates/platform/dokka-win-tracking" }
+windows = "0.62"
+windows-numerics = "0.3"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+undocumented_unsafe_blocks = "deny"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

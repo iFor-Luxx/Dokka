@@ -1,0 +1,19 @@
+[package]
+name = "dokka-shell"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dokka-contracts.workspace = true
+dokka-dock.workspace = true
+dokka-model.workspace = true
+dokka-scene.workspace = true
+dokka-state.workspace = true
+dokka-win-apps.workspace = true
+dokka-win-composition.workspace = true
+dokka-win-surface.workspace = true
+dokka-win-tracking.workspace = true
+
+[lints]
+workspace = true

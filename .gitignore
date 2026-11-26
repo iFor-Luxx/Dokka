@@ -1,0 +1,5 @@
+# Dokka — solo se ignora esto. Todo lo demás se sube.
+# CLAUDE.md y Docs/ son internos, target/ es compilación.
+/CLAUDE.md
+/Docs/
+/target/
