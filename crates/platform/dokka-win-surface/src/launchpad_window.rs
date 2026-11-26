@@ -1,12 +1,11 @@
 use windows::Win32::Foundation::HWND;
-use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
 use windows::Win32::UI::Input::KeyboardAndMouse::SetFocus;
 use windows::Win32::UI::WindowsAndMessaging::{
-    GetForegroundWindow, GetWindowThreadProcessId, HWND_TOPMOST, SW_HIDE, SW_SHOWNORMAL,
-    SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW, SetForegroundWindow, SetWindowPos,
-    ShowWindow,
+    GetForegroundWindow, HWND_TOPMOST, SW_HIDE, SW_SHOWNORMAL, SWP_NOACTIVATE, SWP_NOMOVE,
+    SWP_NOSIZE, SWP_SHOWWINDOW, SetForegroundWindow, SetWindowPos, ShowWindow,
 };
 
+use crate::foreground::foreground_window;
 use crate::place_window::{fullscreen_size, place_fullscreen};
 use crate::{Surface, SurfaceError};
 
@@ -61,11 +60,8 @@ impl Surface {
 
     /// Toma el foco para recibir lo escrito, las flechas y la rueda.
     ///
-    /// El clic en el dock no activa a Dokka (su ventana no se activa), así que
-    /// Windows suele negar el primer plano al hilo en segundo plano: se une la
-    /// entrada al hilo de la ventana activa, se toma el primer plano y el foco
-    /// de teclado, y se desune. Sin esto, `WM_KEYDOWN` nunca llega y Windows
-    /// no genera `WM_CHAR`, por eso lo escrito no aparecía en la casilla.
+    /// Sin esto, `WM_KEYDOWN` nunca llega y Windows no genera `WM_CHAR`, por
+    /// eso lo escrito no aparecía en la casilla.
     pub fn launchpad_opened(&mut self) -> Result<(), SurfaceError> {
         // SAFETY: consulta y cambio de foco de ventanas del mismo escritorio.
         unsafe {
@@ -73,20 +69,11 @@ impl Surface {
             if current != self.launchpad && current != self.window {
                 self.launchpad_previous = Some(current);
             }
-            if GetForegroundWindow() != self.launchpad {
-                let foreground_thread = GetWindowThreadProcessId(current, None);
-                let own_thread = GetCurrentThreadId();
-                let attached = foreground_thread != 0
-                    && foreground_thread != own_thread
-                    && AttachThreadInput(foreground_thread, own_thread, true).as_bool();
-                let _ = SetForegroundWindow(self.launchpad);
-                let _ = SetFocus(Some(self.launchpad));
-                if attached {
-                    let _ = AttachThreadInput(foreground_thread, own_thread, false);
-                }
-            } else {
-                let _ = SetFocus(Some(self.launchpad));
-            }
+        }
+        foreground_window(self.launchpad);
+        // SAFETY: la ventana es propia y sigue viva.
+        unsafe {
+            let _ = SetFocus(Some(self.launchpad));
             // Tomar el foco sube la ventana: se vuelve a colocar justo debajo del dock.
             SetWindowPos(
                 self.launchpad,

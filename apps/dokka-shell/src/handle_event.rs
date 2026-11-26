@@ -32,7 +32,8 @@ pub(crate) fn handle_event(
         SurfaceEvent::SettingsMoved { .. }
         | SurfaceEvent::SettingsLeft
         | SurfaceEvent::SettingsPressed { .. }
-        | SurfaceEvent::SettingsClicked { .. } => {}
+        | SurfaceEvent::SettingsClicked { .. }
+        | SurfaceEvent::SettingsDismissed => {}
         SurfaceEvent::PointerMoved { x, y } => {
             if session.launchpad.is_open() {
                 session.dock.pointer_moved(x, y, session.state.apps());

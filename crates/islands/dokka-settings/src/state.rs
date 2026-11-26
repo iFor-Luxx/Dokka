@@ -57,7 +57,7 @@ impl Settings {
         self.selected
     }
 
-    pub(crate) fn hovered(&self) -> Option<usize> {
+    pub fn hovered(&self) -> Option<usize> {
         self.hovered
     }
 

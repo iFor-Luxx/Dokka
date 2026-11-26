@@ -5,9 +5,9 @@ use windows::Win32::UI::HiDpi::{
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, SetProcessDpiAwarenessContext,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    CreateWindowExW, IDC_ARROW, LoadCursorW, RegisterClassExW, WNDCLASSEXW, WS_EX_APPWINDOW,
-    WS_EX_NOACTIVATE, WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST,
-    WS_EX_TRANSPARENT, WS_POPUP,
+    CreateWindowExW, IDC_ARROW, LoadCursorW, RegisterClassExW, WINDOW_STYLE, WNDCLASSEXW,
+    WS_EX_APPWINDOW, WS_EX_NOACTIVATE, WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST,
+    WS_EX_TRANSPARENT, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU,
 };
 use windows::core::{BOOL, Error, PCWSTR, Result, w};
 
@@ -19,6 +19,7 @@ pub(crate) fn create_window(owner: Option<HWND>) -> Result<HWND> {
     create_with_style(
         owner,
         WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+        WS_POPUP,
         w!("Dokka"),
     )
 }
@@ -28,6 +29,7 @@ pub(crate) fn create_launchpad_window() -> Result<HWND> {
     create_with_style(
         None,
         WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+        WS_POPUP,
         w!("Dokka"),
     )
 }
@@ -39,6 +41,10 @@ pub(crate) fn create_settings_window() -> Result<HWND> {
     create_with_style(
         None,
         WS_EX_NOREDIRECTIONBITMAP | WS_EX_APPWINDOW,
+        // Sin borde ni barra de título: el dibujo propio hace de marco.
+        // SYSMENU + MINIMIZEBOX dan menú de sistema, minimizar y animación
+        // de la barra de tareas como una ventana normal.
+        WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX,
         w!("Preferencias"),
     )
 }
@@ -52,6 +58,7 @@ pub(crate) fn create_preview_window() -> Result<HWND> {
             | WS_EX_TOOLWINDOW
             | WS_EX_NOACTIVATE
             | WS_EX_TRANSPARENT,
+        WS_POPUP,
         w!("Dokka"),
     )
 }
@@ -59,6 +66,7 @@ pub(crate) fn create_preview_window() -> Result<HWND> {
 fn create_with_style(
     owner: Option<HWND>,
     extended: windows::Win32::UI::WindowsAndMessaging::WINDOW_EX_STYLE,
+    style: WINDOW_STYLE,
     title: PCWSTR,
 ) -> Result<HWND> {
     let class_name = w!("DokkaSurface");
@@ -86,7 +94,7 @@ fn create_with_style(
             extended,
             class_name,
             title,
-            WS_POPUP,
+            style,
             0,
             0,
             0,

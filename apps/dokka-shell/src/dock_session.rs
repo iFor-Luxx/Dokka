@@ -26,8 +26,13 @@ pub(crate) struct DockSession {
     pub(crate) previews: Previews,
     pub(crate) launchpad: Launchpad,
     pub(crate) settings: Settings,
-    /// Punto donde empezó el arrastre de Preferencias, si lo hay.
-    pub(crate) settings_drag: Option<[f32; 2]>,
+    /// `true` entre el botón abajo y el clic sobre Preferencias; filtra los
+    /// botones sueltos sin pulsación previa (el arrastre nativo se traga el
+    /// suyo y el cursor puede salir y volver a entrar).
+    pub(crate) settings_pressed: bool,
+    /// Última escena de Preferencias ya dibujada (sección, fila bajo el
+    /// cursor): si no cambió, no se repinta para no hacer parpadear el cristal.
+    pub(crate) settings_painted: Option<(usize, Option<usize>)>,
     pub(crate) catalog: DesktopCatalog,
     pub(crate) theme: Arc<Theme>,
     pub(crate) explorer: AppId,
@@ -53,7 +58,8 @@ impl DockSession {
             previews: Previews::new(Arc::clone(&theme)),
             launchpad: Launchpad::new(),
             settings: Settings::new(),
-            settings_drag: None,
+            settings_pressed: false,
+            settings_painted: None,
             catalog: DesktopCatalog::new(),
             theme,
             explorer,
