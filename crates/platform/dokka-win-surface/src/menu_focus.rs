@@ -28,4 +28,10 @@ impl Surface {
             }
         }
     }
+
+    /// Olvida el foco anterior sin devolverlo: Preferencias se abre mientras
+    /// Dokka aún es la ventana activa, así Windows le concede el primer plano.
+    pub fn menu_dismissed(&mut self) {
+        self.previous_focus = None;
+    }
 }

@@ -45,9 +45,15 @@ pub(crate) fn run_menu_action(
     surface: &mut Surface,
     action: MenuAction,
 ) -> Result<(), Box<dyn Error>> {
-    // Primero se cierra y se devuelve el foco; si no, la ventana lanzada quedaría detrás.
+    // Se cierra el menú; para Preferencias no se devuelve el foco: se abre
+    // mientras Dokka aún es la ventana activa, si no Windows niega el
+    // primer plano. El resto devuelve el foco como hoy.
     session.dock.close_menu();
-    surface.menu_closed();
+    if matches!(action, MenuAction::OpenSettings) {
+        surface.menu_dismissed();
+    } else {
+        surface.menu_closed();
+    }
     match action {
         MenuAction::AddApp => session.picker.open(),
         MenuAction::ShowTaskbar => {

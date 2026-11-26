@@ -1,7 +1,8 @@
 use windows::Win32::Foundation::{HWND, WPARAM};
 use windows::Win32::UI::Input::KeyboardAndMouse::ReleaseCapture;
 use windows::Win32::UI::WindowsAndMessaging::{
-    HTCAPTION, SW_HIDE, SW_MINIMIZE, SW_SHOWNORMAL, SendMessageW, ShowWindow, WM_NCLBUTTONDOWN,
+    HTCAPTION, HWND_NOTOPMOST, HWND_TOPMOST, SW_HIDE, SW_MINIMIZE, SW_SHOWNORMAL, SWP_NOMOVE,
+    SWP_NOSIZE, SWP_SHOWWINDOW, SendMessageW, SetWindowPos, ShowWindow, WM_NCLBUTTONDOWN,
 };
 
 use crate::foreground::foreground_window;
@@ -29,6 +30,26 @@ impl Surface {
         // SAFETY: la ventana es propia y sigue viva mientras sea visible u oculta.
         unsafe {
             let _ = ShowWindow(self.settings, SW_SHOWNORMAL);
+            // Sube en el orden aunque Windows niegue el primer plano; la
+            // segunda llamada quita el estilo topmost y queda ventana normal.
+            let _ = SetWindowPos(
+                self.settings,
+                Some(HWND_TOPMOST),
+                0,
+                0,
+                0,
+                0,
+                SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
+            );
+            let _ = SetWindowPos(
+                self.settings,
+                Some(HWND_NOTOPMOST),
+                0,
+                0,
+                0,
+                0,
+                SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
+            );
         }
         // El dock no activa a Dokka, así que el primer plano puede ser negado.
         foreground_window(self.settings);
