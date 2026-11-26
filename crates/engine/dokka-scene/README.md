@@ -3,6 +3,7 @@
 **Hace:** describe qué se debe dibujar (formas, medidas y colores).
 
 - `Text` admite alineación (`TextAlign::Center` o `Left`) respecto a `x`.
+- `Shape::Glyph` es un glifo de la fuente de iconos, centrado en (`x`, `y`).
 - `Label` es la etiqueta flotante: texto de una línea con la posición de su
   punta; la plataforma mide el texto y la muestra como píldora de cristal
   (radio = mitad del alto) con punta del mismo tinte y borde.

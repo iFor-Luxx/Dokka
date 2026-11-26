@@ -41,6 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         surface.launchpad_handle(),
         surface.scale(),
         typography::FONT_FAMILY,
+        dokka_icons::LUCIDE_FONT_BYTES,
     )?;
     let explorer = explorer_app();
     let mut session = DockSession::new(renderer, explorer.id.clone());

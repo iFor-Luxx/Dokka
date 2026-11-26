@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_icons::{chevron_icon, chevron_left_icon};
+use dokka_icons::{calendar_next_icon, calendar_previous_icon};
 use dokka_scene::{Drawing, Icon, IconImage, Rect};
 use dokka_theme::{Theme, popup as measures};
 
@@ -18,8 +18,8 @@ pub struct CalendarArrows {
 impl CalendarArrows {
     pub fn new(theme: &Theme) -> Self {
         Self {
-            previous: Arc::new(chevron_left_icon(theme.panel.text)),
-            next: Arc::new(chevron_icon(theme.panel.text)),
+            previous: Arc::new(calendar_previous_icon(theme.panel.text)),
+            next: Arc::new(calendar_next_icon(theme.panel.text)),
         }
     }
 }

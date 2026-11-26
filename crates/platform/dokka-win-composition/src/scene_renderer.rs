@@ -40,14 +40,23 @@ pub struct SceneRenderer {
 impl SceneRenderer {
     /// Prepara el dibujo. `above` es la ventana que va sobre las miniaturas.
     /// Se llama una vez, desde el hilo de las ventanas.
+    /// `icon_bytes` son los bytes `&'static` de la fuente de iconos en memoria.
     pub fn attach(
         surface: SurfaceHandle,
         above: SurfaceHandle,
         launchpad: SurfaceHandle,
         scale: f32,
         font_family: &str,
+        icon_bytes: &'static [u8],
     ) -> std::result::Result<Self, CompositionError> {
-        Ok(Self::build(surface, above, launchpad, scale, font_family)?)
+        Ok(Self::build(
+            surface,
+            above,
+            launchpad,
+            scale,
+            font_family,
+            icon_bytes,
+        )?)
     }
 
     /// Muestra la escena. Si su forma no cambia, solo actualiza lo existente.
@@ -66,6 +75,7 @@ impl SceneRenderer {
         launchpad: SurfaceHandle,
         scale: f32,
         font_family: &str,
+        icon_bytes: &'static [u8],
     ) -> Result<Self> {
         let queue = create_queue()?;
         let compositor = Compositor::new()?;
@@ -77,7 +87,7 @@ impl SceneRenderer {
             main: window_root(&compositor, surface, scale)?,
             above: window_root(&compositor, above, scale)?,
             launchpad: window_root(&compositor, launchpad, scale)?,
-            painter: Painter::new(&compositor, font_family)?,
+            painter: Painter::new(&compositor, font_family, icon_bytes)?,
             compositor,
             _queue: queue,
         })
