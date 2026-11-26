@@ -22,6 +22,9 @@ pub(crate) fn handle_event(
         SurfaceEvent::PointerMoved { x, y } => {
             if session.dock.is_menu_open() {
                 session.dock.move_over_menu(x, y);
+            } else if session.previews.contains(x, y) {
+                // Sobre el panel el dock mantiene la lupa tal como estaba.
+                session.previews.pointer_moved(x, y, None);
             } else {
                 session.dock.pointer_moved(x, y, session.state.apps());
                 let request = preview_request(session, x, y);
