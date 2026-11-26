@@ -12,17 +12,18 @@ pub struct SystemRecycleBin;
 
 impl RecycleBin for SystemRecycleBin {
     fn empty(&self) -> Result<(), ContractError> {
-        // `SHEmptyRecycleBinW` muestra su propia confirmación y no vuelve hasta
-        // que el usuario responde: el hilo que la llama espera de todos modos.
-        // Se usa un hilo propio con COM iniciado para no tocar el apartamento
-        // COM del llamante; aun así, conviene llamarla fuera del hilo de la
-        // interfaz porque el contrato es síncrono y espera al usuario.
-        match thread::spawn(empty_once).join() {
-            Ok(result) => result,
-            Err(_) => Err(ContractError::Failed(
-                "no se pudo vaciar la papelera".to_owned(),
-            )),
-        }
+        // Windows muestra su propia confirmación y no vuelve hasta que el usuario
+        // responde: va en un hilo propio, sin esperarlo, para no congelar Dokka.
+        thread::Builder::new()
+            .spawn(|| {
+                if let Err(error) = empty_once() {
+                    eprintln!("{error}");
+                }
+            })
+            .map(|_| ())
+            .map_err(|error| {
+                ContractError::Failed(format!("no se pudo vaciar la papelera: {error}"))
+            })
     }
 }
 

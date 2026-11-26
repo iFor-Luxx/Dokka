@@ -48,19 +48,9 @@ pub(crate) fn app_menu(app: &DockApp) -> MenuData {
             }),
         )],
     );
-    push_section(
-        &mut rows,
-        &mut actions,
-        &mut children,
-        [pin_row(app)],
-    );
+    push_section(&mut rows, &mut actions, &mut children, [pin_row(app)]);
     if app.is_running() {
-        push_section(
-            &mut rows,
-            &mut actions,
-            &mut children,
-            close_rows(app),
-        );
+        push_section(&mut rows, &mut actions, &mut children, close_rows(app));
     }
     MenuData {
         rows,
@@ -118,11 +108,7 @@ pub(crate) fn close_rows(app: &DockApp) -> Vec<(MenuRow, Option<MenuAction>, Opt
             Some(MenuAction::CloseFrontWindow(ids.clone())),
             None,
         ),
-        (
-            MenuRow::item("Salir"),
-            Some(MenuAction::QuitApp(ids)),
-            None,
-        ),
+        (MenuRow::item("Salir"), Some(MenuAction::QuitApp(ids)), None),
     ]
 }
 

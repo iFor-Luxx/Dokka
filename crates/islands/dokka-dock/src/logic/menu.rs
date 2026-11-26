@@ -1,6 +1,6 @@
 //! Menú propio del clic derecho: qué opciones tiene y dónde está.
 
-use dokka_components::menu_panel::{menu_row_at, menu_row_top, menu_size};
+use dokka_components::menu_panel::{MenuRow, menu_row_at, menu_row_top, menu_size};
 use dokka_model::{AppInfo, DockApp, WindowId};
 use dokka_scene::Rect;
 use dokka_theme::menu as measures;

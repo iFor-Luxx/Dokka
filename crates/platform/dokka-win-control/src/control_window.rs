@@ -35,6 +35,10 @@ fn existing_window(id: WindowId) -> Result<HWND, ContractError> {
 }
 
 impl WindowControl for SystemWindowControl {
+    fn front_window(&self, windows: &[WindowId]) -> Option<WindowId> {
+        crate::front_window::front_of(windows)
+    }
+
     fn activate(&self, id: WindowId) -> Result<(), ContractError> {
         let window = existing_window(id)?;
         // SAFETY: `window` existe. La versión asíncrona evita colgarse con apps bloqueadas.
