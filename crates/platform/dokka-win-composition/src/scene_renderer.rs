@@ -37,6 +37,8 @@ pub struct WindowHandles {
 pub struct SceneRenderer {
     thumbnails: WindowThumbnails,
     preview: LargePreview,
+    /// El primer fallo de DWM de la vista grande ya se escribió en consola.
+    preview_error_logged: bool,
     layers: Option<SceneLayers>,
     launchpad_layers: Option<SceneLayers>,
     settings_layers: Option<SceneLayers>,
@@ -44,6 +46,10 @@ pub struct SceneRenderer {
     main: WindowRoot,
     above: WindowRoot,
     launchpad: WindowRoot,
+    /// Objetivo propio de la vista grande: contenedor vacío, sin fondo. Sin él
+    /// DWM no pinta nada en una ventana con `WS_EX_NOREDIRECTIONBITMAP`.
+    /// Solo se conserva vivo; nunca se dibuja en él.
+    _preview_root: WindowRoot,
     settings: WindowRoot,
     painter: Painter,
     compositor: Compositor,
@@ -78,8 +84,18 @@ impl SceneRenderer {
     }
 
     /// Vista grande en su sitio real. `false` si no hay imagen válida.
+    /// El primer fallo de DWM se escribe una vez en consola.
     pub fn show_large(&mut self, source: u64, area: [i32; 4]) -> bool {
-        self.preview.show(source, area).unwrap_or(false)
+        match self.preview.show(source, area) {
+            Ok(valid) => valid,
+            Err(error) => {
+                if !self.preview_error_logged {
+                    self.preview_error_logged = true;
+                    eprintln!("vista grande: {error}");
+                }
+                false
+            }
+        }
     }
 
     /// Esconde la vista grande.
@@ -123,6 +139,7 @@ impl SceneRenderer {
         Ok(Self {
             thumbnails: WindowThumbnails::new(handles.main.raw(), scale),
             preview: LargePreview::new(handles.preview.raw()),
+            preview_error_logged: false,
             layers: None,
             launchpad_layers: None,
             settings_layers: None,
@@ -130,6 +147,7 @@ impl SceneRenderer {
             main: window_root(&compositor, handles.main, scale)?,
             above: window_root(&compositor, handles.above, scale)?,
             launchpad: window_root(&compositor, handles.launchpad, scale)?,
+            _preview_root: window_root(&compositor, handles.preview, 1.0)?,
             settings: window_root(&compositor, handles.settings, settings_scale)?,
             painter: Painter::new(&compositor, font_family, icon_bytes, scale)?,
             compositor,

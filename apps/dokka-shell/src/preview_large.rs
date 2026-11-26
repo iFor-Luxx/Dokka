@@ -8,7 +8,7 @@ use dokka_win_surface::Surface;
 use crate::dock_session::DockSession;
 
 /// Muestra la ventana bajo el cursor en su sitio real, sin activarla.
-/// Ventanas minimizadas o sin imagen válida no muestran vista grande.
+/// Sin imagen válida o sin rectángulo no muestra vista grande.
 pub(crate) fn update_large_preview(session: &mut DockSession, surface: &mut Surface) {
     let Some(hovered) = session.previews.hovered_window() else {
         hide_large(session, surface);
@@ -18,12 +18,13 @@ pub(crate) fn update_large_preview(session: &mut DockSession, surface: &mut Surf
         hide_large(session, surface);
         return;
     };
-    if session.renderer.show_large(hovered, area) {
-        if surface.preview_show().is_err() {
-            session.renderer.hide_large();
-            surface.preview_hide();
-        }
-    } else {
+    // Primero se coloca y muestra la ventana destino: la primera vez mide 0x0 y
+    // `LargePreview::show` calcula el destino con su rectángulo.
+    if surface.preview_show().is_err() {
+        hide_large(session, surface);
+        return;
+    }
+    if !session.renderer.show_large(hovered, area) {
         hide_large(session, surface);
     }
 }
