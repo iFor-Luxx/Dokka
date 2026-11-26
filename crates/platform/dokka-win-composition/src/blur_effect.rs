@@ -1,11 +1,13 @@
 //! Efecto de desenfoque gaussiano para el zoom del Launchpad.
 //!
 //! Describe un `D2D1GaussianBlur` al compositor mediante una implementación
-//! propia de `IGraphicsEffect` + `IGraphicsEffectD2D1Interop`: la única
-//! propiedad expuesta es `BlurAmount` (índice 0) y la única fuente es el
-//! parámetro `source`. La fábrica se crea una sola vez con la propiedad
-//! `Blur.BlurAmount` como animable; el radio se cambia con
-//! `Properties().InsertScalar` sin reconstruir nada.
+//! propia de `IGraphicsEffect` + `IGraphicsEffectD2D1Interop`: expone las 3
+//! propiedades del efecto (índice 0: `BlurAmount` como Single; índice 1:
+//! optimización equilibrada como UInt32; índice 2: modo de borde suave como
+//! UInt32) y una sola fuente, el parámetro `source`. Solo `BlurAmount` tiene
+//! nombre (`Blur.BlurAmount`) y es animable: el radio se cambia con
+//! `Properties().InsertScalar` sin reconstruir nada. La fábrica se crea una
+//! sola vez.
 //!
 //! Módulos y firmas comprobados en `windows` 0.62:
 //! - `windows::Graphics::Effects::{IGraphicsEffect, IGraphicsEffectSource}`
@@ -14,7 +16,8 @@
 //!   (feature `Win32_System_WinRT_Graphics_Direct2D`).
 //! - `windows::Win32::Graphics::Direct2D::CLSID_D2D1GaussianBlur`
 //!   (feature `Win32_Graphics_Direct2D`).
-//! - `windows::Foundation::PropertyValue::CreateSingle` (feature `Foundation`).
+//! - `windows::Foundation::PropertyValue::{CreateSingle, CreateUInt32}`
+//!   (feature `Foundation`).
 
 use windows::Foundation::{IPropertyValue, PropertyValue};
 use windows::Graphics::Effects::{
@@ -41,8 +44,12 @@ pub(crate) const EFFECT_NAME: &str = "Blur";
 pub(crate) const BLUR_ANIMATABLE: &str = "Blur.BlurAmount";
 /// Propiedad del radio dentro del efecto.
 const BLUR_AMOUNT_NAME: &str = "BlurAmount";
+/// Optimización equilibrada (`D2D1_GAUSSIANBLUR_OPTIMIZATION_BALANCED`).
+const BLUR_OPTIMIZATION_BALANCED: u32 = 1;
+/// Borde suave (`D2D1_BORDER_MODE_SOFT`).
+const BLUR_BORDER_MODE_SOFT: u32 = 0;
 
-/// Desenfoque gaussiano con una sola fuente y un solo radio.
+/// Desenfoque gaussiano con una sola fuente: solo el radio (índice 0) cambia.
 #[implement(IGraphicsEffect, IGraphicsEffectD2D1Interop)]
 struct GaussianBlurEffect {
     amount: f32,
@@ -88,14 +95,19 @@ impl IGraphicsEffectD2D1Interop_Impl for GaussianBlurEffect_Impl {
     }
 
     fn GetPropertyCount(&self) -> Result<u32> {
-        Ok(1)
+        Ok(3)
     }
 
     fn GetProperty(&self, index: u32) -> Result<IPropertyValue> {
-        if index != 0 {
-            return Err(Error::from(E_INVALIDARG));
+        if index == 0 {
+            PropertyValue::CreateSingle(self.amount)?.cast()
+        } else if index == 1 {
+            PropertyValue::CreateUInt32(BLUR_OPTIMIZATION_BALANCED)?.cast()
+        } else if index == 2 {
+            PropertyValue::CreateUInt32(BLUR_BORDER_MODE_SOFT)?.cast()
+        } else {
+            Err(Error::from(E_INVALIDARG))
         }
-        PropertyValue::CreateSingle(self.amount)?.cast()
     }
 
     fn GetSource(&self, index: u32) -> Result<IGraphicsEffectSource> {
