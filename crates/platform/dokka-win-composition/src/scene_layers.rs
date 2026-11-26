@@ -1,8 +1,8 @@
 use dokka_scene::{Color, Panel, Scene};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
-use windows_numerics::Vector3;
 
+use crate::blur_stage::BlurStage;
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
@@ -15,12 +15,18 @@ use crate::text_layer::TextLayer;
 /// Elementos visuales creados para una escena.
 ///
 /// El fondo cuelga de un contenedor y el resto del contenido de otro: el fondo
-/// solo se desvanece y el contenido además escala, sin reconstruir capas.
+/// solo se desvanece y el contenido además escala y se desenfoca, sin
+/// reconstruir capas. El contenido cuelga de un `holder` propio en su mismo
+/// sitio: con desenfoque activo el `holder` se oculta y solo se ve la copia
+/// desenfocada, sin que la captura pierda nitidez.
 /// Cada capa se inserta arriba: el fondo queda bajo el contenido, y dentro del
 /// contenido el orden es paneles, resaltado, líneas, iconos, puntos y textos.
 pub(crate) struct SceneLayers {
     backdrop: ContainerVisual,
+    holder: ContainerVisual,
     content: ContainerVisual,
+    root: ContainerVisual,
+    blur: BlurStage,
     panel: PanelLayer,
     panels: Vec<PanelLayer>,
     panel_styles: Vec<PanelStyle>,
@@ -55,11 +61,14 @@ impl SceneLayers {
         scene: &Scene,
     ) -> Result<Self> {
         root.Children()?.RemoveAll()?;
-        // El fondo se crea primero para quedar debajo del contenido.
+        // El fondo se crea primero para quedar debajo del contenido. El
+        // contenido cuelga del `holder`, en su sitio del orden de pintado.
         let backdrop = compositor.CreateContainerVisual()?;
         root.Children()?.InsertAtTop(&backdrop)?;
+        let holder = compositor.CreateContainerVisual()?;
+        root.Children()?.InsertAtTop(&holder)?;
         let content = compositor.CreateContainerVisual()?;
-        root.Children()?.InsertAtTop(&content)?;
+        holder.Children()?.InsertAtTop(&content)?;
         let panel = PanelLayer::add(compositor, &backdrop, &scene.panel)?;
         // Cada capa se inserta arriba: los paneles quedan sobre el fondo y
         // bajo el resaltado, las líneas, los iconos, los puntos y los textos.
@@ -110,9 +119,12 @@ impl SceneLayers {
             .iter()
             .map(|_| LabelLayer::add(compositor, &content))
             .collect::<Result<_>>()?;
-        let layers = Self {
+        let mut layers = Self {
             backdrop,
+            holder,
             content,
+            root: root.clone(),
+            blur: BlurStage::new(),
             panel,
             panels,
             panel_styles: scene.panels.iter().map(panel_style_of).collect(),
@@ -126,12 +138,12 @@ impl SceneLayers {
             overlay,
             submenu,
         };
-        layers.apply_stage(scene)?;
+        layers.apply_stage(compositor, scene)?;
         Ok(layers)
     }
 
     /// `true` si la escena tiene la misma forma y basta con actualizar.
-    /// La opacidad y la escala no reconstruyen: las aplica `update`.
+    /// La opacidad, la escala y el desenfoque no reconstruyen: los aplica `update`.
     pub(crate) fn matches(&self, scene: &Scene) -> bool {
         let same_overlay = match (&self.overlay, &scene.overlay) {
             (Some(layers), Some(overlay)) => layers.matches(overlay),
@@ -200,26 +212,21 @@ impl SceneLayers {
         for (layer, label) in self.labels.iter_mut().zip(&scene.labels) {
             layer.update(compositor, painter, label)?;
         }
-        self.apply_stage(scene)?;
+        self.apply_stage(compositor, scene)?;
         Ok(())
     }
 
-    /// Desvanece el fondo y el contenido, y escala el contenido desde el centro
-    /// del fondo. Con opacidad y escala en reposo no cambia nada visible.
-    fn apply_stage(&self, scene: &Scene) -> Result<()> {
-        let bounds = scene.panel.bounds;
-        self.backdrop.SetOpacity(scene.opacity)?;
-        self.content.SetOpacity(scene.opacity)?;
-        self.content.SetScale(Vector3 {
-            X: scene.scale,
-            Y: scene.scale,
-            Z: 1.0,
-        })?;
-        self.content.SetCenterPoint(Vector3 {
-            X: bounds.x + bounds.width / 2.0,
-            Y: bounds.y + bounds.height / 2.0,
-            Z: 0.0,
-        })
+    /// Desvanece el fondo y deja escala, opacidad y desenfoque del contenido en
+    /// manos de `BlurStage`: en reposo lo deja normal y sin efectos activos, y
+    /// en transición muestra la copia desenfocada. Sin desenfoque ni efecto
+    /// disponible, aplica el zoom y el desvanecido clásicos.
+    fn apply_stage(&mut self, compositor: &Compositor, scene: &Scene) -> Result<()> {
+        let backdrop = self.backdrop.clone();
+        let holder = self.holder.clone();
+        let content = self.content.clone();
+        let root = self.root.clone();
+        self.blur
+            .apply(compositor, &root, &backdrop, &holder, &content, scene)
     }
 }
 

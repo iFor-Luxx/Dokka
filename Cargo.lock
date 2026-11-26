@@ -160,6 +160,8 @@ dependencies = [
  "dokka-win-surface",
  "dokka-win-text",
  "windows",
+ "windows-collections",
+ "windows-core",
  "windows-numerics",
 ]
 

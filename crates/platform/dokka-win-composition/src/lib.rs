@@ -1,6 +1,8 @@
 //! Dibujo de escenas con el compositor de Windows.
 #![allow(unsafe_code)]
 
+mod blur_effect;
+mod blur_stage;
 mod composition_error;
 mod controls_layer;
 mod divider_layer;

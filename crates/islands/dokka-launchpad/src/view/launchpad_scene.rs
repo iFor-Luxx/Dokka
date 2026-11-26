@@ -24,7 +24,7 @@ use crate::Launchpad;
 /// actualizan.
 ///
 /// El zoom de apertura y cierre lo aplica la plataforma sobre esta escena:
-/// el fondo se desvanece y el resto además escala desde el centro.
+/// el fondo se desvanece y el resto además escala y se desenfoca desde el centro.
 pub fn launchpad_scene(
     theme: &Theme,
     screen: Size,
@@ -106,5 +106,6 @@ pub fn launchpad_scene(
         submenu: None,
         opacity: launchpad.zoom.opacity(),
         scale: launchpad.zoom.scale(),
+        blur: launchpad.zoom.blur(),
     }
 }

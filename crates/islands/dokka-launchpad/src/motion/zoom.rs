@@ -1,13 +1,14 @@
 //! Apertura y cierre del Launchpad con el zoom clásico hacia el usuario.
 //!
 //! La apertura entra desde lejos encogiendo y apareciendo, frenando; el cierre
-//! crece hacia el usuario mientras todo se desvanece. Si se reabre a mitad del
-//! cierre, continúa desde donde está, sin saltos.
+//! crece hacia el usuario mientras todo se desenfoca y se desvanece. Si se
+//! reabre a mitad del cierre, continúa desde donde está, sin saltos. El
+//! desenfoque sigue la misma curva que la escala y la opacidad: en reposo es 0.
 
 use dokka_animation::ease_out_cubic;
 use dokka_theme::launchpad as measures;
 
-/// Progreso del zoom: 0 en reposo, 1 lejos (grande y transparente).
+/// Progreso del zoom: 0 en reposo, 1 lejos (grande, transparente y desenfocado).
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct ZoomMotion {
     progress: f32,
@@ -79,5 +80,10 @@ impl ZoomMotion {
     /// Escala del contenido: crece hacia el usuario al cerrar.
     pub(crate) fn scale(&self) -> f32 {
         1.0 + (measures::ZOOM_FAR_SCALE - 1.0) * ease_out_cubic(self.progress)
+    }
+
+    /// Desenfoque del contenido: nítido en reposo y máximo lejos.
+    pub(crate) fn blur(&self) -> f32 {
+        measures::ZOOM_BLUR_MAX * ease_out_cubic(self.progress)
     }
 }

@@ -120,6 +120,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         labels: Vec::new(),
         opacity: 1.0,
         scale: 1.0,
+        blur: 0.0,
         overlay: None,
         submenu: None,
     }

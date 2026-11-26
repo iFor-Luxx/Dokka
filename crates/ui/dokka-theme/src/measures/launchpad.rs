@@ -97,6 +97,9 @@ pub const ZOOM_CLOSE_SECONDS: f32 = 0.22;
 /// Escala del contenido al empezar a abrir y al terminar de cerrar: crece hacia
 /// el usuario desde el centro de la pantalla.
 pub const ZOOM_FAR_SCALE: f32 = 1.15;
+/// Desenfoque máximo del contenido al empezar a abrir y al terminar de cerrar,
+/// en unidades lógicas (desviación del desenfoque gaussiano). En reposo es 0.
+pub const ZOOM_BLUR_MAX: f32 = 20.0;
 /// Cuánto cede la cuadrícula al intentar pasar de la primera o la última página
 /// respecto al ancho (40 sobre 2560).
 pub const PAGE_NUDGE_RATIO: f32 = 40.0 / 2560.0;
