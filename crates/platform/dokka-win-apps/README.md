@@ -1,5 +1,5 @@
 # dokka-win-apps
 
-**Hace:** obtiene el icono de un ejecutable y lo guarda en memoria.
+**Hace:** obtiene el icono de un ejecutable, lo guarda en memoria y abre apps (`AppLauncher`).
 
-**No hace:** todavía no abre apps. Algunas apps de la tienda pueden mostrar un icono genérico.
+**No hace:** no controla ventanas. Algunas apps de la tienda pueden mostrar un icono genérico o no abrirse por su ruta.

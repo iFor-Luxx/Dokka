@@ -1,7 +1,7 @@
 # dokka-dock
 
-**Hace:** decide el tamaño del dock, dónde va cada icono y cómo se ve.
+**Hace:** decide dónde va cada icono, la lupa, el salto, el punto de "abierta" y qué hace cada clic.
 
-**No hace:** no crea ventanas, no habla con Windows y todavía no tiene animaciones ni clics.
+**No hace:** no crea ventanas ni habla con Windows. Todavía no tiene menú, arrastre ni apps fijadas.
 
 **Pendiente:** mover `view/dock_style.rs` a `dokka-theme` cuando exista.

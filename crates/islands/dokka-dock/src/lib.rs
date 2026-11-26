@@ -1,6 +1,10 @@
 //! Isla del dock.
 
 mod logic;
+mod motion;
+mod state;
 mod view;
 
-pub use view::{DOCK_BOTTOM_MARGIN, dock_scene};
+pub use logic::ClickAction;
+pub use state::Dock;
+pub use view::DOCK_BOTTOM_MARGIN;

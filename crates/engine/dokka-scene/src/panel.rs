@@ -1,9 +1,9 @@
-use crate::{Color, Size};
+use crate::{Color, Rect};
 
 /// Panel de cristal con esquinas redondeadas.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Panel {
-    pub size: Size,
+    pub bounds: Rect,
     pub corner_radius: f32,
     pub tint: Color,
     pub border: Color,
