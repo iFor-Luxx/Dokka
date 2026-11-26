@@ -44,7 +44,7 @@ pub fn menu_overlay(
                     x: bounds.x + measures::PADDING + measures::TEXT_INSET,
                     center_y: top + measures::ROW_HEIGHT / 2.0,
                     content: label.clone(),
-                    size: typography::BODY_SIZE,
+                    size: typography::MENU_SIZE,
                     is_bold: false,
                     color,
                     align: TextAlign::Left,
@@ -71,8 +71,8 @@ pub fn menu_overlay(
             bounds,
             corner_radius: measures::CORNER_RADIUS,
             border_width: measures::BORDER_WIDTH,
-            tint: theme.panel.background,
-            border: theme.panel.border,
+            tint: theme.menu.background,
+            border: theme.menu.border,
         },
         highlight: Some(highlight_panel(theme, bounds, rows, highlighted)),
         dividers,
@@ -157,7 +157,7 @@ fn tip_icon(theme: &Theme, bounds: Rect, tip_x: f32) -> Icon {
     let drawing = Drawing {
         shapes: vec![Shape::Triangle {
             points: [(0.0, 0.0), (100.0, 0.0), (50.0, apex)],
-            color: theme.panel.background,
+            color: theme.menu.background,
         }],
     };
     Icon {
@@ -165,7 +165,7 @@ fn tip_icon(theme: &Theme, bounds: Rect, tip_x: f32) -> Icon {
         y: bounds.y + bounds.height,
         side,
         image: Some(IconImage::Drawing(Arc::new(drawing))),
-        placeholder: theme.panel.background,
+        placeholder: theme.menu.background,
         placeholder_radius: 0.0,
     }
 }

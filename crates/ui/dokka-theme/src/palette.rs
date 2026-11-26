@@ -30,4 +30,11 @@ pub(crate) const STEEL_SOFT: Color = Color::rgba(150, 156, 168, 200);
 pub(crate) const GRAY: Color = Color::rgba(140, 145, 155, 255);
 
 /// Azul de selección tipo macOS para el menú.
-pub(crate) const MACOS_BLUE: Color = Color::rgba(10, 132, 255, 255);
+pub(crate) const MACOS_BLUE: Color = Color::rgba(10, 100, 215, 255);
+
+/// Fondo casi opaco del menú del clic derecho.
+pub(crate) const MENU_BACKGROUND: Color = Color::rgba(242, 242, 242, 242);
+/// Borde sutil del menú del clic derecho.
+pub(crate) const MENU_BORDER: Color = Color::rgba(0, 0, 0, 38);
+/// Línea separadora del menú del clic derecho.
+pub(crate) const MENU_SEPARATOR: Color = Color::rgba(0, 0, 0, 35);

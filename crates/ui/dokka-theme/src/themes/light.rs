@@ -29,10 +29,12 @@ pub fn light() -> Theme {
             icon: palette::INK,
         },
         menu: MenuColors {
+            background: palette::MENU_BACKGROUND,
+            border: palette::MENU_BORDER,
             text: palette::INK,
             highlighted_text: palette::white(255),
             highlight: palette::MACOS_BLUE,
-            separator: palette::STEEL_SOFT,
+            separator: palette::MENU_SEPARATOR,
         },
         icons: light_icons(),
     }

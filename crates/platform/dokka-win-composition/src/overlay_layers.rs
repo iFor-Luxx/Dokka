@@ -31,12 +31,13 @@ impl OverlayLayers {
         parent: &ContainerVisual,
         overlay: &Overlay,
     ) -> Result<Self> {
+        let panel = PanelLayer::add(compositor, parent, &overlay.panel)?;
         let mut highlight = None;
-        if let Some(panel) = &overlay.highlight {
-            highlight = Some(PanelLayer::add(compositor, parent, panel)?);
+        if let Some(highlight_style) = &overlay.highlight {
+            highlight = Some(PanelLayer::add(compositor, parent, highlight_style)?);
         }
         Ok(Self {
-            panel: PanelLayer::add(compositor, parent, &overlay.panel)?,
+            panel,
             style: overlay.panel,
             highlight,
             highlight_style: overlay.highlight,
