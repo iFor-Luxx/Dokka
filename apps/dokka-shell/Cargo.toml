@@ -12,6 +12,7 @@ dokka-scene.workspace = true
 dokka-state.workspace = true
 dokka-win-apps.workspace = true
 dokka-win-composition.workspace = true
+dokka-win-control.workspace = true
 dokka-win-surface.workspace = true
 dokka-win-tracking.workspace = true
 

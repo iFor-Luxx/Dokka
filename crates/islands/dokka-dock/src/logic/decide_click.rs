@@ -2,7 +2,7 @@ use dokka_model::{AppId, AppWindow, DockApp, WindowId};
 
 use super::place_dock;
 use crate::Dock;
-use crate::view::style;
+use crate::view::dock_style as style;
 
 /// Lo que debe pasar tras un clic sobre una app.
 #[derive(Debug, Clone, PartialEq, Eq)]

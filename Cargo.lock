@@ -53,6 +53,7 @@ dependencies = [
  "dokka-state",
  "dokka-win-apps",
  "dokka-win-composition",
+ "dokka-win-control",
  "dokka-win-surface",
  "dokka-win-tracking",
 ]

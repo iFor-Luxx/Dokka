@@ -2,11 +2,12 @@
 #![allow(unsafe_code)]
 
 mod composition_error;
-mod draw_glass;
-mod draw_icon;
-mod draw_tint;
+mod dot_layer;
 mod graphics_device;
+mod icon_layer;
 mod paint_bitmap;
+mod panel_layer;
+mod scene_layers;
 mod scene_renderer;
 mod windows_color;
 

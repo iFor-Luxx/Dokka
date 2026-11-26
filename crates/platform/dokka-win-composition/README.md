@@ -1,5 +1,6 @@
 # dokka-win-composition
 
-**Hace:** dibuja una `Scene` en una ventana de Dokka (cristal, tinte, borde e iconos) y la redibuja cuando cambia.
+**Hace:** dibuja una `Scene` (cristal, tinte, borde, iconos y puntos). Solo repinta imágenes cuando cambian;
+en cada fotograma mueve y escala lo que ya existe.
 
-**No hace:** no decide qué dibujar ni crea ventanas. Todavía no anima ni se recupera si falla la tarjeta gráfica.
+**No hace:** no decide qué dibujar ni crea ventanas. Todavía no se recupera si falla la tarjeta gráfica.

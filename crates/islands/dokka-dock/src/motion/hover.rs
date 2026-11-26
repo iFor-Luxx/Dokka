@@ -2,7 +2,7 @@ use dokka_model::DockApp;
 
 use crate::Dock;
 use crate::logic::place_dock;
-use crate::view::style;
+use crate::view::dock_style as style;
 
 /// Margen alrededor de la zona activa antes de dar la lupa por terminada.
 const LEAVE_MARGIN: f32 = 12.0;

@@ -11,13 +11,12 @@ use windows::core::{Interface, Result};
 use windows_numerics::Vector3;
 
 use crate::CompositionError;
-use crate::draw_glass::draw_glass;
-use crate::draw_icon::draw_icon;
-use crate::draw_tint::draw_tint;
 use crate::graphics_device::create_graphics_device;
+use crate::scene_layers::SceneLayers;
 
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
 pub struct SceneRenderer {
+    layers: Option<SceneLayers>,
     root: ContainerVisual,
     device: CompositionGraphicsDevice,
     compositor: Compositor,
@@ -35,9 +34,9 @@ impl SceneRenderer {
         Ok(Self::build(surface, scale)?)
     }
 
-    /// Sustituye lo que se ve por la escena indicada.
+    /// Muestra la escena. Si las imágenes no cambian, solo recoloca lo existente.
     pub fn draw(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
-        Ok(self.redraw(scene)?)
+        Ok(self.apply(scene)?)
     }
 
     fn build(surface: SurfaceHandle, scale: f32) -> Result<Self> {
@@ -56,6 +55,7 @@ impl SceneRenderer {
         target.SetRoot(&root)?;
 
         Ok(Self {
+            layers: None,
             device: create_graphics_device(&compositor)?,
             root,
             compositor,
@@ -64,14 +64,13 @@ impl SceneRenderer {
         })
     }
 
-    fn redraw(&self, scene: &Scene) -> Result<()> {
-        let layers = self.root.Children()?;
-        layers.RemoveAll()?;
-        layers.InsertAtTop(&draw_glass(&self.compositor, &scene.panel)?)?;
-        layers.InsertAtTop(&draw_tint(&self.compositor, &scene.panel)?)?;
-        for icon in &scene.icons {
-            layers.InsertAtTop(&draw_icon(&self.compositor, &self.device, icon)?)?;
-        }
+    fn apply(&mut self, scene: &Scene) -> Result<()> {
+        let layers = match self.layers.take() {
+            Some(layers) if layers.matches(scene) => layers,
+            _ => SceneLayers::build(&self.compositor, &self.device, &self.root, scene)?,
+        };
+        layers.update(scene)?;
+        self.layers = Some(layers);
         Ok(())
     }
 }

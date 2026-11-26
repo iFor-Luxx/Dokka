@@ -4,7 +4,7 @@ use dokka_scene::Rect;
 
 use super::bar_width;
 use crate::Dock;
-use crate::view::style;
+use crate::view::dock_style as style;
 
 /// Dónde está cada cosa en este instante.
 pub(crate) struct Placement {
