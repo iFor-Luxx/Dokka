@@ -29,6 +29,9 @@ pub struct Previews {
     pub(crate) hovered: Option<u64>,
     /// Meses de diferencia con el actual en el calendario.
     pub(crate) month_offset: i32,
+    /// Mayor número de semanas mostrado mientras el calendario está abierto:
+    /// el panel nunca se encoge al navegar.
+    pub(crate) calendar_weeks: u16,
     /// Año, mes y día de hoy.
     pub(crate) today: (u16, u16, u16),
     /// Cuánto se ve el panel abierto.
@@ -50,6 +53,7 @@ impl Previews {
             hovered: None,
             nav_hovered: None,
             month_offset: 0,
+            calendar_weeks: 0,
             today: (0, 1, 1),
             reveal: Reveal::hidden(),
         }

@@ -1,4 +1,6 @@
-use dokka_components::calendar_panel::{calendar_nav_pill, calendar_panel, calendar_size};
+use dokka_components::calendar_panel::{
+    calendar_nav_pill, calendar_panel, calendar_size, calendar_weeks,
+};
 use dokka_components::nav_pill::NavPillProps;
 use dokka_components::popup_panel::place_above;
 use dokka_components::preview_card::{PreviewHover, preview_card, preview_size};
@@ -13,7 +15,12 @@ impl Previews {
     pub(crate) fn bounds(&self) -> Option<Rect> {
         let request = self.open.as_ref()?;
         let size = match &request.content {
-            PreviewContent::Calendar => calendar_size(),
+            PreviewContent::Calendar => {
+                let month = calendar_month(self.today, self.month_offset);
+                // El recuerdo solo crece: el panel nunca se encoge mientras
+                // está abierto. Al abrir es 0 y manda el mes actual.
+                calendar_size(calendar_weeks(&month).max(self.calendar_weeks))
+            }
             PreviewContent::Windows(windows) => preview_size(
                 visible_windows(windows.len(), request.limit),
                 self.media.is_some(),

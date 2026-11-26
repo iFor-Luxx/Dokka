@@ -36,7 +36,10 @@ pub fn nav_pill_panel(theme: &Theme, props: &NavPillProps) -> Panel {
 /// Resaltado suave de la mitad bajo el cursor. Existe siempre, con el mismo
 /// estilo: de tamaño cero cuando no hay mitad pulsable bajo el cursor, para
 /// no reconstruir capas al moverse (igual que el hover de las filas).
+/// Es una cápsula con margen interior dentro de su mitad, sin tocar la línea
+/// central ni salirse del borde. Al ser plano se ve como sombra neutra.
 pub fn nav_pill_highlight(theme: &Theme, props: &NavPillProps) -> Panel {
+    let highlight_radius = measures::radius(props.bounds.height - measures::HOVER_INSET * 2.0);
     let hidden = Panel {
         bounds: Rect {
             x: 0.0,
@@ -44,7 +47,7 @@ pub fn nav_pill_highlight(theme: &Theme, props: &NavPillProps) -> Panel {
             width: 0.0,
             height: 0.0,
         },
-        corner_radius: measures::radius(props.bounds.height),
+        corner_radius: highlight_radius,
         border_width: 0.0,
         tint: theme.nav_pill.hover,
         border: theme.nav_pill.hover,
@@ -55,9 +58,15 @@ pub fn nav_pill_highlight(theme: &Theme, props: &NavPillProps) -> Panel {
         Some(NavHalf::Next) if props.can_next => next,
         _ => return hidden,
     };
+    let inset = measures::HOVER_INSET;
     Panel {
-        bounds: area,
-        corner_radius: measures::radius(props.bounds.height),
+        bounds: Rect {
+            x: area.x + inset,
+            y: area.y + inset,
+            width: area.width - inset * 2.0,
+            height: area.height - inset * 2.0,
+        },
+        corner_radius: highlight_radius,
         border_width: 0.0,
         tint: theme.nav_pill.hover,
         border: theme.nav_pill.hover,
