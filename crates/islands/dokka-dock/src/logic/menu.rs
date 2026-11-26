@@ -1,7 +1,7 @@
 //! Menú propio del clic derecho: qué opciones tiene y dónde está.
 
 use dokka_components::menu_panel::{MenuRow, menu_row_at, menu_row_top, menu_size};
-use dokka_model::{AppInfo, DockApp};
+use dokka_model::{AppInfo, DockApp, WindowId};
 use dokka_scene::Rect;
 use dokka_theme::menu as measures;
 
@@ -25,6 +25,19 @@ pub enum MenuAction {
     Quit,
     Pin(AppInfo),
     Unpin(AppInfo),
+    ActivateWindow(WindowId),
+    OpenApp(AppInfo),
+    RunAsAdministrator(AppInfo),
+    ShowInFolder(AppInfo),
+    CloseFrontWindow(Vec<WindowId>),
+    QuitApp(Vec<WindowId>),
+    OpenDownloads,
+    OpenDocuments,
+    OpenDesktop,
+    OpenPictures,
+    OpenTrash,
+    EmptyTrash,
+    OpenLaunchpad,
 }
 
 /// Menú abierto, con sus filas, su sitio y el submenú de cada madre.
@@ -176,21 +189,15 @@ impl Dock {
         if self.is_on_divider(x, y, apps) {
             return Some(dock_menu(taskbar_hidden, taskbar_auto));
         }
-        let app = self.pin_target(x, y, apps)?;
-        let label = if app.is_pinned {
-            "Quitar del dock"
-        } else {
-            "Fijar en el dock"
-        };
-        let action = if app.is_pinned {
-            MenuAction::Unpin(app.info.clone())
-        } else {
-            MenuAction::Pin(app.info.clone())
-        };
-        Some(MenuData {
-            rows: vec![MenuRow::item(label)],
-            actions: vec![Some(action)],
-            children: vec![None],
-        })
+        let placement = super::place_dock(self, apps);
+        match super::decide_click::entry_at(&placement, x, y)? {
+            super::Entry::App(app) | super::Entry::Minimized(app, _) => {
+                Some(super::app_menu::app_menu(app))
+            }
+            super::Entry::Explorer(app) => Some(super::system_menus::explorer_menu(app)),
+            super::Entry::Trash => Some(super::system_menus::trash_menu(self.icons.trash_size)),
+            super::Entry::Launchpad => Some(super::system_menus::launchpad_menu()),
+            super::Entry::Calendar | super::Entry::Clock => None,
+        }
     }
 }

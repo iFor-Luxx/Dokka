@@ -45,11 +45,23 @@ pub(crate) fn run_menu_action(
     surface: &mut Surface,
     action: MenuAction,
 ) -> Result<(), Box<dyn Error>> {
-    // Se cierra el menú; para Preferencias no se devuelve el foco: se abre
-    // mientras Dokka aún es la ventana activa, si no Windows niega el
-    // primer plano. El resto devuelve el foco como hoy.
-    session.dock.close_menu();
-    if matches!(action, MenuAction::OpenSettings) {
+    // Se cierra el menú. Si la opción va a mostrar algo, no se devuelve el foco:
+    // se hace mientras Dokka aún es la ventana activa, si no Windows puede dejarlo
+    // detrás. El resto devuelve el foco como antes.
+    if matches!(
+        action,
+        MenuAction::OpenSettings
+            | MenuAction::ActivateWindow(_)
+            | MenuAction::OpenApp(_)
+            | MenuAction::RunAsAdministrator(_)
+            | MenuAction::ShowInFolder(_)
+            | MenuAction::OpenDownloads
+            | MenuAction::OpenDocuments
+            | MenuAction::OpenDesktop
+            | MenuAction::OpenPictures
+            | MenuAction::OpenTrash
+            | MenuAction::EmptyTrash
+    ) {
         surface.menu_dismissed();
     } else {
         surface.menu_closed();
@@ -94,6 +106,9 @@ pub(crate) fn run_menu_action(
         MenuAction::Unpin(info) => {
             toggle_pin(session, info, true)?;
             session.resize(surface)?;
+        }
+        other => {
+            crate::app_menu_actions::run_app_menu_action(session, surface, other)?;
         }
     }
     Ok(())

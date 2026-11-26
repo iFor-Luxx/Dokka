@@ -12,7 +12,8 @@ use dokka_settings::Settings;
 use dokka_state::DockState;
 use dokka_theme::{Theme, light};
 use dokka_win_apps::{
-    AppPicker, DesktopCatalog, IconCache, NameCache, SystemLauncher, recycle_bin_size,
+    AppPicker, DesktopCatalog, IconCache, NameCache, SystemAppActions, SystemLauncher,
+    SystemRecycleBin, recycle_bin_size,
 };
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
@@ -38,6 +39,8 @@ pub(crate) struct DockSession {
     pub(crate) explorer: AppId,
     pub(crate) launcher: SystemLauncher,
     pub(crate) control: SystemWindowControl,
+    pub(crate) app_actions: SystemAppActions,
+    pub(crate) recycle_bin: SystemRecycleBin,
     pub(crate) media: MediaMonitor,
     pub(crate) picker: AppPicker,
     taskbar_hidden: bool,
@@ -65,6 +68,8 @@ impl DockSession {
             explorer,
             launcher: SystemLauncher,
             control: SystemWindowControl,
+            app_actions: SystemAppActions,
+            recycle_bin: SystemRecycleBin,
             media: MediaMonitor::start(),
             picker: AppPicker::new(),
             taskbar_hidden: false,
