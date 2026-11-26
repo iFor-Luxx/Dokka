@@ -1,8 +1,11 @@
 # dokka-icons
 
-**Hace:** describe los iconos propios de Dokka (explorador, launchpad, calendario, reloj, papelera,
-chevrón del submenú y sus flechas de mes, y marca de la opción elegida) como dibujos.
+**Hace:** describe los iconos de color propios de Dokka (explorador, launchpad, calendario,
+reloj y papelera) como dibujos, y expone los de interfaz desde la librería
+`lucide-icons` (chevrón del submenú, marca elegida, flechas del calendario, lupa
+y botones de música) como glifos, más los bytes de su fuente.
 Y uniforma los iconos de apps para el Launchpad (`app_tile`: si llenan el cuadro solo recorta las
 esquinas; si son silueta las centra sobre la baldosa clara del tema; el marco blanco no se ve).
 
-**No hace:** no pinta, no lee la hora ni la papelera: recibe esos datos. Son diseños propios, no copias de Apple.
+**No hace:** no pinta, no lee la hora ni la papelera: recibe esos datos. Los de color son
+diseños propios, no copias de Apple; los de interfaz son Lucide, no dibujos propios.

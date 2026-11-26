@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_icons::{next_icon, pause_icon, play_icon, previous_icon};
+use dokka_icons::{media_next_icon, media_pause_icon, media_play_icon, media_previous_icon};
 use dokka_scene::{Controls, Drawing, Icon, IconImage, Panel, Rect};
 use dokka_theme::{Theme, popup as measures};
 
@@ -20,10 +20,10 @@ impl MediaIcons {
     pub fn new(theme: &Theme) -> Self {
         let color = theme.media.icon;
         Self {
-            previous: Arc::new(previous_icon(color)),
-            play: Arc::new(play_icon(color)),
-            pause: Arc::new(pause_icon(color)),
-            next: Arc::new(next_icon(color)),
+            previous: Arc::new(media_previous_icon(color)),
+            play: Arc::new(media_play_icon(color)),
+            pause: Arc::new(media_pause_icon(color)),
+            next: Arc::new(media_next_icon(color)),
         }
     }
 }

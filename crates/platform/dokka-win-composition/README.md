@@ -8,7 +8,8 @@ panel, punta, resaltado, líneas, puntos, textos e iconos; el texto se repinta s
 estilo, color o alineación (izquierda o centro). El overlay se escala sobre el icono sin reconstruir
 capas; las miniaturas del panel usan la misma transformación. El submenú reutiliza `OverlayLayers`
 encima del menú y tampoco reconstruye al mover el resaltado. El Launchpad usa el mismo compositor en un tercer
-árbol visual (`draw_launchpad`).
+árbol visual (`draw_launchpad`). Los glifos Lucide se pintan con la fuente en
+memoria de `dokka-win-text`, al doble de resolución como los textos.
 
 **No hace:** no decide qué dibujar ni crea ventanas. Las miniaturas siempre quedan por encima del resto.
 Todavía no se recupera si falla la tarjeta gráfica.

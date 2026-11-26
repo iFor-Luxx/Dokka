@@ -17,6 +17,11 @@ pub const CHECK_SIDE: f32 = 12.0;
 pub const ARROW_WIDTH: f32 = 18.0;
 /// Lado del icono del chevrón, centrado en la fila y en la columna del chevrón.
 pub const CHEVRON_SIDE: f32 = 12.0;
+/// Tamaño del glifo Lucide dentro del lienzo de 100 (centrado en 50, 50).
+/// Se ajusta para que el trazo aparente iguale al chevrón anterior.
+pub const CHEVRON_GLYPH_SIZE: f32 = 88.0;
+/// Tamaño del glifo de la marca dentro del lienzo de 100.
+pub const CHECK_GLYPH_SIZE: f32 = 88.0;
 /// Separación entre el menú madre y su submenú.
 pub const SUBMENU_GAP: f32 = 4.0;
 pub const CORNER_RADIUS: f32 = 10.0;

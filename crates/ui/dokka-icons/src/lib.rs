@@ -1,13 +1,11 @@
-//! Iconos propios de Dokka.
+//! Iconos de Dokka: los de color son propios; los de interfaz salen de Lucide.
 
 mod app_tile;
 mod calendar;
-mod checkmark;
-mod chevron;
 mod clock;
 mod explorer;
 mod launchpad;
-mod media;
+mod lucide;
 mod shapes;
 mod tile_frame;
 mod tile_paint;
@@ -17,10 +15,13 @@ mod trash;
 pub use app_tile::app_tile;
 
 pub use calendar::calendar_icon;
-pub use checkmark::checkmark_icon;
-pub use chevron::{chevron_icon, chevron_left_icon};
 pub use clock::clock_icon;
 pub use explorer::explorer_icon;
 pub use launchpad::launchpad_icon;
-pub use media::{next_icon, pause_icon, play_icon, previous_icon};
+pub use lucide::{
+    calendar_next_icon, calendar_previous_icon, checkmark_icon, media_next_icon, media_pause_icon,
+    media_play_icon, media_previous_icon, search_icon, submenu_chevron_icon,
+};
 pub use trash::trash_icon;
+
+pub use lucide_icons::LUCIDE_FONT_BYTES;

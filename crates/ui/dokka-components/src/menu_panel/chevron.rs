@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_icons::chevron_icon;
+use dokka_icons::submenu_chevron_icon;
 use dokka_scene::{Drawing, Icon, IconImage, Rect};
 use dokka_theme::{Theme, menu as measures};
 
@@ -17,8 +17,8 @@ pub struct MenuChevrons {
 impl MenuChevrons {
     pub fn new(theme: &Theme) -> Self {
         Self {
-            normal: Arc::new(chevron_icon(theme.menu.text)),
-            highlighted: Arc::new(chevron_icon(theme.menu.highlighted_text)),
+            normal: Arc::new(submenu_chevron_icon(theme.menu.text)),
+            highlighted: Arc::new(submenu_chevron_icon(theme.menu.highlighted_text)),
         }
     }
 }

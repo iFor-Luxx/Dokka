@@ -1,6 +1,8 @@
 # dokka-shell
 
-**Hace:** es el ejecutable; arranca Dokka y conecta las piezas. Pide al dock abrir el menú
+**Hace:** es el ejecutable; arranca Dokka y conecta las piezas. Pasa al compositor
+la fuente del sistema y los bytes de la fuente de iconos Lucide (en memoria,
+sin instalar). Pide al dock abrir el menú
 (con si la barra está oculta o en automático) y ejecuta su `MenuAction`; mientras el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Reiniciar Dokka» relanza el ejecutable actual. Es dueño de si la barra está

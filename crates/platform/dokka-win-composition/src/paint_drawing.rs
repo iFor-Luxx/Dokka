@@ -106,6 +106,15 @@ fn paint_shape(context: &ID2D1DeviceContext, text: &TextPainter, shape: &Shape) 
                 let line = CenteredText::centered(content, x, y, size, is_bold);
                 text.draw(context, &brush(context, color)?, line)?;
             }
+            Shape::Glyph {
+                glyph,
+                x,
+                y,
+                size,
+                color,
+            } => {
+                text.draw_glyph(context, &brush(context, color)?, glyph, x, y, size)?;
+            }
         }
     }
     Ok(())

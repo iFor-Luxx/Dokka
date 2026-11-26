@@ -46,6 +46,8 @@ pub const SEARCH_TEXT_SIZE: f32 = 12.0;
 pub const SEARCH_BORDER_WIDTH: f32 = 1.0;
 /// Lado de la lupa, en unidades lógicas.
 pub const SEARCH_ICON_SIDE: f32 = 14.0;
+/// Tamaño del glifo Lucide dentro del lienzo de 100 para la lupa.
+pub const SEARCH_GLYPH_SIZE: f32 = 84.0;
 /// Aire entre el borde de la casilla y la lupa.
 pub const SEARCH_ICON_INSET: f32 = 9.0;
 /// Texto que se muestra cuando no se ha escrito nada.

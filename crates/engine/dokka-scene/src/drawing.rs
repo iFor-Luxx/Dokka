@@ -39,6 +39,15 @@ pub enum Shape {
         is_bold: bool,
         color: Color,
     },
+    /// Glifo de la fuente de iconos, centrado en (`x`, `y`).
+    /// `size` va en las mismas unidades del lienzo que `Text`.
+    Glyph {
+        glyph: char,
+        x: f32,
+        y: f32,
+        size: f32,
+        color: Color,
+    },
 }
 
 /// Imagen vectorial: las formas se pintan en orden.

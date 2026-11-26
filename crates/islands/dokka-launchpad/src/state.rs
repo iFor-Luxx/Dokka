@@ -3,7 +3,8 @@ use std::sync::Arc;
 
 use dokka_components::app_grid::{AppGridItem, AppGridProps, app_at, page_capacity};
 use dokka_components::page_dots::{PageDotsProps, dot_at};
-use dokka_components::search_field::{SearchFieldProps, magnifier_drawing, search_contains};
+use dokka_components::search_field::{SearchFieldProps, search_contains};
+use dokka_icons::search_icon;
 use dokka_model::{AppId, AppInfo};
 use dokka_scene::{Bitmap, Color, Drawing, Size};
 use dokka_theme::Theme;
@@ -164,7 +165,7 @@ impl Launchpad {
         {
             return Arc::clone(drawing);
         }
-        let drawing = Arc::new(magnifier_drawing(color));
+        let drawing = Arc::new(search_icon(color));
         self.magnifier = Some((color, Arc::clone(&drawing)));
         drawing
     }
