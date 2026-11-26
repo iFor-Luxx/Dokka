@@ -114,10 +114,10 @@ fn overlay_inner(
                 }
                 texts.push(mark_text(label_x, top, &item.label, color));
                 if item.has_submenu {
-                    texts.push(mark_text(
-                        bounds.x + bounds.width - measures::PADDING - measures::ARROW_WIDTH,
+                    texts.push(chevron_text(
+                        bounds.x + bounds.width - measures::PADDING - measures::ARROW_WIDTH / 2.0,
                         top,
-                        ">",
+                        "›",
                         color,
                     ));
                 }
@@ -168,6 +168,19 @@ fn mark_text(x: f32, top: f32, content: &str, color: dokka_scene::Color) -> Text
         is_bold: false,
         color,
         align: TextAlign::Left,
+    }
+}
+
+/// Chevrón "›" de las filas con submenú: centrado en su columna y en la fila.
+fn chevron_text(x_center: f32, top: f32, content: &str, color: dokka_scene::Color) -> Text {
+    Text {
+        x: x_center,
+        center_y: top + measures::ROW_HEIGHT / 2.0,
+        content: content.to_owned(),
+        size: typography::MENU_CHEVRON_SIZE,
+        is_bold: true,
+        color,
+        align: TextAlign::Center,
     }
 }
 

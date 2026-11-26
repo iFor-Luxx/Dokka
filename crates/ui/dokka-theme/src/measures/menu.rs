@@ -10,7 +10,8 @@ pub const PADDING: f32 = 5.0;
 pub const TEXT_INSET: f32 = 10.0;
 /// Columna reservada a la izquierda para ✓ en los menús que la usan.
 pub const CHECK_WIDTH: f32 = 18.0;
-/// Columna reservada a la derecha para ">" en las filas con submenú.
+/// Columna reservada a la derecha para el chevrón "›" en las filas con submenú.
+/// El chevrón va centrado en esta columna.
 pub const ARROW_WIDTH: f32 = 18.0;
 /// Separación entre el menú madre y su submenú.
 pub const SUBMENU_GAP: f32 = 4.0;
