@@ -8,6 +8,12 @@ pub const ROW_HEIGHT: f32 = 24.0;
 pub const PADDING: f32 = 5.0;
 /// Separación del texto respecto al borde izquierdo del resaltado.
 pub const TEXT_INSET: f32 = 10.0;
+/// Columna reservada a la izquierda para ✓ en los menús que la usan.
+pub const CHECK_WIDTH: f32 = 18.0;
+/// Columna reservada a la derecha para ">" en las filas con submenú.
+pub const ARROW_WIDTH: f32 = 18.0;
+/// Separación entre el menú madre y su submenú.
+pub const SUBMENU_GAP: f32 = 4.0;
 pub const CORNER_RADIUS: f32 = 10.0;
 pub const HIGHLIGHT_RADIUS: f32 = 5.0;
 pub const BORDER_WIDTH: f32 = 1.0;

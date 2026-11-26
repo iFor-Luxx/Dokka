@@ -6,8 +6,10 @@ mod hover_target;
 mod hovered_label;
 mod list_entries;
 mod menu;
+mod menu_query;
 mod pin_target;
 mod place_dock;
+mod submenu;
 mod trash_label;
 
 pub(crate) use clock_label::clock_label;

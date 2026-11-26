@@ -11,6 +11,7 @@
   y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos.
 - `Overlay` lleva `opacity` y escala con origen (`scale` y `origin`): los paneles
   animados crecen desde el icono; el menú siempre vale 1.
-- `Scene` añade `texts` sueltos y `highlight` opcional para el Launchpad.
+- `Scene` añade `texts` sueltos, `highlight` opcional para el Launchpad y
+  `submenu` opcional para el segundo panel del menú (mismo cristal, sin punta).
 
 **No hace:** no dibuja ni habla con Windows. Las medidas son lógicas, sin escalar por DPI.

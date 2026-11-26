@@ -35,6 +35,7 @@ pub(crate) struct DockSession {
     pub(crate) media: MediaMonitor,
     pub(crate) picker: AppPicker,
     taskbar_hidden: bool,
+    taskbar_auto: bool,
     windows: SystemWindows,
     pub(crate) icons: IconCache,
     names: NameCache,
@@ -58,6 +59,7 @@ impl DockSession {
             media: MediaMonitor::start(),
             picker: AppPicker::new(),
             taskbar_hidden: false,
+            taskbar_auto: false,
             windows: SystemWindows,
             icons: IconCache::new(),
             names: NameCache::default(),
@@ -118,6 +120,19 @@ impl DockSession {
         self.taskbar_hidden = hidden;
     }
 
+    pub(crate) fn taskbar_hidden(&self) -> bool {
+        self.taskbar_hidden
+    }
+
+    pub(crate) fn taskbar_auto(&self) -> bool {
+        self.taskbar_auto
+    }
+
+    /// Guarda si la barra se oculta sola al abrir Dokka.
+    pub(crate) fn set_taskbar_auto(&mut self, auto: bool) {
+        self.taskbar_auto = auto;
+    }
+
     /// Dibuja el instante actual.
     pub(crate) fn render(&mut self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
         update_media(self);
@@ -125,14 +140,17 @@ impl DockSession {
         if self.launchpad.is_open() {
             // Con el Launchpad no hay menú ni vistas previas.
             scene.overlay = None;
+            scene.submenu = None;
             scene.labels.clear();
         } else if self.dock.is_menu_open() {
             scene.overlay = self.dock.menu_overlay();
+            scene.submenu = self.dock.submenu_overlay();
         } else {
             scene.overlay = self.previews.overlay();
+            scene.submenu = None;
         }
         // Con un panel abierto, la etiqueta sobra.
-        if scene.overlay.is_some() {
+        if scene.overlay.is_some() || scene.submenu.is_some() {
             scene.labels.clear();
         }
         self.renderer.draw(&scene)?;
@@ -151,6 +169,7 @@ impl DockSession {
             [
                 Some(self.dock.active_area(self.state.apps())),
                 self.dock.menu_area(),
+                self.dock.submenu_area(),
                 (!self.dock.is_menu_open())
                     .then(|| self.previews.area())
                     .flatten(),
