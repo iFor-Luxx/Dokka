@@ -1,0 +1,2 @@
+# Los scripts de bash deben conservar saltos de linea Unix tambien en Windows.
+*.sh text eol=lf
