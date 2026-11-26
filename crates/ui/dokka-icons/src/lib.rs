@@ -2,6 +2,7 @@
 
 mod app_tile;
 mod calendar;
+mod checkmark;
 mod chevron;
 mod clock;
 mod explorer;
@@ -16,7 +17,8 @@ mod trash;
 pub use app_tile::app_tile;
 
 pub use calendar::calendar_icon;
-pub use chevron::chevron_icon;
+pub use checkmark::checkmark_icon;
+pub use chevron::{chevron_icon, chevron_left_icon};
 pub use clock::clock_icon;
 pub use explorer::explorer_icon;
 pub use launchpad::launchpad_icon;

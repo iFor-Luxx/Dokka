@@ -7,37 +7,49 @@ const TIP: (f32, f32) = (66.0, 50.0);
 const BOTTOM: (f32, f32) = (34.0, 74.0);
 const WIDTH: f32 = 14.0;
 
-/// Chevrón estilo macOS que marca las filas con submenú.
+/// Chevrón derecho estilo macOS que marca las filas con submenú.
 pub fn chevron_icon(color: Color) -> Drawing {
+    chevron_drawing(TOP, TIP, BOTTOM, color)
+}
+
+/// Chevrón izquierdo con el mismo trazo: flecha del mes anterior.
+pub fn chevron_left_icon(color: Color) -> Drawing {
+    const LEFT_TOP: (f32, f32) = (66.0, 26.0);
+    const LEFT_TIP: (f32, f32) = (34.0, 50.0);
+    const LEFT_BOTTOM: (f32, f32) = (66.0, 74.0);
+    chevron_drawing(LEFT_TOP, LEFT_TIP, LEFT_BOTTOM, color)
+}
+
+fn chevron_drawing(top: (f32, f32), tip: (f32, f32), bottom: (f32, f32), color: Color) -> Drawing {
     Drawing {
         shapes: vec![
             Shape::Line {
-                from: TOP,
-                to: TIP,
+                from: top,
+                to: tip,
                 width: WIDTH,
                 color,
             },
             Shape::Line {
-                from: TIP,
-                to: BOTTOM,
+                from: tip,
+                to: bottom,
                 width: WIDTH,
                 color,
             },
             Shape::Circle {
-                x: TOP.0,
-                y: TOP.1,
+                x: top.0,
+                y: top.1,
                 radius: WIDTH / 2.0,
                 color,
             },
             Shape::Circle {
-                x: TIP.0,
-                y: TIP.1,
+                x: tip.0,
+                y: tip.1,
                 radius: WIDTH / 2.0,
                 color,
             },
             Shape::Circle {
-                x: BOTTOM.0,
-                y: BOTTOM.1,
+                x: bottom.0,
+                y: bottom.1,
                 radius: WIDTH / 2.0,
                 color,
             },

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use dokka_animation::Spring;
-use dokka_components::menu_panel::MenuChevrons;
+use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
 use dokka_model::AppId;
 use dokka_theme::Theme;
 
@@ -21,6 +21,8 @@ pub struct Dock {
     pub(crate) icons: SystemIcons,
     /// Chevrones del menú en los dos colores; se reutilizan para no repintar.
     pub(crate) menu_chevrons: MenuChevrons,
+    /// Marcas de opción elegida en los dos colores; se reutilizan igual.
+    pub(crate) menu_checks: MenuChecks,
     pub(crate) hover: Spring,
     pub(crate) is_hovered: bool,
     pub(crate) cursor_x: f32,
@@ -34,6 +36,7 @@ impl Dock {
             explorer,
             icons: SystemIcons::new(&theme.icons),
             menu_chevrons: MenuChevrons::new(&theme),
+            menu_checks: MenuChecks::new(&theme),
             theme,
             hover: Spring::new(0.0, HOVER_STIFFNESS),
             is_hovered: false,

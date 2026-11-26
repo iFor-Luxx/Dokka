@@ -95,7 +95,7 @@ impl Previews {
         let mut overlay = match &request.content {
             PreviewContent::Calendar => {
                 let month = calendar_month(self.today, self.month_offset);
-                calendar_panel(&self.theme, drawn, &month)
+                calendar_panel(&self.theme, &self.calendar_arrows, drawn, &month)
             }
             PreviewContent::Windows(windows) => {
                 let shown = visible_windows(windows.len(), request.limit);

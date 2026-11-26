@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use dokka_components::calendar_panel::CalendarArrows;
 use dokka_components::preview_card::{MediaIcons, NowPlaying};
 use dokka_theme::Theme;
 
@@ -10,6 +11,8 @@ use crate::{PreviewRequest, motion::Reveal};
 pub struct Previews {
     pub(crate) theme: Arc<Theme>,
     pub(crate) media_icons: MediaIcons,
+    /// Flechas del calendario, creadas una vez: el mes cambia sin reconstruirlas.
+    pub(crate) calendar_arrows: CalendarArrows,
     pub(crate) open: Option<PreviewRequest>,
     /// Panel que espera a que el cursor se detenga, y cuánto lleva esperando.
     pub(crate) pending: Option<(PreviewRequest, f32)>,
@@ -29,6 +32,7 @@ impl Previews {
     pub fn new(theme: Arc<Theme>) -> Self {
         Self {
             media_icons: MediaIcons::new(&theme),
+            calendar_arrows: CalendarArrows::new(&theme),
             theme,
             open: None,
             pending: None,

@@ -67,6 +67,7 @@ impl Dock {
         Some(menu_overlay(
             &self.theme,
             &self.menu_chevrons,
+            &self.menu_checks,
             menu.panel,
             menu.tip_x,
             &menu.rows,
@@ -80,6 +81,7 @@ impl Dock {
         Some(submenu_overlay(
             &self.theme,
             &self.menu_chevrons,
+            &self.menu_checks,
             sub.panel,
             &sub.rows,
             sub.highlighted,

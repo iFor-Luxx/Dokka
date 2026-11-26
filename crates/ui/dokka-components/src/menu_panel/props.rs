@@ -34,7 +34,7 @@ impl MenuRow {
         })
     }
 
-    /// Fila elegible con ✓ a la izquierda cuando está elegida.
+    /// Fila elegible con icono de marca a la izquierda cuando está elegida.
     pub fn checked(label: impl Into<String>, checked: bool) -> Self {
         Self::Item(MenuItem {
             label: label.into(),

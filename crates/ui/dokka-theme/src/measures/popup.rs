@@ -14,6 +14,8 @@ pub const CALENDAR_HEADER: f32 = 40.0;
 /// Cuánto baja la cabecera respecto a su centro.
 pub const CALENDAR_HEADER_DROP: f32 = 2.0;
 pub const CALENDAR_ARROW_SIDE: f32 = 28.0;
+/// Lado del icono de cada flecha, centrado en su zona pulsable.
+pub const CALENDAR_ARROW_ICON_SIDE: f32 = 12.0;
 /// Aire entre el círculo de hoy y su celda.
 pub const CALENDAR_TODAY_INSET: f32 = 3.0;
 
