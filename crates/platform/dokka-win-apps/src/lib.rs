@@ -5,10 +5,12 @@ mod app_name;
 mod icon_cache;
 mod launch_app;
 mod load_icon;
+mod pick_app;
 mod read_bitmap;
 mod system_places;
 
 pub use app_name::NameCache;
 pub use icon_cache::IconCache;
 pub use launch_app::SystemLauncher;
+pub use pick_app::AppPicker;
 pub use system_places::{explorer_app, recycle_bin_size, system_place};

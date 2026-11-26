@@ -10,7 +10,7 @@ use dokka_previews::Previews;
 use dokka_scene::Scene;
 use dokka_state::DockState;
 use dokka_theme::light;
-use dokka_win_apps::{IconCache, NameCache, SystemLauncher, recycle_bin_size};
+use dokka_win_apps::{AppPicker, IconCache, NameCache, SystemLauncher, recycle_bin_size};
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
 use dokka_win_media::MediaMonitor;
@@ -27,6 +27,7 @@ pub(crate) struct DockSession {
     pub(crate) launcher: SystemLauncher,
     pub(crate) control: SystemWindowControl,
     pub(crate) media: MediaMonitor,
+    pub(crate) picker: AppPicker,
     windows: SystemWindows,
     icons: IconCache,
     names: NameCache,
@@ -45,6 +46,7 @@ impl DockSession {
             launcher: SystemLauncher,
             control: SystemWindowControl,
             media: MediaMonitor::start(),
+            picker: AppPicker::new(),
             windows: SystemWindows,
             icons: IconCache::new(),
             names: NameCache::default(),
