@@ -1,6 +1,5 @@
 use windows::Win32::UI::WindowsAndMessaging::{
-    HWND_TOPMOST, SW_HIDE, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW, SetWindowPos,
-    ShowWindow,
+    SW_HIDE, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW, SetWindowPos, ShowWindow,
 };
 
 use crate::place_window::place_fullscreen;
@@ -19,38 +18,21 @@ impl Surface {
             return Ok(());
         }
         let _ = place_fullscreen(self.preview)?;
+        // La ventana sigue oculta: `place_fullscreen` la ordena como
+        // TOPMOST sin pintarla, así que no hay parpadeo visible.
+        // Se muestra justo detrás de la principal; la superpuesta, dueña
+        // de la principal, sigue encima sin tocarla.
         // SAFETY: ambas ventanas son propias y siguen vivas.
         unsafe {
             SetWindowPos(
                 self.preview,
-                Some(HWND_TOPMOST),
+                Some(self.window),
                 0,
                 0,
                 0,
                 0,
                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW,
             )?;
-            // El dock y sus botones quedan encima de la vista grande.
-            SetWindowPos(
-                self.window,
-                Some(HWND_TOPMOST),
-                0,
-                0,
-                0,
-                0,
-                SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW,
-            )?;
-            if self.above_position.is_some() {
-                SetWindowPos(
-                    self.above,
-                    Some(self.window),
-                    0,
-                    0,
-                    0,
-                    0,
-                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE,
-                )?;
-            }
         }
         self.preview_visible = true;
         Ok(())
