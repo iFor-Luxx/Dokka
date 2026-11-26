@@ -11,7 +11,7 @@ pub(crate) const INK: Color = Color::rgba(30, 32, 36, 255);
 pub(crate) const CHARCOAL: Color = Color::rgba(40, 40, 44, 255);
 pub(crate) const MIST: Color = Color::rgba(236, 240, 236, 170);
 pub(crate) const MIST_SOLID: Color = Color::rgba(232, 238, 232, 235);
-pub(crate) const MIST_STRONG: Color = Color::rgba(240, 244, 240, 225);
+pub(crate) const MIST_STRONG: Color = Color::rgba(240, 244, 240, 160);
 
 pub(crate) const RED: Color = Color::rgba(235, 70, 70, 255);
 pub(crate) const ORANGE: Color = Color::rgba(250, 140, 40, 255);
