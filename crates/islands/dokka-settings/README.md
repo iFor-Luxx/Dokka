@@ -9,8 +9,8 @@ navegación atenuada, título de la sección y tarjeta gris "Próximamente". Gua
 abierta, la sección elegida, la fila bajo el cursor y los chevrones de la píldora
 creados una vez; decide qué hace cada clic
 (`SettingsAction`) y qué puntos arrastran la ventana (`drag_zone`). Da su `Scene`
-de 760 × 720 con forma fija: fondo, barra, selección, casilla, píldora y tarjeta como
-paneles; hover como resaltado; semáforos como puntos; insignias, glifos, lupa y
+de 760 × 720 con forma fija: fondo, barra flotante, píldora y tarjeta como
+paneles; buscador, selección y hover como planos sobre la barra; semáforos como puntos; insignias, glifos, lupa y
 chevrones como iconos; y nombres, búsqueda, título y tarjeta como textos.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Sin

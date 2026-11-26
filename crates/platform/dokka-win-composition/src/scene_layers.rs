@@ -21,7 +21,7 @@ use crate::text_layer::TextLayer;
 /// sitio: con desenfoque activo el `holder` se oculta y solo se ve la copia
 /// desenfocada, sin que la captura pierda nitidez.
 /// Cada capa se inserta arriba: el fondo queda bajo el contenido, y dentro del
-/// contenido el orden es paneles, resaltado, líneas, iconos, puntos y textos.
+/// contenido el orden es paneles, planos, resaltado, líneas, iconos, puntos y textos.
 pub(crate) struct SceneLayers {
     backdrop: ContainerVisual,
     holder: ContainerVisual,
@@ -31,6 +31,8 @@ pub(crate) struct SceneLayers {
     panel: PanelLayer,
     panels: Vec<PanelLayer>,
     panel_styles: Vec<PanelStyle>,
+    flats: Vec<PanelLayer>,
+    flat_styles: Vec<PanelStyle>,
     highlight: Option<PanelLayer>,
     highlight_style: Option<(dokka_scene::Color, f32)>,
     dividers: Vec<DividerLayer>,
@@ -73,10 +75,18 @@ impl SceneLayers {
         let panel = PanelLayer::add(compositor, &backdrop, &scene.panel)?;
         // Cada capa se inserta arriba: los paneles quedan sobre el fondo y
         // bajo el resaltado, las líneas, los iconos, los puntos y los textos.
+        // Los planos van encima de los paneles: son tinte sin cristal sobre el
+        // cristal de la misma ventana (buscador, selección y hover de
+        // Preferencias). El resto de escenas no los usa.
         let panels = scene
             .panels
             .iter()
             .map(|panel| PanelLayer::add(compositor, &content, panel))
+            .collect::<Result<_>>()?;
+        let flats = scene
+            .flat_panels
+            .iter()
+            .map(|panel| PanelLayer::add_flat(compositor, &content, panel))
             .collect::<Result<_>>()?;
         let highlight = scene
             .highlight
@@ -129,6 +139,8 @@ impl SceneLayers {
             panel,
             panels,
             panel_styles: scene.panels.iter().map(panel_style_of).collect(),
+            flats,
+            flat_styles: scene.flat_panels.iter().map(panel_style_of).collect(),
             highlight,
             highlight_style: scene.highlight.map(highlight_style_of),
             dividers,
@@ -171,6 +183,14 @@ impl SceneLayers {
                 .iter()
                 .zip(&scene.panels)
                 .all(|(style, panel)| *style == panel_style_of(panel))
+            // Lo plano y el cristal van en listas distintas: un cambio de un
+            // lado al otro reconstruye en vez de reutilizar el cristal.
+            && self.flat_styles.len() == scene.flat_panels.len()
+            && self
+                .flat_styles
+                .iter()
+                .zip(&scene.flat_panels)
+                .all(|(style, panel)| *style == panel_style_of(panel))
             && self.dots.len() >= scene.dots.len()
             && self.dividers.len() >= scene.dividers.len()
             && self.texts.len() >= scene.texts.len()
@@ -191,6 +211,9 @@ impl SceneLayers {
     ) -> Result<()> {
         self.panel.update(&scene.panel)?;
         for (layer, panel) in self.panels.iter().zip(&scene.panels) {
+            layer.update(panel)?;
+        }
+        for (layer, panel) in self.flats.iter().zip(&scene.flat_panels) {
             layer.update(panel)?;
         }
         if let (Some(layer), Some(panel)) = (&self.highlight, &scene.highlight) {

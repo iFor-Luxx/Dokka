@@ -75,6 +75,8 @@ pub(crate) const LAUNCHPAD_DOT_ACTIVE: Color = Color::rgba(255, 255, 255, 255);
 pub(crate) const SETTINGS_WINDOW: Color = Color::rgba(246, 246, 248, 255);
 /// Barra lateral translúcida sobre la ventana.
 pub(crate) const SETTINGS_SIDEBAR: Color = Color::rgba(232, 232, 238, 190);
+/// Borde fino y luminoso del panel flotante de la barra lateral.
+pub(crate) const SETTINGS_SIDEBAR_BORDER: Color = white(170);
 /// Casilla de búsqueda: gris apenas visible.
 pub(crate) const SETTINGS_SEARCH_BACKGROUND: Color = Color::rgba(0, 0, 0, 18);
 /// Borde fino de la casilla de búsqueda.

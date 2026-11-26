@@ -6,6 +6,11 @@ pub struct Scene {
     pub panel: Panel,
     /// Paneles extra sobre el fondo y bajo el resaltado, como la casilla de búsqueda.
     pub panels: Vec<Panel>,
+    /// Paneles planos (tinte y borde, sin cristal) sobre el cristal de la misma
+    /// ventana, como el buscador, la selección y el hover de Preferencias: el
+    /// cristal muestrearía el fondo de pantalla e ignoraría lo que hay debajo
+    /// dentro de la ventana. El dock, el Launchpad y los paneles no los usan.
+    pub flat_panels: Vec<Panel>,
     pub icons: Vec<Icon>,
     pub dots: Vec<Dot>,
     pub dividers: Vec<Divider>,

@@ -8,8 +8,19 @@ pub const WIDTH: f32 = 760.0;
 /// Alto lógico de la ventana.
 pub const HEIGHT: f32 = 720.0;
 /// Esquinas de la ventana, muy redondeadas.
-pub const CORNER_RADIUS: f32 = 20.0;
+pub const CORNER_RADIUS: f32 = 26.0;
 pub const BORDER_WIDTH: f32 = 1.0;
+
+/// Panel flotante dentro de la ventana: margen parejo arriba, abajo y a la
+/// izquierda donde se ve el fondo claro de la ventana. El borde derecho sigue
+/// en `SIDEBAR_WIDTH` para no mover la cabecera ni la tarjeta.
+pub const SIDEBAR_INSET: f32 = 8.0;
+/// Margen interior parejo del contenido (casilla, insignias) al borde del panel.
+pub const SIDEBAR_MARGIN: f32 = 10.0;
+/// Esquinas del panel, concéntricas con las de la ventana.
+pub const SIDEBAR_RADIUS: f32 = CORNER_RADIUS - SIDEBAR_INSET;
+/// Borde fino y luminoso del panel flotante.
+pub const SIDEBAR_BORDER_WIDTH: f32 = 1.0;
 
 /// Ancho de la barra lateral.
 pub const SIDEBAR_WIDTH: f32 = 260.0;
@@ -18,19 +29,18 @@ pub const SIDEBAR_WIDTH: f32 = 260.0;
 pub const TRAFFIC_DIAMETER: f32 = 12.0;
 /// Distancia entre bordes izquierdos de semáforos seguidos.
 pub const TRAFFIC_PITCH: f32 = 20.0;
-/// Borde izquierdo del primer semáforo.
-pub const TRAFFIC_LEFT: f32 = 20.0;
-/// Borde superior de los semáforos.
-pub const TRAFFIC_TOP: f32 = 20.0;
+/// Borde izquierdo del primer semáforo: con aire (~18) al borde del panel.
+pub const TRAFFIC_LEFT: f32 = SIDEBAR_INSET + 18.0;
+/// Borde superior de los semáforos: centrados entre el panel y la casilla.
+pub const TRAFFIC_TOP: f32 = 25.0;
 /// Aire para pulsar cada semáforo alrededor de su círculo.
 pub const TRAFFIC_HIT_PADDING: f32 = 6.0;
 
-/// Margen lateral de la casilla y las filas dentro de la barra.
-pub const SIDEBAR_MARGIN: f32 = 12.0;
 /// Borde superior de la casilla de búsqueda, bajo los semáforos.
 pub const SEARCH_TOP: f32 = 52.0;
 pub const SEARCH_HEIGHT: f32 = 30.0;
-pub const SEARCH_RADIUS: f32 = 8.0;
+/// Cápsula: extremos totalmente redondos (mitad del alto).
+pub const SEARCH_RADIUS: f32 = SEARCH_HEIGHT / 2.0;
 pub const SEARCH_BORDER_WIDTH: f32 = 1.0;
 /// Lado de la lupa dentro de la casilla.
 pub const SEARCH_ICON_SIDE: f32 = 16.0;
@@ -52,8 +62,8 @@ pub const BADGE_SIDE: f32 = 28.0;
 pub const BADGE_RADIUS: f32 = 7.0;
 /// Aire entre el cuadrado y el nombre.
 pub const BADGE_TEXT_GAP: f32 = 10.0;
-/// Borde izquierdo del cuadrado dentro de la barra.
-pub const BADGE_LEFT: f32 = 20.0;
+/// Borde izquierdo del cuadrado, con el mismo aire interior que la casilla.
+pub const BADGE_LEFT: f32 = SIDEBAR_INSET + SIDEBAR_MARGIN;
 /// Tamaño del nombre de cada sección.
 pub const ROW_TEXT_SIZE: f32 = 13.0;
 /// Tamaño del glifo Lucide blanco sobre el cuadrado.
@@ -110,9 +120,19 @@ pub fn row_middle(index: usize) -> f32 {
     row_top(index) + ROW_PITCH / 2.0
 }
 
-/// Ancho de la casilla de búsqueda dentro de la barra.
+/// Ancho del panel flotante: el borde derecho sigue en `SIDEBAR_WIDTH`.
+pub fn sidebar_panel_width() -> f32 {
+    SIDEBAR_WIDTH - SIDEBAR_INSET
+}
+
+/// Borde izquierdo de la fila resaltada (selección y hover), dentro del panel.
+pub fn row_highlight_left() -> f32 {
+    SIDEBAR_INSET + ROW_HIGHLIGHT_MARGIN
+}
+
+/// Ancho de la casilla de búsqueda dentro del panel flotante.
 pub fn search_width() -> f32 {
-    SIDEBAR_WIDTH - SIDEBAR_MARGIN * 2.0
+    sidebar_panel_width() - SIDEBAR_MARGIN * 2.0
 }
 
 /// Borde izquierdo del título, tras la píldora.
