@@ -7,7 +7,8 @@
 //! y la captura no pierde nitidez porque es del `content`. En reposo el
 //! `holder` se muestra y el contenido se ve directo, sin efectos activos. La
 //! fábrica se usa una sola vez para crear el pincel, que se reutiliza; si no se
-//! pueden crear, se sigue con el zoom y el desvanecido clásicos sin error visible.
+//! pueden crear o el pincel falla, se sigue con el zoom y el desvanecido
+//! clásicos y el fallo se escribe una sola vez en consola.
 
 use dokka_scene::Scene;
 use windows::UI::Composition::{
@@ -28,6 +29,8 @@ pub(crate) struct BlurStage {
     sprite: Option<SpriteVisual>,
     /// `true` si el efecto no se pudo crear: no se reintenta.
     unsupported: bool,
+    /// `true` si el fallo ya se escribió en consola: no se repite.
+    warned: bool,
 }
 
 impl BlurStage {
@@ -37,6 +40,15 @@ impl BlurStage {
             surface: None,
             sprite: None,
             unsupported: false,
+            warned: false,
+        }
+    }
+
+    /// Escribe el fallo del desenfoque una sola vez en consola.
+    fn warn_once(&mut self, detail: &str) {
+        if !self.warned {
+            self.warned = true;
+            eprintln!("[dokka-win-composition] desenfoque desactivado ({detail})");
         }
     }
 
@@ -76,15 +88,50 @@ impl BlurStage {
         if self.unsupported {
             return self.apply_classic(holder, content, scene, center);
         }
-        if self.brush.is_none() && self.ensure(compositor, root, content).is_err() {
+        if self.brush.is_none()
+            && let Err(err) = self.ensure(compositor, root, content)
+        {
+            let detail = format!("al crear el efecto: {err}");
+            self.warn_once(&detail);
             self.unsupported = true;
             return self.apply_classic(holder, content, scene, center);
         }
-        let (Some(surface), Some(brush), Some(sprite)) = (&self.surface, &self.brush, &self.sprite)
-        else {
-            self.unsupported = true;
-            return self.apply_classic(holder, content, scene, center);
+        let (surface, brush, sprite) = match (
+            self.surface.clone(),
+            self.brush.clone(),
+            self.sprite.clone(),
+        ) {
+            (Some(surface), Some(brush), Some(sprite)) => (surface, brush, sprite),
+            _ => {
+                self.warn_once("efecto creado sin pincel ni copia");
+                self.unsupported = true;
+                return self.apply_classic(holder, content, scene, center);
+            }
         };
+        if let Err(err) =
+            Self::apply_blurred(&surface, &brush, &sprite, holder, content, scene, center)
+        {
+            let detail = format!("al aplicar el desenfoque: {err}");
+            self.warn_once(&detail);
+            return self.apply_classic(holder, content, scene, center);
+        }
+        Ok(())
+    }
+
+    /// Copia desenfocada sobre el contenido: el `holder` oculta el contenido
+    /// nítido bajo la copia; la captura es del `content`, así que no le afecta
+    /// y sigue limpia. La copia visible lleva el desvanecido y la escala de la
+    /// escena.
+    fn apply_blurred(
+        surface: &CompositionVisualSurface,
+        brush: &CompositionEffectBrush,
+        sprite: &SpriteVisual,
+        holder: &ContainerVisual,
+        content: &ContainerVisual,
+        scene: &Scene,
+        center: Vector3,
+    ) -> Result<()> {
+        let bounds = scene.panel.bounds;
         surface.SetSourceSize(Vector2 {
             X: bounds.width,
             Y: bounds.height,
@@ -92,9 +139,6 @@ impl BlurStage {
         brush
             .Properties()?
             .InsertScalar(&HSTRING::from(BLUR_ANIMATABLE), scene.blur)?;
-        // El `holder` oculta el contenido nítido bajo la copia; la captura es
-        // del `content`, así que no le afecta y sigue limpia. La copia visible
-        // lleva el desvanecido y la escala de la escena.
         holder.SetOpacity(0.0)?;
         content.SetOpacity(1.0)?;
         content.SetScale(Vector3 {
