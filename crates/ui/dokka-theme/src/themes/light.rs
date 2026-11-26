@@ -1,0 +1,33 @@
+use super::light_icons::light_icons;
+use crate::palette;
+use crate::{DockColors, MediaColors, PanelColors, Theme, TooltipColors};
+
+/// Tema claro de cristal: el actual de Dokka.
+pub fn light() -> Theme {
+    let border = palette::white(140);
+    Theme {
+        dock: DockColors {
+            background: palette::white(40),
+            border: palette::white(96),
+            placeholder: palette::white(80),
+            divider: palette::white(110),
+            running_dot: palette::white(220),
+        },
+        panel: PanelColors {
+            background: palette::MIST,
+            border,
+            text: palette::INK,
+            highlight: palette::white(245),
+        },
+        tooltip: TooltipColors {
+            background: palette::MIST_SOLID,
+            text: palette::INK,
+        },
+        media: MediaColors {
+            background: palette::MIST_STRONG,
+            border,
+            icon: palette::INK,
+        },
+        icons: light_icons(),
+    }
+}
