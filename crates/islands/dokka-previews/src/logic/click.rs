@@ -1,8 +1,9 @@
-use dokka_components::calendar_panel::calendar_nav_pill;
+use dokka_components::calendar_panel::{calendar_nav_pill, calendar_weeks};
 use dokka_components::nav_pill::{NavHalf, NavPillProps, nav_pill_at};
 use dokka_components::preview_card::{media_buttons, preview_slot, window_button_areas};
 use dokka_scene::Rect;
 
+use super::calendar_month;
 use crate::{MediaCommand, PreviewClick, PreviewContent, Previews};
 
 impl Previews {
@@ -24,10 +25,22 @@ impl Previews {
                     can_next: true,
                     hovered: None,
                 };
-                match nav_pill_at(&props, x, y) {
-                    Some(NavHalf::Previous) => self.month_offset -= 1,
-                    Some(NavHalf::Next) => self.month_offset += 1,
-                    None => (),
+                // El mes que se deja también cuenta: si era de 6 semanas, no se encoge.
+                let left = calendar_weeks(&calendar_month(self.today, self.month_offset));
+                let stepped = match nav_pill_at(&props, x, y) {
+                    Some(NavHalf::Previous) => {
+                        self.month_offset -= 1;
+                        true
+                    }
+                    Some(NavHalf::Next) => {
+                        self.month_offset += 1;
+                        true
+                    }
+                    None => false,
+                };
+                if stepped {
+                    let weeks = calendar_weeks(&calendar_month(self.today, self.month_offset));
+                    self.calendar_weeks = self.calendar_weeks.max(left).max(weeks);
                 }
                 Some(PreviewClick::Handled)
             }

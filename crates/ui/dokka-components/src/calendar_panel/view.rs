@@ -9,14 +9,21 @@ use crate::nav_pill::{
 use crate::popup_panel::{popup_panel, text};
 
 const WEEKDAYS: [&str; 7] = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
-/// Fila de nombres de día más seis semanas.
-const ROWS: f32 = 7.0;
+/// Semanas mínimas: los meses de 4 o 5 semanas miden igual y las flechas
+/// no saltan al navegar; solo los de 6 semanas crecen una fila.
+const MINIMUM_WEEKS: u16 = 5;
 
-pub fn calendar_size() -> Size {
+pub fn calendar_weeks(month: &CalendarMonth) -> u16 {
+    let used = u32::from(month.first_column) + u32::from(month.days);
+    (used.div_ceil(7) as u16).max(MINIMUM_WEEKS)
+}
+
+pub fn calendar_size(weeks: u16) -> Size {
+    let rows = 1.0 + f32::from(weeks);
     Size {
         width: measures::CALENDAR_CELL_WIDTH * 7.0 + measures::PADDING * 2.0,
         height: measures::CALENDAR_HEADER
-            + measures::CALENDAR_CELL_HEIGHT * ROWS
+            + measures::CALENDAR_CELL_HEIGHT * rows
             + measures::PADDING,
     }
 }

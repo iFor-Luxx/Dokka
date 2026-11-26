@@ -58,6 +58,7 @@ impl Previews {
         self.hovered = None;
         self.nav_hovered = None;
         self.month_offset = 0;
+        self.calendar_weeks = 0;
         self.reveal = Reveal::hidden();
     }
 
@@ -76,6 +77,7 @@ impl Previews {
                 self.open = None;
                 self.closing = None;
                 self.month_offset = 0;
+                self.calendar_weeks = 0;
                 self.nav_hovered = None;
                 self.reveal = Reveal::hidden();
                 self.open = request;
@@ -92,6 +94,7 @@ impl Previews {
                 self.hovered = None;
                 self.nav_hovered = None;
                 self.month_offset = 0;
+                self.calendar_weeks = 0;
                 self.reveal = Reveal::hidden();
             }
         }
