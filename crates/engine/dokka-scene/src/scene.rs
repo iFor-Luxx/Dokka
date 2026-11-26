@@ -16,4 +16,6 @@ pub struct Scene {
     /// Resaltado suave detrás del elemento bajo el cursor.
     pub highlight: Option<Panel>,
     pub overlay: Option<Overlay>,
+    /// Segundo panel del menú (submenú), sobre el principal y sin punta.
+    pub submenu: Option<Overlay>,
 }

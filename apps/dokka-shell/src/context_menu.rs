@@ -2,6 +2,7 @@
 
 use std::error::Error;
 
+use dokka_config::{TaskbarMode, TaskbarModeFile};
 use dokka_contracts::AppLauncher;
 use dokka_dock::MenuAction;
 use dokka_win_apps::system_place;
@@ -21,7 +22,13 @@ pub(crate) fn open_context_menu(
     if session.dock.is_menu_open() {
         session.dock.close_menu();
     }
-    if session.dock.open_menu(x, y, session.state.apps()) {
+    if session.dock.open_menu(
+        x,
+        y,
+        session.state.apps(),
+        session.taskbar_hidden(),
+        session.taskbar_auto(),
+    ) {
         session.previews.close();
         session.dock.pointer_left();
         surface.menu_opened()?;
@@ -48,6 +55,17 @@ pub(crate) fn run_menu_action(
             session.resize(surface)?;
         }
         MenuAction::HideTaskbar => {
+            set_taskbar_visible(false);
+            session.set_taskbar_hidden(true);
+            session.resize(surface)?;
+        }
+        MenuAction::TaskbarManual => {
+            TaskbarModeFile::in_user_folder()?.save(TaskbarMode::Manual)?;
+            session.set_taskbar_auto(false);
+        }
+        MenuAction::TaskbarAuto => {
+            TaskbarModeFile::in_user_folder()?.save(TaskbarMode::Automatic)?;
+            session.set_taskbar_auto(true);
             set_taskbar_visible(false);
             session.set_taskbar_hidden(true);
             session.resize(surface)?;

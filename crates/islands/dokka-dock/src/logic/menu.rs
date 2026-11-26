@@ -1,11 +1,12 @@
 //! Menú propio del clic derecho: qué opciones tiene y dónde está.
 
-use dokka_components::menu_panel::{MenuRow, menu_overlay, menu_row_at, menu_size};
+use dokka_components::menu_panel::{MenuRow, menu_row_at, menu_row_top, menu_size};
 use dokka_model::{AppInfo, DockApp};
-use dokka_scene::{Overlay, Rect};
+use dokka_scene::Rect;
 use dokka_theme::menu as measures;
 
-use super::dock_menu::dock_menu;
+use super::dock_menu::{MenuData, dock_menu};
+use super::submenu::{OpenSubmenu, submenu_contains, submenu_panel};
 use crate::Dock;
 
 /// Lo que se pidió desde el menú.
@@ -14,6 +15,8 @@ pub enum MenuAction {
     AddApp,
     ShowTaskbar,
     HideTaskbar,
+    TaskbarManual,
+    TaskbarAuto,
     ShowDesktop,
     TaskManager,
     TaskbarSettings,
@@ -23,21 +26,35 @@ pub enum MenuAction {
     Unpin(AppInfo),
 }
 
-/// Menú abierto, con sus filas y su sitio.
+/// Menú abierto, con sus filas, su sitio y el submenú de cada madre.
 #[derive(Debug, Clone)]
 pub(crate) struct OpenMenu {
-    rows: Vec<MenuRow>,
-    actions: Vec<Option<MenuAction>>,
-    panel: Rect,
-    tip_x: f32,
-    floor: f32,
-    highlighted: Option<usize>,
+    pub(crate) rows: Vec<MenuRow>,
+    pub(crate) actions: Vec<Option<MenuAction>>,
+    pub(crate) children: Vec<Option<super::dock_menu::SubmenuData>>,
+    pub(crate) panel: Rect,
+    pub(crate) tip_x: f32,
+    pub(crate) floor: f32,
+    pub(crate) limit: f32,
+    pub(crate) highlighted: Option<usize>,
+    pub(crate) submenu: Option<OpenSubmenu>,
 }
 
 impl Dock {
     /// Abre el menú de ese punto. Devuelve si se abrió alguno.
-    pub fn open_menu(&mut self, x: f32, y: f32, apps: &[DockApp]) -> bool {
-        let (rows, actions) = match self.menu_content(x, y, apps) {
+    pub fn open_menu(
+        &mut self,
+        x: f32,
+        y: f32,
+        apps: &[DockApp],
+        taskbar_hidden: bool,
+        taskbar_auto: bool,
+    ) -> bool {
+        let MenuData {
+            rows,
+            actions,
+            children,
+        } = match self.menu_content(x, y, apps, taskbar_hidden, taskbar_auto) {
             Some(content) => content,
             None => return false,
         };
@@ -52,46 +69,87 @@ impl Dock {
             width: size.width,
             height: size.height,
         };
-        let floor = bar_top;
         self.pointer_left();
         self.menu = Some(OpenMenu {
             rows,
             actions,
+            children,
             panel,
             tip_x: x,
-            floor,
+            floor: bar_top,
+            limit,
             highlighted: None,
+            submenu: None,
         });
         true
     }
 
-    /// Actualiza la fila resaltada bajo el cursor.
+    /// Actualiza la fila resaltada bajo el cursor, abriendo submenús al pasar.
     pub fn move_over_menu(&mut self, x: f32, y: f32) {
         let Some(menu) = self.menu.as_mut() else {
             return;
         };
-        menu.highlighted = menu_row_at(&menu.rows, menu.panel, x, y);
-    }
-
-    /// Opción elegida en el punto. Cierra el menú al elegir.
-    pub fn click_menu(&mut self, x: f32, y: f32) -> Option<MenuAction> {
-        let menu = self.menu.as_ref()?;
-        let index = menu_row_at(&menu.rows, menu.panel, x, y)?;
-        let action = menu.actions[index].clone()?;
-        self.menu = None;
-        Some(action)
-    }
-
-    /// `true` si el punto está dentro del menú, punta incluida.
-    pub fn menu_contains(&self, x: f32, y: f32) -> bool {
-        let Some(menu) = &self.menu else {
-            return false;
+        if menu
+            .submenu
+            .as_ref()
+            .is_some_and(|sub| submenu_contains(sub.panel, x, y))
+        {
+            if let Some(sub) = menu.submenu.as_mut() {
+                sub.highlighted = menu_row_at(&sub.rows, sub.panel, x, y);
+            }
+            if let Some(mother) = menu.submenu.as_ref().map(|sub| sub.mother) {
+                menu.highlighted = Some(mother);
+            }
+            return;
+        }
+        if let Some(index) = menu_row_at(&menu.rows, menu.panel, x, y) {
+            menu.highlighted = Some(index);
+            let same_mother = menu.submenu.as_ref().is_some_and(|sub| sub.mother == index);
+            if same_mother {
+                if let Some(sub) = menu.submenu.as_mut() {
+                    sub.highlighted = None;
+                }
+                return;
+            }
+            let child = menu
+                .rows
+                .get(index)
+                .is_some_and(|row| matches!(row, MenuRow::Item(item) if item.has_submenu));
+            let data = if child {
+                menu.children.get(index).and_then(|slot| slot.clone())
+            } else {
+                None
+            };
+            if let Some(data) = data {
+                let top = menu_row_top(&menu.rows, menu.panel, index);
+                let panel = submenu_panel(menu.panel, top, &data.rows, menu.limit, menu.floor);
+                menu.submenu = Some(OpenSubmenu {
+                    mother: index,
+                    rows: data.rows,
+                    actions: data.actions,
+                    panel,
+                    highlighted: None,
+                });
+            } else {
+                menu.submenu = None;
+            }
+            return;
+        }
+        menu.highlighted = None;
+        let bridge = menu
+            .submenu
+            .as_ref()
+            .map(|sub| (menu_row_top(&menu.rows, menu.panel, sub.mother), sub.panel));
+        let Some((mother_top, sub_panel)) = bridge else {
+            return;
         };
-        let panel = menu.panel;
-        x >= panel.x
-            && x <= panel.x + panel.width
-            && y >= panel.y
-            && y <= panel.y + panel.height + measures::POINTER_HEIGHT
+        if super::submenu::in_bridge(menu.panel, mother_top, sub_panel, x, y) {
+            if let Some(mother) = menu.submenu.as_ref().map(|sub| sub.mother) {
+                menu.highlighted = Some(mother);
+            }
+            return;
+        }
+        menu.submenu = None;
     }
 
     pub fn close_menu(&mut self) {
@@ -100,29 +158,6 @@ impl Dock {
 
     pub fn is_menu_open(&self) -> bool {
         self.menu.is_some()
-    }
-
-    /// Dibujo del menú abierto.
-    pub fn menu_overlay(&self) -> Option<Overlay> {
-        let menu = self.menu.as_ref()?;
-        Some(menu_overlay(
-            &self.theme,
-            menu.panel,
-            menu.tip_x,
-            &menu.rows,
-            menu.highlighted,
-        ))
-    }
-
-    /// Zona que debe verse y recibir el mouse: el menú y el hueco hasta el dock.
-    pub fn menu_area(&self) -> Option<Rect> {
-        let menu = self.menu.as_ref()?;
-        Some(Rect {
-            x: menu.panel.x,
-            y: menu.panel.y,
-            width: menu.panel.width,
-            height: (menu.floor - menu.panel.y).max(menu.panel.height),
-        })
     }
 
     fn menu_floor(&self, apps: &[DockApp]) -> f32 {
@@ -134,9 +169,11 @@ impl Dock {
         x: f32,
         y: f32,
         apps: &[DockApp],
-    ) -> Option<(Vec<MenuRow>, Vec<Option<MenuAction>>)> {
+        taskbar_hidden: bool,
+        taskbar_auto: bool,
+    ) -> Option<MenuData> {
         if self.is_on_divider(x, y, apps) {
-            return Some(dock_menu());
+            return Some(dock_menu(taskbar_hidden, taskbar_auto));
         }
         let app = self.pin_target(x, y, apps)?;
         let label = if app.is_pinned {
@@ -149,6 +186,10 @@ impl Dock {
         } else {
             MenuAction::Pin(app.info.clone())
         };
-        Some((vec![MenuRow::Item(label.to_owned())], vec![Some(action)]))
+        Some(MenuData {
+            rows: vec![MenuRow::item(label)],
+            actions: vec![Some(action)],
+            children: vec![None],
+        })
     }
 }

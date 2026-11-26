@@ -73,5 +73,6 @@ pub fn launchpad_scene(
         texts,
         highlight: Some(app_highlight(theme, &grid)),
         overlay: None,
+        submenu: None,
     }
 }

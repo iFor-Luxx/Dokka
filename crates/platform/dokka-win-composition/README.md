@@ -6,7 +6,8 @@ su imagen y solo cambia el pincel de un punto cuando cambia su color. La etiquet
 sus capas al moverse entre iconos y solo repinta el texto si cambia. En el overlay pinta en orden
 panel, punta, resaltado, líneas, puntos y textos; el texto se repinta si cambia su contenido,
 estilo, color o alineación (izquierda o centro). El overlay se escala sobre el icono sin reconstruir
-capas; las miniaturas del panel usan la misma transformación. El Launchpad usa el mismo compositor en un tercer
+capas; las miniaturas del panel usan la misma transformación. El submenú reutiliza `OverlayLayers`
+encima del menú y tampoco reconstruye al mover el resaltado. El Launchpad usa el mismo compositor en un tercer
 árbol visual (`draw_launchpad`).
 
 **No hace:** no decide qué dibujar ni crea ventanas. Las miniaturas siempre quedan por encima del resto.

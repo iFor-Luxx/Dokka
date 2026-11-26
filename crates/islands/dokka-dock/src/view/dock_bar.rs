@@ -74,6 +74,7 @@ impl Dock {
             texts: Vec::new(),
             highlight: None,
             overlay: None,
+            submenu: None,
             labels,
         }
     }

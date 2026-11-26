@@ -24,6 +24,7 @@ pub(crate) struct SceneLayers {
     texts: Vec<TextLayer>,
     labels: Vec<LabelLayer>,
     overlay: Option<OverlayLayers>,
+    submenu: Option<OverlayLayers>,
 }
 
 /// Lo que fija el aspecto de un panel extra al crearse: `update` no lo reconstruye.
@@ -84,6 +85,12 @@ impl SceneLayers {
             .as_ref()
             .map(|overlay| OverlayLayers::add(compositor, root, overlay))
             .transpose()?;
+        // El submenú reutiliza las mismas capas y va encima del menú.
+        let submenu = scene
+            .submenu
+            .as_ref()
+            .map(|submenu| OverlayLayers::add(compositor, root, submenu))
+            .transpose()?;
         // Van al final para quedar por encima de los iconos.
         let labels = scene
             .labels
@@ -102,6 +109,7 @@ impl SceneLayers {
             texts,
             labels,
             overlay,
+            submenu,
         })
     }
 
@@ -112,7 +120,14 @@ impl SceneLayers {
             (None, None) => true,
             _ => false,
         };
+        // El resaltado se mueve con `update`: cambiar de fila no reconstruye.
+        let same_submenu = match (&self.submenu, &scene.submenu) {
+            (Some(layers), Some(submenu)) => layers.matches(submenu),
+            (None, None) => true,
+            _ => false,
+        };
         same_overlay
+            && same_submenu
             && self.highlight.is_some() == scene.highlight.is_some()
             && self.highlight_style == scene.highlight.map(highlight_style_of)
             && self.panel_styles.len() == scene.panels.len()
@@ -160,6 +175,9 @@ impl SceneLayers {
         }
         if let (Some(layers), Some(overlay)) = (&mut self.overlay, &scene.overlay) {
             layers.update(compositor, painter, overlay)?;
+        }
+        if let (Some(layers), Some(submenu)) = (&mut self.submenu, &scene.submenu) {
+            layers.update(compositor, painter, submenu)?;
         }
         for (layer, label) in self.labels.iter_mut().zip(&scene.labels) {
             layer.update(compositor, painter, label)?;

@@ -27,26 +27,100 @@ pub fn menu_overlay(
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
+    let pointer = Some(menu_pointer(bounds, tip_x));
+    overlay_inner(theme, bounds, pointer, rows, highlighted)
+}
+
+/// Mismo cristal y resaltado que el menú, sin punta.
+pub fn submenu_overlay(
+    theme: &Theme,
+    bounds: Rect,
+    rows: &[MenuRow],
+    highlighted: Option<usize>,
+) -> Overlay {
+    overlay_inner(theme, bounds, None, rows, highlighted)
+}
+
+/// Fila de texto que hay en el punto, si es elegible.
+pub fn menu_row_at(rows: &[MenuRow], bounds: Rect, x: f32, y: f32) -> Option<usize> {
+    if x < bounds.x || x > bounds.x + bounds.width {
+        return None;
+    }
+    let mut top = bounds.y + measures::PADDING;
+    for (index, row) in rows.iter().enumerate() {
+        let height = match row {
+            MenuRow::Item(_) => measures::ROW_HEIGHT,
+            MenuRow::Separator => measures::SEPARATOR_HEIGHT,
+        };
+        if y >= top && y < top + height {
+            return match row {
+                MenuRow::Item(_) => Some(index),
+                MenuRow::Separator => None,
+            };
+        }
+        top += height;
+    }
+    None
+}
+
+/// Borde superior de la fila, para alinear el submenú con su madre.
+pub fn menu_row_top(rows: &[MenuRow], bounds: Rect, index: usize) -> f32 {
+    let mut top = bounds.y + measures::PADDING;
+    for row in rows.iter().take(index) {
+        top += match row {
+            MenuRow::Item(_) => measures::ROW_HEIGHT,
+            MenuRow::Separator => measures::SEPARATOR_HEIGHT,
+        };
+    }
+    top
+}
+
+fn overlay_inner(
+    theme: &Theme,
+    bounds: Rect,
+    pointer: Option<Pointer>,
+    rows: &[MenuRow],
+    highlighted: Option<usize>,
+) -> Overlay {
+    let with_checks = rows
+        .iter()
+        .any(|row| matches!(row, MenuRow::Item(item) if item.checked));
+    let label_x = bounds.x
+        + measures::PADDING
+        + measures::TEXT_INSET
+        + if with_checks {
+            measures::CHECK_WIDTH
+        } else {
+            0.0
+        };
     let mut top = bounds.y + measures::PADDING;
     let mut texts = Vec::new();
     let mut dividers = Vec::new();
     for (index, row) in rows.iter().enumerate() {
         match row {
-            MenuRow::Item(label) => {
+            MenuRow::Item(item) => {
                 let color = if highlighted == Some(index) {
                     theme.menu.highlighted_text
                 } else {
                     theme.menu.text
                 };
-                texts.push(Text {
-                    x: bounds.x + measures::PADDING + measures::TEXT_INSET,
-                    center_y: top + measures::ROW_HEIGHT / 2.0,
-                    content: label.clone(),
-                    size: typography::MENU_SIZE,
-                    is_bold: false,
-                    color,
-                    align: TextAlign::Left,
-                });
+                if item.checked {
+                    texts.push(mark_text(
+                        bounds.x + measures::PADDING + measures::TEXT_INSET,
+                        top,
+                        "✓",
+                        color,
+                    ));
+                }
+                texts.push(mark_text(label_x, top, &item.label, color));
+                if item.has_submenu {
+                    texts.push(mark_text(
+                        bounds.x + bounds.width - measures::PADDING - measures::ARROW_WIDTH,
+                        top,
+                        ">",
+                        color,
+                    ));
+                }
                 top += measures::ROW_HEIGHT;
             }
             MenuRow::Separator => {
@@ -75,7 +149,7 @@ pub fn menu_overlay(
         highlight: Some(highlight_panel(theme, bounds, rows, highlighted)),
         dividers,
         dots: Vec::new(),
-        pointer: Some(menu_pointer(bounds, tip_x)),
+        pointer,
         texts,
         thumbnails: Vec::new(),
         controls: None,
@@ -85,26 +159,16 @@ pub fn menu_overlay(
     }
 }
 
-/// Fila de texto que hay en el punto, si es elegible.
-pub fn menu_row_at(rows: &[MenuRow], bounds: Rect, x: f32, y: f32) -> Option<usize> {
-    if x < bounds.x || x > bounds.x + bounds.width {
-        return None;
+fn mark_text(x: f32, top: f32, content: &str, color: dokka_scene::Color) -> Text {
+    Text {
+        x,
+        center_y: top + measures::ROW_HEIGHT / 2.0,
+        content: content.to_owned(),
+        size: typography::MENU_SIZE,
+        is_bold: false,
+        color,
+        align: TextAlign::Left,
     }
-    let mut top = bounds.y + measures::PADDING;
-    for (index, row) in rows.iter().enumerate() {
-        let height = match row {
-            MenuRow::Item(_) => measures::ROW_HEIGHT,
-            MenuRow::Separator => measures::SEPARATOR_HEIGHT,
-        };
-        if y >= top && y < top + height {
-            return match row {
-                MenuRow::Item(_) => Some(index),
-                MenuRow::Separator => None,
-            };
-        }
-        top += height;
-    }
-    None
 }
 
 fn highlight_panel(
@@ -119,7 +183,7 @@ fn highlight_panel(
         let index = highlighted.unwrap_or(0);
         Rect {
             x: bounds.x + measures::PADDING,
-            y: row_top(rows, bounds, index),
+            y: menu_row_top(rows, bounds, index),
             width: bounds.width - measures::PADDING * 2.0,
             height: measures::ROW_HEIGHT,
         }
@@ -138,17 +202,6 @@ fn highlight_panel(
         tint: theme.menu.highlight,
         border: theme.menu.highlight,
     }
-}
-
-fn row_top(rows: &[MenuRow], bounds: Rect, index: usize) -> f32 {
-    let mut top = bounds.y + measures::PADDING;
-    for row in rows.iter().take(index) {
-        top += match row {
-            MenuRow::Item(_) => measures::ROW_HEIGHT,
-            MenuRow::Separator => measures::SEPARATOR_HEIGHT,
-        };
-    }
-    top
 }
 
 fn menu_pointer(bounds: Rect, tip_x: f32) -> Pointer {

@@ -8,6 +8,7 @@ mod launchpad;
 mod media;
 mod perform_click;
 mod pinned_apps;
+mod taskbar_mode;
 
 use std::error::Error;
 
@@ -22,6 +23,7 @@ use dokka_win_tracking::{ChangeWatcher, WINDOWS_CHANGED_MESSAGE};
 use crate::dock_session::DockSession;
 use crate::handle_event::handle_event;
 use crate::pinned_apps::load_pinned;
+use crate::taskbar_mode::load_taskbar_mode;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Recupera la barra si un cierre anterior la dejó oculta.
@@ -45,6 +47,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let _watcher = ChangeWatcher::start();
 
     load_pinned(&mut session, explorer);
+    if load_taskbar_mode(&mut session) {
+        // En automático la barra ya empieza oculta.
+        set_taskbar_visible(false);
+    }
     session.sync()?;
     session.update_clock_and_trash();
     session.resize(&mut surface)?;
