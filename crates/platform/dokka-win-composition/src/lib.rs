@@ -18,6 +18,7 @@ mod paint_surface;
 mod paint_text;
 mod painter;
 mod panel_layer;
+mod pointer_layer;
 mod scene_layers;
 mod scene_renderer;
 mod solid_brush;

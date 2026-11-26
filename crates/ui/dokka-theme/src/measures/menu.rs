@@ -14,6 +14,5 @@ pub const BORDER_WIDTH: f32 = 1.0;
 /// Hueco vertical que ocupa una línea separadora.
 pub const SEPARATOR_HEIGHT: f32 = 11.0;
 pub const DIVIDER_HEIGHT: f32 = 1.0;
-/// Punta que apunta al sitio pulsado.
-pub const POINTER_WIDTH: f32 = 18.0;
+/// Punta que apunta al sitio pulsado: centro x y altura (base = 2 × altura).
 pub const POINTER_HEIGHT: f32 = 9.0;

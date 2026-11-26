@@ -4,34 +4,45 @@ use windows::core::Result;
 
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
-use crate::icon_layer::IconLayer;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
+use crate::pointer_layer::{PointerLayer, pointer_style_of};
 use crate::text_layer::TextLayer;
 
 /// Elementos visuales de un panel flotante.
-/// Orden: panel, resaltado, líneas, puntos, iconos (punta), textos.
+/// Orden: panel, punta, resaltado, líneas, puntos, textos.
 pub(crate) struct OverlayLayers {
     panel: PanelLayer,
     /// Apariencia con la que se creó el fondo.
     style: Panel,
+    pointer: Option<PointerLayer>,
+    /// Altura con la que se creó la punta, si la hay.
+    pointer_style: Option<f32>,
     highlight: Option<PanelLayer>,
     /// Estilo con el que se creó el resaltado, si lo hay.
     highlight_style: Option<Panel>,
     dividers: Vec<DividerLayer>,
     dots: Vec<DotLayer>,
-    icons: Vec<IconLayer>,
     texts: Vec<TextLayer>,
 }
 
 impl OverlayLayers {
     pub(crate) fn add(
         compositor: &Compositor,
-        painter: &Painter,
         parent: &ContainerVisual,
         overlay: &Overlay,
     ) -> Result<Self> {
         let panel = PanelLayer::add(compositor, parent, &overlay.panel)?;
+        // Encima del panel para que su cristal tape ese tramo de borde y de tinte.
+        let mut pointer = None;
+        if let Some(style) = &overlay.pointer {
+            pointer = Some(PointerLayer::add(
+                compositor,
+                parent,
+                &overlay.panel,
+                style,
+            )?);
+        }
         let mut highlight = None;
         if let Some(highlight_style) = &overlay.highlight {
             highlight = Some(PanelLayer::add(compositor, parent, highlight_style)?);
@@ -39,6 +50,8 @@ impl OverlayLayers {
         Ok(Self {
             panel,
             style: overlay.panel,
+            pointer,
+            pointer_style: overlay.pointer.map(pointer_style_of),
             highlight,
             highlight_style: overlay.highlight,
             dividers: overlay
@@ -51,11 +64,6 @@ impl OverlayLayers {
                 .iter()
                 .map(|dot| DotLayer::add(compositor, parent, dot))
                 .collect::<Result<_>>()?,
-            icons: overlay
-                .icons
-                .iter()
-                .map(|icon| IconLayer::add(compositor, painter, parent, icon))
-                .collect::<Result<_>>()?,
             texts: overlay
                 .texts
                 .iter()
@@ -65,21 +73,18 @@ impl OverlayLayers {
     }
 
     /// Un panel de otro color (calendario frente a vista previa) se crea de nuevo.
-    /// El resaltado del menú tiene estilo constante, así que moverse por él no reconstruye.
+    /// El resaltado del menú tiene estilo constante, así que moverse por él no reconstruye;
+    /// la punta se mueve con `update`.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
         self.style.tint == overlay.panel.tint
+            && self.pointer.is_some() == overlay.pointer.is_some()
+            && self.pointer_style == overlay.pointer.map(pointer_style_of)
             && self.highlight.is_some() == overlay.highlight.is_some()
             && self.highlight_style.map(highlight_style_of)
                 == overlay.highlight.map(highlight_style_of)
             && self.dividers.len() == overlay.dividers.len()
             && self.dots.len() == overlay.dots.len()
-            && self.icons.len() == overlay.icons.len()
             && self.texts.len() == overlay.texts.len()
-            && self
-                .icons
-                .iter()
-                .zip(&overlay.icons)
-                .all(|(layer, icon)| layer.accepts(icon))
     }
 
     pub(crate) fn update(
@@ -89,6 +94,9 @@ impl OverlayLayers {
         overlay: &Overlay,
     ) -> Result<()> {
         self.panel.update(&overlay.panel)?;
+        if let (Some(layer), Some(pointer)) = (&self.pointer, &overlay.pointer) {
+            layer.update(&overlay.panel, pointer)?;
+        }
         if let (Some(layer), Some(panel)) = (&self.highlight, &overlay.highlight) {
             layer.update(panel)?;
         }
@@ -97,9 +105,6 @@ impl OverlayLayers {
         }
         for (layer, dot) in self.dots.iter().zip(&overlay.dots) {
             layer.update(dot)?;
-        }
-        for (layer, icon) in self.icons.iter_mut().zip(&overlay.icons) {
-            layer.update(compositor, painter, icon)?;
         }
         for (layer, text) in self.texts.iter_mut().zip(&overlay.texts) {
             layer.update(compositor, painter, text)?;

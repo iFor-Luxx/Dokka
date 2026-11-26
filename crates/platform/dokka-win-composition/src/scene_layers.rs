@@ -47,7 +47,7 @@ impl SceneLayers {
         let overlay = scene
             .overlay
             .as_ref()
-            .map(|overlay| OverlayLayers::add(compositor, painter, root, overlay))
+            .map(|overlay| OverlayLayers::add(compositor, root, overlay))
             .transpose()?;
         // Van al final para quedar por encima de los iconos.
         let labels = scene
