@@ -1,9 +1,7 @@
-use crate::{PreviewContent, PreviewRequest, Previews};
+use crate::{PreviewRequest, Previews};
 
-/// Las ventanas se muestran casi al instante; la espera mínima evita destellos al pasar de largo.
-const WINDOWS_AFTER_SECONDS: f32 = 0.12;
-/// El calendario espera más: primero se ve la etiqueta con la fecha.
-const CALENDAR_AFTER_SECONDS: f32 = 0.4;
+/// Todos los paneles se muestran casi al instante; la espera mínima evita destellos al pasar de largo.
+const OPEN_AFTER_SECONDS: f32 = 0.12;
 /// Margen para volver antes de que se cierre.
 const CLOSE_AFTER_SECONDS: f32 = 0.25;
 
@@ -51,13 +49,9 @@ impl Previews {
                 self.close();
             }
         }
-        if let Some((request, waited)) = &mut self.pending {
+        if let Some((_, waited)) = &mut self.pending {
             *waited += seconds;
-            let delay = match request.content {
-                PreviewContent::Windows(_) => WINDOWS_AFTER_SECONDS,
-                PreviewContent::Calendar => CALENDAR_AFTER_SECONDS,
-            };
-            if *waited >= delay {
+            if *waited >= OPEN_AFTER_SECONDS {
                 let request = self.pending.take().map(|(request, _)| request);
                 self.close();
                 self.open = request;
