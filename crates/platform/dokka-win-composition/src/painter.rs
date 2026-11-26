@@ -17,10 +17,10 @@ pub(crate) struct Painter {
 }
 
 impl Painter {
-    pub(crate) fn new(compositor: &Compositor) -> Result<Self> {
+    pub(crate) fn new(compositor: &Compositor, font_family: &str) -> Result<Self> {
         Ok(Self {
             device: create_graphics_device(compositor)?,
-            text: TextPainter::new()?,
+            text: TextPainter::new(font_family)?,
         })
     }
 

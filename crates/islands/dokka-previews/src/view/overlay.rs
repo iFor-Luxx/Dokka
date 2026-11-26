@@ -41,11 +41,13 @@ impl Previews {
         let request = self.open.as_ref()?;
         Some(match &request.content {
             PreviewContent::Calendar => {
-                calendar_panel(bounds, &calendar_month(self.today, self.month_offset))
+                let month = calendar_month(self.today, self.month_offset);
+                calendar_panel(&self.theme, bounds, &month)
             }
             PreviewContent::Windows(windows) => {
                 let shown = visible_windows(windows.len(), request.limit);
-                preview_card(bounds, &windows[..shown], self.media.as_ref())
+                let media = self.media.as_ref().map(|now| (now, &self.media_icons));
+                preview_card(&self.theme, bounds, &windows[..shown], media)
             }
         })
     }

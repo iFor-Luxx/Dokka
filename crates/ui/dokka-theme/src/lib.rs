@@ -1,5 +1,11 @@
-//! Colores y medidas de Dokka.
+//! Estilos de Dokka: colores por tema, fuente y medidas.
 
-pub mod dock;
-pub mod popup;
-pub mod tooltip;
+mod measures;
+mod palette;
+mod theme;
+mod themes;
+pub mod typography;
+
+pub use measures::{dock, popup, tooltip};
+pub use theme::{DockColors, IconColors, MediaColors, PanelColors, Theme, TooltipColors};
+pub use themes::light;

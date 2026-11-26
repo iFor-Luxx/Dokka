@@ -1,6 +1,7 @@
 //! Las piezas que forman el dock en ejecución.
 
 use std::error::Error;
+use std::sync::Arc;
 
 use dokka_contracts::WindowSource;
 use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
@@ -8,6 +9,7 @@ use dokka_model::AppId;
 use dokka_previews::Previews;
 use dokka_scene::Scene;
 use dokka_state::DockState;
+use dokka_theme::light;
 use dokka_win_apps::{IconCache, NameCache, SystemLauncher, recycle_bin_has_items};
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
@@ -33,10 +35,12 @@ pub(crate) struct DockSession {
 
 impl DockSession {
     pub(crate) fn new(renderer: SceneRenderer, explorer: AppId) -> Self {
+        // Único lugar donde se elige el tema.
+        let theme = Arc::new(light());
         Self {
             state: DockState::default(),
-            dock: Dock::new(explorer.clone()),
-            previews: Previews::default(),
+            dock: Dock::new(explorer.clone(), Arc::clone(&theme)),
+            previews: Previews::new(theme),
             explorer,
             launcher: SystemLauncher,
             control: SystemWindowControl,

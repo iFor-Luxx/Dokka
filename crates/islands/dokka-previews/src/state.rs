@@ -1,10 +1,15 @@
-use dokka_components::preview_card::NowPlaying;
+use std::sync::Arc;
+
+use dokka_components::preview_card::{MediaIcons, NowPlaying};
+use dokka_theme::Theme;
 
 use crate::PreviewRequest;
 
 /// Lo que los paneles recuerdan entre eventos.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Previews {
+    pub(crate) theme: Arc<Theme>,
+    pub(crate) media_icons: MediaIcons,
     pub(crate) open: Option<PreviewRequest>,
     /// Panel que espera a que el cursor se detenga, y cuánto lleva esperando.
     pub(crate) pending: Option<(PreviewRequest, f32)>,
@@ -19,6 +24,19 @@ pub struct Previews {
 }
 
 impl Previews {
+    pub fn new(theme: Arc<Theme>) -> Self {
+        Self {
+            media_icons: MediaIcons::new(&theme),
+            theme,
+            open: None,
+            pending: None,
+            closing: None,
+            media: None,
+            month_offset: 0,
+            today: (0, 1, 1),
+        }
+    }
+
     pub fn set_today(&mut self, year: u16, month: u16, day: u16) {
         self.today = (year, month, day);
     }

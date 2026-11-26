@@ -55,6 +55,7 @@ name = "dokka-icons"
 version = "0.1.0"
 dependencies = [
  "dokka-scene",
+ "dokka-theme",
 ]
 
 [[package]]

@@ -10,6 +10,8 @@ mod pinned_apps;
 
 use std::error::Error;
 
+use dokka_theme::typography;
+
 use dokka_win_apps::explorer_app;
 use dokka_win_composition::SceneRenderer;
 use dokka_win_surface::{Surface, SurfaceOptions};
@@ -26,8 +28,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         height: 0.0,
         bottom_margin: 0.0,
     })?;
-    let renderer =
-        SceneRenderer::attach(surface.handle(), surface.above_handle(), surface.scale())?;
+    let renderer = SceneRenderer::attach(
+        surface.handle(),
+        surface.above_handle(),
+        surface.scale(),
+        typography::FONT_FAMILY,
+    )?;
     let explorer = explorer_app();
     let mut session = DockSession::new(renderer, explorer.id.clone());
     let _watcher = ChangeWatcher::start();

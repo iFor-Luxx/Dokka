@@ -46,12 +46,12 @@ impl Dock {
                 x: bounds.x + (bounds.width - style::DOT_DIAMETER) / 2.0,
                 y: dot_y,
                 diameter: style::DOT_DIAMETER,
-                color: style::DOT_COLOR,
+                color: self.theme.dock.running_dot,
             })
             .collect();
 
         let labels = hovered_label(self, &placement, names)
-            .map(|(text, slot)| tooltip(&text, slot.x + slot.width / 2.0, slot.y))
+            .map(|(text, slot)| tooltip(&self.theme, &text, slot.x + slot.width / 2.0, slot.y))
             .into_iter()
             .collect();
 
@@ -59,14 +59,15 @@ impl Dock {
             panel: Panel {
                 bounds: placement.bar,
                 corner_radius: style::CORNER_RADIUS,
-                tint: style::TINT,
-                border: style::BORDER,
+                border_width: style::BORDER_WIDTH,
+                tint: self.theme.dock.background,
+                border: self.theme.dock.border,
             },
             icons,
             dots,
             dividers: vec![Divider {
                 bounds: placement.divider,
-                color: style::DIVIDER_COLOR,
+                color: self.theme.dock.divider,
             }],
             thumbnails,
             overlay: None,
@@ -80,7 +81,7 @@ impl Dock {
             y: bounds.y,
             side: bounds.width,
             image: self.image_for(entry, images),
-            placeholder: style::PLACEHOLDER,
+            placeholder: self.theme.dock.placeholder,
             placeholder_radius: style::PLACEHOLDER_RADIUS,
         }
     }

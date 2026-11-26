@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use dokka_animation::Spring;
 use dokka_model::AppId;
+use dokka_theme::Theme;
 
 use crate::motion::LaunchBounce;
 use crate::view::system_icons::SystemIcons;
@@ -13,6 +15,7 @@ const HOVER_STIFFNESS: f32 = 28.0;
 pub struct Dock {
     /// App que ocupa el primer lugar con el icono del explorador.
     pub(crate) explorer: AppId,
+    pub(crate) theme: Arc<Theme>,
     pub(crate) icons: SystemIcons,
     pub(crate) hover: Spring,
     pub(crate) is_hovered: bool,
@@ -21,10 +24,11 @@ pub struct Dock {
 }
 
 impl Dock {
-    pub fn new(explorer: AppId) -> Self {
+    pub fn new(explorer: AppId, theme: Arc<Theme>) -> Self {
         Self {
             explorer,
-            icons: SystemIcons::new(),
+            icons: SystemIcons::new(&theme.icons),
+            theme,
             hover: Spring::new(0.0, HOVER_STIFFNESS),
             is_hovered: false,
             cursor_x: 0.0,

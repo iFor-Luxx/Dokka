@@ -76,7 +76,7 @@ pub(crate) fn place_dock<'a>(dock: &Dock, apps: &'a [DockApp]) -> Placement<'a> 
         divider: Rect {
             x: moved(divider_rest),
             y: style::headroom() + style::DIVIDER_INSET,
-            width: 1.0,
+            width: style::DIVIDER_WIDTH,
             height: style::HEIGHT - style::DIVIDER_INSET * 2.0,
         },
     }

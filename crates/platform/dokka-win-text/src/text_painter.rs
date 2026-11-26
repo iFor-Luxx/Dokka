@@ -8,7 +8,7 @@ use windows::Win32::Graphics::DirectWrite::{
     DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_TEXT_METRICS,
     DWriteCreateFactory, IDWriteFactory, IDWriteTextFormat,
 };
-use windows::core::{Result, w};
+use windows::core::{HSTRING, Result, w};
 
 /// Caja generosa alrededor del centro para que nada se parta en líneas.
 const BOX_HALF_SIDE: f32 = 600.0;
@@ -26,13 +26,18 @@ pub struct CenteredText<'a> {
 #[derive(Debug)]
 pub struct TextPainter {
     factory: IDWriteFactory,
+    family: HSTRING,
 }
 
 impl TextPainter {
-    pub fn new() -> Result<Self> {
+    /// `family` es el nombre de la fuente; lo decide quien usa el pintor.
+    pub fn new(family: &str) -> Result<Self> {
         // SAFETY: crea la fábrica compartida de DirectWrite.
         let factory = unsafe { DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED)? };
-        Ok(Self { factory })
+        Ok(Self {
+            factory,
+            family: HSTRING::from(family),
+        })
     }
 
     /// Ancho y alto que ocupa el texto en una línea.
@@ -93,7 +98,7 @@ impl TextPainter {
         // SAFETY: las cadenas son estáticas.
         unsafe {
             self.factory.CreateTextFormat(
-                w!("Segoe UI"),
+                &self.family,
                 None,
                 weight,
                 DWRITE_FONT_STYLE_NORMAL,

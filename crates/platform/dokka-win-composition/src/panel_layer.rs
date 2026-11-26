@@ -7,8 +7,6 @@ use windows_numerics::{Vector2, Vector3};
 
 use crate::windows_color::windows_color;
 
-const BORDER_THICKNESS: f32 = 1.0;
-
 /// Cristal desenfocado con tinte y borde, que puede cambiar de tamaño.
 pub(crate) struct PanelLayer {
     glass: SpriteVisual,
@@ -29,14 +27,14 @@ impl PanelLayer {
         glass.SetClip(&compositor.CreateGeometricClipWithGeometry(&glass_outline)?)?;
 
         // El trazo se centra en el contorno: se mete medio grosor para que no se corte.
-        let inset = BORDER_THICKNESS / 2.0;
+        let inset = panel.border_width / 2.0;
         let tint_outline = rounded(compositor, panel.corner_radius - inset)?;
         tint_outline.SetOffset(Vector2 { X: inset, Y: inset })?;
         let shape = compositor.CreateSpriteShapeWithGeometry(&tint_outline)?;
         shape.SetFillBrush(&compositor.CreateColorBrushWithColor(windows_color(panel.tint))?)?;
         shape
             .SetStrokeBrush(&compositor.CreateColorBrushWithColor(windows_color(panel.border))?)?;
-        shape.SetStrokeThickness(BORDER_THICKNESS)?;
+        shape.SetStrokeThickness(panel.border_width)?;
         let tint = compositor.CreateShapeVisual()?;
         tint.Shapes()?.Append(&shape)?;
 
@@ -68,8 +66,8 @@ impl PanelLayer {
         self.tint.SetOffset(offset)?;
         self.tint.SetSize(size)?;
         self.tint_outline.SetSize(Vector2 {
-            X: bounds.width - BORDER_THICKNESS,
-            Y: bounds.height - BORDER_THICKNESS,
+            X: bounds.width - panel.border_width,
+            Y: bounds.height - panel.border_width,
         })
     }
 }

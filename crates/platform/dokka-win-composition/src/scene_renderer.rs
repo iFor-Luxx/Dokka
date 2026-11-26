@@ -42,8 +42,9 @@ impl SceneRenderer {
         surface: SurfaceHandle,
         above: SurfaceHandle,
         scale: f32,
+        font_family: &str,
     ) -> std::result::Result<Self, CompositionError> {
-        Ok(Self::build(surface, above, scale)?)
+        Ok(Self::build(surface, above, scale, font_family)?)
     }
 
     /// Muestra la escena. Si su forma no cambia, solo actualiza lo existente.
@@ -51,7 +52,12 @@ impl SceneRenderer {
         Ok(self.apply(scene)?)
     }
 
-    fn build(surface: SurfaceHandle, above: SurfaceHandle, scale: f32) -> Result<Self> {
+    fn build(
+        surface: SurfaceHandle,
+        above: SurfaceHandle,
+        scale: f32,
+        font_family: &str,
+    ) -> Result<Self> {
         let queue = create_queue()?;
         let compositor = Compositor::new()?;
         Ok(Self {
@@ -60,7 +66,7 @@ impl SceneRenderer {
             controls: None,
             main: window_root(&compositor, surface, scale)?,
             above: window_root(&compositor, above, scale)?,
-            painter: Painter::new(&compositor)?,
+            painter: Painter::new(&compositor, font_family)?,
             compositor,
             _queue: queue,
         })
