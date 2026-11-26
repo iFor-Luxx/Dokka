@@ -20,13 +20,21 @@ pub const CALENDAR_CELL_WIDTH: f32 = 38.0;
 pub const CALENDAR_CELL_HEIGHT: f32 = 29.0;
 pub const CALENDAR_HEADER: f32 = 40.0;
 
-pub const PREVIEW_SLOT_WIDTH: f32 = 200.0;
-pub const PREVIEW_IMAGE_HEIGHT: f32 = 124.0;
+/// Las vistas previas usan la misma apariencia clara que los demás paneles.
+pub const PREVIEW_TINT: Color = TINT;
+pub const PREVIEW_BORDER: Color = BORDER;
+pub const PREVIEW_INK: Color = INK;
+pub const PREVIEW_PADDING: f32 = 8.0;
+pub const PREVIEW_SLOT_WIDTH: f32 = 270.0;
+pub const PREVIEW_IMAGE_HEIGHT: f32 = 180.0;
 pub const PREVIEW_TITLE_HEIGHT: f32 = 28.0;
 pub const PREVIEW_MAXIMUM_WINDOWS: usize = 3;
 
-/// Alto de la canción más sus botones.
-pub const MEDIA_HEIGHT: f32 = 58.0;
-pub const MEDIA_BUTTON_WIDTH: f32 = 46.0;
-pub const MEDIA_BUTTON_HEIGHT: f32 = 30.0;
-pub const MEDIA_SYMBOL_SIZE: f32 = 18.0;
+/// Píldora de controles sobre la imagen.
+pub const MEDIA_TINT: Color = Color::rgba(240, 244, 240, 225);
+pub const MEDIA_BORDER: Color = BORDER;
+pub const MEDIA_BUTTON_WIDTH: f32 = 52.0;
+pub const MEDIA_HEIGHT: f32 = 42.0;
+pub const MEDIA_ICON_SIDE: f32 = 22.0;
+/// Distancia entre la píldora y el borde inferior de la imagen.
+pub const MEDIA_INSET: f32 = 10.0;

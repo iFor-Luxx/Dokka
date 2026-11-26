@@ -5,9 +5,8 @@ pub struct PreviewWindow {
     pub title: String,
 }
 
-/// Canción en curso de la app de la tarjeta.
+/// Reproducción en curso de la app de la tarjeta.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NowPlaying {
-    pub title: String,
     pub is_playing: bool,
 }

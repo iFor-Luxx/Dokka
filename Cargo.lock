@@ -10,6 +10,7 @@ version = "0.1.0"
 name = "dokka-components"
 version = "0.1.0"
 dependencies = [
+ "dokka-icons",
  "dokka-scene",
  "dokka-theme",
 ]
@@ -93,6 +94,7 @@ dependencies = [
  "dokka-win-apps",
  "dokka-win-composition",
  "dokka-win-control",
+ "dokka-win-media",
  "dokka-win-surface",
  "dokka-win-tracking",
 ]

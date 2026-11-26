@@ -1,4 +1,4 @@
-use dokka_scene::Scene;
+use dokka_scene::{Controls, Scene};
 use dokka_win_surface::SurfaceHandle;
 use windows::System::DispatcherQueueController;
 use windows::UI::Composition::Desktop::DesktopWindowTarget;
@@ -11,29 +11,39 @@ use windows::core::{Interface, Result};
 use windows_numerics::Vector3;
 
 use crate::CompositionError;
+use crate::controls_layer::ControlsLayer;
 use crate::painter::Painter;
 use crate::scene_layers::SceneLayers;
 use crate::window_thumbnails::WindowThumbnails;
+
+/// Árbol visual enlazado a una ventana.
+struct WindowRoot {
+    root: ContainerVisual,
+    _target: DesktopWindowTarget,
+}
 
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
 pub struct SceneRenderer {
     thumbnails: WindowThumbnails,
     layers: Option<SceneLayers>,
-    root: ContainerVisual,
+    controls: Option<ControlsLayer>,
+    main: WindowRoot,
+    above: WindowRoot,
     painter: Painter,
     compositor: Compositor,
-    _target: DesktopWindowTarget,
     // Va al final: el compositor necesita la cola mientras exista.
     _queue: DispatcherQueueController,
 }
 
 impl SceneRenderer {
-    /// Prepara el dibujo en la ventana. Se llama una vez, desde el hilo de la ventana.
+    /// Prepara el dibujo. `above` es la ventana que va sobre las miniaturas.
+    /// Se llama una vez, desde el hilo de las ventanas.
     pub fn attach(
         surface: SurfaceHandle,
+        above: SurfaceHandle,
         scale: f32,
     ) -> std::result::Result<Self, CompositionError> {
-        Ok(Self::build(surface, scale)?)
+        Ok(Self::build(surface, above, scale)?)
     }
 
     /// Muestra la escena. Si su forma no cambia, solo actualiza lo existente.
@@ -41,28 +51,17 @@ impl SceneRenderer {
         Ok(self.apply(scene)?)
     }
 
-    fn build(surface: SurfaceHandle, scale: f32) -> Result<Self> {
+    fn build(surface: SurfaceHandle, above: SurfaceHandle, scale: f32) -> Result<Self> {
         let queue = create_queue()?;
         let compositor = Compositor::new()?;
-        let interop: ICompositorDesktopInterop = compositor.cast()?;
-        // SAFETY: el handle viene de una `Surface` creada en este mismo hilo.
-        let target = unsafe { interop.CreateDesktopWindowTarget(surface.raw(), true)? };
-
-        let root = compositor.CreateContainerVisual()?;
-        root.SetScale(Vector3 {
-            X: scale,
-            Y: scale,
-            Z: 1.0,
-        })?;
-        target.SetRoot(&root)?;
-
         Ok(Self {
             thumbnails: WindowThumbnails::new(surface.raw(), scale),
             layers: None,
+            controls: None,
+            main: window_root(&compositor, surface, scale)?,
+            above: window_root(&compositor, above, scale)?,
             painter: Painter::new(&compositor)?,
-            root,
             compositor,
-            _target: target,
             _queue: queue,
         })
     }
@@ -70,14 +69,51 @@ impl SceneRenderer {
     fn apply(&mut self, scene: &Scene) -> Result<()> {
         let mut layers = match self.layers.take() {
             Some(layers) if layers.matches(scene) => layers,
-            _ => SceneLayers::build(&self.compositor, &self.painter, &self.root, scene)?,
+            _ => SceneLayers::build(&self.compositor, &self.painter, &self.main.root, scene)?,
         };
         layers.update(&self.compositor, &self.painter, scene)?;
         self.layers = Some(layers);
-        let floating = scene.overlay.iter().flat_map(|overlay| &overlay.thumbnails);
+
+        let overlay = scene.overlay.as_ref();
+        self.apply_controls(overlay.and_then(|overlay| overlay.controls.as_ref()))?;
+
+        let floating = overlay.into_iter().flat_map(|overlay| &overlay.thumbnails);
         let all: Vec<_> = scene.thumbnails.iter().chain(floating).collect();
         self.thumbnails.show(&all)
     }
+
+    fn apply_controls(&mut self, controls: Option<&Controls>) -> Result<()> {
+        let Some(controls) = controls else {
+            self.controls = None;
+            return self.above.root.Children()?.RemoveAll();
+        };
+        let mut layer = match self.controls.take() {
+            Some(layer) => layer,
+            None => {
+                ControlsLayer::add(&self.compositor, &self.painter, &self.above.root, controls)?
+            }
+        };
+        layer.update(&self.compositor, &self.painter, controls)?;
+        self.controls = Some(layer);
+        Ok(())
+    }
+}
+
+fn window_root(compositor: &Compositor, surface: SurfaceHandle, scale: f32) -> Result<WindowRoot> {
+    let interop: ICompositorDesktopInterop = compositor.cast()?;
+    // SAFETY: el handle viene de una ventana creada en este mismo hilo.
+    let target = unsafe { interop.CreateDesktopWindowTarget(surface.raw(), true)? };
+    let root = compositor.CreateContainerVisual()?;
+    root.SetScale(Vector3 {
+        X: scale,
+        Y: scale,
+        Z: 1.0,
+    })?;
+    target.SetRoot(&root)?;
+    Ok(WindowRoot {
+        root,
+        _target: target,
+    })
 }
 
 fn create_queue() -> Result<DispatcherQueueController> {

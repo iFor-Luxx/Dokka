@@ -9,6 +9,7 @@ use windows::Win32::Graphics::Direct2D::{
 use windows::core::Result;
 use windows_numerics::{Matrix3x2, Vector2};
 
+use crate::fill_triangle::fill_triangle;
 use crate::paint_surface::paint_surface;
 
 /// Resolución a la que se pintan los dibujos.
@@ -90,6 +91,9 @@ fn paint_shape(context: &ID2D1DeviceContext, text: &TextPainter, shape: &Shape) 
                 };
                 let end = Vector2 { X: to.0, Y: to.1 };
                 context.DrawLine(start, end, &brush(context, color)?, width, None);
+            }
+            Shape::Triangle { points, color } => {
+                fill_triangle(context, &points, &brush(context, color)?)?;
             }
             Shape::Text {
                 text: ref content,

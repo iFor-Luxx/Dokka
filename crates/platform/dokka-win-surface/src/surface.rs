@@ -18,15 +18,22 @@ pub struct SurfaceOptions {
 pub struct SurfaceHandle(HWND);
 
 impl SurfaceHandle {
+    pub(crate) fn new(window: HWND) -> Self {
+        Self(window)
+    }
+
     pub fn raw(self) -> HWND {
         self.0
     }
 }
 
-/// Ventana de Dokka.
+/// Ventana de Dokka, con otra superpuesta que se muestra cuando hace falta.
 #[derive(Debug)]
 pub struct Surface {
     pub(crate) window: HWND,
+    pub(crate) above: HWND,
+    /// Posición en pantalla de la superpuesta mientras está visible.
+    pub(crate) above_position: Option<[i32; 4]>,
     pub(crate) scale: f32,
     /// Zonas activas en píxeles, para no repetir llamadas iguales.
     pub(crate) active_areas: Vec<[i32; 4]>,
@@ -34,17 +41,19 @@ pub struct Surface {
 
 impl Surface {
     pub fn create(options: SurfaceOptions) -> Result<Self, SurfaceError> {
-        let window = create_window()?;
+        let window = create_window(None)?;
         let scale = place_at_bottom_center(window, options)?;
         Ok(Self {
             window,
+            above: create_window(Some(window))?,
+            above_position: None,
             scale,
             active_areas: Vec::new(),
         })
     }
 
     pub fn handle(&self) -> SurfaceHandle {
-        SurfaceHandle(self.window)
+        SurfaceHandle::new(self.window)
     }
 
     /// Píxeles físicos por unidad lógica.

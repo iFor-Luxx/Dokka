@@ -1,4 +1,4 @@
-use dokka_scene::Overlay;
+use dokka_scene::{Overlay, Panel};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
@@ -10,6 +10,8 @@ use crate::text_layer::TextLayer;
 /// Elementos visuales de un panel flotante.
 pub(crate) struct OverlayLayers {
     panel: PanelLayer,
+    /// Apariencia con la que se creó el fondo.
+    style: Panel,
     dots: Vec<DotLayer>,
     texts: Vec<TextLayer>,
 }
@@ -22,6 +24,7 @@ impl OverlayLayers {
     ) -> Result<Self> {
         Ok(Self {
             panel: PanelLayer::add(compositor, parent, &overlay.panel)?,
+            style: overlay.panel,
             dots: overlay
                 .dots
                 .iter()
@@ -35,8 +38,11 @@ impl OverlayLayers {
         })
     }
 
+    /// Un panel de otro color (calendario frente a vista previa) se crea de nuevo.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
-        self.dots.len() == overlay.dots.len() && self.texts.len() == overlay.texts.len()
+        self.style.tint == overlay.panel.tint
+            && self.dots.len() == overlay.dots.len()
+            && self.texts.len() == overlay.texts.len()
     }
 
     pub(crate) fn update(

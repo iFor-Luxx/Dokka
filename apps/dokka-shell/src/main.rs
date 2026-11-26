@@ -4,6 +4,7 @@ mod context_menu;
 mod dock_session;
 mod floating_panels;
 mod handle_event;
+mod media;
 mod perform_click;
 mod pinned_apps;
 
@@ -25,7 +26,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         height: 0.0,
         bottom_margin: 0.0,
     })?;
-    let renderer = SceneRenderer::attach(surface.handle(), surface.scale())?;
+    let renderer =
+        SceneRenderer::attach(surface.handle(), surface.above_handle(), surface.scale())?;
     let explorer = explorer_app();
     let mut session = DockSession::new(renderer, explorer.id.clone());
     let _watcher = ChangeWatcher::start();

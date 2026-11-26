@@ -2,8 +2,10 @@
 #![allow(unsafe_code)]
 
 mod composition_error;
+mod controls_layer;
 mod divider_layer;
 mod dot_layer;
+mod fill_triangle;
 mod fit_thumbnail;
 mod graphics_device;
 mod icon_layer;

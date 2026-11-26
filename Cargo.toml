@@ -32,6 +32,7 @@ dokka-theme = { path = "crates/ui/dokka-theme" }
 dokka-win-apps = { path = "crates/platform/dokka-win-apps" }
 dokka-win-composition = { path = "crates/platform/dokka-win-composition" }
 dokka-win-control = { path = "crates/platform/dokka-win-control" }
+dokka-win-media = { path = "crates/platform/dokka-win-media" }
 dokka-win-surface = { path = "crates/platform/dokka-win-surface" }
 dokka-win-text = { path = "crates/platform/dokka-win-text" }
 dokka-win-tracking = { path = "crates/platform/dokka-win-tracking" }

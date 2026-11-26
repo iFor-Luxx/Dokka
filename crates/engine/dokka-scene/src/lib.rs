@@ -22,7 +22,7 @@ pub use dot::Dot;
 pub use drawing::{DRAWING_SIDE, Drawing, Shape};
 pub use icon::{Icon, IconImage};
 pub use label::Label;
-pub use overlay::Overlay;
+pub use overlay::{Controls, Overlay};
 pub use panel::Panel;
 pub use rect::Rect;
 pub use scene::Scene;

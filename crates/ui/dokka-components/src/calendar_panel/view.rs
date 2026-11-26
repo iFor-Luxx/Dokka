@@ -80,5 +80,6 @@ pub fn calendar_panel(bounds: Rect, month: &CalendarMonth) -> Overlay {
         dots,
         texts,
         thumbnails: Vec::new(),
+        controls: None,
     }
 }

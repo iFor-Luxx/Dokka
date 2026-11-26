@@ -9,20 +9,25 @@ use crate::dock_session::DockSession;
 pub(crate) fn preview_request(session: &DockSession, x: f32, y: f32) -> Option<PreviewRequest> {
     let apps = session.state.apps();
     let target = session.dock.hover_target(x, y, apps)?;
-    let content = match target.kind {
-        HoverKind::Calendar => PreviewContent::Calendar,
-        HoverKind::Windows(windows) => PreviewContent::Windows(
-            windows
+    let (content, app) = match target.kind {
+        HoverKind::Calendar => (PreviewContent::Calendar, None),
+        HoverKind::Windows { app, windows } => {
+            let windows = windows
                 .into_iter()
                 .map(|(id, title)| PreviewWindow {
                     window: id.value(),
                     title,
                 })
-                .collect(),
-        ),
+                .collect();
+            (
+                PreviewContent::Windows(windows),
+                Some(app.as_str().to_owned()),
+            )
+        }
     };
     Some(PreviewRequest {
         content,
+        app,
         center_x: target.center_x,
         bottom: target.icons_top - popup::GAP,
         floor: target.bar_top,

@@ -26,6 +26,10 @@ pub enum Shape {
         width: f32,
         color: Color,
     },
+    Triangle {
+        points: [(f32, f32); 3],
+        color: Color,
+    },
     /// Texto centrado en (`x`, `y`).
     Text {
         text: String,

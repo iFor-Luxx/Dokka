@@ -7,6 +7,7 @@ mod place_window;
 mod read_pointer;
 mod run_loop;
 mod set_active_area;
+mod show_above;
 mod show_menu;
 mod surface;
 mod surface_error;

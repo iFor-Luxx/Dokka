@@ -10,6 +10,7 @@ use dokka_win_surface::{Surface, SurfaceEvent};
 use crate::context_menu::open_context_menu;
 use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
+use crate::media::send_media;
 use crate::perform_click::perform_click;
 
 pub(crate) fn handle_event(
@@ -62,6 +63,7 @@ fn click(
         Some(PreviewClick::Activate(window)) => {
             session.control.activate(WindowId::new(window))?;
         }
+        Some(PreviewClick::Media(command)) => send_media(session, command),
         Some(PreviewClick::Handled) => {}
         None => {
             session.previews.close();

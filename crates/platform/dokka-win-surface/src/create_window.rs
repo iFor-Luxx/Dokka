@@ -1,4 +1,4 @@
-use windows::Win32::Foundation::HWND;
+use windows::Win32::Foundation::{ERROR_CLASS_ALREADY_EXISTS, GetLastError, HWND};
 use windows::Win32::Graphics::Dwm::{DWMWA_USE_HOSTBACKDROPBRUSH, DwmSetWindowAttribute};
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::UI::HiDpi::{
@@ -12,8 +12,9 @@ use windows::core::{BOOL, Error, Result, w};
 
 use crate::window_procedure::window_procedure;
 
-/// Crea la ventana todavía oculta y sin tamaño.
-pub(crate) fn create_window() -> Result<HWND> {
+/// Crea una ventana oculta y sin tamaño. Con `owner`, queda siempre encima de ella
+/// y deja pasar el mouse hacia ella.
+pub(crate) fn create_window(owner: Option<HWND>) -> Result<HWND> {
     let class_name = w!("DokkaSurface");
     // SAFETY: las cadenas son estáticas, las estructuras viven durante cada llamada
     // y `window_procedure` cumple la firma que exige Windows.
@@ -30,7 +31,8 @@ pub(crate) fn create_window() -> Result<HWND> {
             lpszClassName: class_name,
             ..Default::default()
         };
-        if RegisterClassExW(&class) == 0 {
+        // La segunda ventana reutiliza la clase ya registrada.
+        if RegisterClassExW(&class) == 0 && GetLastError() != ERROR_CLASS_ALREADY_EXISTS {
             return Err(Error::from_thread());
         }
 
@@ -43,7 +45,7 @@ pub(crate) fn create_window() -> Result<HWND> {
             0,
             0,
             0,
-            None,
+            owner,
             None,
             Some(instance.into()),
             None,

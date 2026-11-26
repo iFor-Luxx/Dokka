@@ -11,8 +11,11 @@ use dokka_state::DockState;
 use dokka_win_apps::{IconCache, NameCache, SystemLauncher, recycle_bin_has_items};
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
+use dokka_win_media::MediaMonitor;
 use dokka_win_surface::{Surface, SurfaceOptions, local_time};
 use dokka_win_tracking::SystemWindows;
+
+use crate::media::update_media;
 
 pub(crate) struct DockSession {
     pub(crate) state: DockState,
@@ -21,6 +24,7 @@ pub(crate) struct DockSession {
     pub(crate) explorer: AppId,
     pub(crate) launcher: SystemLauncher,
     pub(crate) control: SystemWindowControl,
+    pub(crate) media: MediaMonitor,
     windows: SystemWindows,
     icons: IconCache,
     names: NameCache,
@@ -36,6 +40,7 @@ impl DockSession {
             explorer,
             launcher: SystemLauncher,
             control: SystemWindowControl,
+            media: MediaMonitor::start(),
             windows: SystemWindows,
             icons: IconCache::new(),
             names: NameCache::default(),
@@ -92,6 +97,7 @@ impl DockSession {
 
     /// Dibuja el instante actual.
     pub(crate) fn render(&mut self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
+        update_media(self);
         let mut scene = self.scene();
         scene.overlay = self.previews.overlay();
         // Con un panel abierto, la etiqueta sobra.
@@ -99,6 +105,11 @@ impl DockSession {
             scene.labels.clear();
         }
         self.renderer.draw(&scene)?;
+        let controls = scene.overlay.and_then(|overlay| overlay.controls);
+        surface.show_above(controls.map(|controls| {
+            let area = controls.panel.bounds;
+            [area.x, area.y, area.width, area.height]
+        }))?;
         let areas: Vec<[f32; 4]> = [
             Some(self.dock.active_area(self.state.apps())),
             self.previews.area(),

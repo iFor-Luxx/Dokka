@@ -9,8 +9,11 @@ use crate::view::dock_style as style;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HoverKind {
     Calendar,
-    /// Ventanas abiertas con su título.
-    Windows(Vec<(WindowId, String)>),
+    /// Ventanas abiertas de una app, con su título.
+    Windows {
+        app: AppId,
+        windows: Vec<(WindowId, String)>,
+    },
 }
 
 /// Lo que hay bajo el cursor y dónde apoyar su panel.
@@ -30,19 +33,23 @@ impl Dock {
         let entry = entry_at(&placement, x, y)?;
         let kind = match entry {
             Entry::Calendar => HoverKind::Calendar,
-            Entry::App(app) | Entry::Explorer(app) if app.is_running() => HoverKind::Windows(
-                app.windows
+            Entry::App(app) | Entry::Explorer(app) if app.is_running() => HoverKind::Windows {
+                app: app.info.id.clone(),
+                windows: app
+                    .windows
                     .iter()
                     .map(|window| (window.id, window.title.clone()))
                     .collect(),
-            ),
-            Entry::Minimized(app, id) => HoverKind::Windows(
-                app.windows
+            },
+            Entry::Minimized(app, id) => HoverKind::Windows {
+                app: app.info.id.clone(),
+                windows: app
+                    .windows
                     .iter()
                     .filter(|window| window.id == id)
                     .map(|window| (window.id, window.title.clone()))
                     .collect(),
-            ),
+            },
             _ => return None,
         };
         let (_, slot) = placement.slots.iter().find(|(_, slot)| {
