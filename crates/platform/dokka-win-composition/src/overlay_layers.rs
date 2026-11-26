@@ -116,8 +116,8 @@ impl OverlayLayers {
         for (layer, divider) in self.dividers.iter().zip(&overlay.dividers) {
             layer.update(divider)?;
         }
-        for (layer, dot) in self.dots.iter().zip(&overlay.dots) {
-            layer.update(dot)?;
+        for (layer, dot) in self.dots.iter_mut().zip(&overlay.dots) {
+            layer.update(compositor, dot)?;
         }
         for (layer, text) in self.texts.iter_mut().zip(&overlay.texts) {
             layer.update(compositor, painter, text)?;

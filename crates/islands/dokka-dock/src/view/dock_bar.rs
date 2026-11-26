@@ -63,6 +63,7 @@ impl Dock {
                 tint: self.theme.dock.background,
                 border: self.theme.dock.border,
             },
+            panels: Vec::new(),
             icons,
             dots,
             dividers: vec![Divider {

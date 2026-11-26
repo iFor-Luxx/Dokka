@@ -9,7 +9,7 @@ use crate::tile_pixels::{checked_len, pixel_index, read_pixel};
 /// Radio en píxeles para el lado dado, desde la medida del tema.
 pub(crate) fn tile_radius_px(side: u32) -> f32 {
     let side_f = side as f32;
-    let radius = measures::TILE_RADIUS * side_f / measures::ICON_SIDE;
+    let radius = measures::TILE_RADIUS * side_f / measures::TILE_REFERENCE_SIDE;
     radius.clamp(0.0, side_f / 2.0)
 }
 

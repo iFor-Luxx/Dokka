@@ -7,6 +7,6 @@ mod tiles;
 mod view;
 
 pub use events::LaunchpadAction;
-pub use logic::merge_apps;
+pub use logic::{filter_apps, merge_apps};
 pub use state::Launchpad;
 pub use view::launchpad_scene;

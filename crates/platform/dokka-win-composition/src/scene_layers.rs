@@ -1,4 +1,4 @@
-use dokka_scene::{Panel, Scene};
+use dokka_scene::{Color, Panel, Scene};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
@@ -14,6 +14,8 @@ use crate::text_layer::TextLayer;
 /// Elementos visuales creados para una escena.
 pub(crate) struct SceneLayers {
     panel: PanelLayer,
+    panels: Vec<PanelLayer>,
+    panel_styles: Vec<PanelStyle>,
     highlight: Option<PanelLayer>,
     highlight_style: Option<(dokka_scene::Color, f32)>,
     dividers: Vec<DividerLayer>,
@@ -22,6 +24,18 @@ pub(crate) struct SceneLayers {
     texts: Vec<TextLayer>,
     labels: Vec<LabelLayer>,
     overlay: Option<OverlayLayers>,
+}
+
+/// Lo que fija el aspecto de un panel extra al crearse: `update` no lo reconstruye.
+type PanelStyle = (Color, Color, f32, f32);
+
+fn panel_style_of(panel: &Panel) -> PanelStyle {
+    (
+        panel.tint,
+        panel.border,
+        panel.corner_radius,
+        panel.border_width,
+    )
 }
 
 impl SceneLayers {
@@ -33,6 +47,13 @@ impl SceneLayers {
     ) -> Result<Self> {
         root.Children()?.RemoveAll()?;
         let panel = PanelLayer::add(compositor, root, &scene.panel)?;
+        // Cada capa se inserta arriba: los paneles quedan sobre el fondo y
+        // bajo el resaltado, las líneas, los iconos, los puntos y los textos.
+        let panels = scene
+            .panels
+            .iter()
+            .map(|panel| PanelLayer::add(compositor, root, panel))
+            .collect::<Result<_>>()?;
         let highlight = scene
             .highlight
             .as_ref()
@@ -71,6 +92,8 @@ impl SceneLayers {
             .collect::<Result<_>>()?;
         Ok(Self {
             panel,
+            panels,
+            panel_styles: scene.panels.iter().map(panel_style_of).collect(),
             highlight,
             highlight_style: scene.highlight.map(highlight_style_of),
             dividers,
@@ -92,6 +115,12 @@ impl SceneLayers {
         same_overlay
             && self.highlight.is_some() == scene.highlight.is_some()
             && self.highlight_style == scene.highlight.map(highlight_style_of)
+            && self.panel_styles.len() == scene.panels.len()
+            && self
+                .panel_styles
+                .iter()
+                .zip(&scene.panels)
+                .all(|(style, panel)| *style == panel_style_of(panel))
             && self.dots.len() == scene.dots.len()
             && self.dividers.len() == scene.dividers.len()
             && self.texts.len() == scene.texts.len()
@@ -111,6 +140,9 @@ impl SceneLayers {
         scene: &Scene,
     ) -> Result<()> {
         self.panel.update(&scene.panel)?;
+        for (layer, panel) in self.panels.iter().zip(&scene.panels) {
+            layer.update(panel)?;
+        }
         if let (Some(layer), Some(panel)) = (&self.highlight, &scene.highlight) {
             layer.update(panel)?;
         }
@@ -120,8 +152,8 @@ impl SceneLayers {
         for (layer, icon) in self.icons.iter_mut().zip(&scene.icons) {
             layer.update(compositor, painter, icon)?;
         }
-        for (layer, dot) in self.dots.iter().zip(&scene.dots) {
-            layer.update(dot)?;
+        for (layer, dot) in self.dots.iter_mut().zip(&scene.dots) {
+            layer.update(compositor, dot)?;
         }
         for (layer, text) in self.texts.iter_mut().zip(&scene.texts) {
             layer.update(compositor, painter, text)?;

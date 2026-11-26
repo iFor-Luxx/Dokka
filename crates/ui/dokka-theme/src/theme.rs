@@ -62,6 +62,11 @@ pub struct LaunchpadColors {
     pub background: Color,
     pub text: Color,
     pub highlight: Color,
+    pub search_background: Color,
+    pub search_border: Color,
+    pub search_text: Color,
+    pub dot_active: Color,
+    pub dot_inactive: Color,
     /// Baldosa clara de los iconos uniformes.
     pub tile: Color,
 }

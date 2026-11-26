@@ -42,11 +42,21 @@ pub(crate) const MENU_BORDER: Color = Color::rgba(0, 0, 0, 38);
 /// Línea separadora del menú del clic derecho.
 pub(crate) const MENU_SEPARATOR: Color = Color::rgba(0, 0, 0, 35);
 
-/// Fondo del Launchpad: cristal oscuro que deja ver el escritorio.
-pub(crate) const LAUNCHPAD_BACKGROUND: Color = Color::rgba(24, 26, 32, 150);
+/// Fondo del Launchpad: velo negro muy leve que deja ver el escritorio.
+pub(crate) const LAUNCHPAD_BACKGROUND: Color = Color::rgba(0, 0, 0, 50);
 /// Baldosa clara donde apoya el glifo de cada app en el Launchpad.
 pub(crate) const APP_TILE: Color = Color::rgba(231, 234, 239, 255);
 /// Texto claro de los nombres bajo los iconos.
 pub(crate) const LAUNCHPAD_TEXT: Color = Color::rgba(250, 250, 250, 255);
 /// Resaltado suave detrás de la app bajo el cursor.
 pub(crate) const LAUNCHPAD_HIGHLIGHT: Color = Color::rgba(255, 255, 255, 38);
+/// Casilla de búsqueda: fondo claro apenas visible.
+pub(crate) const LAUNCHPAD_SEARCH_BACKGROUND: Color = Color::rgba(255, 255, 255, 30);
+/// Borde fino blanco translúcido de la casilla.
+pub(crate) const LAUNCHPAD_SEARCH_BORDER: Color = Color::rgba(255, 255, 255, 110);
+/// Texto y lupa de la casilla, claros para leerse sobre el fondo vivo.
+pub(crate) const LAUNCHPAD_SEARCH_TEXT: Color = Color::rgba(255, 255, 255, 190);
+/// Punto de la página actual: blanco.
+pub(crate) const LAUNCHPAD_DOT_ACTIVE: Color = Color::rgba(255, 255, 255, 255);
+/// Puntos de las demás páginas.
+pub(crate) const LAUNCHPAD_DOT_INACTIVE: Color = Color::rgba(255, 255, 255, 110);

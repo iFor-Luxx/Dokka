@@ -10,7 +10,10 @@ use dokka_win_surface::{Surface, SurfaceEvent};
 use crate::context_menu::{open_context_menu, poll_app_picker, run_menu_action};
 use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
-use crate::launchpad::{click_launchpad, close_launchpad, move_over_launchpad};
+use crate::launchpad::{
+    click_launchpad, close_launchpad, confirm_over_launchpad, erase_over_launchpad,
+    escape_over_launchpad, move_over_launchpad, scroll_launchpad, type_over_launchpad,
+};
 use crate::media::send_media;
 use crate::perform_click::perform_click;
 
@@ -54,6 +57,31 @@ pub(crate) fn handle_event(
         SurfaceEvent::LaunchpadDismissed => {
             if session.launchpad.is_open() {
                 close_launchpad(session, surface);
+            }
+        }
+        SurfaceEvent::LaunchpadTyped { character } => {
+            if session.launchpad.is_open() {
+                type_over_launchpad(session, character);
+            }
+        }
+        SurfaceEvent::LaunchpadBackspace => {
+            if session.launchpad.is_open() {
+                erase_over_launchpad(session);
+            }
+        }
+        SurfaceEvent::LaunchpadEnter => {
+            if session.launchpad.is_open() {
+                confirm_over_launchpad(session, surface)?;
+            }
+        }
+        SurfaceEvent::LaunchpadEscape => {
+            if session.launchpad.is_open() {
+                escape_over_launchpad(session, surface)?;
+            }
+        }
+        SurfaceEvent::LaunchpadWheel { delta } => {
+            if session.launchpad.is_open() {
+                scroll_launchpad(session, surface, delta);
             }
         }
         SurfaceEvent::Frame { seconds } => {
