@@ -63,6 +63,16 @@ name = "dokka-interaction"
 version = "0.1.0"
 
 [[package]]
+name = "dokka-launchpad"
+version = "0.1.0"
+dependencies = [
+ "dokka-components",
+ "dokka-model",
+ "dokka-scene",
+ "dokka-theme",
+]
+
+[[package]]
 name = "dokka-model"
 version = "0.1.0"
 
@@ -88,6 +98,7 @@ dependencies = [
  "dokka-contracts",
  "dokka-dock",
  "dokka-events",
+ "dokka-launchpad",
  "dokka-model",
  "dokka-previews",
  "dokka-scene",

@@ -3,11 +3,6 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VIRTUAL_KEY, VK_D, VK_LWIN,
 };
 
-/// Abre o cierra el menú Inicio, como pulsar la tecla Windows.
-pub fn open_start_menu() {
-    send(&[press(VK_LWIN), release(VK_LWIN)]);
-}
-
 /// Muestra u oculta el escritorio, como Windows + D.
 pub fn show_desktop() {
     send(&[press(VK_LWIN), press(VK_D), release(VK_D), release(VK_LWIN)]);

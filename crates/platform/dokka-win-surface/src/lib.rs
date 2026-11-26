@@ -2,6 +2,7 @@
 #![allow(unsafe_code)]
 
 mod create_window;
+mod launchpad_window;
 mod local_time;
 mod menu_focus;
 mod place_window;

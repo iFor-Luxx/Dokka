@@ -10,6 +10,7 @@ use dokka_win_surface::{Surface, SurfaceEvent};
 use crate::context_menu::{open_context_menu, poll_app_picker, run_menu_action};
 use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
+use crate::launchpad::{click_launchpad, close_launchpad, move_over_launchpad};
 use crate::media::send_media;
 use crate::perform_click::perform_click;
 
@@ -20,7 +21,9 @@ pub(crate) fn handle_event(
 ) -> Result<(), Box<dyn Error>> {
     match event {
         SurfaceEvent::PointerMoved { x, y } => {
-            if session.dock.is_menu_open() {
+            if session.launchpad.is_open() {
+                session.dock.pointer_moved(x, y, session.state.apps());
+            } else if session.dock.is_menu_open() {
                 session.dock.move_over_menu(x, y);
             } else if session.previews.contains(x, y) {
                 // Sobre el panel el dock mantiene la lupa tal como estaba.
@@ -32,21 +35,41 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::PointerLeft => {
-            if !session.dock.is_menu_open() {
+            if session.launchpad.is_open() {
+                session.dock.pointer_left();
+            } else if !session.dock.is_menu_open() {
                 session.dock.pointer_left();
                 session.previews.pointer_left();
             }
         }
+        SurfaceEvent::LaunchpadMoved { x, y } => {
+            move_over_launchpad(session, surface, x, y);
+        }
+        SurfaceEvent::LaunchpadLeft => {
+            session.launchpad.pointer_left();
+        }
+        SurfaceEvent::LaunchpadClicked { x, y } => {
+            click_launchpad(session, surface, x, y)?;
+        }
+        SurfaceEvent::LaunchpadDismissed => {
+            if session.launchpad.is_open() {
+                close_launchpad(session, surface);
+            }
+        }
         SurfaceEvent::Frame { seconds } => {
             session.dock.advance(seconds);
-            session.previews.advance(seconds);
+            if !session.launchpad.is_open() {
+                session.previews.advance(seconds);
+            }
         }
         SurfaceEvent::Refresh => {
             if !session.sync()? {
                 return Ok(());
             }
             // Un panel podría estar mostrando una ventana que ya no existe.
-            session.previews.close();
+            if !session.launchpad.is_open() {
+                session.previews.close();
+            }
             if session.dock.is_menu_open() {
                 session.dock.close_menu();
                 surface.menu_closed();
@@ -67,8 +90,12 @@ pub(crate) fn handle_event(
             click(session, surface, x, y, with_shift)?;
         }
         SurfaceEvent::RightClicked { x, y } => {
-            session.previews.close();
-            open_context_menu(session, surface, x, y)?;
+            if session.launchpad.is_open() {
+                close_launchpad(session, surface);
+            } else {
+                session.previews.close();
+                open_context_menu(session, surface, x, y)?;
+            }
         }
     }
     session.render(surface)
@@ -93,6 +120,11 @@ fn click(
         }
         return Ok(());
     }
+    if session.launchpad.is_open() {
+        session.previews.close();
+        perform_click(session, surface, x, y, with_shift)?;
+        return Ok(());
+    }
     match session.previews.click(x, y) {
         Some(PreviewClick::Activate(window)) => {
             session.control.activate(WindowId::new(window))?;
@@ -101,7 +133,7 @@ fn click(
         Some(PreviewClick::Handled) => {}
         None => {
             session.previews.close();
-            perform_click(session, x, y, with_shift)?;
+            perform_click(session, surface, x, y, with_shift)?;
         }
     }
     Ok(())

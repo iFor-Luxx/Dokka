@@ -7,7 +7,9 @@
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho;
-  `popup::SPACE` reserva 420 sobre el dock para que quepa el menú completo).
-- `theme.rs`: `MenuColors` (`theme.menu`) para el menú.
+  `popup::SPACE` reserva 420 sobre el dock para que quepa el menú completo;
+  `launchpad.rs` para la cuadrícula a pantalla completa).
+- `theme.rs`: `MenuColors` (`theme.menu`) para el menú y `LaunchpadColors`
+  (`theme.launchpad`: fondo oscurecido, texto claro y resaltado suave).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.

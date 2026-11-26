@@ -17,6 +17,18 @@ pub enum SurfaceEvent {
     },
     /// El menú debe cerrarse: se perdió el foco o se pulsó Esc.
     Dismissed,
+    /// El cursor se mueve sobre el Launchpad.
+    LaunchpadMoved {
+        x: f32,
+        y: f32,
+    },
+    LaunchpadLeft,
+    LaunchpadClicked {
+        x: f32,
+        y: f32,
+    },
+    /// El Launchpad debe cerrarse: se perdió el foco o se pulsó Esc.
+    LaunchpadDismissed,
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.

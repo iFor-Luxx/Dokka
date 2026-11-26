@@ -15,6 +15,24 @@ use crate::window_procedure::window_procedure;
 /// Crea una ventana oculta y sin tamaño. Con `owner`, queda siempre encima de ella
 /// y deja pasar el mouse hacia ella.
 pub(crate) fn create_window(owner: Option<HWND>) -> Result<HWND> {
+    create_with_style(
+        owner,
+        WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+    )
+}
+
+/// Ventana del Launchpad: a pantalla completa, sí toma el foco para Esc.
+pub(crate) fn create_launchpad_window() -> Result<HWND> {
+    create_with_style(
+        None,
+        WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+    )
+}
+
+fn create_with_style(
+    owner: Option<HWND>,
+    extended: windows::Win32::UI::WindowsAndMessaging::WINDOW_EX_STYLE,
+) -> Result<HWND> {
     let class_name = w!("DokkaSurface");
     // SAFETY: las cadenas son estáticas, las estructuras viven durante cada llamada
     // y `window_procedure` cumple la firma que exige Windows.
@@ -37,7 +55,7 @@ pub(crate) fn create_window(owner: Option<HWND>) -> Result<HWND> {
         }
 
         let window = CreateWindowExW(
-            WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+            extended,
             class_name,
             w!("Dokka"),
             WS_POPUP,

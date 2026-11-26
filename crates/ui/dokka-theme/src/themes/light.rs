@@ -1,6 +1,8 @@
 use super::light_icons::light_icons;
 use crate::palette;
-use crate::{DockColors, MediaColors, MenuColors, PanelColors, Theme, TooltipColors};
+use crate::{
+    DockColors, LaunchpadColors, MediaColors, MenuColors, PanelColors, Theme, TooltipColors,
+};
 
 /// Tema claro de cristal: el actual de Dokka.
 pub fn light() -> Theme {
@@ -35,6 +37,11 @@ pub fn light() -> Theme {
             highlighted_text: palette::white(255),
             highlight: palette::MACOS_BLUE,
             separator: palette::MENU_SEPARATOR,
+        },
+        launchpad: LaunchpadColors {
+            background: palette::LAUNCHPAD_BACKGROUND,
+            text: palette::LAUNCHPAD_TEXT,
+            highlight: palette::LAUNCHPAD_HIGHLIGHT,
         },
         icons: light_icons(),
     }

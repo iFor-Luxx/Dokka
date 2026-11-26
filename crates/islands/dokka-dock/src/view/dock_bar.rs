@@ -70,6 +70,8 @@ impl Dock {
                 color: self.theme.dock.divider,
             }],
             thumbnails,
+            texts: Vec::new(),
+            highlight: None,
             overlay: None,
             labels,
         }

@@ -26,9 +26,11 @@ struct WindowRoot {
 pub struct SceneRenderer {
     thumbnails: WindowThumbnails,
     layers: Option<SceneLayers>,
+    launchpad_layers: Option<SceneLayers>,
     controls: Option<ControlsLayer>,
     main: WindowRoot,
     above: WindowRoot,
+    launchpad: WindowRoot,
     painter: Painter,
     compositor: Compositor,
     // Va al final: el compositor necesita la cola mientras exista.
@@ -41,10 +43,11 @@ impl SceneRenderer {
     pub fn attach(
         surface: SurfaceHandle,
         above: SurfaceHandle,
+        launchpad: SurfaceHandle,
         scale: f32,
         font_family: &str,
     ) -> std::result::Result<Self, CompositionError> {
-        Ok(Self::build(surface, above, scale, font_family)?)
+        Ok(Self::build(surface, above, launchpad, scale, font_family)?)
     }
 
     /// Muestra la escena. Si su forma no cambia, solo actualiza lo existente.
@@ -52,9 +55,15 @@ impl SceneRenderer {
         Ok(self.apply(scene)?)
     }
 
+    /// Muestra el Launchpad a pantalla completa en su propio árbol visual.
+    pub fn draw_launchpad(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
+        Ok(self.apply_launchpad(scene)?)
+    }
+
     fn build(
         surface: SurfaceHandle,
         above: SurfaceHandle,
+        launchpad: SurfaceHandle,
         scale: f32,
         font_family: &str,
     ) -> Result<Self> {
@@ -63,9 +72,11 @@ impl SceneRenderer {
         Ok(Self {
             thumbnails: WindowThumbnails::new(surface.raw(), scale),
             layers: None,
+            launchpad_layers: None,
             controls: None,
             main: window_root(&compositor, surface, scale)?,
             above: window_root(&compositor, above, scale)?,
+            launchpad: window_root(&compositor, launchpad, scale)?,
             painter: Painter::new(&compositor, font_family)?,
             compositor,
             _queue: queue,
@@ -103,6 +114,16 @@ impl SceneRenderer {
         };
         layer.update(&self.compositor, &self.painter, controls)?;
         self.controls = Some(layer);
+        Ok(())
+    }
+
+    fn apply_launchpad(&mut self, scene: &Scene) -> Result<()> {
+        let mut layers = match self.launchpad_layers.take() {
+            Some(layers) if layers.matches(scene) => layers,
+            _ => SceneLayers::build(&self.compositor, &self.painter, &self.launchpad.root, scene)?,
+        };
+        layers.update(&self.compositor, &self.painter, scene)?;
+        self.launchpad_layers = Some(layers);
         Ok(())
     }
 }

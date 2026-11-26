@@ -4,6 +4,7 @@ mod context_menu;
 mod dock_session;
 mod floating_panels;
 mod handle_event;
+mod launchpad;
 mod media;
 mod perform_click;
 mod pinned_apps;
@@ -35,6 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let renderer = SceneRenderer::attach(
         surface.handle(),
         surface.above_handle(),
+        surface.launchpad_handle(),
         surface.scale(),
         typography::FONT_FAMILY,
     )?;
