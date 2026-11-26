@@ -1,7 +1,9 @@
-//! Pinta la baldosa redondeada y el glifo centrado con borde suave.
+//! Pinta la baldosa redondeada con fondo en degradado y el glifo centrado.
 
 use dokka_scene::{Bitmap, Color};
 use dokka_theme::launchpad as measures;
+
+use crate::tile_color::gradient_row;
 
 use crate::tile_frame::content_bounds;
 use crate::tile_pixels::{checked_len, pixel_index, read_pixel};
@@ -60,14 +62,14 @@ pub(crate) fn rounded_mask(source: &Bitmap, radius: f32) -> Option<Bitmap> {
     })
 }
 
-/// Silueta centrada sobre la baldosa clara, con las esquinas recortadas.
-pub(crate) fn tile_with_content(side: u32, content: &Bitmap, tile: Color) -> Bitmap {
-    let fallback = filled_tile(side, tile);
-    let Some((left, top, right, bottom)) = content_bounds(content) else {
+/// Silueta centrada sobre el degradado del icono, con las esquinas recortadas.
+pub(crate) fn tile_with_content(side: u32, content: &Bitmap, top: Color, bottom: Color) -> Bitmap {
+    let fallback = filled_tile(side, top, bottom);
+    let Some((left, top_edge, right, bottom_edge)) = content_bounds(content) else {
         return fallback;
     };
     let box_w = right.saturating_sub(left).max(1) as f32;
-    let box_h = bottom.saturating_sub(top).max(1) as f32;
+    let box_h = bottom_edge.saturating_sub(top_edge).max(1) as f32;
     let side_f = side as f32;
     let target = side_f * measures::TILE_CONTENT_SCALE.clamp(0.3, 0.85);
     let fit = (target / box_w).min(target / box_h);
@@ -90,9 +92,10 @@ pub(crate) fn tile_with_content(side: u32, content: &Bitmap, tile: Color) -> Bit
             };
             let px = x as f32 + 0.5;
             let py = y as f32 + 0.5;
-            let mut red = tile.red as f32;
-            let mut green = tile.green as f32;
-            let mut blue = tile.blue as f32;
+            let base = gradient_row(top, bottom, y, side);
+            let mut blue = base[0];
+            let mut green = base[1];
+            let mut red = base[2];
             let mut alpha = 255.0;
             let inside =
                 px >= dest_x && px < dest_x + dest_w && py >= dest_y && py < dest_y + dest_h;
@@ -100,7 +103,7 @@ pub(crate) fn tile_with_content(side: u32, content: &Bitmap, tile: Color) -> Bit
                 let sample = bilinear(
                     content,
                     left as f32 + (px - dest_x) / fit,
-                    top as f32 + (py - dest_y) / fit,
+                    top_edge as f32 + (py - dest_y) / fit,
                 );
                 let ink_a = sample[3] / 255.0;
                 blue = sample[0] + blue * (1.0 - ink_a);
@@ -122,21 +125,22 @@ pub(crate) fn tile_with_content(side: u32, content: &Bitmap, tile: Color) -> Bit
     }
 }
 
-/// Baldosa lisa, ya con las esquinas recortadas.
-fn filled_tile(side: u32, tile: Color) -> Bitmap {
+/// Fondo en degradado vertical, ya con las esquinas recortadas.
+fn filled_tile(side: u32, top: Color, bottom: Color) -> Bitmap {
     let radius = tile_radius_px(side);
     let side_f = side as f32;
     let total = checked_len(side, side).unwrap_or_default();
     let mut pixels = vec![0_u8; total];
     for y in 0..side {
+        let base = gradient_row(top, bottom, y, side);
         for x in 0..side {
             if let Some(at) = pixel_index(side, x, y)
                 && let Some(slot) = pixels.get_mut(at..at + 4)
             {
                 let coverage = rounded_coverage(x, y, side_f, radius);
-                slot[0] = dim(tile.blue, coverage);
-                slot[1] = dim(tile.green, coverage);
-                slot[2] = dim(tile.red, coverage);
+                slot[0] = (base[0] * coverage + 0.5).clamp(0.0, 255.0) as u8;
+                slot[1] = (base[1] * coverage + 0.5).clamp(0.0, 255.0) as u8;
+                slot[2] = (base[2] * coverage + 0.5).clamp(0.0, 255.0) as u8;
                 slot[3] = dim(255, coverage);
             }
         }
