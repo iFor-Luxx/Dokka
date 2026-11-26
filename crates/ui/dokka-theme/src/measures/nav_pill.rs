@@ -17,6 +17,9 @@ pub const BORDER_WIDTH: f32 = 1.0;
 pub const DIVIDER_WIDTH: f32 = 1.0;
 /// Fracción del alto de la píldora que ocupa la línea del centro.
 pub const DIVIDER_FRACTION: f32 = 0.5;
+/// Margen interior del resaltado dentro de su mitad: no toca la línea
+/// central ni se sale del borde de la cápsula.
+pub const HOVER_INSET: f32 = 3.0;
 
 /// Radio de la cápsula: extremos totalmente redondos.
 pub fn radius(pill_height: f32) -> f32 {
