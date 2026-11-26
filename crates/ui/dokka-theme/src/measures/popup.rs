@@ -17,10 +17,10 @@ pub const CALENDAR_HEADER: f32 = 40.0;
 pub const CALENDAR_HEADER_DROP: f32 = 2.0;
 pub const CALENDAR_ARROW_SIDE: f32 = 28.0;
 /// Lado del icono de cada flecha, centrado en su zona pulsable (28):
-/// deja 2 de aire por lado y la zona de clic no se reduce.
-pub const CALENDAR_ARROW_ICON_SIDE: f32 = 24.0;
+/// deja 4 de aire por lado y la zona de clic no se reduce.
+pub const CALENDAR_ARROW_ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo Lucide para las flechas: llena el lienzo de 100,
-/// de modo que la fuente efectiva es 24 al mostrarse a 24 de lado.
+/// de modo que la fuente efectiva es 20 al mostrarse a 20 de lado.
 pub const CALENDAR_ARROW_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Aire entre el círculo de hoy y su celda.
 pub const CALENDAR_TODAY_INSET: f32 = 3.0;
@@ -36,9 +36,9 @@ pub const PREVIEW_MAXIMUM_WINDOWS: usize = 3;
 pub const MEDIA_BUTTON_WIDTH: f32 = 52.0;
 pub const MEDIA_HEIGHT: f32 = 42.0;
 /// Lado del icono de cada botón, centrado en su botón de 52 × 42.
-pub const MEDIA_ICON_SIDE: f32 = 24.0;
+pub const MEDIA_ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo Lucide para los botones de música: llena el lienzo
-/// de 100, de modo que la fuente efectiva es 24 al mostrarse a 24 de lado.
+/// de 100, de modo que la fuente efectiva es 20 al mostrarse a 20 de lado.
 pub const MEDIA_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Distancia entre la píldora y el borde inferior de la imagen.
 pub const MEDIA_INSET: f32 = 10.0;
