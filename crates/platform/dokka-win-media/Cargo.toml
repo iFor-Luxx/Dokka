@@ -1,0 +1,16 @@
+[package]
+name = "dokka-win-media"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+windows = { workspace = true, features = [
+    "Foundation",
+    "Foundation_Collections",
+    "Media_Control",
+    "Win32_System_WinRT",
+] }
+
+[lints]
+workspace = true
