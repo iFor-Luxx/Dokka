@@ -7,6 +7,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::read_pointer::read_pointer;
+use crate::window_procedure::DISMISS_MESSAGE;
 use crate::{Surface, SurfaceError, SurfaceEvent};
 
 /// Espera para agrupar ráfagas de avisos en una sola actualización.
@@ -104,6 +105,9 @@ impl Surface {
             let _ = unsafe { KillTimer(None, message.wParam.0) };
             state.pending_timer = None;
             return Some(SurfaceEvent::Refresh);
+        }
+        if message.hwnd == self.window && message.message == DISMISS_MESSAGE {
+            return Some(SurfaceEvent::Dismissed);
         }
         if message.hwnd == self.window
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)

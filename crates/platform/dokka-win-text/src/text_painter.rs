@@ -5,15 +5,15 @@ use windows::Win32::Graphics::Direct2D::{
 use windows::Win32::Graphics::DirectWrite::{
     DWRITE_FACTORY_TYPE_SHARED, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL,
     DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_WEIGHT_SEMI_BOLD, DWRITE_MEASURING_MODE_NATURAL,
-    DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_TEXT_METRICS,
-    DWriteCreateFactory, IDWriteFactory, IDWriteTextFormat,
+    DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_LEADING,
+    DWRITE_TEXT_METRICS, DWriteCreateFactory, IDWriteFactory, IDWriteTextFormat,
 };
 use windows::core::{HSTRING, Result, w};
 
 /// Caja generosa alrededor del centro para que nada se parta en líneas.
 const BOX_HALF_SIDE: f32 = 600.0;
 
-/// Texto de una línea centrado en un punto.
+/// Texto de una línea colocado en un punto.
 #[derive(Debug, Clone, Copy)]
 pub struct CenteredText<'a> {
     pub text: &'a str,
@@ -21,6 +21,22 @@ pub struct CenteredText<'a> {
     pub y: f32,
     pub size: f32,
     pub is_bold: bool,
+    /// `true` alinea a la izquierda en `x`; `false` centra en `x`.
+    pub align_left: bool,
+}
+
+impl<'a> CenteredText<'a> {
+    /// Texto centrado en el punto, como antes.
+    pub fn centered(text: &'a str, x: f32, y: f32, size: f32, is_bold: bool) -> Self {
+        Self {
+            text,
+            x,
+            y,
+            size,
+            is_bold,
+            align_left: false,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -67,15 +83,29 @@ impl TextPainter {
     ) -> Result<()> {
         let characters: Vec<u16> = text.text.encode_utf16().collect();
         let format = self.format(text.size, text.is_bold)?;
-        let area = D2D_RECT_F {
-            left: text.x - BOX_HALF_SIDE,
-            top: text.y - BOX_HALF_SIDE,
-            right: text.x + BOX_HALF_SIDE,
-            bottom: text.y + BOX_HALF_SIDE,
+        let area = if text.align_left {
+            D2D_RECT_F {
+                left: text.x,
+                top: text.y - BOX_HALF_SIDE,
+                right: text.x + BOX_HALF_SIDE * 2.0,
+                bottom: text.y + BOX_HALF_SIDE,
+            }
+        } else {
+            D2D_RECT_F {
+                left: text.x - BOX_HALF_SIDE,
+                top: text.y - BOX_HALF_SIDE,
+                right: text.x + BOX_HALF_SIDE,
+                bottom: text.y + BOX_HALF_SIDE,
+            }
         };
         // SAFETY: las cadenas y el rectángulo viven durante las llamadas.
         unsafe {
-            format.SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER)?;
+            let align = if text.align_left {
+                DWRITE_TEXT_ALIGNMENT_LEADING
+            } else {
+                DWRITE_TEXT_ALIGNMENT_CENTER
+            };
+            format.SetTextAlignment(align)?;
             format.SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER)?;
             context.DrawText(
                 &characters,

@@ -41,13 +41,8 @@ pub(crate) fn paint_label(
             context.SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
         }
         paint_background(context, label, width, body)?;
-        let line = CenteredText {
-            text: &label.text,
-            x: width / 2.0,
-            y: body / 2.0,
-            size: label.font_size,
-            is_bold: false,
-        };
+        let line =
+            CenteredText::centered(&label.text, width / 2.0, body / 2.0, label.font_size, false);
         text.draw(context, &solid_brush(context, label.text_color)?, line)
     })?;
 

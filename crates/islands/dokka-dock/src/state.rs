@@ -5,6 +5,7 @@ use dokka_animation::Spring;
 use dokka_model::AppId;
 use dokka_theme::Theme;
 
+use crate::logic::OpenMenu;
 use crate::motion::LaunchBounce;
 use crate::view::system_icons::SystemIcons;
 
@@ -21,6 +22,7 @@ pub struct Dock {
     pub(crate) is_hovered: bool,
     pub(crate) cursor_x: f32,
     pub(crate) bounces: HashMap<AppId, LaunchBounce>,
+    pub(crate) menu: Option<OpenMenu>,
 }
 
 impl Dock {
@@ -33,6 +35,7 @@ impl Dock {
             is_hovered: false,
             cursor_x: 0.0,
             bounces: HashMap::new(),
+            menu: None,
         }
     }
 }

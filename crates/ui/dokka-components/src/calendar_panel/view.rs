@@ -81,7 +81,10 @@ pub fn calendar_panel(theme: &Theme, bounds: Rect, month: &CalendarMonth) -> Ove
 
     Overlay {
         panel: popup_panel(theme, bounds),
+        highlight: None,
+        dividers: Vec::new(),
         dots,
+        icons: Vec::new(),
         texts,
         thumbnails: Vec::new(),
         controls: None,

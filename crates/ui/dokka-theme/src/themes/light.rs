@@ -1,6 +1,6 @@
 use super::light_icons::light_icons;
 use crate::palette;
-use crate::{DockColors, MediaColors, PanelColors, Theme, TooltipColors};
+use crate::{DockColors, MediaColors, MenuColors, PanelColors, Theme, TooltipColors};
 
 /// Tema claro de cristal: el actual de Dokka.
 pub fn light() -> Theme {
@@ -27,6 +27,12 @@ pub fn light() -> Theme {
             background: palette::MIST_STRONG,
             border,
             icon: palette::INK,
+        },
+        menu: MenuColors {
+            text: palette::INK,
+            highlighted_text: palette::white(255),
+            highlight: palette::MACOS_BLUE,
+            separator: palette::STEEL_SOFT,
         },
         icons: light_icons(),
     }

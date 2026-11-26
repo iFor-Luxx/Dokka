@@ -27,5 +27,5 @@ pub use panel::Panel;
 pub use rect::Rect;
 pub use scene::Scene;
 pub use size::Size;
-pub use text::Text;
+pub use text::{Text, TextAlign};
 pub use thumbnail::Thumbnail;

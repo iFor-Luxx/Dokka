@@ -103,7 +103,12 @@ impl DockSession {
     pub(crate) fn render(&mut self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
         update_media(self);
         let mut scene = self.scene();
-        scene.overlay = self.previews.overlay();
+        // El menú tiene prioridad sobre las vistas previas.
+        if self.dock.is_menu_open() {
+            scene.overlay = self.dock.menu_overlay();
+        } else {
+            scene.overlay = self.previews.overlay();
+        }
         // Con un panel abierto, la etiqueta sobra.
         if scene.overlay.is_some() {
             scene.labels.clear();
@@ -116,7 +121,10 @@ impl DockSession {
         }))?;
         let areas: Vec<[f32; 4]> = [
             Some(self.dock.active_area(self.state.apps())),
-            self.previews.area(),
+            self.dock.menu_area(),
+            (!self.dock.is_menu_open())
+                .then(|| self.previews.area())
+                .flatten(),
         ]
         .into_iter()
         .flatten()

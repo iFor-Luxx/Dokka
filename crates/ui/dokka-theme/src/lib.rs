@@ -6,6 +6,8 @@ mod theme;
 mod themes;
 pub mod typography;
 
-pub use measures::{dock, popup, tooltip};
-pub use theme::{DockColors, IconColors, MediaColors, PanelColors, Theme, TooltipColors};
+pub use measures::{dock, menu, popup, tooltip};
+pub use theme::{
+    DockColors, IconColors, MediaColors, MenuColors, PanelColors, Theme, TooltipColors,
+};
 pub use themes::light;
