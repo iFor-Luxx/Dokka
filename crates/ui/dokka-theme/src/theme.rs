@@ -46,6 +46,8 @@ pub struct MediaColors {
 /// Colores del menú del clic derecho.
 #[derive(Debug, Clone, Copy)]
 pub struct MenuColors {
+    pub background: Color,
+    pub border: Color,
     pub text: Color,
     pub highlighted_text: Color,
     pub highlight: Color,
