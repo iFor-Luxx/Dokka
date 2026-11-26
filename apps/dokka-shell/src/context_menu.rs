@@ -5,7 +5,7 @@ use std::error::Error;
 use dokka_contracts::AppLauncher;
 use dokka_dock::MenuAction;
 use dokka_win_apps::system_place;
-use dokka_win_control::show_desktop;
+use dokka_win_control::{set_taskbar_visible, show_desktop};
 use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
@@ -42,6 +42,16 @@ pub(crate) fn run_menu_action(
     surface.menu_closed();
     match action {
         MenuAction::AddApp => session.picker.open(),
+        MenuAction::ShowTaskbar => {
+            set_taskbar_visible(true);
+            session.set_taskbar_hidden(false);
+            session.resize(surface)?;
+        }
+        MenuAction::HideTaskbar => {
+            set_taskbar_visible(false);
+            session.set_taskbar_hidden(true);
+            session.resize(surface)?;
+        }
         MenuAction::ShowDesktop => show_desktop(),
         MenuAction::TaskManager => session
             .launcher
@@ -50,7 +60,7 @@ pub(crate) fn run_menu_action(
             .launcher
             .launch(&system_place("Barra de tareas", "ms-settings:taskbar"))?,
         MenuAction::Restart => restart(surface)?,
-        MenuAction::Quit => surface.close(),
+        MenuAction::Quit => quit(surface),
         MenuAction::Pin(info) => {
             toggle_pin(session, info, false)?;
             session.resize(surface)?;
@@ -89,6 +99,12 @@ pub(crate) fn poll_app_picker(
 fn restart(surface: &Surface) -> Result<(), Box<dyn Error>> {
     let current = std::env::current_exe()?;
     std::process::Command::new(current).spawn()?;
-    surface.close();
+    quit(surface);
     Ok(())
+}
+
+/// Cierra Dokka devolviendo antes la barra de tareas.
+fn quit(surface: &Surface) {
+    set_taskbar_visible(true);
+    surface.close();
 }

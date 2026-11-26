@@ -11,6 +11,8 @@ pub struct SurfaceOptions {
     pub width: f32,
     pub height: f32,
     pub bottom_margin: f32,
+    /// Con `true` usa el monitor completo; si no, el área de trabajo.
+    pub over_taskbar: bool,
 }
 
 /// Referencia a la ventana para otras piezas de `platform`.

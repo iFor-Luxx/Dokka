@@ -1,6 +1,7 @@
 mod clock_label;
 mod decide_click;
 mod divider_target;
+mod dock_menu;
 mod hover_target;
 mod hovered_label;
 mod list_entries;

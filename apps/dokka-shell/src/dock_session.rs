@@ -28,6 +28,7 @@ pub(crate) struct DockSession {
     pub(crate) control: SystemWindowControl,
     pub(crate) media: MediaMonitor,
     pub(crate) picker: AppPicker,
+    taskbar_hidden: bool,
     windows: SystemWindows,
     icons: IconCache,
     names: NameCache,
@@ -47,6 +48,7 @@ impl DockSession {
             control: SystemWindowControl,
             media: MediaMonitor::start(),
             picker: AppPicker::new(),
+            taskbar_hidden: false,
             windows: SystemWindows,
             icons: IconCache::new(),
             names: NameCache::default(),
@@ -97,8 +99,14 @@ impl DockSession {
             width: size.width,
             height: size.height,
             bottom_margin: DOCK_BOTTOM_MARGIN,
+            over_taskbar: self.taskbar_hidden,
         })?;
         Ok(())
+    }
+
+    /// Guarda si la barra está oculta; quien la cambia recoloca con `resize`.
+    pub(crate) fn set_taskbar_hidden(&mut self, hidden: bool) {
+        self.taskbar_hidden = hidden;
     }
 
     /// Dibuja el instante actual.
