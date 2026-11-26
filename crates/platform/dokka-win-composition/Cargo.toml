@@ -8,9 +8,12 @@ publish.workspace = true
 dokka-scene.workspace = true
 dokka-win-surface.workspace = true
 dokka-win-text.workspace = true
+windows-collections.workspace = true
+windows-core.workspace = true
 windows = { workspace = true, features = [
     "Foundation",
     "Graphics_DirectX",
+    "Graphics_Effects",
     "System",
     "UI_Composition",
     "UI_Composition_Desktop",
@@ -24,6 +27,7 @@ windows = { workspace = true, features = [
     "Win32_Graphics_Dxgi_Common",
     "Win32_System_WinRT",
     "Win32_System_WinRT_Composition",
+    "Win32_System_WinRT_Graphics_Direct2D",
 ] }
 windows-numerics.workspace = true
 

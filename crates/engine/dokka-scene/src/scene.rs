@@ -23,4 +23,8 @@ pub struct Scene {
     /// Escala del contenido sobre el fondo, con origen en el centro del fondo.
     /// El fondo solo se desvanece; el dock siempre vale 1.
     pub scale: f32,
+    /// Desenfoque gaussiano del contenido en unidades lógicas, de 0 (nítido)
+    /// al máximo del tema. Solo el Launchpad lo usa durante el zoom; el resto
+    /// vale 0. No reconstruye capas: la plataforma lo aplica sobre la escena.
+    pub blur: f32,
 }

@@ -17,5 +17,7 @@
   `submenu` opcional para el segundo panel del menú (mismo cristal, sin punta).
 - `Scene` añade `opacity` y `scale`: cuánto se ve todo (1 en reposo) y cuánto
   escala el contenido sobre el fondo, con origen en su centro. El dock siempre vale 1.
+- `Scene` añade `blur`: desenfoque gaussiano del contenido en unidades lógicas
+  (0 en reposo, máximo del tema durante el zoom del Launchpad).
 
 **No hace:** no dibuja ni habla con Windows. Las medidas son lógicas, sin escalar por DPI.

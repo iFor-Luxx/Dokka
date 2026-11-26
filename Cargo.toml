@@ -39,6 +39,8 @@ dokka-win-text = { path = "crates/platform/dokka-win-text" }
 dokka-win-tracking = { path = "crates/platform/dokka-win-tracking" }
 lucide-icons = { version = "1.81", default-features = false }
 windows = "0.62"
+windows-collections = "0.3"
+windows-core = "0.62"
 windows-numerics = "0.3"
 
 [workspace.lints.rust]

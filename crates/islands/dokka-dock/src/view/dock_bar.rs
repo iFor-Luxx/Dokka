@@ -79,6 +79,7 @@ impl Dock {
             // El dock no usa el zoom del Launchpad: siempre en reposo.
             opacity: 1.0,
             scale: 1.0,
+            blur: 0.0,
         }
     }
 

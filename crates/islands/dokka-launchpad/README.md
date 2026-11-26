@@ -13,8 +13,8 @@ sin foco muestra lupa y "Buscar" a la izquierda; con foco (clic o primera letra)
 vertical parpadeante tras el texto y el marcador tenue a su derecha, con el aviso de cada segundo
 (`tick`) y sin fotogramas continuos; Esc limpia y quita el foco, y con la casilla vacía y sin foco
 cierra. La apertura y el cierre usan el zoom clásico (`motion/zoom.rs`: entra encogiendo desde
-~1,15 y sale creciendo hacia el usuario mientras todo se desvanece); la escena lleva opacidad y
-escala, y reabrir a mitad del cierre continúa desde donde está. La paginación vive en `paging.rs`
+~1,15 y sale creciendo hacia el usuario mientras todo se desenfoca y se desvanece); la escena lleva opacidad,
+escala y desenfoque, y reabrir a mitad del cierre continúa desde donde está. La paginación vive en `paging.rs`
 y el clic en `logic/`.
 
 **No hace:** no crea ventanas, no habla con Windows, no guarda en disco ni usa otras islas.
