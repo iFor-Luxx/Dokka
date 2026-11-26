@@ -3,11 +3,14 @@ use std::ffi::c_void;
 use dokka_contracts::{ContractError, WindowControl};
 use dokka_model::WindowId;
 use windows::Win32::Foundation::{HWND, LPARAM, RECT, WPARAM};
+use windows::Win32::Graphics::Gdi::{
+    GetMonitorInfoW, MONITOR_DEFAULTTONEAREST, MONITORINFO, MonitorFromWindow,
+};
 use windows::Win32::UI::WindowsAndMessaging::{
-    GWL_EXSTYLE, GetForegroundWindow, GetWindowLongPtrW, GetWindowRect, HWND_NOTOPMOST,
-    HWND_TOPMOST, IsIconic, IsWindow, PostMessageW, SW_MINIMIZE, SW_RESTORE, SWP_NOACTIVATE,
-    SWP_NOMOVE, SWP_NOSIZE, SetForegroundWindow, SetWindowPos, ShowWindowAsync, WM_CLOSE,
-    WS_EX_TOPMOST,
+    GWL_EXSTYLE, GetForegroundWindow, GetWindowLongPtrW, GetWindowPlacement, GetWindowRect,
+    HWND_NOTOPMOST, HWND_TOPMOST, IsIconic, IsWindow, PostMessageW, SW_MINIMIZE, SW_RESTORE,
+    SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SetForegroundWindow, SetWindowPos, ShowWindowAsync,
+    WINDOWPLACEMENT, WM_CLOSE, WPF_RESTORETOMAXIMIZED, WS_EX_TOPMOST,
 };
 
 /// Control de ventanas mediante Windows.
@@ -97,18 +100,59 @@ impl WindowControl for SystemWindowControl {
 }
 
 /// Rectángulo real de la ventana en píxeles de pantalla `[izquierda, arriba,
-/// derecha, abajo]`. `None` si está minimizada, no existe o no tiene tamaño.
+/// derecha, abajo]`. `None` si no existe o no tiene tamaño. Para una ventana
+/// minimizada devuelve su posición restaurada, sin restaurarla ni activarla.
 pub fn window_rect(id: WindowId) -> Option<[i32; 4]> {
     let window = HWND(id.value() as *mut c_void);
     // SAFETY: son consultas de solo lectura; un handle destruido devuelve cero.
     unsafe {
-        if !IsWindow(Some(window)).as_bool() || IsIconic(window).as_bool() {
+        if !IsWindow(Some(window)).as_bool() {
             return None;
+        }
+        if IsIconic(window).as_bool() {
+            return restored_rect(window);
         }
         let mut area = RECT::default();
         if GetWindowRect(window, &mut area).is_err() {
             return None;
         }
+        if area.right <= area.left || area.bottom <= area.top {
+            return None;
+        }
+        Some([area.left, area.top, area.right, area.bottom])
+    }
+}
+
+/// Posición restaurada de una ventana minimizada, sin tocar su estado.
+/// `rcNormalPosition` usa coordenadas del área de trabajo; si estaba
+/// maximizada se usa el área de trabajo de su monitor.
+fn restored_rect(window: HWND) -> Option<[i32; 4]> {
+    // SAFETY: `window` existe y cada estructura declara su propio tamaño.
+    unsafe {
+        let mut placement = WINDOWPLACEMENT {
+            length: size_of::<WINDOWPLACEMENT>() as u32,
+            ..Default::default()
+        };
+        if GetWindowPlacement(window, &mut placement).is_err() {
+            return None;
+        }
+        // Minimizada, `showCmd` ya no dice si volverá maximizada: lo dice la marca.
+        if placement.flags.0 & WPF_RESTORETOMAXIMIZED.0 != 0 {
+            let monitor = MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST);
+            let mut info = MONITORINFO {
+                cbSize: size_of::<MONITORINFO>() as u32,
+                ..Default::default()
+            };
+            if !GetMonitorInfoW(monitor, &mut info).as_bool() {
+                return None;
+            }
+            let area = info.rcWork;
+            if area.right <= area.left || area.bottom <= area.top {
+                return None;
+            }
+            return Some([area.left, area.top, area.right, area.bottom]);
+        }
+        let area = placement.rcNormalPosition;
         if area.right <= area.left || area.bottom <= area.top {
             return None;
         }

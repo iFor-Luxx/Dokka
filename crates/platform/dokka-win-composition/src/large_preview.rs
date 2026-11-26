@@ -39,9 +39,8 @@ impl LargePreview {
             None => {
                 let window = HWND(source as *mut c_void);
                 // SAFETY: Windows valida ambos identificadores.
-                let Ok(handle) = (unsafe { DwmRegisterThumbnail(self.destination, window) }) else {
-                    return Ok(false);
-                };
+                // El error sube a `show_large`, que lo escribe una vez en consola.
+                let handle = unsafe { DwmRegisterThumbnail(self.destination, window) }?;
                 self.registered.insert(source, handle);
                 handle
             }
