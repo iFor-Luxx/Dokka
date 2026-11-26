@@ -5,7 +5,9 @@ mod app_name;
 mod desktop_catalog;
 mod desktop_entry;
 mod desktop_paths;
+mod file_icon;
 mod filter_target;
+mod hicon_bitmap;
 mod icon_cache;
 mod launch_app;
 mod load_icon;
@@ -14,6 +16,7 @@ mod read_bitmap;
 mod read_url;
 mod resolve_lnk;
 mod system_places;
+mod url_icon;
 
 pub use app_name::NameCache;
 pub use desktop_catalog::DesktopCatalog;

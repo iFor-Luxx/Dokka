@@ -5,5 +5,5 @@ mod ease;
 mod spring;
 
 pub use bounce::Bounce;
-pub use ease::ease_out_cubic;
+pub use ease::{ease_out_back, ease_out_cubic};
 pub use spring::Spring;

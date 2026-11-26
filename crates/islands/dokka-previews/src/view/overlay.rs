@@ -27,6 +27,7 @@ impl Previews {
     }
 
     /// Rectángulo tal como se dibuja, desplazado hacia abajo según la animación.
+    /// La escala la aplica la plataforma sobre este rectángulo.
     fn drawn(&self) -> Option<Rect> {
         let rest = self.bounds()?;
         Some(Rect {
@@ -35,9 +36,22 @@ impl Previews {
         })
     }
 
-    /// Cuánto baja el panel respecto al reposo.
+    /// Cuánto baja el panel respecto al reposo. En el rebote es negativo.
     fn drop(&self) -> f32 {
-        (1.0 - self.reveal.eased()) * theme::POPUP_TRAVEL
+        self.reveal
+            .drop(theme::POPUP_ENTER_TRAVEL, theme::POPUP_EXIT_TRAVEL)
+    }
+
+    /// Escala actual del panel, con origen en el centro inferior sobre el icono.
+    fn scale(&self) -> f32 {
+        self.reveal
+            .scale(theme::POPUP_ENTER_SCALE, theme::POPUP_EXIT_SCALE)
+    }
+
+    /// Punto que queda fijo al escalar: centro inferior sobre el icono.
+    fn origin(&self) -> Option<(f32, f32)> {
+        let request = self.open.as_ref()?;
+        Some((request.center_x, request.bottom))
     }
 
     /// `true` solo si el punto está dentro del panel abierto, sin el hueco
@@ -56,14 +70,22 @@ impl Previews {
     }
 
     /// Zona que debe verse y recibir el mouse: lo dibujado y el hueco hasta el dock.
+    /// Cubre también el rebote, que se pasa un poco por encima del reposo.
     pub fn area(&self) -> Option<Rect> {
         let rest = self.bounds()?;
         let drawn = self.drawn()?;
+        let origin = self.origin()?;
+        let scaled = scaled_rect(drawn, self.scale(), origin);
         let floor = self.open.as_ref()?.floor;
-        let bottom = floor.max(drawn.y + drawn.height);
+        let left = rest.x.min(scaled.x);
+        let top = rest.y.min(scaled.y);
+        let right = (rest.x + rest.width).max(scaled.x + scaled.width);
+        let bottom = floor.max(scaled.y + scaled.height);
         Some(Rect {
-            height: (bottom - rest.y).max(0.0),
-            ..rest
+            x: left,
+            y: top,
+            width: (right - left).max(0.0),
+            height: (bottom - top).max(0.0),
         })
     }
 
@@ -86,8 +108,20 @@ impl Previews {
         if self.reveal.is_animating() {
             overlay.controls = None;
         }
-        overlay.opacity = self.reveal.eased();
+        overlay.opacity = self.reveal.fade(theme::POPUP_OPACITY_SPAN);
+        overlay.scale = self.scale();
+        overlay.origin = self.origin()?;
         Some(overlay)
+    }
+}
+
+/// Rectángulo tras escalarlo sobre `origin`.
+fn scaled_rect(rect: Rect, scale: f32, origin: (f32, f32)) -> Rect {
+    Rect {
+        x: origin.0 + (rect.x - origin.0) * scale,
+        y: origin.1 + (rect.y - origin.1) * scale,
+        width: rect.width * scale,
+        height: rect.height * scale,
     }
 }
 

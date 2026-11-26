@@ -3,6 +3,7 @@
 mod events;
 mod logic;
 mod state;
+mod tiles;
 mod view;
 
 pub use events::LaunchpadAction;

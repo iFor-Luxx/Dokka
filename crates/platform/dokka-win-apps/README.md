@@ -4,5 +4,6 @@
 También pide una app con el diálogo de Windows (`AppPicker`, en su propio hilo)
 y lista el Escritorio (`DesktopCatalog` como `AppCatalog`: `.lnk` filtrados por
 destino pero abiertos por el `.lnk`, `.url` solo de juegos y `.exe` sueltos).
+Para un `.url` usa su `IconFile`/`IconIndex` en grande cuando existe.
 
 **No hace:** no controla ventanas. Algunas apps de la tienda pueden mostrar un icono genérico o no abrirse por su ruta.

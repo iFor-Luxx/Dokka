@@ -18,6 +18,12 @@ pub const TOP_RATIO: f32 = 285.0 / 1440.0;
 pub const ROW_GAP_HEIGHT_RATIO: f32 = 48.0 / 1440.0;
 /// Reserva entre la última fila y los puntos, respecto al alto (48 sobre 1440).
 pub const GRID_BOTTOM_MARGIN_RATIO: f32 = 48.0 / 1440.0;
+/// Lado para el que se definió el radio de la baldosa.
+pub const TILE_REFERENCE_SIDE: f32 = 90.0;
+/// Radio de la baldosa uniforme, para `TILE_REFERENCE_SIDE`.
+pub const TILE_RADIUS: f32 = 20.0;
+/// Parte del lado que ocupa el glifo sobre la baldosa.
+pub const TILE_CONTENT_SCALE: f32 = 0.66;
 /// Aire entre el icono y su nombre.
 pub const TEXT_GAP: f32 = 6.0;
 pub const TEXT_SIZE: f32 = 13.0;

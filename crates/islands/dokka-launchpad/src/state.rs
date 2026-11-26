@@ -1,14 +1,17 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use dokka_components::app_grid::{AppGridItem, AppGridProps, app_at, page_capacity};
 use dokka_components::page_dots::{PageDotsProps, dot_at};
 use dokka_components::search_field::{SearchFieldProps, magnifier_drawing, search_contains};
-use dokka_model::AppInfo;
-use dokka_scene::{Color, Drawing, Size};
+use dokka_model::{AppId, AppInfo};
+use dokka_scene::{Bitmap, Color, Drawing, Size};
+use dokka_theme::Theme;
 use dokka_theme::launchpad as measures;
 
 use crate::LaunchpadAction;
 use crate::logic::filter_apps;
+use crate::tiles::TileCache;
 
 /// Estado abierto/cerrado, búsqueda, página y app resaltada.
 #[derive(Debug, Default)]
@@ -20,6 +23,7 @@ pub struct Launchpad {
     page: usize,
     /// Lupa de la casilla, creada una vez y reutilizada con su color.
     magnifier: Option<(Color, Arc<Drawing>)>,
+    tiles: TileCache,
 }
 
 impl Launchpad {
@@ -33,12 +37,14 @@ impl Launchpad {
         self.highlighted = None;
         self.query.clear();
         self.page = 0;
+        self.tiles.clear();
         self.is_open = true;
     }
 
     pub fn close(&mut self) {
         self.is_open = false;
         self.highlighted = None;
+        self.tiles.clear();
     }
 
     pub fn is_open(&self) -> bool {
@@ -161,6 +167,15 @@ impl Launchpad {
         let drawing = Arc::new(magnifier_drawing(color));
         self.magnifier = Some((color, Arc::clone(&drawing)));
         drawing
+    }
+
+    /// Baldosas uniformes para el redibujado, calculadas una sola vez por app.
+    pub fn tiled_images(
+        &mut self,
+        images: &HashMap<AppId, Arc<Bitmap>>,
+        theme: &Theme,
+    ) -> HashMap<AppId, Arc<Bitmap>> {
+        self.tiles.tiled(&self.apps, images, theme)
     }
 
     /// Resalta la app que hay en el punto.

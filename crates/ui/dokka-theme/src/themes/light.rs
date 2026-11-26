@@ -48,6 +48,7 @@ pub fn light() -> Theme {
             search_text: palette::LAUNCHPAD_SEARCH_TEXT,
             dot_active: palette::LAUNCHPAD_DOT_ACTIVE,
             dot_inactive: palette::LAUNCHPAD_DOT_INACTIVE,
+            tile: palette::APP_TILE,
         },
         icons: light_icons(),
     }

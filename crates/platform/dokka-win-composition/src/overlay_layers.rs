@@ -1,6 +1,7 @@
 use dokka_scene::{Overlay, Panel};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
+use windows_numerics::Vector3;
 
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
@@ -37,6 +38,7 @@ impl OverlayLayers {
         let container = compositor.CreateContainerVisual()?;
         parent.Children()?.InsertAtTop(&container)?;
         container.SetOpacity(overlay.opacity)?;
+        apply_scale(&container, overlay)?;
         let panel = PanelLayer::add(compositor, &container, &overlay.panel)?;
         // Encima del panel para que su cristal tape ese tramo de borde y de tinte.
         let mut pointer = None;
@@ -83,7 +85,7 @@ impl OverlayLayers {
 
     /// Un panel de otro color (calendario frente a vista previa) se crea de nuevo.
     /// El resaltado del menú tiene estilo constante, así que moverse por él no reconstruye;
-    /// la punta se mueve con `update`. La opacidad y la posición no reconstruyen.
+    /// la punta se mueve con `update`. La opacidad, la posición y la escala no reconstruyen.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
         self.style.tint == overlay.panel.tint
             && self.pointer.is_some() == overlay.pointer.is_some()
@@ -103,6 +105,7 @@ impl OverlayLayers {
         overlay: &Overlay,
     ) -> Result<()> {
         self.container.SetOpacity(overlay.opacity)?;
+        apply_scale(&self.container, overlay)?;
         self.panel.update(&overlay.panel)?;
         if let (Some(layer), Some(pointer)) = (&self.pointer, &overlay.pointer) {
             layer.update(&overlay.panel, pointer)?;
@@ -126,4 +129,18 @@ impl OverlayLayers {
 /// Lo que fija el aspecto del resaltado al crearse: `update` no lo cambia.
 fn highlight_style_of(panel: Panel) -> (dokka_scene::Color, f32) {
     (panel.tint, panel.corner_radius)
+}
+
+/// Escala el contenedor sobre el icono, sin mover el resto de la escena.
+fn apply_scale(container: &ContainerVisual, overlay: &Overlay) -> Result<()> {
+    container.SetScale(Vector3 {
+        X: overlay.scale,
+        Y: overlay.scale,
+        Z: 1.0,
+    })?;
+    container.SetCenterPoint(Vector3 {
+        X: overlay.origin.0,
+        Y: overlay.origin.1,
+        Z: 0.0,
+    })
 }
