@@ -46,15 +46,15 @@ impl ControlsLayer {
     }
 }
 
-/// La ventana de los botones empieza donde empieza su panel: se resta ese origen.
+/// La ventana de los botones abarca el panel y sus iconos: se resta ese origen.
 fn in_own_window(controls: &Controls) -> Controls {
-    let origin = controls.panel.bounds;
+    let origin = union_origin(controls);
     Controls {
         panel: Panel {
             bounds: Rect {
-                x: 0.0,
-                y: 0.0,
-                ..origin
+                x: controls.panel.bounds.x - origin.0,
+                y: controls.panel.bounds.y - origin.1,
+                ..controls.panel.bounds
             },
             ..controls.panel
         },
@@ -62,10 +62,21 @@ fn in_own_window(controls: &Controls) -> Controls {
             .icons
             .iter()
             .map(|icon| Icon {
-                x: icon.x - origin.x,
-                y: icon.y - origin.y,
+                x: icon.x - origin.0,
+                y: icon.y - origin.1,
                 ..icon.clone()
             })
             .collect(),
     }
+}
+
+/// Esquina superior izquierda del panel y de todos los iconos.
+fn union_origin(controls: &Controls) -> (f32, f32) {
+    let mut left = controls.panel.bounds.x;
+    let mut top = controls.panel.bounds.y;
+    for icon in &controls.icons {
+        left = left.min(icon.x);
+        top = top.min(icon.y);
+    }
+    (left, top)
 }

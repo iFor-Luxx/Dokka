@@ -1,7 +1,7 @@
 # dokka-previews
 
 **Hace:** decide qué panel flotante mostrar (calendario o vistas de ventanas), cuándo abrirlo y cerrarlo,
-qué hace un clic en él y con qué estilo entra y sale (crece desde el icono con un rebote leve;
+qué hace un clic en él (activar, cerrar o fijar una ventana) y con qué estilo entra y sale (crece desde el icono con un rebote leve;
 si el cursor vuelve a mitad de salida, retoma desde donde está). Las flechas del calendario
 se crean una vez con el color del tema y se reutilizan al cambiar de mes.
 

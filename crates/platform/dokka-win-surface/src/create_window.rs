@@ -6,7 +6,7 @@ use windows::Win32::UI::HiDpi::{
 };
 use windows::Win32::UI::WindowsAndMessaging::{
     CreateWindowExW, IDC_ARROW, LoadCursorW, RegisterClassExW, WNDCLASSEXW, WS_EX_NOACTIVATE,
-    WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_POPUP,
+    WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_EX_TRANSPARENT, WS_POPUP,
 };
 use windows::core::{BOOL, Error, Result, w};
 
@@ -26,6 +26,18 @@ pub(crate) fn create_launchpad_window() -> Result<HWND> {
     create_with_style(
         None,
         WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+    )
+}
+
+/// Vista grande: a pantalla completa, sin foco y transparente al mouse.
+pub(crate) fn create_preview_window() -> Result<HWND> {
+    create_with_style(
+        None,
+        WS_EX_NOREDIRECTIONBITMAP
+            | WS_EX_TOPMOST
+            | WS_EX_TOOLWINDOW
+            | WS_EX_NOACTIVATE
+            | WS_EX_TRANSPARENT,
     )
 }
 

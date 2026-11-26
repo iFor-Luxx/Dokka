@@ -1,5 +1,5 @@
 use dokka_components::calendar_panel::calendar_arrows;
-use dokka_components::preview_card::{media_buttons, preview_slot};
+use dokka_components::preview_card::{media_buttons, preview_slot, window_button_areas};
 use dokka_scene::Rect;
 
 use crate::{MediaCommand, PreviewClick, PreviewContent, Previews};
@@ -26,6 +26,12 @@ impl Previews {
                 Some(PreviewClick::Handled)
             }
             PreviewContent::Windows(windows) => {
+                if let Some(click) = self.window_button_click(bounds, x, y) {
+                    if matches!(click, PreviewClick::Close(_)) {
+                        self.close();
+                    }
+                    return Some(click);
+                }
                 if let Some(command) = self.media_command(bounds, x, y) {
                     return Some(PreviewClick::Media(command));
                 }
@@ -41,6 +47,22 @@ impl Previews {
                     None => PreviewClick::Handled,
                 })
             }
+        }
+    }
+
+    fn window_button_click(&self, bounds: Rect, x: f32, y: f32) -> Option<PreviewClick> {
+        let hovered = self.hovered?;
+        let PreviewContent::Windows(windows) = self.open.as_ref()?.content.clone() else {
+            return None;
+        };
+        let index = windows.iter().position(|item| item.window == hovered)?;
+        let [close, pin] = window_button_areas(bounds, index);
+        if contains(close, x, y) {
+            Some(PreviewClick::Close(hovered))
+        } else if contains(pin, x, y) {
+            Some(PreviewClick::TogglePin(hovered))
+        } else {
+            None
         }
     }
 

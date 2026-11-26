@@ -8,6 +8,8 @@ mod launchpad;
 mod media;
 mod perform_click;
 mod pinned_apps;
+mod preview_actions;
+mod preview_large;
 mod session_render;
 mod taskbar_mode;
 
@@ -40,6 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         surface.handle(),
         surface.above_handle(),
         surface.launchpad_handle(),
+        surface.preview_handle(),
         surface.scale(),
         typography::FONT_FAMILY,
         dokka_icons::LUCIDE_FONT_BYTES,

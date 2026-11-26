@@ -22,7 +22,8 @@ pub use explorer::explorer_icon;
 pub use launchpad::launchpad_icon;
 pub use lucide::{
     calendar_next_icon, calendar_previous_icon, checkmark_icon, media_next_icon, media_pause_icon,
-    media_play_icon, media_previous_icon, search_icon, submenu_chevron_icon,
+    media_play_icon, media_previous_icon, preview_close_icon, preview_pin_icon,
+    preview_pinned_icon, search_icon, submenu_chevron_icon,
 };
 pub use trash::trash_icon;
 

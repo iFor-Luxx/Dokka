@@ -43,6 +43,15 @@ pub const MEDIA_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Distancia entre la píldora y el borde inferior de la imagen.
 pub const MEDIA_INSET: f32 = 10.0;
 
+/// Lado de cada botón redondo de ventana (cerrar y fijar), arriba a la izquierda.
+pub const PREVIEW_BUTTON_SIDE: f32 = 28.0;
+/// Tamaño del glifo Lucide dentro del botón: 20 efectivos en un botón de 28.
+pub const PREVIEW_BUTTON_GLYPH_SIZE: f32 = 71.0;
+/// Distancia entre los botones y el borde de la imagen.
+pub const PREVIEW_BUTTON_INSET: f32 = 6.0;
+/// Distancia entre cerrar y fijar.
+pub const PREVIEW_BUTTON_GAP: f32 = 6.0;
+
 /// Cuánto tarda en entrar un panel, creciendo desde el icono con un rebote leve.
 pub const POPUP_ENTER_SECONDS: f32 = 0.28;
 /// Cuánto tarda en salir un panel, encogiéndose hacia el icono y acelerando.
