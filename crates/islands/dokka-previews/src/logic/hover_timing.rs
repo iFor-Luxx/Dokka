@@ -1,4 +1,6 @@
-use crate::{PreviewRequest, Previews};
+use dokka_theme::popup as measures;
+
+use crate::{PreviewRequest, Previews, motion::Reveal};
 
 /// Todos los paneles se muestran casi al instante; la espera mínima evita destellos al pasar de largo.
 const OPEN_AFTER_SECONDS: f32 = 0.12;
@@ -10,12 +12,14 @@ impl Previews {
         if self.keeps(x, y) {
             self.pending = None;
             self.closing = None;
+            self.reveal.cancel_exit();
             return;
         }
         match request {
             Some(request) if self.is_open_for(&request) => {
                 self.pending = None;
                 self.closing = None;
+                self.reveal.cancel_exit();
             }
             Some(request) => {
                 let waited = match &self.pending {
@@ -30,7 +34,7 @@ impl Previews {
 
     pub fn pointer_left(&mut self) {
         self.pending = None;
-        if self.open.is_some() && self.closing.is_none() {
+        if self.open.is_some() && self.closing.is_none() && !self.reveal.is_leaving() {
             self.closing = Some(0.0);
         }
     }
@@ -40,28 +44,47 @@ impl Previews {
         self.pending = None;
         self.closing = None;
         self.month_offset = 0;
+        self.reveal = Reveal::hidden();
     }
 
     pub fn advance(&mut self, seconds: f32) {
         if let Some(waited) = &mut self.closing {
             *waited += seconds;
             if *waited >= CLOSE_AFTER_SECONDS {
-                self.close();
+                self.closing = None;
+                self.reveal.start_exit();
             }
         }
         if let Some((_, waited)) = &mut self.pending {
             *waited += seconds;
             if *waited >= OPEN_AFTER_SECONDS {
                 let request = self.pending.take().map(|(request, _)| request);
-                self.close();
+                self.open = None;
+                self.closing = None;
+                self.month_offset = 0;
+                self.reveal = Reveal::hidden();
                 self.open = request;
+            }
+        }
+        if self.open.is_some() {
+            self.reveal.advance(
+                seconds,
+                measures::POPUP_ENTER_SECONDS,
+                measures::POPUP_EXIT_SECONDS,
+            );
+            if self.reveal.has_exited() {
+                self.open = None;
+                self.month_offset = 0;
+                self.reveal = Reveal::hidden();
             }
         }
     }
 
-    /// `true` mientras haya una espera en marcha.
+    /// `true` mientras haya una espera o una animación en marcha.
     pub fn is_waiting(&self) -> bool {
-        self.pending.is_some() || self.closing.is_some()
+        self.pending.is_some()
+            || self.closing.is_some()
+            || (self.open.is_some() && self.reveal.is_animating())
     }
 
     fn is_open_for(&self, request: &PreviewRequest) -> bool {

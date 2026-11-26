@@ -21,4 +21,7 @@ pub struct Overlay {
     pub thumbnails: Vec<Thumbnail>,
     /// La plataforma los pone en una capa propia, sobre las miniaturas.
     pub controls: Option<Controls>,
+    /// Cuánto se ve el panel, de 0 (oculto) a 1 (reposo).
+    /// El menú siempre vale 1.
+    pub opacity: f32,
 }

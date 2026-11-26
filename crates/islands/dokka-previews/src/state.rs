@@ -3,7 +3,7 @@ use std::sync::Arc;
 use dokka_components::preview_card::{MediaIcons, NowPlaying};
 use dokka_theme::Theme;
 
-use crate::PreviewRequest;
+use crate::{PreviewRequest, motion::Reveal};
 
 /// Lo que los paneles recuerdan entre eventos.
 #[derive(Debug)]
@@ -21,6 +21,8 @@ pub struct Previews {
     pub(crate) month_offset: i32,
     /// Año, mes y día de hoy.
     pub(crate) today: (u16, u16, u16),
+    /// Cuánto se ve el panel abierto.
+    pub(crate) reveal: Reveal,
 }
 
 impl Previews {
@@ -34,6 +36,7 @@ impl Previews {
             media: None,
             month_offset: 0,
             today: (0, 1, 1),
+            reveal: Reveal::hidden(),
         }
     }
 
