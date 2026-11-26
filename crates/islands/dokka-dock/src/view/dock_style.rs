@@ -2,6 +2,7 @@
 
 pub use dokka_theme::dock::*;
 use dokka_theme::popup;
+use dokka_theme::tooltip;
 
 /// Ancho en reposo de una barra con `slots` iconos y su separador.
 pub(crate) fn bar_width(slots: usize) -> f32 {
@@ -15,7 +16,7 @@ pub(crate) fn magnify_range() -> f32 {
 
 /// Espacio sobre la barra que usan la lupa, el salto y la etiqueta.
 pub(crate) fn rise_space() -> f32 {
-    (SLOT * (MAXIMUM_SCALE - 1.0) + BOUNCE_HEIGHT + 4.0).ceil()
+    (SLOT * (MAXIMUM_SCALE - 1.0) + BOUNCE_HEIGHT + tooltip::RESERVED_HEIGHT).ceil()
 }
 
 /// Todo el espacio sobre la barra, incluido el de los paneles flotantes.
