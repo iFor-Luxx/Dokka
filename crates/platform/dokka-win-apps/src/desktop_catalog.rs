@@ -63,11 +63,7 @@ fn desktop_fingerprint() -> Option<DesktopFingerprint> {
             if metadata.is_dir() {
                 continue;
             }
-            fingerprint.push((
-                path,
-                metadata.modified().ok(),
-                metadata.len(),
-            ));
+            fingerprint.push((path, metadata.modified().ok(), metadata.len()));
         }
     }
     fingerprint.sort_by(|left, right| left.0.cmp(&right.0));

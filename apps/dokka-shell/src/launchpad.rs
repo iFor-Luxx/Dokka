@@ -74,7 +74,12 @@ pub(crate) fn reopen_launchpad(
 }
 
 /// Resalta la app bajo el cursor; indica si cambió para no redibujar.
-pub(crate) fn move_over_launchpad(session: &mut DockSession, surface: &Surface, x: f32, y: f32) -> bool {
+pub(crate) fn move_over_launchpad(
+    session: &mut DockSession,
+    surface: &Surface,
+    x: f32,
+    y: f32,
+) -> bool {
     if session.launchpad.is_closing() {
         return false;
     }
