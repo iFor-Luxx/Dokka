@@ -8,8 +8,10 @@ pub const ROW_HEIGHT: f32 = 24.0;
 pub const PADDING: f32 = 5.0;
 /// Separación del texto respecto al borde izquierdo del resaltado.
 pub const TEXT_INSET: f32 = 10.0;
-/// Columna reservada a la izquierda para ✓ en los menús que la usan.
+/// Columna reservada a la izquierda para la marca en los menús que la usan.
 pub const CHECK_WIDTH: f32 = 18.0;
+/// Lado del icono de marca, centrado en su columna como el chevrón.
+pub const CHECK_SIDE: f32 = 12.0;
 /// Columna reservada a la derecha para el icono del chevrón en las filas con submenú.
 /// El icono va centrado en esta columna.
 pub const ARROW_WIDTH: f32 = 18.0;

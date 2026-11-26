@@ -3,6 +3,7 @@ use dokka_scene::{Divider, Overlay, Panel, Pointer, Rect, Size, Text};
 use dokka_theme::{Theme, menu as measures, typography};
 
 use super::MenuRow;
+use super::check::{MenuChecks, check_icons};
 use super::chevron::{MenuChevrons, chevron_icons};
 
 /// Alto del panel para estas filas.
@@ -24,24 +25,26 @@ pub fn menu_size(rows: &[MenuRow]) -> Size {
 pub fn menu_overlay(
     theme: &Theme,
     chevrons: &MenuChevrons,
+    checks: &MenuChecks,
     bounds: Rect,
     tip_x: f32,
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
     let pointer = Some(menu_pointer(bounds, tip_x));
-    overlay_inner(theme, chevrons, bounds, pointer, rows, highlighted)
+    overlay_inner(theme, chevrons, checks, bounds, pointer, rows, highlighted)
 }
 
 /// Mismo cristal y resaltado que el menú, sin punta.
 pub fn submenu_overlay(
     theme: &Theme,
     chevrons: &MenuChevrons,
+    checks: &MenuChecks,
     bounds: Rect,
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
-    overlay_inner(theme, chevrons, bounds, None, rows, highlighted)
+    overlay_inner(theme, chevrons, checks, bounds, None, rows, highlighted)
 }
 
 /// Fila de texto que hay en el punto, si es elegible.
@@ -81,6 +84,7 @@ pub fn menu_row_top(rows: &[MenuRow], bounds: Rect, index: usize) -> f32 {
 fn overlay_inner(
     theme: &Theme,
     chevrons: &MenuChevrons,
+    checks: &MenuChecks,
     bounds: Rect,
     pointer: Option<Pointer>,
     rows: &[MenuRow],
@@ -108,14 +112,6 @@ fn overlay_inner(
                 } else {
                     theme.menu.text
                 };
-                if item.checked {
-                    texts.push(mark_text(
-                        bounds.x + measures::PADDING + measures::TEXT_INSET,
-                        top,
-                        "✓",
-                        color,
-                    ));
-                }
                 texts.push(mark_text(label_x, top, &item.label, color));
                 top += measures::ROW_HEIGHT;
             }
@@ -147,7 +143,11 @@ fn overlay_inner(
         dots: Vec::new(),
         pointer,
         texts,
-        icons: chevron_icons(theme, chevrons, bounds, rows, highlighted),
+        icons: {
+            let mut icons = chevron_icons(theme, chevrons, bounds, rows, highlighted);
+            icons.extend(check_icons(theme, checks, bounds, rows, highlighted));
+            icons
+        },
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,

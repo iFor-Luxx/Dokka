@@ -2,6 +2,7 @@ use dokka_scene::{Dot, Overlay, Rect, Size};
 use dokka_theme::{Theme, popup as measures, typography};
 
 use super::CalendarMonth;
+use super::arrows::{CalendarArrows, arrow_icons};
 use crate::popup_panel::{popup_panel, text};
 
 const WEEKDAYS: [&str; 7] = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
@@ -29,7 +30,12 @@ pub fn calendar_arrows(bounds: Rect) -> (Rect, Rect) {
     (arrow(side * 2.0), arrow(side))
 }
 
-pub fn calendar_panel(theme: &Theme, bounds: Rect, month: &CalendarMonth) -> Overlay {
+pub fn calendar_panel(
+    theme: &Theme,
+    arrows: &CalendarArrows,
+    bounds: Rect,
+    month: &CalendarMonth,
+) -> Overlay {
     let column_x = |column: u16| {
         bounds.x + measures::PADDING + (f32::from(column) + 0.5) * measures::CALENDAR_CELL_WIDTH
     };
@@ -48,15 +54,6 @@ pub fn calendar_panel(theme: &Theme, bounds: Rect, month: &CalendarMonth) -> Ove
         typography::TITLE_SIZE,
         true,
     )];
-    let (previous, next) = calendar_arrows(bounds);
-    for (symbol, area) in [("‹", previous), ("›", next)] {
-        let center = (
-            area.x + area.width / 2.0,
-            header_y - measures::CALENDAR_HEADER_DROP,
-        );
-        let size = typography::CALENDAR_ARROW_SIZE;
-        texts.push(text(theme, symbol.to_owned(), center, size, false));
-    }
     texts.extend((0..7).zip(WEEKDAYS).map(|(column, name)| {
         let center = (column_x(column), row_y(0));
         text(theme, name.to_owned(), center, typography::BODY_SIZE, true)
@@ -86,7 +83,7 @@ pub fn calendar_panel(theme: &Theme, bounds: Rect, month: &CalendarMonth) -> Ove
         dots,
         pointer: None,
         texts,
-        icons: Vec::new(),
+        icons: arrow_icons(theme, arrows, bounds),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
