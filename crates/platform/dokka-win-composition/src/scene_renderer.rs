@@ -94,11 +94,23 @@ impl SceneRenderer {
         let overlay = scene.overlay.as_ref();
         self.apply_controls(overlay.and_then(|overlay| overlay.controls.as_ref()))?;
 
-        let (floating, floating_opacity) = overlay
-            .map(|overlay| (overlay.thumbnails.as_slice(), overlay.opacity))
-            .unwrap_or((&[], 1.0));
-        self.thumbnails
-            .show(&scene.thumbnails, floating, floating_opacity)
+        let (floating, floating_opacity, floating_scale, floating_origin) = overlay
+            .map(|overlay| {
+                (
+                    overlay.thumbnails.as_slice(),
+                    overlay.opacity,
+                    overlay.scale,
+                    overlay.origin,
+                )
+            })
+            .unwrap_or((&[], 1.0, 1.0, (0.0, 0.0)));
+        self.thumbnails.show(
+            &scene.thumbnails,
+            floating,
+            floating_opacity,
+            floating_scale,
+            floating_origin,
+        )
     }
 
     fn apply_controls(&mut self, controls: Option<&Controls>) -> Result<()> {
