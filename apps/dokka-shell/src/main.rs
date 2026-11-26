@@ -2,6 +2,7 @@
 
 mod context_menu;
 mod dock_session;
+mod floating_panels;
 mod handle_event;
 mod perform_click;
 mod pinned_apps;
@@ -40,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         if let Err(error) = handle_event(&mut session, surface, event) {
             eprintln!("Dokka no pudo atender un evento: {error}");
         }
-        session.dock.is_animating()
+        session.is_animating()
     })?;
     Ok(())
 }

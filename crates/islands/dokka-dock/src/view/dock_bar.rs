@@ -1,17 +1,23 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use dokka_components::tooltip::tooltip;
 use dokka_model::{AppId, DockApp};
 use dokka_scene::{Bitmap, Divider, Dot, Icon, IconImage, Panel, Rect, Scene};
 
 use super::dock_style as style;
 use super::minimized_window::minimized_window;
 use crate::Dock;
-use crate::logic::{Entry, place_dock};
+use crate::logic::{Entry, hovered_label, place_dock};
 
 impl Dock {
     /// Escena actual. Una app sin imagen muestra un cuadro neutro.
-    pub fn scene(&self, apps: &[DockApp], images: &HashMap<AppId, Arc<Bitmap>>) -> Scene {
+    pub fn scene(
+        &self,
+        apps: &[DockApp],
+        images: &HashMap<AppId, Arc<Bitmap>>,
+        names: &HashMap<AppId, String>,
+    ) -> Scene {
         let placement = place_dock(self, apps);
         let mut icons = Vec::with_capacity(placement.slots.len());
         let mut thumbnails = Vec::new();
@@ -44,6 +50,11 @@ impl Dock {
             })
             .collect();
 
+        let labels = hovered_label(self, &placement, names)
+            .map(|(text, slot)| tooltip(&text, slot.x + slot.width / 2.0, slot.y))
+            .into_iter()
+            .collect();
+
         Scene {
             panel: Panel {
                 bounds: placement.bar,
@@ -58,6 +69,8 @@ impl Dock {
                 color: style::DIVIDER_COLOR,
             }],
             thumbnails,
+            overlay: None,
+            labels,
         }
     }
 

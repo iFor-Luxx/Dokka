@@ -74,7 +74,9 @@ impl SceneRenderer {
         };
         layers.update(&self.compositor, &self.painter, scene)?;
         self.layers = Some(layers);
-        self.thumbnails.show(&scene.thumbnails)
+        let floating = scene.overlay.iter().flat_map(|overlay| &overlay.thumbnails);
+        let all: Vec<_> = scene.thumbnails.iter().chain(floating).collect();
+        self.thumbnails.show(&all)
     }
 }
 

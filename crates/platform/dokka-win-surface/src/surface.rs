@@ -1,4 +1,5 @@
 use windows::Win32::Foundation::HWND;
+use windows::Win32::UI::WindowsAndMessaging::PostQuitMessage;
 
 use crate::SurfaceError;
 use crate::create_window::create_window;
@@ -27,8 +28,8 @@ impl SurfaceHandle {
 pub struct Surface {
     pub(crate) window: HWND,
     pub(crate) scale: f32,
-    /// Zona activa en píxeles, para no repetir llamadas iguales.
-    pub(crate) active_area: Option<[i32; 4]>,
+    /// Zonas activas en píxeles, para no repetir llamadas iguales.
+    pub(crate) active_areas: Vec<[i32; 4]>,
 }
 
 impl Surface {
@@ -38,7 +39,7 @@ impl Surface {
         Ok(Self {
             window,
             scale,
-            active_area: None,
+            active_areas: Vec::new(),
         })
     }
 
@@ -49,6 +50,12 @@ impl Surface {
     /// Píxeles físicos por unidad lógica.
     pub fn scale(&self) -> f32 {
         self.scale
+    }
+
+    /// Pide terminar `run`.
+    pub fn close(&self) {
+        // SAFETY: encola el fin del bucle de este hilo.
+        unsafe { PostQuitMessage(0) };
     }
 
     pub fn resize(&mut self, options: SurfaceOptions) -> Result<(), SurfaceError> {

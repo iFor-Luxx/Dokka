@@ -6,7 +6,7 @@ use crate::Dock;
 use crate::logic::{list_entries, place_dock};
 
 impl Dock {
-    /// Tamaño de la ventana: barra más el espacio para crecer y saltar.
+    /// Tamaño de la ventana: barra, espacio para crecer y sitio para paneles.
     pub fn surface_size(&self, apps: &[DockApp]) -> Size {
         let (entries, _) = list_entries(apps, &self.explorer);
         Size {
@@ -15,17 +15,18 @@ impl Dock {
         }
     }
 
-    /// Parte de la ventana que se ve y recibe el mouse. El resto deja pasar los clics.
+    /// Parte del dock que se ve y recibe el mouse. El resto deja pasar los clics.
     pub fn active_area(&self, apps: &[DockApp]) -> Rect {
+        let bar = place_dock(self, apps).bar;
         if !self.needs_headroom() {
-            return place_dock(self, apps).bar;
+            return bar;
         }
-        let size = self.surface_size(apps);
+        let rise = style::rise_space();
         Rect {
             x: 0.0,
-            y: 0.0,
-            width: size.width,
-            height: size.height,
+            y: bar.y - rise,
+            width: self.surface_size(apps).width,
+            height: rise + bar.height,
         }
     }
 }

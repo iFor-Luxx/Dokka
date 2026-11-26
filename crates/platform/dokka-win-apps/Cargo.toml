@@ -11,6 +11,7 @@ dokka-scene.workspace = true
 windows = { workspace = true, features = [
     "Win32_Foundation",
     "Win32_Graphics_Gdi",
+    "Win32_Storage_FileSystem",
     "Win32_System_Com",
     "Win32_UI_Shell",
     "Win32_UI_WindowsAndMessaging",

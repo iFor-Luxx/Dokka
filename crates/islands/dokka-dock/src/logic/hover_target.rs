@@ -1,4 +1,4 @@
-use dokka_model::{DockApp, WindowId};
+use dokka_model::{AppId, DockApp, WindowId};
 
 use super::decide_click::entry_at;
 use super::{Entry, place_dock};

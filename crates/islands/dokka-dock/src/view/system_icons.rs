@@ -4,6 +4,19 @@ use dokka_icons::{calendar_icon, clock_icon, explorer_icon, launchpad_icon, tras
 use dokka_scene::Drawing;
 
 use crate::Dock;
+use crate::logic::long_date;
+
+/// Fecha y hora que muestran el calendario y el reloj. `weekday` 0 es domingo.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct DockTime {
+    pub year: u16,
+    pub month: u16,
+    pub day: u16,
+    pub weekday: u16,
+    pub hour: u16,
+    pub minute: u16,
+    pub second: u16,
+}
 
 /// Iconos propios ya construidos; solo cambian cuando cambia lo que muestran.
 #[derive(Debug)]
@@ -13,8 +26,8 @@ pub(crate) struct SystemIcons {
     pub(crate) calendar: Arc<Drawing>,
     pub(crate) clock: Arc<Drawing>,
     pub(crate) trash: Arc<Drawing>,
-    date: (u16, u16),
-    time: (u16, u16, u16),
+    pub(crate) long_date: String,
+    time: DockTime,
     trash_is_full: bool,
 }
 
@@ -26,23 +39,24 @@ impl SystemIcons {
             calendar: Arc::new(calendar_icon(1, 1)),
             clock: Arc::new(clock_icon(0, 0, 0)),
             trash: Arc::new(trash_icon(false)),
-            date: (1, 1),
-            time: (0, 0, 0),
+            long_date: String::new(),
+            time: DockTime::default(),
             trash_is_full: false,
         }
     }
 }
 
 impl Dock {
-    pub fn set_time(&mut self, month: u16, day: u16, hour: u16, minute: u16, second: u16) {
+    pub fn set_time(&mut self, time: DockTime) {
         let icons = &mut self.icons;
-        if icons.date != (month, day) {
-            icons.date = (month, day);
-            icons.calendar = Arc::new(calendar_icon(month, day));
+        let old = icons.time;
+        if (old.year, old.month, old.day) != (time.year, time.month, time.day) {
+            icons.calendar = Arc::new(calendar_icon(time.month, time.day));
+            icons.long_date = long_date(time.year, time.month, time.day, time.weekday);
         }
-        if icons.time != (hour, minute, second) {
-            icons.time = (hour, minute, second);
-            icons.clock = Arc::new(clock_icon(hour, minute, second));
+        if old != time {
+            icons.clock = Arc::new(clock_icon(time.hour, time.minute, time.second));
+            icons.time = time;
         }
     }
 

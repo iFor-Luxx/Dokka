@@ -15,13 +15,15 @@ use crate::fit_thumbnail::fit_thumbnail;
 /// Proporción usada si la ventana no informa su tamaño.
 const FALLBACK_ASPECT: f32 = 1.6;
 
+/// Ventana de origen y cuántas veces apareció antes en la misma escena.
+type Key = (u64, usize);
+
 /// Miniaturas en vivo que Windows compone sobre la ventana de Dokka.
 pub(crate) struct WindowThumbnails {
     destination: HWND,
     /// Píxeles por unidad lógica.
     scale: f32,
-    /// Registro de Windows por ventana de origen.
-    registered: HashMap<u64, isize>,
+    registered: HashMap<Key, isize>,
 }
 
 impl WindowThumbnails {
@@ -34,9 +36,21 @@ impl WindowThumbnails {
     }
 
     /// Deja visibles exactamente las miniaturas indicadas, en su sitio.
-    pub(crate) fn show(&mut self, thumbnails: &[Thumbnail]) -> Result<()> {
-        self.registered.retain(|window, handle| {
-            let wanted = thumbnails.iter().any(|item| item.window == *window);
+    pub(crate) fn show(&mut self, thumbnails: &[&Thumbnail]) -> Result<()> {
+        // Una misma ventana puede verse en el dock y en un panel a la vez.
+        let keys: Vec<Key> = thumbnails
+            .iter()
+            .enumerate()
+            .map(|(index, item)| {
+                let before = thumbnails[..index]
+                    .iter()
+                    .filter(|other| other.window == item.window)
+                    .count();
+                (item.window, before)
+            })
+            .collect();
+        self.registered.retain(|key, handle| {
+            let wanted = keys.contains(key);
             if !wanted {
                 // SAFETY: `handle` se registró aquí y se libera una sola vez.
                 let _ = unsafe { DwmUnregisterThumbnail(*handle) };
@@ -44,8 +58,8 @@ impl WindowThumbnails {
             wanted
         });
 
-        for thumbnail in thumbnails {
-            let handle = match self.registered.get(&thumbnail.window) {
+        for (key, thumbnail) in keys.into_iter().zip(thumbnails) {
+            let handle = match self.registered.get(&key) {
                 Some(&handle) => handle,
                 None => {
                     let source = HWND(thumbnail.window as *mut c_void);
@@ -55,7 +69,7 @@ impl WindowThumbnails {
                     else {
                         continue;
                     };
-                    self.registered.insert(thumbnail.window, handle);
+                    self.registered.insert(key, handle);
                     handle
                 }
             };

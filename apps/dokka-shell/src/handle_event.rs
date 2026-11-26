@@ -2,10 +2,14 @@
 
 use std::error::Error;
 
+use dokka_contracts::WindowControl;
+use dokka_model::WindowId;
+use dokka_previews::PreviewClick;
 use dokka_win_surface::{Surface, SurfaceEvent};
 
 use crate::context_menu::open_context_menu;
 use crate::dock_session::DockSession;
+use crate::floating_panels::preview_request;
 use crate::perform_click::perform_click;
 
 pub(crate) fn handle_event(
@@ -16,24 +20,53 @@ pub(crate) fn handle_event(
     match event {
         SurfaceEvent::PointerMoved { x, y } => {
             session.dock.pointer_moved(x, y, session.state.apps());
+            let request = preview_request(session, x, y);
+            session.previews.pointer_moved(x, y, request);
         }
-        SurfaceEvent::PointerLeft => session.dock.pointer_left(),
+        SurfaceEvent::PointerLeft => {
+            session.dock.pointer_left();
+            session.previews.pointer_left();
+        }
         SurfaceEvent::Frame { seconds } => {
             session.dock.advance(seconds);
+            session.previews.advance(seconds);
         }
         SurfaceEvent::Refresh => {
             if !session.sync()? {
                 return Ok(());
             }
+            // Un panel podría estar mostrando una ventana que ya no existe.
+            session.previews.close();
             session.resize(surface)?;
         }
         SurfaceEvent::Tick => session.update_clock_and_trash(),
         SurfaceEvent::Clicked { x, y, with_shift } => {
-            perform_click(session, x, y, with_shift)?;
+            click(session, x, y, with_shift)?;
         }
         SurfaceEvent::RightClicked { x, y } => {
+            session.previews.close();
             open_context_menu(session, surface, x, y)?;
         }
     }
     session.render(surface)
+}
+
+/// Los paneles están por encima: tienen prioridad sobre el dock.
+fn click(
+    session: &mut DockSession,
+    x: f32,
+    y: f32,
+    with_shift: bool,
+) -> Result<(), Box<dyn Error>> {
+    match session.previews.click(x, y) {
+        Some(PreviewClick::Activate(window)) => {
+            session.control.activate(WindowId::new(window))?;
+        }
+        Some(PreviewClick::Handled) => {}
+        None => {
+            session.previews.close();
+            perform_click(session, x, y, with_shift)?;
+        }
+    }
+    Ok(())
 }

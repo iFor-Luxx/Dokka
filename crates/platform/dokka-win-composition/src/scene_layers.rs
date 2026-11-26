@@ -5,6 +5,8 @@ use windows::core::Result;
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
+use crate::label_layer::LabelLayer;
+use crate::overlay_layers::OverlayLayers;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
 
@@ -14,6 +16,8 @@ pub(crate) struct SceneLayers {
     dividers: Vec<DividerLayer>,
     icons: Vec<IconLayer>,
     dots: Vec<DotLayer>,
+    labels: Vec<LabelLayer>,
+    overlay: Option<OverlayLayers>,
 }
 
 impl SceneLayers {
@@ -40,18 +44,38 @@ impl SceneLayers {
             .iter()
             .map(|dot| DotLayer::add(compositor, root, dot))
             .collect::<Result<_>>()?;
+        let overlay = scene
+            .overlay
+            .as_ref()
+            .map(|overlay| OverlayLayers::add(compositor, root, overlay))
+            .transpose()?;
+        // Van al final para quedar por encima de los iconos.
+        let labels = scene
+            .labels
+            .iter()
+            .map(|_| LabelLayer::add(compositor, root))
+            .collect::<Result<_>>()?;
         Ok(Self {
             panel,
             dividers,
             icons,
             dots,
+            labels,
+            overlay,
         })
     }
 
     /// `true` si la escena tiene la misma forma y basta con actualizar.
     pub(crate) fn matches(&self, scene: &Scene) -> bool {
-        self.dots.len() == scene.dots.len()
+        let same_overlay = match (&self.overlay, &scene.overlay) {
+            (Some(layers), Some(overlay)) => layers.matches(overlay),
+            (None, None) => true,
+            _ => false,
+        };
+        same_overlay
+            && self.dots.len() == scene.dots.len()
             && self.dividers.len() == scene.dividers.len()
+            && self.labels.len() == scene.labels.len()
             && self.icons.len() == scene.icons.len()
             && self
                 .icons
@@ -75,6 +99,12 @@ impl SceneLayers {
         }
         for (layer, dot) in self.dots.iter().zip(&scene.dots) {
             layer.update(dot)?;
+        }
+        if let (Some(layers), Some(overlay)) = (&mut self.overlay, &scene.overlay) {
+            layers.update(compositor, painter, overlay)?;
+        }
+        for (layer, label) in self.labels.iter_mut().zip(&scene.labels) {
+            layer.update(compositor, painter, label)?;
         }
         Ok(())
     }

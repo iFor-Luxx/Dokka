@@ -17,6 +17,7 @@ publish = false
 
 [workspace.dependencies]
 dokka-animation = { path = "crates/engine/dokka-animation" }
+dokka-components = { path = "crates/ui/dokka-components" }
 dokka-config = { path = "crates/services/dokka-config" }
 dokka-contracts = { path = "crates/core/dokka-contracts" }
 dokka-dock = { path = "crates/islands/dokka-dock" }
@@ -24,8 +25,10 @@ dokka-events = { path = "crates/core/dokka-events" }
 dokka-icons = { path = "crates/ui/dokka-icons" }
 dokka-interaction = { path = "crates/engine/dokka-interaction" }
 dokka-model = { path = "crates/core/dokka-model" }
+dokka-previews = { path = "crates/islands/dokka-previews" }
 dokka-scene = { path = "crates/engine/dokka-scene" }
 dokka-state = { path = "crates/core/dokka-state" }
+dokka-theme = { path = "crates/ui/dokka-theme" }
 dokka-win-apps = { path = "crates/platform/dokka-win-apps" }
 dokka-win-composition = { path = "crates/platform/dokka-win-composition" }
 dokka-win-control = { path = "crates/platform/dokka-win-control" }

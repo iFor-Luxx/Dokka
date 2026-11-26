@@ -6,6 +6,8 @@ publish.workspace = true
 
 [dependencies]
 dokka-animation.workspace = true
+dokka-components.workspace = true
+dokka-theme.workspace = true
 dokka-icons.workspace = true
 dokka-interaction.workspace = true
 dokka-model.workspace = true
