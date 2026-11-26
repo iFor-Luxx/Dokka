@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use dokka_model::{AppId, DockApp};
 use dokka_scene::Rect;
 
-use super::{Entry, Placement, trash_label};
+use super::{Entry, Placement, clock_label, trash_label};
 use crate::Dock;
 use crate::view::dock_style as style;
 
@@ -31,7 +31,7 @@ pub(crate) fn hovered_label(
         Entry::Explorer(_) => "Explorador".to_owned(),
         Entry::App(app) => app_name(app),
         Entry::Launchpad => "Launchpad".to_owned(),
-        Entry::Clock => dock.icons.long_date.clone(),
+        Entry::Clock => clock_label(dock.icons.time.hour, dock.icons.time.minute),
         Entry::Trash => trash_label(dock.icons.trash_size),
     };
     Some((text, slot))
