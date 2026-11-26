@@ -2,6 +2,7 @@
 
 mod events;
 mod logic;
+mod motion;
 mod state;
 mod view;
 

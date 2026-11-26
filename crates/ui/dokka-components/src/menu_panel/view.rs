@@ -79,6 +79,7 @@ pub fn menu_overlay(
         texts,
         thumbnails: Vec::new(),
         controls: None,
+        opacity: 1.0,
     }
 }
 

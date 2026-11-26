@@ -30,3 +30,10 @@ pub const MEDIA_HEIGHT: f32 = 42.0;
 pub const MEDIA_ICON_SIDE: f32 = 22.0;
 /// Distancia entre la píldora y el borde inferior de la imagen.
 pub const MEDIA_INSET: f32 = 10.0;
+
+/// Cuánto tarda en subir un panel al aparecer, con frenada al final.
+pub const POPUP_ENTER_SECONDS: f32 = 0.18;
+/// Cuánto tarda en bajar un panel al desaparecer.
+pub const POPUP_EXIT_SECONDS: f32 = 0.14;
+/// Cuánto sube un panel al aparecer (y baja al salir).
+pub const POPUP_TRAVEL: f32 = 18.0;

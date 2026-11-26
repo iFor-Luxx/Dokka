@@ -67,6 +67,7 @@ pub fn preview_card(
         texts,
         thumbnails,
         controls: media.map(|(playing, icons)| media_controls(theme, icons, bounds, playing)),
+        opacity: 1.0,
     }
 }
 

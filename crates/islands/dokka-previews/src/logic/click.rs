@@ -7,6 +7,9 @@ use crate::{MediaCommand, PreviewClick, PreviewContent, Previews};
 impl Previews {
     /// `None` si el clic cayó fuera del panel.
     pub fn click(&mut self, x: f32, y: f32) -> Option<PreviewClick> {
+        if self.reveal.is_leaving() {
+            return None;
+        }
         let bounds = self.bounds()?;
         if !contains(bounds, x, y) {
             return None;

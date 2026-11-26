@@ -36,15 +36,27 @@ impl WindowThumbnails {
     }
 
     /// Deja visibles exactamente las miniaturas indicadas, en su sitio.
-    pub(crate) fn show(&mut self, thumbnails: &[&Thumbnail]) -> Result<()> {
+    /// Las del panel comparten la opacidad del panel; las del dock van opacas.
+    pub(crate) fn show(
+        &mut self,
+        dock: &[Thumbnail],
+        floating: &[Thumbnail],
+        floating_opacity: f32,
+    ) -> Result<()> {
+        let opacity = (floating_opacity.clamp(0.0, 1.0) * 255.0).round() as u8;
+        let all: Vec<(&Thumbnail, u8)> = dock
+            .iter()
+            .map(|item| (item, u8::MAX))
+            .chain(floating.iter().map(|item| (item, opacity)))
+            .collect();
         // Una misma ventana puede verse en el dock y en un panel a la vez.
-        let keys: Vec<Key> = thumbnails
+        let keys: Vec<Key> = all
             .iter()
             .enumerate()
-            .map(|(index, item)| {
-                let before = thumbnails[..index]
+            .map(|(index, (item, _))| {
+                let before = all[..index]
                     .iter()
-                    .filter(|other| other.window == item.window)
+                    .filter(|(other, _)| other.window == item.window)
                     .count();
                 (item.window, before)
             })
@@ -58,7 +70,7 @@ impl WindowThumbnails {
             wanted
         });
 
-        for (key, thumbnail) in keys.into_iter().zip(thumbnails) {
+        for (key, (thumbnail, opacity)) in keys.into_iter().zip(all) {
             let handle = match self.registered.get(&key) {
                 Some(&handle) => handle,
                 None => {
@@ -73,12 +85,12 @@ impl WindowThumbnails {
                     handle
                 }
             };
-            self.place(handle, thumbnail)?;
+            self.place(handle, thumbnail, opacity)?;
         }
         Ok(())
     }
 
-    fn place(&self, handle: isize, thumbnail: &Thumbnail) -> Result<()> {
+    fn place(&self, handle: isize, thumbnail: &Thumbnail, opacity: u8) -> Result<()> {
         // SAFETY: `handle` es un registro vigente.
         let source = unsafe { DwmQueryThumbnailSourceSize(handle) }?;
         let aspect = if source.cx > 0 && source.cy > 0 {
@@ -96,7 +108,7 @@ impl WindowThumbnails {
                 right: pixels(area.x + area.width),
                 bottom: pixels(area.y + area.height),
             },
-            opacity: u8::MAX,
+            opacity,
             fVisible: true.into(),
             ..Default::default()
         };

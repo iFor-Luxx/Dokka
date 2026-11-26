@@ -11,7 +11,9 @@ use crate::text_layer::TextLayer;
 
 /// Elementos visuales de un panel flotante.
 /// Orden: panel, punta, resaltado, líneas, puntos, textos.
+/// Todo cuelga de un contenedor para fundir el panel sin tocar el dock ni las etiquetas.
 pub(crate) struct OverlayLayers {
+    container: ContainerVisual,
     panel: PanelLayer,
     /// Apariencia con la que se creó el fondo.
     style: Panel,
@@ -32,49 +34,56 @@ impl OverlayLayers {
         parent: &ContainerVisual,
         overlay: &Overlay,
     ) -> Result<Self> {
-        let panel = PanelLayer::add(compositor, parent, &overlay.panel)?;
+        let container = compositor.CreateContainerVisual()?;
+        parent.Children()?.InsertAtTop(&container)?;
+        container.SetOpacity(overlay.opacity)?;
+        let panel = PanelLayer::add(compositor, &container, &overlay.panel)?;
         // Encima del panel para que su cristal tape ese tramo de borde y de tinte.
         let mut pointer = None;
         if let Some(style) = &overlay.pointer {
             pointer = Some(PointerLayer::add(
                 compositor,
-                parent,
+                &container,
                 &overlay.panel,
                 style,
             )?);
         }
         let mut highlight = None;
         if let Some(highlight_style) = &overlay.highlight {
-            highlight = Some(PanelLayer::add(compositor, parent, highlight_style)?);
+            highlight = Some(PanelLayer::add(compositor, &container, highlight_style)?);
         }
+        let dividers = overlay
+            .dividers
+            .iter()
+            .map(|divider| DividerLayer::add(compositor, &container, divider))
+            .collect::<Result<Vec<_>>>()?;
+        let dots = overlay
+            .dots
+            .iter()
+            .map(|dot| DotLayer::add(compositor, &container, dot))
+            .collect::<Result<Vec<_>>>()?;
+        let texts = overlay
+            .texts
+            .iter()
+            .map(|_| TextLayer::add(compositor, &container))
+            .collect::<Result<Vec<_>>>()?;
         Ok(Self {
+            container,
             panel,
             style: overlay.panel,
             pointer,
             pointer_style: overlay.pointer.map(pointer_style_of),
             highlight,
             highlight_style: overlay.highlight,
-            dividers: overlay
-                .dividers
-                .iter()
-                .map(|divider| DividerLayer::add(compositor, parent, divider))
-                .collect::<Result<_>>()?,
-            dots: overlay
-                .dots
-                .iter()
-                .map(|dot| DotLayer::add(compositor, parent, dot))
-                .collect::<Result<_>>()?,
-            texts: overlay
-                .texts
-                .iter()
-                .map(|_| TextLayer::add(compositor, parent))
-                .collect::<Result<_>>()?,
+            dividers,
+            dots,
+            texts,
         })
     }
 
     /// Un panel de otro color (calendario frente a vista previa) se crea de nuevo.
     /// El resaltado del menú tiene estilo constante, así que moverse por él no reconstruye;
-    /// la punta se mueve con `update`.
+    /// la punta se mueve con `update`. La opacidad y la posición no reconstruyen.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
         self.style.tint == overlay.panel.tint
             && self.pointer.is_some() == overlay.pointer.is_some()
@@ -93,6 +102,7 @@ impl OverlayLayers {
         painter: &Painter,
         overlay: &Overlay,
     ) -> Result<()> {
+        self.container.SetOpacity(overlay.opacity)?;
         self.panel.update(&overlay.panel)?;
         if let (Some(layer), Some(pointer)) = (&self.pointer, &overlay.pointer) {
             layer.update(&overlay.panel, pointer)?;
