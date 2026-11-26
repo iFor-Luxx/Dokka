@@ -14,7 +14,8 @@ teclado), avisa con `Dismissed` para el menú y `LaunchpadDismissed` al perder e
 `LaunchpadEscape` al pulsar Esc (para limpiar la búsqueda antes de cerrar), centra
 Preferencias una vez con las medidas que pasa el shell, la muestra al frente sin dejarla
 siempre encima, la oculta sin destruirla (destruir una ventana sin dueña terminaría la
-app, y `WM_CLOSE` también solo oculta) y la mueve por arrastre, y da la
+app; `WM_CLOSE` solo la oculta y avisa con `SettingsDismissed`), la mueve con el arrastre
+nativo de Windows, permite minimizarla desde la barra de tareas, y da la
 hora local. El Launchpad queda siempre justo debajo del dock y los
 clics del dock no lo cierran. `SurfaceOptions.over_taskbar` usa el monitor
 completo para bajar hasta el borde cuando la barra está oculta; si no, usa el área

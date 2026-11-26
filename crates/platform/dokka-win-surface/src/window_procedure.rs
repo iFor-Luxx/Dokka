@@ -10,6 +10,10 @@ use windows::Win32::UI::WindowsAndMessaging::{
 /// así que se reenvía como mensaje publicado.
 pub(crate) const DISMISS_MESSAGE: u32 = 0x8001;
 
+/// Aviso propio de que Preferencias se cerró con la X, Alt+F4 o la barra de
+/// tareas. `WM_CLOSE` tampoco pasa por la cola, así que se reenvía igual.
+pub(crate) const SETTINGS_DISMISS_MESSAGE: u32 = 0x8002;
+
 pub(crate) unsafe extern "system" fn window_procedure(
     window: HWND,
     message: u32,
@@ -39,10 +43,12 @@ pub(crate) unsafe extern "system" fn window_procedure(
         }
         // Cerrar con la X, Alt+F4 o la barra de tareas solo oculta: destruir una
         // ventana sin dueña terminaría la app. Vale para las tres ventanas.
+        // Preferencias además avisa para que el shell cierre la isla.
         WM_CLOSE if !is_owned() => {
             // SAFETY: la ventana que recibe el mensaje sigue viva aquí.
             unsafe {
                 let _ = ShowWindow(window, SW_HIDE);
+                let _ = PostMessageW(Some(window), SETTINGS_DISMISS_MESSAGE, WPARAM(0), LPARAM(0));
             }
             LRESULT(0)
         }

@@ -62,6 +62,8 @@ pub enum SurfaceEvent {
         x: f32,
         y: f32,
     },
+    /// Preferencias se cerró con la X, Alt+F4 o la barra de tareas.
+    SettingsDismissed,
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.

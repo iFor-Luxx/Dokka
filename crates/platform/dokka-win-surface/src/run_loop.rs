@@ -7,7 +7,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::read_pointer::{read_pointer, read_settings_pointer};
-use crate::window_procedure::DISMISS_MESSAGE;
+use crate::window_procedure::{DISMISS_MESSAGE, SETTINGS_DISMISS_MESSAGE};
 use crate::{Surface, SurfaceError, SurfaceEvent};
 
 /// Espera para agrupar ráfagas de avisos en una sola actualización.
@@ -22,7 +22,6 @@ struct LoopState {
     pending_timer: Option<usize>,
     is_pressed: bool,
     is_launchpad_pressed: bool,
-    is_settings_pressed: bool,
 }
 
 impl Surface {
@@ -114,6 +113,9 @@ impl Surface {
         if message.hwnd == self.launchpad_window() && message.message == DISMISS_MESSAGE {
             return Some(SurfaceEvent::LaunchpadDismissed);
         }
+        if message.hwnd == self.settings_window() && message.message == SETTINGS_DISMISS_MESSAGE {
+            return Some(SurfaceEvent::SettingsDismissed);
+        }
         if message.hwnd == self.window
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)
         {
@@ -125,11 +127,7 @@ impl Surface {
             return Some(launchpad_event(event));
         }
         if message.hwnd == self.settings_window()
-            && let Some(event) = read_settings_pointer(
-                message,
-                self.settings_scale(),
-                &mut state.is_settings_pressed,
-            )
+            && let Some(event) = read_settings_pointer(message, self.settings_scale())
         {
             return Some(event);
         }

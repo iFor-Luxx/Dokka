@@ -86,12 +86,10 @@ fn typed_character(message: &MSG) -> Option<SurfaceEvent> {
 
 /// Traduce los mensajes de la ventana de Preferencias. Como el dock, pero con
 /// aviso de botón abajo para arrastrar la ventana desde su franja superior;
-/// el botón derecho no hace nada.
-pub(crate) fn read_settings_pointer(
-    message: &MSG,
-    scale: f32,
-    is_pressed: &mut bool,
-) -> Option<SurfaceEvent> {
+/// el botón derecho no hace nada. El clic no se filtra aquí: el shell decide
+/// si hubo botón abajo antes (el arrastre nativo se traga el botón al soltar
+/// y un estado a medias daría clics fantasmas).
+pub(crate) fn read_settings_pointer(message: &MSG, scale: f32) -> Option<SurfaceEvent> {
     match message.message {
         WM_MOUSEMOVE => {
             let (x, y) = pointer_position(message, scale);
@@ -105,16 +103,12 @@ pub(crate) fn read_settings_pointer(
             let _ = unsafe { TrackMouseEvent(&mut request) };
             Some(SurfaceEvent::SettingsMoved { x, y })
         }
-        MOUSE_LEFT => {
-            *is_pressed = false;
-            Some(SurfaceEvent::SettingsLeft)
-        }
+        MOUSE_LEFT => Some(SurfaceEvent::SettingsLeft),
         WM_LBUTTONDOWN => {
-            *is_pressed = true;
             let (x, y) = pointer_position(message, scale);
             Some(SurfaceEvent::SettingsPressed { x, y })
         }
-        WM_LBUTTONUP if std::mem::take(is_pressed) => {
+        WM_LBUTTONUP => {
             let (x, y) = pointer_position(message, scale);
             Some(SurfaceEvent::SettingsClicked { x, y })
         }
