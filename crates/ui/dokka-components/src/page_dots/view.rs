@@ -1,4 +1,4 @@
-use dokka_scene::Dot;
+use dokka_scene::{Dot, Panel, Rect};
 use dokka_theme::{Theme, launchpad as measures};
 
 use super::PageDotsProps;
@@ -42,4 +42,27 @@ pub fn dot_at(props: &PageDotsProps, x: f32, y: f32) -> Option<usize> {
         let center = dot_center_x(props, index);
         x >= center - half && x < center + half && y >= middle - half && y < middle + half
     })
+}
+
+/// Aro claro tras el punto actual: lo hace algo mayor sin cambiar el tamaño
+/// de los puntos, que solo se actualiza en posición y color. Siempre hay uno,
+/// así las capas no se reconstruyen al cambiar de página.
+pub fn dot_halo(theme: &Theme, props: &PageDotsProps) -> Panel {
+    let total = props.total.max(1);
+    let current = props.current.min(total - 1);
+    let middle = measures::dots_center_y(props.screen.height);
+    let side = measures::dot_halo_diameter(props.screen.width);
+    let center = dot_center_x(props, current);
+    Panel {
+        bounds: Rect {
+            x: center - side / 2.0,
+            y: middle - side / 2.0,
+            width: side,
+            height: side,
+        },
+        corner_radius: side / 2.0,
+        border_width: 0.0,
+        tint: theme.launchpad.dot_active,
+        border: theme.launchpad.dot_active,
+    }
 }

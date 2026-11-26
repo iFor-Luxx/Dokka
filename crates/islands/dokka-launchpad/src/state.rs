@@ -12,16 +12,19 @@ use dokka_theme::launchpad as measures;
 
 use crate::LaunchpadAction;
 use crate::logic::filter_apps;
+use crate::motion::PageMotion;
 use crate::tiles::TileCache;
 
 /// Estado abierto/cerrado, búsqueda, página y app resaltada.
 #[derive(Debug, Default)]
 pub struct Launchpad {
     apps: Vec<AppInfo>,
-    highlighted: Option<usize>,
+    pub(crate) highlighted: Option<usize>,
     is_open: bool,
     query: String,
-    page: usize,
+    pub(crate) page: usize,
+    /// Deslizamiento o cesión de la cuadrícula en curso.
+    pub(crate) motion: PageMotion,
     /// Lupa de la casilla, creada una vez y reutilizada con su color.
     magnifier: Option<(Color, Arc<Drawing>)>,
     tiles: TileCache,
@@ -38,6 +41,7 @@ impl Launchpad {
         self.highlighted = None;
         self.query.clear();
         self.page = 0;
+        self.motion = PageMotion::new();
         self.tiles.clear();
         self.is_open = true;
     }
@@ -108,6 +112,7 @@ impl Launchpad {
         }
         self.query.push(character);
         self.page = 0;
+        self.motion = PageMotion::new();
         self.highlighted = None;
     }
 
@@ -115,6 +120,7 @@ impl Launchpad {
     pub fn erase_character(&mut self) {
         self.query.pop();
         self.page = 0;
+        self.motion = PageMotion::new();
         self.highlighted = None;
     }
 
@@ -136,26 +142,9 @@ impl Launchpad {
         }
         self.query.clear();
         self.page = 0;
+        self.motion = PageMotion::new();
         self.highlighted = None;
         LaunchpadAction::Stay
-    }
-
-    /// La rueda cambia de página: hacia arriba retrocede, hacia abajo avanza.
-    pub fn scroll(&mut self, screen: Size, delta: i16) {
-        let count = self.page_count(screen);
-        let current = self.current_page(screen);
-        if delta > 0 {
-            self.page = current.saturating_sub(1);
-        } else if current + 1 < count {
-            self.page = current + 1;
-        }
-        self.highlighted = None;
-    }
-
-    /// Va a esta página si existe.
-    pub fn go_to_page(&mut self, screen: Size, page: usize) {
-        self.page = page.min(self.page_count(screen) - 1);
-        self.highlighted = None;
     }
 
     /// Lupa de la casilla con este color, creada una vez y reutilizada.

@@ -100,7 +100,9 @@ impl DockSession {
     }
 
     pub(crate) fn is_animating(&self) -> bool {
-        self.dock.is_animating() || self.previews.is_waiting()
+        self.dock.is_animating()
+            || self.previews.is_waiting()
+            || (self.launchpad.is_open() && self.launchpad.is_moving())
     }
 
     /// Ajusta la ventana al número de iconos.

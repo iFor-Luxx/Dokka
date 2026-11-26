@@ -67,6 +67,7 @@ version = "0.1.0"
 name = "dokka-launchpad"
 version = "0.1.0"
 dependencies = [
+ "dokka-animation",
  "dokka-components",
  "dokka-icons",
  "dokka-model",

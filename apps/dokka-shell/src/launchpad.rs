@@ -133,6 +133,18 @@ pub(crate) fn scroll_launchpad(session: &mut DockSession, surface: &Surface, del
     session.launchpad.scroll(size, delta);
 }
 
+/// Flecha izquierda: retrocede de página o cede en la primera.
+pub(crate) fn page_back_launchpad(session: &mut DockSession, surface: &Surface) {
+    let size = launchpad_size(surface);
+    session.launchpad.step_backward(size);
+}
+
+/// Flecha derecha: avanza de página o cede en la última.
+pub(crate) fn page_forward_launchpad(session: &mut DockSession, surface: &Surface) {
+    let size = launchpad_size(surface);
+    session.launchpad.step_forward(size);
+}
+
 /// Dibuja la cuadrícula del Launchpad en su ventana propia.
 pub(crate) fn render_launchpad(
     session: &mut DockSession,
