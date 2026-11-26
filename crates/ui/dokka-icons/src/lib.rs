@@ -12,6 +12,7 @@ mod shapes;
 mod tile_frame;
 mod tile_paint;
 mod tile_pixels;
+mod tile_square;
 mod trash;
 
 pub use app_tile::app_tile;

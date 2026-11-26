@@ -2,10 +2,13 @@
 //!
 //! El marco blanco de algunos accesos pequeños se detecta como fondo blanco
 //! opaco alrededor del dibujo y se recorta antes de componer la baldosa.
+//! El marco fino de otro color se quita por su hueco interior.
 
 use dokka_scene::Bitmap;
 
-use crate::tile_pixels::{checked_len, pixel_index, read_pixel};
+use crate::tile_pixels::{
+    box_fill, checked_len, copy_rect, pixel_index, read_pixel, transparent_share, visible_bounds,
+};
 
 /// `true` si es blanco opaco de marco o fondo de documento.
 fn is_frame_white(pixel: [u8; 4]) -> bool {
@@ -90,6 +93,86 @@ pub(crate) fn crop_white_frame(bitmap: &Bitmap) -> Option<Bitmap> {
         height,
         pixels,
     })
+}
+
+/// Cobertura mínima de cada lado del borde para verlo como marco fino.
+const RING_SIDE_COVERAGE: f32 = 0.85;
+/// Hueco mínimo justo dentro del anillo para ver marco y no fondo.
+const INNER_GAP_CLEAR: f32 = 0.75;
+/// Grosor del aire que se mira pegado al anillo.
+const INNER_GAP_WIDTH: u32 = 2;
+
+/// Quita el marco fino alrededor de una imagen pequeña y deja lo de dentro (no toca fondos opacos).
+pub(crate) fn strip_thin_frame(bitmap: &Bitmap) -> Option<Bitmap> {
+    let mut current = strip_once(bitmap)?;
+    for _ in 1..4 {
+        let Some(next) = strip_once(&current) else {
+            break;
+        };
+        current = next;
+    }
+    Some(current)
+}
+
+/// Quita un solo anillo de 1–2 px si bordea lo visible y por dentro hay hueco.
+fn strip_once(bitmap: &Bitmap) -> Option<Bitmap> {
+    let bounds = visible_bounds(bitmap)?;
+    let (left, top, right, bottom) = bounds;
+    for thickness in [1, 2] {
+        if !ring_closed(bitmap, bounds, thickness) || !gap_inside(bitmap, bounds, thickness) {
+            continue;
+        }
+        let inner = copy_rect(
+            bitmap,
+            left.checked_add(thickness)?,
+            top.checked_add(thickness)?,
+            right.checked_sub(thickness)?,
+            bottom.checked_sub(thickness)?,
+        )?;
+        // El anillo era todo el dibujo: no queda nada dentro.
+        visible_bounds(&inner)?;
+        return Some(inner);
+    }
+    None
+}
+
+/// `true` si cada lado del borde de la caja está casi todo visible.
+fn ring_closed(bitmap: &Bitmap, bounds: (u32, u32, u32, u32), thickness: u32) -> bool {
+    let (left, top, right, bottom) = bounds;
+    let bands = [
+        (left, top, right, top.saturating_add(thickness)),
+        (left, bottom.saturating_sub(thickness), right, bottom),
+        (left, top, left.saturating_add(thickness), bottom),
+        (right.saturating_sub(thickness), top, right, bottom),
+    ];
+    bands
+        .into_iter()
+        .all(|band| box_fill(bitmap, band) >= RING_SIDE_COVERAGE)
+}
+
+/// `true` si justo dentro del anillo hay sobre todo hueco: es marco, no fondo.
+fn gap_inside(bitmap: &Bitmap, bounds: (u32, u32, u32, u32), thickness: u32) -> bool {
+    let (left, top, right, bottom) = bounds;
+    let ileft = left.saturating_add(thickness);
+    let itop = top.saturating_add(thickness);
+    let iright = right.saturating_sub(thickness);
+    let ibottom = bottom.saturating_sub(thickness);
+    if iright <= ileft || ibottom <= itop {
+        return false;
+    }
+    let air = INNER_GAP_WIDTH;
+    let bands = [
+        (ileft, itop, iright, itop.saturating_add(air)),
+        (ileft, ibottom.saturating_sub(air), iright, ibottom),
+        (ileft, itop, ileft.saturating_add(air), ibottom),
+        (iright.saturating_sub(air), itop, iright, ibottom),
+    ];
+    let share: f32 = bands
+        .into_iter()
+        .map(|band| transparent_share(bitmap, band))
+        .sum::<f32>()
+        / 4.0;
+    share >= INNER_GAP_CLEAR
 }
 
 /// Parte del anillo exterior que es opaca: los cuadradones llenan, y no las siluetas.
