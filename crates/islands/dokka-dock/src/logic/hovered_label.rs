@@ -26,10 +26,12 @@ pub(crate) fn hovered_label(
         // Con ventanas abiertas aparece directamente la vista previa, que ya las nombra.
         Entry::Explorer(app) | Entry::App(app) if app.is_running() => return None,
         Entry::Minimized(..) => return None,
+        // El calendario abre su panel directamente, sin etiqueta previa.
+        Entry::Calendar => return None,
         Entry::Explorer(_) => "Explorador".to_owned(),
         Entry::App(app) => app_name(app),
         Entry::Launchpad => "Launchpad".to_owned(),
-        Entry::Calendar | Entry::Clock => dock.icons.long_date.clone(),
+        Entry::Clock => dock.icons.long_date.clone(),
         Entry::Trash => trash_label(dock.icons.trash_size),
     };
     Some((text, slot))
