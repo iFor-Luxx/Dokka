@@ -1,19 +1,27 @@
+use dokka_components::nav_pill::nav_pill_contains;
 use dokka_components::search_field::search_contains_at;
 use dokka_components::settings_list::search_bounds;
 use dokka_components::window_controls::traffic_at;
+use dokka_scene::Rect;
 use dokka_theme::settings as measures;
 
-/// `true` si el punto cae en un chevrón de la cabecera (atrás o adelante).
+/// `true` si el punto cae en la píldora de la cabecera.
+/// Hoy no navega (ambos lados atenuados), pero tampoco arrastra la ventana.
 fn nav_at(x: f32, y: f32) -> bool {
-    let back = measures::NAV_LEFT..measures::NAV_LEFT + measures::NAV_SIDE;
-    let forward =
-        measures::NAV_LEFT + measures::NAV_SIDE..measures::NAV_LEFT + measures::NAV_SIDE * 2.0;
-    (measures::NAV_TOP..measures::NAV_TOP + measures::NAV_SIDE).contains(&y)
-        && (back.contains(&x) || forward.contains(&x))
+    nav_pill_contains(
+        Rect {
+            x: measures::NAV_LEFT,
+            y: measures::NAV_TOP,
+            width: measures::NAV_PILL_WIDTH,
+            height: measures::NAV_PILL_HEIGHT,
+        },
+        x,
+        y,
+    )
 }
 
 /// `true` si desde el punto se puede arrastrar la ventana: la franja superior
-/// quitando los semáforos, los chevrones, la casilla y las filas.
+/// quitando los semáforos, la píldora, la casilla y las filas.
 pub fn drag_zone(x: f32, y: f32) -> bool {
     if !(0.0..measures::DRAG_HEIGHT).contains(&y) {
         return false;

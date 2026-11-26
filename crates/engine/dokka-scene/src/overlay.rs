@@ -8,10 +8,13 @@ pub struct Controls {
 }
 
 /// Panel flotante sobre la escena principal.
-/// Orden de pintado: panel, punta, resaltado, líneas, puntos, textos, iconos.
+/// Orden de pintado: panel, píldora, punta, resaltado, líneas, puntos, textos, iconos.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Overlay {
     pub panel: Panel,
+    /// Fondo de la píldora segmentada de navegación, sobre el panel.
+    /// Su hover va en `highlight`.
+    pub pill: Option<Panel>,
     pub highlight: Option<Panel>,
     pub dividers: Vec<Divider>,
     /// Se dibujan debajo de los textos.

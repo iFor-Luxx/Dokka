@@ -42,6 +42,17 @@ pub(crate) const MENU_BORDER: Color = Color::rgba(0, 0, 0, 38);
 /// Línea separadora del menú del clic derecho.
 pub(crate) const MENU_SEPARATOR: Color = Color::rgba(0, 0, 0, 35);
 
+/// Cápsula de navegación: gris muy claro.
+pub(crate) const NAV_PILL_BACKGROUND: Color = Color::rgba(230, 232, 238, 235);
+/// Borde fino y luminoso de la cápsula de navegación.
+pub(crate) const NAV_PILL_BORDER: Color = white(180);
+/// Línea vertical del centro de la píldora.
+pub(crate) const NAV_PILL_DIVIDER: Color = Color::rgba(0, 0, 0, 35);
+/// Chevrón no disponible de la píldora.
+pub(crate) const NAV_PILL_ICON_DISABLED: Color = Color::rgba(30, 32, 36, 110);
+/// Resaltado suave de la mitad bajo el cursor.
+pub(crate) const NAV_PILL_HOVER: Color = Color::rgba(0, 0, 0, 25);
+
 /// Fondo del Launchpad: velo negro muy leve que deja ver el escritorio.
 pub(crate) const LAUNCHPAD_BACKGROUND: Color = Color::rgba(0, 0, 0, 50);
 /// Baldosa clara donde apoya el glifo de cada app en el Launchpad.

@@ -1,12 +1,11 @@
-use std::sync::Arc;
-
+use dokka_components::nav_pill::{NavPillProps, nav_pill_divider, nav_pill_icons, nav_pill_panel};
 use dokka_components::search_field::{search_label_at, search_magnifier_at, search_panel_at};
 use dokka_components::settings_list::{
     SettingsListProps, row_badges, row_hover, row_icons, row_labels, row_selection, search_bounds,
     sidebar_panel,
 };
 use dokka_components::window_controls::traffic_dots;
-use dokka_scene::{Divider, Icon, Panel, Rect, Scene, Text, TextAlign};
+use dokka_scene::{Divider, Panel, Rect, Scene, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::section_names;
@@ -24,11 +23,23 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let search = search_bounds();
     let search_drawing = settings.search_drawing(theme);
     let nav = settings.nav_drawings(theme);
+    // Píldora de navegación: hoy sin lados disponibles, solo adorna.
+    let pill = NavPillProps {
+        bounds: Rect {
+            x: measures::NAV_LEFT,
+            y: measures::NAV_TOP,
+            width: measures::NAV_PILL_WIDTH,
+            height: measures::NAV_PILL_HEIGHT,
+        },
+        can_previous: false,
+        can_next: false,
+        hovered: None,
+    };
     let mut glyphs = Vec::with_capacity(measures::SECTIONS);
     for index in 0..measures::SECTIONS {
         glyphs.push(settings.row_drawing(theme, index));
     }
-    let mut icons: Vec<Icon> = row_badges(theme);
+    let mut icons = row_badges(theme);
     icons.extend(row_icons(theme, &glyphs));
     icons.push(search_magnifier_at(
         theme.settings.search_icon,
@@ -37,8 +48,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         measures::SEARCH_ICON_SIDE,
         &search_drawing,
     ));
-    icons.push(nav_icon(theme, &nav[0], 0));
-    icons.push(nav_icon(theme, &nav[1], 1));
+    icons.extend(nav_pill_icons(theme, &nav, &pill));
     let (card_x, card_top, card_width) = measures::card_bounds();
     let names = section_names();
     let mut texts = row_labels(theme, &props, &names);
@@ -102,17 +112,22 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
                 tint: theme.settings.card,
                 border: theme.settings.card_border,
             },
+            // Cada capa se inserta arriba: la píldora queda sobre el fondo.
+            nav_pill_panel(theme, &pill),
         ],
         highlight: Some(row_hover(theme, &props)),
-        dividers: vec![Divider {
-            bounds: Rect {
-                x: measures::HEADER_DIVIDER_LEFT,
-                y: measures::HEADER_DIVIDER_TOP,
-                width: measures::HEADER_DIVIDER_RIGHT - measures::HEADER_DIVIDER_LEFT,
-                height: measures::HEADER_DIVIDER_HEIGHT,
+        dividers: vec![
+            Divider {
+                bounds: Rect {
+                    x: measures::HEADER_DIVIDER_LEFT,
+                    y: measures::HEADER_DIVIDER_TOP,
+                    width: measures::HEADER_DIVIDER_RIGHT - measures::HEADER_DIVIDER_LEFT,
+                    height: measures::HEADER_DIVIDER_HEIGHT,
+                },
+                color: theme.settings.divider,
             },
-            color: theme.settings.divider,
-        }],
+            nav_pill_divider(theme, &pill),
+        ],
         icons,
         dots: traffic_dots(theme),
         texts,
@@ -123,18 +138,5 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         blur: 0.0,
         overlay: None,
         submenu: None,
-    }
-}
-
-/// Chevrón de la cabecera en su zona pulsable.
-fn nav_icon(theme: &Theme, drawing: &Arc<dokka_scene::Drawing>, position: usize) -> Icon {
-    let inset = (measures::NAV_SIDE - measures::NAV_ICON_SIDE) / 2.0;
-    Icon {
-        x: measures::NAV_LEFT + position as f32 * measures::NAV_SIDE + inset,
-        y: measures::NAV_TOP + inset,
-        side: measures::NAV_ICON_SIDE,
-        image: Some(dokka_scene::IconImage::Drawing(Arc::clone(drawing))),
-        placeholder: theme.settings.nav,
-        placeholder_radius: 0.0,
     }
 }

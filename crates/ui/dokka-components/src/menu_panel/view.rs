@@ -139,6 +139,7 @@ fn overlay_inner(
             border: theme.menu.border,
         },
         highlight: Some(highlight_panel(theme, bounds, rows, highlighted)),
+        pill: None,
         dividers,
         dots: Vec::new(),
         pointer,

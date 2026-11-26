@@ -2,9 +2,9 @@
 
 **Hace:** describe los iconos de color propios de Dokka (explorador, launchpad, calendario, reloj y
 papelera) como dibujos, y expone los de interfaz desde la librería `lucide-icons` (chevrón del
-submenú, marca elegida, flechas del calendario, lupa y botones de música; iconos blancos de
-las siete secciones de Preferencias y sus chevrones de cabecera) como glifos, más los bytes
-submenú, marca elegida, flechas del calendario, lupa y botones de música y de cerrar/fijar) como glifos, más los bytes
+submenú, marca elegida, chevrones de la píldora de navegación, lupa y botones de música; iconos blancos de
+las siete secciones de Preferencias) como glifos, más los bytes
+submenú, marca elegida, chevrones de la píldora, lupa y botones de música y de cerrar/fijar) como glifos, más los bytes
 de su fuente. Y uniforma los iconos de apps para el Launchpad (`app_tile`: si llenan el cuadro
 —aunque traigan margen transparente— ocupan toda la baldosa con las esquinas recortadas; si son
 silueta se centran sobre un degradado claro sacado de los colores del propio icono (color medio

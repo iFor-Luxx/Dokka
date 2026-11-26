@@ -1,4 +1,5 @@
-use dokka_components::calendar_panel::{calendar_panel, calendar_size};
+use dokka_components::calendar_panel::{calendar_nav_pill, calendar_panel, calendar_size};
+use dokka_components::nav_pill::NavPillProps;
 use dokka_components::popup_panel::place_above;
 use dokka_components::preview_card::{PreviewHover, preview_card, preview_size};
 use dokka_scene::{Overlay, Rect};
@@ -95,7 +96,13 @@ impl Previews {
         let mut overlay = match &request.content {
             PreviewContent::Calendar => {
                 let month = calendar_month(self.today, self.month_offset);
-                calendar_panel(&self.theme, &self.calendar_arrows, drawn, &month)
+                let pill = NavPillProps {
+                    bounds: calendar_nav_pill(drawn),
+                    can_previous: true,
+                    can_next: true,
+                    hovered: self.nav_hovered,
+                };
+                calendar_panel(&self.theme, &self.nav_pill, drawn, &month, &pill)
             }
             PreviewContent::Windows(windows) => {
                 let shown = visible_windows(windows.len(), request.limit);

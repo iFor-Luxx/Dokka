@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_components::calendar_panel::CalendarArrows;
+use dokka_components::nav_pill::{NavHalf, NavPillIcons};
 use dokka_components::preview_card::{MediaIcons, NowPlaying, WindowButtonIcons};
 use dokka_theme::Theme;
 
@@ -12,8 +12,10 @@ pub struct Previews {
     pub(crate) theme: Arc<Theme>,
     pub(crate) media_icons: MediaIcons,
     pub(crate) window_buttons: WindowButtonIcons,
-    /// Flechas del calendario, creadas una vez: el mes cambia sin reconstruirlas.
-    pub(crate) calendar_arrows: CalendarArrows,
+    /// Chevrones de la píldora, creados una vez: el mes cambia sin reconstruirlos.
+    pub(crate) nav_pill: NavPillIcons,
+    /// Mitad de la píldora bajo el cursor, si hay alguna.
+    pub(crate) nav_hovered: Option<NavHalf>,
     pub(crate) open: Option<PreviewRequest>,
     /// Panel que espera a que el cursor se detenga, y cuánto lleva esperando.
     pub(crate) pending: Option<(PreviewRequest, f32)>,
@@ -38,7 +40,7 @@ impl Previews {
         Self {
             media_icons: MediaIcons::new(&theme),
             window_buttons: WindowButtonIcons::new(&theme),
-            calendar_arrows: CalendarArrows::new(&theme),
+            nav_pill: NavPillIcons::new(&theme),
             theme,
             open: None,
             pending: None,
@@ -46,6 +48,7 @@ impl Previews {
             media: None,
             pinned: Vec::new(),
             hovered: None,
+            nav_hovered: None,
             month_offset: 0,
             today: (0, 1, 1),
             reveal: Reveal::hidden(),
