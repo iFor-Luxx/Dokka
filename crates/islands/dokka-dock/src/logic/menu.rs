@@ -10,9 +10,11 @@ use crate::Dock;
 /// Lo que se pidió desde el menú.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MenuAction {
+    AddApp,
     ShowDesktop,
     TaskManager,
     TaskbarSettings,
+    Restart,
     Quit,
     Pin(AppInfo),
     Unpin(AppInfo),
@@ -150,19 +152,25 @@ impl Dock {
 
 fn dock_menu() -> (Vec<MenuRow>, Vec<Option<MenuAction>>) {
     let rows = vec![
+        MenuRow::Item("Añadir app…".to_owned()),
+        MenuRow::Separator,
         MenuRow::Item("Mostrar el escritorio".to_owned()),
         MenuRow::Item("Administrador de tareas".to_owned()),
         MenuRow::Separator,
         MenuRow::Item("Configuración de la barra de tareas".to_owned()),
         MenuRow::Separator,
+        MenuRow::Item("Reiniciar Dokka".to_owned()),
         MenuRow::Item("Salir de Dokka".to_owned()),
     ];
     let actions = vec![
+        Some(MenuAction::AddApp),
+        None,
         Some(MenuAction::ShowDesktop),
         Some(MenuAction::TaskManager),
         None,
         Some(MenuAction::TaskbarSettings),
         None,
+        Some(MenuAction::Restart),
         Some(MenuAction::Quit),
     ];
     (rows, actions)

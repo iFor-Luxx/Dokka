@@ -7,7 +7,7 @@ use dokka_model::WindowId;
 use dokka_previews::PreviewClick;
 use dokka_win_surface::{Surface, SurfaceEvent};
 
-use crate::context_menu::{open_context_menu, run_menu_action};
+use crate::context_menu::{open_context_menu, poll_app_picker, run_menu_action};
 use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
 use crate::media::send_media;
@@ -53,7 +53,10 @@ pub(crate) fn handle_event(
             }
             session.resize(surface)?;
         }
-        SurfaceEvent::Tick => session.update_clock_and_trash(),
+        SurfaceEvent::Tick => {
+            session.update_clock_and_trash();
+            poll_app_picker(session, surface)?;
+        }
         SurfaceEvent::Dismissed => {
             if session.dock.is_menu_open() {
                 session.dock.close_menu();
