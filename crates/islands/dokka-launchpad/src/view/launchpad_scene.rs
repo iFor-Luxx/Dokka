@@ -6,7 +6,7 @@ use dokka_components::app_grid::{
 };
 use dokka_components::page_dots::{PageDotsProps, dot_halo, page_dots};
 use dokka_components::search_field::{
-    SearchFieldProps, search_label, search_magnifier, search_panel,
+    SearchFieldProps, search_cursor, search_label, search_magnifier, search_panel,
 };
 use dokka_model::AppId;
 use dokka_scene::{Bitmap, Panel, Rect, Scene, Size};
@@ -22,6 +22,9 @@ use crate::Launchpad;
 /// hasta su sitio; la casilla y los puntos se quedan quietos. La cantidad de
 /// iconos y textos no cambia a mitad del movimiento: las capas solo se
 /// actualizan.
+///
+/// El zoom de apertura y cierre lo aplica la plataforma sobre esta escena:
+/// el fondo se desvanece y el resto además escala desde el centro.
 pub fn launchpad_scene(
     theme: &Theme,
     screen: Size,
@@ -49,6 +52,8 @@ pub fn launchpad_scene(
     let search = SearchFieldProps {
         screen,
         query: launchpad.query().to_owned(),
+        focused: launchpad.is_focused(),
+        cursor_visible: launchpad.is_cursor_visible(),
     };
     let dots = PageDotsProps {
         screen,
@@ -73,6 +78,7 @@ pub fn launchpad_scene(
         }
     }
     texts.push(search_label(theme, &search));
+    let dividers = vec![search_cursor(theme, &search)];
     let mut highlight = app_highlight(theme, &grid);
     highlight.bounds.x += offset;
     Scene {
@@ -91,12 +97,14 @@ pub fn launchpad_scene(
         panels: vec![search_panel(theme, &search), dot_halo(theme, &dots)],
         icons,
         dots: page_dots(theme, &dots),
-        dividers: Vec::new(),
+        dividers,
         thumbnails: Vec::new(),
         labels: Vec::new(),
         texts,
         highlight: Some(highlight),
         overlay: None,
         submenu: None,
+        opacity: launchpad.zoom.opacity(),
+        scale: launchpad.zoom.scale(),
     }
 }

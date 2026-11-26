@@ -59,6 +59,15 @@ pub const SEARCH_PLACEHOLDER_HALF_WIDTH: f32 = 24.0;
 pub const SEARCH_MAGNIFIER_GAP: f32 = 10.0;
 /// Distancia del borde izquierdo al texto escrito: lupa más aire a ambos lados.
 pub const SEARCH_TEXT_INSET: f32 = SEARCH_ICON_INSET + SEARCH_ICON_SIDE + SEARCH_MAGNIFIER_GAP;
+/// Ancho aproximado de cada letra escrita, para colocar el cursor tras el texto
+/// sin medir la fuente en cada redibujado.
+pub const SEARCH_CHAR_ADVANCE: f32 = 8.0;
+/// Aire entre la última letra (o el borde del texto) y el cursor vertical.
+pub const SEARCH_CURSOR_GAP: f32 = 2.0;
+/// Ancho del cursor vertical de la casilla enfocada.
+pub const SEARCH_CURSOR_WIDTH: f32 = 2.0;
+/// Alto del cursor vertical de la casilla enfocada.
+pub const SEARCH_CURSOR_HEIGHT: f32 = 18.0;
 /// Cuántos caracteres guarda la búsqueda.
 pub const SEARCH_MAX_CHARACTERS: usize = 32;
 /// Mensaje centrado cuando el filtro no encuentra nada.
@@ -79,6 +88,13 @@ pub const DOT_HIT_SIDE: f32 = 24.0;
 pub const DOT_ACTIVE_HALO_RATIO: f32 = 11.0 / 2560.0;
 /// Cuánto tarda la cuadrícula en deslizarse a otra página, en segundos.
 pub const PAGE_SLIDE_SECONDS: f32 = 0.3;
+/// Cuánto tarda el Launchpad en aparecer, encogiendo desde el zoom, en segundos.
+pub const ZOOM_OPEN_SECONDS: f32 = 0.28;
+/// Cuánto tarda el Launchpad en cerrarse, creciendo hacia el usuario, en segundos.
+pub const ZOOM_CLOSE_SECONDS: f32 = 0.22;
+/// Escala del contenido al empezar a abrir y al terminar de cerrar: crece hacia
+/// el usuario desde el centro de la pantalla.
+pub const ZOOM_FAR_SCALE: f32 = 1.15;
 /// Cuánto cede la cuadrícula al intentar pasar de la primera o la última página
 /// respecto al ancho (40 sobre 2560).
 pub const PAGE_NUDGE_RATIO: f32 = 40.0 / 2560.0;

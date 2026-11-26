@@ -8,7 +8,14 @@ empieza arriba, casilla de búsqueda, puntos de página, iconos y nombres. Sin r
 baldosa uniforme una sola vez por apertura y la reutiliza en cada redibujado. El cambio de página
 desliza la cuadrícula (~0,3 s, frenando) y en los extremos cede y vuelve; la rueda y las flechas no
 encadenan cambios mientras se mueve. La transición vive en `motion/` y la escena dibuja la página
-destino desplazada, así las capas solo se actualizan.
+destino desplazada, así las capas solo se actualizan. La casilla (`search_box.rs`) guarda el foco:
+sin foco muestra lupa y "Buscar" a la izquierda; con foco (clic o primera letra) muestra el cursor
+vertical parpadeante tras el texto y el marcador tenue a su derecha, con el aviso de cada segundo
+(`tick`) y sin fotogramas continuos; Esc limpia y quita el foco, y con la casilla vacía y sin foco
+cierra. La apertura y el cierre usan el zoom clásico (`motion/zoom.rs`: entra encogiendo desde
+~1,15 y sale creciendo hacia el usuario mientras todo se desvanece); la escena lleva opacidad y
+escala, y reabrir a mitad del cierre continúa desde donde está. La paginación vive en `paging.rs`
+y el clic en `logic/`.
 
 **No hace:** no crea ventanas, no habla con Windows, no guarda en disco ni usa otras islas.
-Sin animación de apertura, arrastre ni carpetas.
+Sin arrastre ni carpetas. No mide la fuente: el cursor usa un avance aproximado por letra.

@@ -8,7 +8,6 @@ use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
 use dokka_launchpad::Launchpad;
 use dokka_model::AppId;
 use dokka_previews::Previews;
-use dokka_scene::Scene;
 use dokka_state::DockState;
 use dokka_theme::{Theme, light};
 use dokka_win_apps::{
@@ -19,8 +18,6 @@ use dokka_win_control::SystemWindowControl;
 use dokka_win_media::MediaMonitor;
 use dokka_win_surface::{Surface, SurfaceOptions, local_time};
 use dokka_win_tracking::SystemWindows;
-
-use crate::media::update_media;
 
 pub(crate) struct DockSession {
     pub(crate) state: DockState,
@@ -38,7 +35,7 @@ pub(crate) struct DockSession {
     taskbar_auto: bool,
     windows: SystemWindows,
     pub(crate) icons: IconCache,
-    names: NameCache,
+    pub(crate) names: NameCache,
     pub(crate) renderer: SceneRenderer,
 }
 
@@ -103,6 +100,7 @@ impl DockSession {
         self.dock.is_animating()
             || self.previews.is_waiting()
             || (self.launchpad.is_open() && self.launchpad.is_moving())
+            || (self.launchpad.is_open() && self.launchpad.is_zooming())
     }
 
     /// Ajusta la ventana al número de iconos.
@@ -133,80 +131,5 @@ impl DockSession {
     /// Guarda si la barra se oculta sola al abrir Dokka.
     pub(crate) fn set_taskbar_auto(&mut self, auto: bool) {
         self.taskbar_auto = auto;
-    }
-
-    /// Dibuja el instante actual.
-    pub(crate) fn render(&mut self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
-        update_media(self);
-        let mut scene = self.scene();
-        if self.launchpad.is_open() {
-            // Con el Launchpad no hay menú ni vistas previas.
-            scene.overlay = None;
-            scene.submenu = None;
-            scene.labels.clear();
-        } else if self.dock.is_menu_open() {
-            scene.overlay = self.dock.menu_overlay();
-            scene.submenu = self.dock.submenu_overlay();
-        } else {
-            scene.overlay = self.previews.overlay();
-            scene.submenu = None;
-        }
-        // Con un panel abierto, la etiqueta sobra.
-        if scene.overlay.is_some() || scene.submenu.is_some() {
-            scene.labels.clear();
-        }
-        self.renderer.draw(&scene)?;
-        let controls = scene.overlay.and_then(|overlay| overlay.controls);
-        surface.show_above(controls.map(|controls| {
-            let area = controls.panel.bounds;
-            [area.x, area.y, area.width, area.height]
-        }))?;
-        let areas: Vec<[f32; 4]> = if self.launchpad.is_open() {
-            [Some(self.dock.active_area(self.state.apps()))]
-                .into_iter()
-                .flatten()
-                .map(|area| [area.x, area.y, area.width, area.height])
-                .collect()
-        } else {
-            [
-                Some(self.dock.active_area(self.state.apps())),
-                self.dock.menu_area(),
-                self.dock.submenu_area(),
-                (!self.dock.is_menu_open())
-                    .then(|| self.previews.area())
-                    .flatten(),
-            ]
-            .into_iter()
-            .flatten()
-            .map(|area| [area.x, area.y, area.width, area.height])
-            .collect()
-        };
-        surface.set_active_areas(&areas);
-        if self.launchpad.is_open() {
-            crate::launchpad::render_launchpad(self, surface)?;
-        }
-        Ok(())
-    }
-
-    fn scene(&mut self) -> Scene {
-        let images = self
-            .state
-            .apps()
-            .iter()
-            .filter_map(|app| {
-                let image = self.icons.icon_for(&app.info.executable)?;
-                Some((app.info.id.clone(), image))
-            })
-            .collect();
-        let names = self
-            .state
-            .apps()
-            .iter()
-            .filter_map(|app| {
-                let name = self.names.name_for(&app.info.executable)?;
-                Some((app.info.id.clone(), name))
-            })
-            .collect();
-        self.dock.scene(self.state.apps(), &images, &names)
     }
 }

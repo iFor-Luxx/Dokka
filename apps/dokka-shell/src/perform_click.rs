@@ -10,7 +10,7 @@ use dokka_win_control::foreground_window;
 use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
-use crate::launchpad::{close_launchpad, toggle_launchpad};
+use crate::launchpad::{begin_close_launchpad, toggle_launchpad};
 
 pub(crate) fn perform_click(
     session: &mut DockSession,
@@ -29,7 +29,7 @@ pub(crate) fn perform_click(
 
     // Cualquier otra cosa del dock cierra primero el Launchpad.
     if action != DockAction::Launchpad && session.launchpad.is_open() {
-        close_launchpad(session, surface);
+        begin_close_launchpad(session, surface);
     }
     match action {
         DockAction::App(app_id, action) => perform_app_action(session, app_id, action)?,

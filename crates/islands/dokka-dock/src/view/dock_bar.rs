@@ -76,6 +76,9 @@ impl Dock {
             overlay: None,
             submenu: None,
             labels,
+            // El dock no usa el zoom del Launchpad: siempre en reposo.
+            opacity: 1.0,
+            scale: 1.0,
         }
     }
 

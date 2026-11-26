@@ -1,31 +1,30 @@
 //! Abre y cierra el Launchpad a pantalla completa.
 
-use std::collections::HashMap;
 use std::error::Error;
-use std::sync::Arc;
 
 use dokka_contracts::{AppCatalog, AppLauncher};
-use dokka_launchpad::{LaunchpadAction, launchpad_scene, merge_apps};
-use dokka_model::AppId;
-use dokka_scene::{Bitmap, Size};
+use dokka_launchpad::{LaunchpadAction, merge_apps};
+use dokka_scene::Size;
 use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
 
-/// Abre o cierra al pulsar el icono del dock.
+/// Abre o cierra al pulsar el icono del dock. A mitad del cierre, reabre desde donde está.
 pub(crate) fn toggle_launchpad(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
-    if session.launchpad.is_open() {
-        close_launchpad(session, surface);
+    if session.launchpad.is_closing() {
+        reopen_launchpad(session, surface)?;
+    } else if session.launchpad.is_open() {
+        begin_close_launchpad(session, surface);
     } else {
         open_launchpad(session, surface)?;
     }
     Ok(())
 }
 
-/// Muestra la pantalla completa con catálogo y fijadas.
+/// Muestra la pantalla completa con catálogo y fijadas, entrando con zoom.
 pub(crate) fn open_launchpad(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -50,27 +49,50 @@ pub(crate) fn open_launchpad(
     Ok(())
 }
 
-/// Oculta y devuelve el foco sin robar lo recién pulsado.
-pub(crate) fn close_launchpad(session: &mut DockSession, surface: &mut Surface) {
-    session.launchpad.close();
+/// Empieza el cierre animado: la app elegida se lanza y el foco se devuelve
+/// ahora; la ventana se oculta cuando termina la animación.
+pub(crate) fn begin_close_launchpad(session: &mut DockSession, surface: &mut Surface) {
+    session.launchpad.begin_close();
     // El foco se devuelve antes de ocultar: después ya no sería la ventana activa.
     surface.launchpad_closed();
+}
+
+/// Oculta la ventana al terminar la animación de cierre.
+pub(crate) fn finish_close_launchpad(session: &mut DockSession, surface: &mut Surface) {
+    session.launchpad.close();
     surface.launchpad_hide();
+}
+
+/// Cancela el cierre y vuelve a abrir desde donde está.
+pub(crate) fn reopen_launchpad(
+    session: &mut DockSession,
+    surface: &mut Surface,
+) -> Result<(), Box<dyn Error>> {
+    session.launchpad.reopen();
+    surface.launchpad_opened()?;
+    Ok(())
 }
 
 /// Resalta la app bajo el cursor.
 pub(crate) fn move_over_launchpad(session: &mut DockSession, surface: &Surface, x: f32, y: f32) {
+    if session.launchpad.is_closing() {
+        return;
+    }
     let size = launchpad_size(surface);
     session.launchpad.pointer_moved(x, y, size);
 }
 
 /// Clic en la cuadrícula: abre la app, cambia de página o cierra por vacío.
+/// Durante el cierre no se aceptan clics.
 pub(crate) fn click_launchpad(
     session: &mut DockSession,
     surface: &mut Surface,
     x: f32,
     y: f32,
 ) -> Result<(), Box<dyn Error>> {
+    if session.launchpad.is_closing() {
+        return Ok(());
+    }
     let size = launchpad_size(surface);
     let action = session.launchpad.click(x, y, size);
     apply_launchpad_action(session, surface, action)
@@ -78,11 +100,17 @@ pub(crate) fn click_launchpad(
 
 /// Letra escrita: filtra y vuelve a la primera página.
 pub(crate) fn type_over_launchpad(session: &mut DockSession, character: char) {
+    if session.launchpad.is_closing() {
+        return;
+    }
     session.launchpad.type_character(character);
 }
 
 /// Retroceso: borra la última letra.
 pub(crate) fn erase_over_launchpad(session: &mut DockSession) {
+    if session.launchpad.is_closing() {
+        return;
+    }
     session.launchpad.erase_character();
 }
 
@@ -91,15 +119,21 @@ pub(crate) fn confirm_over_launchpad(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
+    if session.launchpad.is_closing() {
+        return Ok(());
+    }
     let action = session.launchpad.confirm();
     apply_launchpad_action(session, surface, action)
 }
 
-/// Esc limpia lo escrito y, si ya está vacío, cierra.
+/// Esc limpia lo escrito y quita el foco; con la casilla vacía y sin foco, cierra.
 pub(crate) fn escape_over_launchpad(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
+    if session.launchpad.is_closing() {
+        return Ok(());
+    }
     let action = session.launchpad.escape();
     apply_launchpad_action(session, surface, action)
 }
@@ -112,12 +146,12 @@ fn apply_launchpad_action(
 ) -> Result<(), Box<dyn Error>> {
     match action {
         LaunchpadAction::Open(app) => {
-            close_launchpad(session, surface);
-            session.render(surface)?;
+            begin_close_launchpad(session, surface);
+            crate::session_render::render(session, surface)?;
             session.launcher.launch(&app)?;
         }
         LaunchpadAction::Close => {
-            close_launchpad(session, surface);
+            begin_close_launchpad(session, surface);
         }
         LaunchpadAction::ShowPage(page) => {
             session.launchpad.go_to_page(launchpad_size(surface), page);
@@ -129,45 +163,33 @@ fn apply_launchpad_action(
 
 /// La rueda cambia de página.
 pub(crate) fn scroll_launchpad(session: &mut DockSession, surface: &Surface, delta: i16) {
+    if session.launchpad.is_closing() {
+        return;
+    }
     let size = launchpad_size(surface);
     session.launchpad.scroll(size, delta);
 }
 
 /// Flecha izquierda: retrocede de página o cede en la primera.
 pub(crate) fn page_back_launchpad(session: &mut DockSession, surface: &Surface) {
+    if session.launchpad.is_closing() {
+        return;
+    }
     let size = launchpad_size(surface);
     session.launchpad.step_backward(size);
 }
 
 /// Flecha derecha: avanza de página o cede en la última.
 pub(crate) fn page_forward_launchpad(session: &mut DockSession, surface: &Surface) {
+    if session.launchpad.is_closing() {
+        return;
+    }
     let size = launchpad_size(surface);
     session.launchpad.step_forward(size);
 }
 
-/// Dibuja la cuadrícula del Launchpad en su ventana propia.
-pub(crate) fn render_launchpad(
-    session: &mut DockSession,
-    surface: &mut Surface,
-) -> Result<(), Box<dyn Error>> {
-    let size = launchpad_size(surface);
-    let raw: HashMap<AppId, Arc<Bitmap>> = session
-        .launchpad
-        .apps()
-        .iter()
-        .filter_map(|app| {
-            let image = session.icons.icon_for(&app.executable)?;
-            Some((app.id.clone(), image))
-        })
-        .collect();
-    let theme = Arc::clone(&session.theme);
-    let images = session.launchpad.tiled_images(&raw, &theme);
-    let scene = launchpad_scene(&session.theme, size, &mut session.launchpad, &images);
-    session.renderer.draw_launchpad(&scene)?;
-    Ok(())
-}
-
-fn launchpad_size(surface: &Surface) -> Size {
+/// Tamaño lógico del Launchpad para la cuadrícula.
+pub(crate) fn launchpad_size(surface: &Surface) -> Size {
     let size = surface.launchpad_size();
     Size {
         width: size[0],

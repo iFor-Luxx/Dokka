@@ -11,9 +11,9 @@ use crate::context_menu::{open_context_menu, poll_app_picker, run_menu_action};
 use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
 use crate::launchpad::{
-    click_launchpad, close_launchpad, confirm_over_launchpad, erase_over_launchpad,
-    escape_over_launchpad, move_over_launchpad, page_back_launchpad, page_forward_launchpad,
-    scroll_launchpad, type_over_launchpad,
+    begin_close_launchpad, click_launchpad, confirm_over_launchpad, erase_over_launchpad,
+    escape_over_launchpad, finish_close_launchpad, move_over_launchpad, page_back_launchpad,
+    page_forward_launchpad, scroll_launchpad, type_over_launchpad,
 };
 use crate::media::send_media;
 use crate::perform_click::perform_click;
@@ -56,8 +56,8 @@ pub(crate) fn handle_event(
             click_launchpad(session, surface, x, y)?;
         }
         SurfaceEvent::LaunchpadDismissed => {
-            if session.launchpad.is_open() {
-                close_launchpad(session, surface);
+            if session.launchpad.is_open() && !session.launchpad.is_closing() {
+                begin_close_launchpad(session, surface);
             }
         }
         SurfaceEvent::LaunchpadTyped { character } => {
@@ -99,6 +99,9 @@ pub(crate) fn handle_event(
             session.dock.advance(seconds);
             if session.launchpad.is_open() {
                 session.launchpad.advance(seconds);
+                if session.launchpad.close_finished() {
+                    finish_close_launchpad(session, surface);
+                }
             }
             if !session.launchpad.is_open() {
                 session.previews.advance(seconds);
@@ -120,6 +123,9 @@ pub(crate) fn handle_event(
         }
         SurfaceEvent::Tick => {
             session.update_clock_and_trash();
+            if session.launchpad.is_open() {
+                session.launchpad.tick();
+            }
             poll_app_picker(session, surface)?;
         }
         SurfaceEvent::Dismissed => {
@@ -133,14 +139,14 @@ pub(crate) fn handle_event(
         }
         SurfaceEvent::RightClicked { x, y } => {
             if session.launchpad.is_open() {
-                close_launchpad(session, surface);
+                begin_close_launchpad(session, surface);
             } else {
                 session.previews.close();
                 open_context_menu(session, surface, x, y)?;
             }
         }
     }
-    session.render(surface)
+    crate::session_render::render(session, surface)
 }
 
 /// Los paneles están por encima: tienen prioridad sobre el dock.
