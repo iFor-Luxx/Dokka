@@ -1,6 +1,6 @@
 use dokka_components::calendar_panel::{calendar_panel, calendar_size};
 use dokka_components::popup_panel::place_above;
-use dokka_components::preview_card::{preview_card, preview_size};
+use dokka_components::preview_card::{PreviewHover, preview_card, preview_size};
 use dokka_scene::{Overlay, Rect};
 use dokka_theme::popup as theme;
 
@@ -100,7 +100,15 @@ impl Previews {
             PreviewContent::Windows(windows) => {
                 let shown = visible_windows(windows.len(), request.limit);
                 let media = self.media.as_ref().map(|now| (now, &self.media_icons));
-                preview_card(&self.theme, drawn, &windows[..shown], media)
+                let hovered = self.hovered_index(&windows[..shown]);
+                preview_card(
+                    &self.theme,
+                    &self.window_buttons,
+                    drawn,
+                    &windows[..shown],
+                    media,
+                    hovered,
+                )
             }
         };
         // Los botones van en otra ventana: aparecen al terminar la entrada
@@ -112,6 +120,19 @@ impl Previews {
         overlay.scale = self.scale();
         overlay.origin = self.origin()?;
         Some(overlay)
+    }
+
+    /// Mini bajo el cursor con su estado de fijada, si sigue visible.
+    fn hovered_index(
+        &self,
+        shown: &[dokka_components::preview_card::PreviewWindow],
+    ) -> Option<PreviewHover> {
+        let hovered = self.hovered?;
+        let index = shown.iter().position(|item| item.window == hovered)?;
+        Some(PreviewHover {
+            index,
+            is_pinned: self.pinned.contains(&hovered),
+        })
     }
 }
 

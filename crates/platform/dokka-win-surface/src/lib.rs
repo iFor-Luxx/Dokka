@@ -6,6 +6,7 @@ mod launchpad_window;
 mod local_time;
 mod menu_focus;
 mod place_window;
+mod preview_window;
 mod read_pointer;
 mod run_loop;
 mod set_active_area;

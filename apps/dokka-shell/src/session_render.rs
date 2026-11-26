@@ -12,6 +12,8 @@ use dokka_win_surface::Surface;
 use crate::dock_session::DockSession;
 use crate::launchpad::launchpad_size;
 use crate::media::update_media;
+use crate::preview_actions::update_pinned;
+use crate::preview_large::{above_window_area, update_large_preview};
 use crate::settings::render_settings;
 
 /// Dibuja el instante actual.
@@ -20,6 +22,7 @@ pub(crate) fn render(
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     update_media(session);
+    update_pinned(session);
     let mut scene = dock_scene(session);
     if session.launchpad.is_open() {
         // Con el Launchpad no hay menú ni vistas previas.
@@ -39,10 +42,8 @@ pub(crate) fn render(
     }
     session.renderer.draw(&scene)?;
     let controls = scene.overlay.and_then(|overlay| overlay.controls);
-    surface.show_above(controls.map(|controls| {
-        let area = controls.panel.bounds;
-        [area.x, area.y, area.width, area.height]
-    }))?;
+    surface.show_above(controls.as_ref().map(above_window_area))?;
+    update_large_preview(session, surface);
     let areas: Vec<[f32; 4]> = if session.launchpad.is_open() {
         [Some(session.dock.active_area(session.state.apps()))]
             .into_iter()

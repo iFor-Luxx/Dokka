@@ -11,6 +11,7 @@ mod graphics_device;
 mod icon_layer;
 mod label_layer;
 mod label_pointer;
+mod large_preview;
 mod overlay_layers;
 mod paint_bitmap;
 mod paint_drawing;

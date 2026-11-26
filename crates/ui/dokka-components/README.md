@@ -1,7 +1,8 @@
 # dokka-components
 
 **Hace:** componentes reutilizables de interfaz: etiqueta flotante de cristal (`tooltip`),
-fondo de paneles (`popup_panel`), calendario con sus flechas Lucide, vistas previas, menú del clic derecho
+fondo de paneles (`popup_panel`), calendario con sus flechas Lucide, vistas previas con
+botones redondos de cerrar y fijar, menú del clic derecho
 (`menu_panel`: tamaño, `Overlay` y fila bajo un punto, con iconos Lucide de marca elegida y del chevrón
 y submenú sin punta; sin significado), cuadrícula de apps (`app_grid`: 7 columnas que empiezan arriba, iconos,
 textos recortados con "…", mensaje de vacío centrado, resaltado y app bajo un punto), casilla de búsqueda (`search_field`:

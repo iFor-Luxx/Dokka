@@ -34,5 +34,7 @@ pub enum MediaCommand {
 pub enum PreviewClick {
     Handled,
     Activate(u64),
+    Close(u64),
+    TogglePin(u64),
     Media(MediaCommand),
 }

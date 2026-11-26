@@ -2,7 +2,7 @@ use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::{
     DefWindowProcW, GW_OWNER, GWL_EXSTYLE, GetWindow, GetWindowLongW, HTTRANSPARENT, MA_NOACTIVATE,
     PostMessageW, PostQuitMessage, SW_HIDE, ShowWindow, WA_INACTIVE, WM_ACTIVATE, WM_CLOSE,
-    WM_DESTROY, WM_MOUSEACTIVATE, WM_NCHITTEST, WS_EX_NOACTIVATE,
+    WM_DESTROY, WM_MOUSEACTIVATE, WM_NCHITTEST, WS_EX_NOACTIVATE, WS_EX_TRANSPARENT,
 };
 
 /// Aviso propio de que la ventana dejó de estar activa o se pulsó Esc.
@@ -24,7 +24,8 @@ pub(crate) unsafe extern "system" fn window_procedure(
             LRESULT(MA_NOACTIVATE as isize)
         }
         // La ventana superpuesta es solo visual: el mouse llega a su dueña.
-        WM_NCHITTEST if is_owned() => LRESULT(HTTRANSPARENT as isize),
+        // La vista grande también deja pasar el mouse hacia la ventana real.
+        WM_NCHITTEST if is_owned() || has_transparent(window) => LRESULT(HTTRANSPARENT as isize),
         WM_ACTIVATE if !is_owned() && wparam.0 & 0xFFFF == WA_INACTIVE as usize => {
             // SAFETY: reenvía el aviso a la cola del hilo para que lo lea `run_loop`.
             let _ = unsafe { PostMessageW(Some(window), DISMISS_MESSAGE, WPARAM(0), LPARAM(0)) };
@@ -55,4 +56,11 @@ fn has_no_activate(window: HWND) -> bool {
     // SAFETY: consulta de solo lectura del estilo extendido propio.
     let style = unsafe { GetWindowLongW(window, GWL_EXSTYLE) } as u32;
     style & WS_EX_NOACTIVATE.0 != 0
+}
+
+/// `true` si la ventana deja pasar el mouse, como la vista grande.
+fn has_transparent(window: HWND) -> bool {
+    // SAFETY: consulta de solo lectura del estilo extendido propio.
+    let style = unsafe { GetWindowLongW(window, GWL_EXSTYLE) } as u32;
+    style & WS_EX_TRANSPARENT.0 != 0
 }

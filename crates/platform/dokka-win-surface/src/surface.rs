@@ -2,7 +2,9 @@ use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::WindowsAndMessaging::PostQuitMessage;
 
 use crate::SurfaceError;
-use crate::create_window::{create_launchpad_window, create_settings_window, create_window};
+use crate::create_window::{
+    create_launchpad_window, create_preview_window, create_settings_window, create_window,
+};
 use crate::place_window::{fullscreen_size, place_at_bottom_center, place_fullscreen};
 
 /// Medidas lógicas de una superficie anclada abajo y centrada.
@@ -36,6 +38,10 @@ pub struct Surface {
     pub(crate) above: HWND,
     /// Pantalla completa del Launchpad, oculta hasta que se abre.
     pub(crate) launchpad: HWND,
+    /// Vista grande de la ventana bajo el cursor, oculta hasta que se usa.
+    pub(crate) preview: HWND,
+    /// `true` mientras la vista grande está visible.
+    pub(crate) preview_visible: bool,
     /// `true` mientras el Launchpad está visible.
     pub(crate) launchpad_visible: bool,
     /// Tamaño lógico del Launchpad para dibujar la cuadrícula.
@@ -71,6 +77,8 @@ impl Surface {
             window,
             above: create_window(Some(window))?,
             launchpad,
+            preview: create_preview_window()?,
+            preview_visible: false,
             launchpad_visible: false,
             launchpad_size,
             settings,

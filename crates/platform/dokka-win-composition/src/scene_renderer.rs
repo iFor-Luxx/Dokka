@@ -12,6 +12,7 @@ use windows_numerics::Vector3;
 
 use crate::CompositionError;
 use crate::controls_layer::ControlsLayer;
+use crate::large_preview::LargePreview;
 use crate::painter::Painter;
 use crate::scene_layers::SceneLayers;
 use crate::window_thumbnails::WindowThumbnails;
@@ -27,12 +28,15 @@ pub struct WindowHandles {
     pub main: SurfaceHandle,
     pub above: SurfaceHandle,
     pub launchpad: SurfaceHandle,
+    /// Vista grande, por debajo del dock.
+    pub preview: SurfaceHandle,
     pub settings: SurfaceHandle,
 }
 
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
 pub struct SceneRenderer {
     thumbnails: WindowThumbnails,
+    preview: LargePreview,
     layers: Option<SceneLayers>,
     launchpad_layers: Option<SceneLayers>,
     settings_layers: Option<SceneLayers>,
@@ -48,8 +52,9 @@ pub struct SceneRenderer {
 }
 
 impl SceneRenderer {
-    /// Prepara el dibujo desde el hilo de las ventanas. Un solo compositor y
-    /// una sola cola sirven a los cuatro árboles visuales.
+    /// Prepara el dibujo desde el hilo de las ventanas, una sola vez. Un solo compositor y
+    /// una sola cola sirven a todos los árboles visuales.
+    /// `icon_bytes` son los bytes `&'static` de la fuente de iconos en memoria.
     pub fn attach(
         handles: WindowHandles,
         scale: f32,
@@ -71,6 +76,18 @@ impl SceneRenderer {
     pub fn draw(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
         Ok(self.apply(scene)?)
     }
+
+    /// Vista grande en su sitio real. `false` si no hay imagen válida.
+    pub fn show_large(&mut self, source: u64, area: [i32; 4]) -> bool {
+        self.preview.show(source, area).unwrap_or(false)
+    }
+
+    /// Esconde la vista grande.
+    pub fn hide_large(&mut self) {
+        self.preview.hide();
+    }
+
+    /// Muestra el Launchpad a pantalla completa en su propio árbol visual.
     pub fn draw_launchpad(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
         let layers = self.launchpad_layers.take();
         self.launchpad_layers = Some(Self::apply_tree(
@@ -105,6 +122,7 @@ impl SceneRenderer {
         let compositor = Compositor::new()?;
         Ok(Self {
             thumbnails: WindowThumbnails::new(handles.main.raw(), scale),
+            preview: LargePreview::new(handles.preview.raw()),
             layers: None,
             launchpad_layers: None,
             settings_layers: None,

@@ -8,6 +8,8 @@ mod launchpad;
 mod media;
 mod perform_click;
 mod pinned_apps;
+mod preview_actions;
+mod preview_large;
 mod session_render;
 mod settings;
 mod taskbar_mode;
@@ -43,6 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             main: surface.handle(),
             above: surface.above_handle(),
             launchpad: surface.launchpad_handle(),
+            preview: surface.preview_handle(),
             settings: surface.settings_handle(),
         },
         surface.scale(),
