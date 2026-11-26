@@ -12,7 +12,8 @@ use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
 use crate::launchpad::{
     click_launchpad, close_launchpad, confirm_over_launchpad, erase_over_launchpad,
-    escape_over_launchpad, move_over_launchpad, scroll_launchpad, type_over_launchpad,
+    escape_over_launchpad, move_over_launchpad, page_back_launchpad, page_forward_launchpad,
+    scroll_launchpad, type_over_launchpad,
 };
 use crate::media::send_media;
 use crate::perform_click::perform_click;
@@ -84,8 +85,21 @@ pub(crate) fn handle_event(
                 scroll_launchpad(session, surface, delta);
             }
         }
+        SurfaceEvent::LaunchpadPrevPage => {
+            if session.launchpad.is_open() {
+                page_back_launchpad(session, surface);
+            }
+        }
+        SurfaceEvent::LaunchpadNextPage => {
+            if session.launchpad.is_open() {
+                page_forward_launchpad(session, surface);
+            }
+        }
         SurfaceEvent::Frame { seconds } => {
             session.dock.advance(seconds);
+            if session.launchpad.is_open() {
+                session.launchpad.advance(seconds);
+            }
             if !session.launchpad.is_open() {
                 session.previews.advance(seconds);
             }

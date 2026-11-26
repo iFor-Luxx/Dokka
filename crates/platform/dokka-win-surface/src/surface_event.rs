@@ -37,6 +37,10 @@ pub enum SurfaceEvent {
     LaunchpadBackspace,
     /// Enter sobre el Launchpad.
     LaunchpadEnter,
+    /// Flecha izquierda sobre el Launchpad: retrocede de página.
+    LaunchpadPrevPage,
+    /// Flecha derecha sobre el Launchpad: avanza de página.
+    LaunchpadNextPage,
     /// Esc sobre el Launchpad: limpia la búsqueda antes de cerrar.
     LaunchpadEscape,
     /// Rueda sobre el Launchpad: cambia de página.

@@ -1,5 +1,5 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::{
-    TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent, VK_BACK, VK_ESCAPE, VK_RETURN,
+    TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent, VK_BACK, VK_ESCAPE, VK_LEFT, VK_RETURN, VK_RIGHT,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
     MSG, WM_CHAR, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_MOUSEWHEEL,
@@ -28,6 +28,12 @@ pub(crate) fn read_pointer(
         }
         WM_KEYDOWN if message.wParam.0 == VK_BACK.0 as usize => {
             Some(SurfaceEvent::LaunchpadBackspace)
+        }
+        WM_KEYDOWN if message.wParam.0 == VK_LEFT.0 as usize => {
+            Some(SurfaceEvent::LaunchpadPrevPage)
+        }
+        WM_KEYDOWN if message.wParam.0 == VK_RIGHT.0 as usize => {
+            Some(SurfaceEvent::LaunchpadNextPage)
         }
         WM_CHAR => typed_character(message),
         WM_MOUSEWHEEL => Some(SurfaceEvent::LaunchpadWheel {

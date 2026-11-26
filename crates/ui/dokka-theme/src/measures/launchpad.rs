@@ -35,29 +35,36 @@ pub const HIGHLIGHT_PADDING: f32 = 12.0;
 /// Nombres largos recortados con "…".
 pub const MAX_NAME_CHARACTERS: usize = 18;
 
-/// Ancho de la casilla de búsqueda respecto al ancho (250 sobre 2560).
-pub const SEARCH_WIDTH_RATIO: f32 = 250.0 / 2560.0;
-/// Alto de la casilla respecto al alto (24 sobre 1440).
-pub const SEARCH_HEIGHT_RATIO: f32 = 24.0 / 1440.0;
+/// Ancho de la casilla de búsqueda respecto al ancho (340 sobre 2560).
+pub const SEARCH_WIDTH_RATIO: f32 = 340.0 / 2560.0;
+/// Alto de la casilla respecto al alto (34 sobre 1440).
+pub const SEARCH_HEIGHT_RATIO: f32 = 34.0 / 1440.0;
 /// Borde superior de la casilla respecto al alto (125 sobre 1440).
 pub const SEARCH_TOP_RATIO: f32 = 125.0 / 1440.0;
-pub const SEARCH_TEXT_SIZE: f32 = 12.0;
+/// Tamaño del texto escrito y del marcador "Buscar".
+pub const SEARCH_TEXT_SIZE: f32 = 15.0;
 /// Grosor del borde de la casilla.
 pub const SEARCH_BORDER_WIDTH: f32 = 1.0;
 /// Lado de la lupa, en unidades lógicas.
-pub const SEARCH_ICON_SIDE: f32 = 14.0;
+pub const SEARCH_ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo Lucide dentro del lienzo de 100 para la lupa.
-pub const SEARCH_GLYPH_SIZE: f32 = 84.0;
+pub const SEARCH_GLYPH_SIZE: f32 = 100.0;
 /// Aire entre el borde de la casilla y la lupa.
-pub const SEARCH_ICON_INSET: f32 = 9.0;
+pub const SEARCH_ICON_INSET: f32 = 14.0;
 /// Texto que se muestra cuando no se ha escrito nada.
 pub const SEARCH_PLACEHOLDER: &str = "Buscar";
-/// Mitad del ancho aproximado de "Buscar": centra el grupo de lupa y texto.
-pub const SEARCH_PLACEHOLDER_HALF_WIDTH: f32 = 19.0;
+/// Mitad del ancho aproximado de "Buscar" a su tamaño nuevo: centra el grupo de lupa y texto.
+pub const SEARCH_PLACEHOLDER_HALF_WIDTH: f32 = 24.0;
 /// Aire entre la lupa y el texto de la casilla.
-pub const SEARCH_MAGNIFIER_GAP: f32 = 6.0;
+pub const SEARCH_MAGNIFIER_GAP: f32 = 10.0;
+/// Distancia del borde izquierdo al texto escrito: lupa más aire a ambos lados.
+pub const SEARCH_TEXT_INSET: f32 = SEARCH_ICON_INSET + SEARCH_ICON_SIDE + SEARCH_MAGNIFIER_GAP;
 /// Cuántos caracteres guarda la búsqueda.
 pub const SEARCH_MAX_CHARACTERS: usize = 32;
+/// Mensaje centrado cuando el filtro no encuentra nada.
+pub const EMPTY_TEXT: &str = "Sin resultados";
+/// Tamaño del mensaje de búsqueda vacía.
+pub const EMPTY_TEXT_SIZE: f32 = 15.0;
 
 /// Línea de los puntos respecto al alto (1013 sobre 1440).
 pub const DOTS_CENTER_Y_RATIO: f32 = 1013.0 / 1440.0;
@@ -67,6 +74,14 @@ pub const DOT_DIAMETER_RATIO: f32 = 8.0 / 2560.0;
 pub const DOT_PITCH_RATIO: f32 = 24.0 / 2560.0;
 /// Lado del cuadrado que responde al clic en un punto.
 pub const DOT_HIT_SIDE: f32 = 24.0;
+/// Diámetro del aro claro tras el punto actual respecto al ancho (11 sobre 2560):
+/// lo hace algo mayor sin cambiar el tamaño de los puntos.
+pub const DOT_ACTIVE_HALO_RATIO: f32 = 11.0 / 2560.0;
+/// Cuánto tarda la cuadrícula en deslizarse a otra página, en segundos.
+pub const PAGE_SLIDE_SECONDS: f32 = 0.3;
+/// Cuánto cede la cuadrícula al intentar pasar de la primera o la última página
+/// respecto al ancho (40 sobre 2560).
+pub const PAGE_NUDGE_RATIO: f32 = 40.0 / 2560.0;
 
 /// Lado del icono de app para este ancho de pantalla.
 pub fn icon_side(screen_width: f32) -> f32 {
@@ -128,7 +143,22 @@ pub fn search_top(screen_height: f32) -> f32 {
     screen_height * SEARCH_TOP_RATIO
 }
 
-/// Radio de la casilla: un cuarto de su alto (6 sobre 24).
+/// Centro vertical del mensaje de búsqueda vacía: a media cuadrícula.
+pub fn empty_center_y(screen_height: f32) -> f32 {
+    (grid_top(screen_height) + dots_center_y(screen_height)) / 2.0
+}
+
+/// Lado del aro claro tras el punto actual para este ancho.
+pub fn dot_halo_diameter(screen_width: f32) -> f32 {
+    screen_width * DOT_ACTIVE_HALO_RATIO
+}
+
+/// Cuánto cede la cuadrícula al intentar salir de los extremos para este ancho.
+pub fn page_nudge_distance(screen_width: f32) -> f32 {
+    screen_width * PAGE_NUDGE_RATIO
+}
+
+/// Radio de la casilla: un cuarto de su alto.
 pub fn search_radius(screen_height: f32) -> f32 {
     search_height(screen_height) / 4.0
 }

@@ -52,22 +52,29 @@ pub fn search_magnifier(theme: &Theme, props: &SearchFieldProps, drawing: &Arc<D
     }
 }
 
-/// Lo escrito o el texto "Buscar", centrado en la casilla.
+/// Lo escrito, alineado a la izquierda tras la lupa; o el texto "Buscar"
+/// centrado con la lupa como grupo cuando la casilla está vacía.
 pub fn search_label(theme: &Theme, props: &SearchFieldProps) -> Text {
     let bounds = search_bounds(props);
-    let content = if props.query.is_empty() {
-        measures::SEARCH_PLACEHOLDER.to_owned()
-    } else {
-        props.query.clone()
-    };
+    if props.query.is_empty() {
+        return Text {
+            x: bounds.x + bounds.width / 2.0,
+            center_y: bounds.y + bounds.height / 2.0,
+            content: measures::SEARCH_PLACEHOLDER.to_owned(),
+            size: measures::SEARCH_TEXT_SIZE,
+            is_bold: false,
+            color: theme.launchpad.search_text,
+            align: TextAlign::Center,
+        };
+    }
     Text {
-        x: bounds.x + bounds.width / 2.0,
+        x: bounds.x + measures::SEARCH_TEXT_INSET,
         center_y: bounds.y + bounds.height / 2.0,
-        content,
+        content: props.query.clone(),
         size: measures::SEARCH_TEXT_SIZE,
         is_bold: false,
         color: theme.launchpad.search_text,
-        align: TextAlign::Center,
+        align: TextAlign::Left,
     }
 }
 

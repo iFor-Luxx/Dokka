@@ -155,6 +155,19 @@ pub fn app_at(props: &AppGridProps, x: f32, y: f32) -> Option<usize> {
     None
 }
 
+/// Mensaje centrado cuando el filtro no encuentra nada, a media cuadrícula.
+pub fn empty_label(theme: &Theme, screen: Size) -> Text {
+    Text {
+        x: screen.width / 2.0,
+        center_y: measures::empty_center_y(screen.height),
+        content: measures::EMPTY_TEXT.to_owned(),
+        size: measures::EMPTY_TEXT_SIZE,
+        is_bold: false,
+        color: theme.launchpad.text,
+        align: TextAlign::Center,
+    }
+}
+
 /// Filas que caben entre la primera fila y los puntos de página.
 fn rows_that_fit(screen_width: f32, screen_height: f32, icon: f32) -> usize {
     let bottom =

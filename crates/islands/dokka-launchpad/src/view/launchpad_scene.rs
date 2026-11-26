@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dokka_components::app_grid::{AppGridItem, AppGridProps, app_highlight, app_icons, app_texts};
-use dokka_components::page_dots::{PageDotsProps, page_dots};
+use dokka_components::app_grid::{
+    AppGridItem, AppGridProps, app_highlight, app_icons, app_texts, empty_label,
+};
+use dokka_components::page_dots::{PageDotsProps, dot_halo, page_dots};
 use dokka_components::search_field::{
     SearchFieldProps, search_label, search_magnifier, search_panel,
 };
@@ -15,6 +17,11 @@ use crate::Launchpad;
 /// Escena a pantalla completa: fondo, casilla de búsqueda, iconos, nombres y
 /// puntos de página. Cada capa visual se crea arriba, en orden de pintado:
 /// fondo, paneles, resaltado, iconos, puntos y textos.
+///
+/// Durante el deslizamiento la página destino ya está dibujada y se desplaza
+/// hasta su sitio; la casilla y los puntos se quedan quietos. La cantidad de
+/// iconos y textos no cambia a mitad del movimiento: las capas solo se
+/// actualizan.
 pub fn launchpad_scene(
     theme: &Theme,
     screen: Size,
@@ -22,6 +29,8 @@ pub fn launchpad_scene(
     images: &HashMap<AppId, Arc<Bitmap>>,
 ) -> Scene {
     let visible = launchpad.visible_apps(screen);
+    let show_empty = visible.is_empty();
+    let offset = launchpad.motion_offset(screen.width);
     let items = visible
         .iter()
         .map(|app| AppGridItem {
@@ -48,9 +57,24 @@ pub fn launchpad_scene(
     };
     let drawing = launchpad.magnifier(theme.launchpad.search_text);
     let mut icons = app_icons(theme, &grid);
+    if offset != 0.0 {
+        for icon in &mut icons {
+            icon.x += offset;
+        }
+    }
     icons.push(search_magnifier(theme, &search, &drawing));
     let mut texts = app_texts(theme, &grid);
+    if show_empty {
+        texts.push(empty_label(theme, screen));
+    }
+    if offset != 0.0 {
+        for text in &mut texts {
+            text.x += offset;
+        }
+    }
     texts.push(search_label(theme, &search));
+    let mut highlight = app_highlight(theme, &grid);
+    highlight.bounds.x += offset;
     Scene {
         panel: Panel {
             bounds: Rect {
@@ -64,14 +88,14 @@ pub fn launchpad_scene(
             tint: theme.launchpad.background,
             border: theme.launchpad.background,
         },
-        panels: vec![search_panel(theme, &search)],
+        panels: vec![search_panel(theme, &search), dot_halo(theme, &dots)],
         icons,
         dots: page_dots(theme, &dots),
         dividers: Vec::new(),
         thumbnails: Vec::new(),
         labels: Vec::new(),
         texts,
-        highlight: Some(app_highlight(theme, &grid)),
+        highlight: Some(highlight),
         overlay: None,
         submenu: None,
     }
