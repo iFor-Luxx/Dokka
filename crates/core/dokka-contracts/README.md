@@ -2,7 +2,9 @@
 
 **Hace:** define los traits que las islas usan para pedir cosas a Windows o a los servicios.
 `AppCatalog` lista las apps instaladas para el Launchpad; `AppLauncher` las abre.
-`WindowControl` trae al frente, minimiza, cierra (`WM_CLOSE`) y fija por encima.
+`WindowControl` trae al frente, minimiza, cierra (`WM_CLOSE`), fija por encima y dice cuál de varias está más al frente.
+`AppActions` abre como administrador y muestra el archivo en su carpeta; `RecycleBin` vacía la
+papelera con la confirmación de Windows.
 
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 
