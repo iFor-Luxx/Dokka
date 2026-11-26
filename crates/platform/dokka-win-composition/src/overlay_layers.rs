@@ -12,13 +12,16 @@ use crate::pointer_layer::{PointerLayer, pointer_style_of};
 use crate::text_layer::TextLayer;
 
 /// Elementos visuales de un panel flotante.
-/// Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
+/// Orden: panel, píldora, punta, resaltado, líneas, puntos, textos, iconos.
 /// Todo cuelga de un contenedor para fundir el panel sin tocar el dock ni las etiquetas.
 pub(crate) struct OverlayLayers {
     container: ContainerVisual,
     panel: PanelLayer,
     /// Apariencia con la que se creó el fondo.
     style: Panel,
+    pill: Option<PanelLayer>,
+    /// Panel con el que se creó la píldora, si la hay.
+    pill_style: Option<Panel>,
     pointer: Option<PointerLayer>,
     /// Altura con la que se creó la punta, si la hay.
     pointer_style: Option<f32>,
@@ -43,7 +46,12 @@ impl OverlayLayers {
         container.SetOpacity(overlay.opacity)?;
         apply_scale(&container, overlay)?;
         let panel = PanelLayer::add(compositor, &container, &overlay.panel)?;
-        // Encima del panel para que su cristal tape ese tramo de borde y de tinte.
+        // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
+        let mut pill = None;
+        if let Some(pill_panel) = &overlay.pill {
+            pill = Some(PanelLayer::add(compositor, &container, pill_panel)?);
+        }
+        // Encima de la píldora para que su cristal tape ese tramo de borde y de tinte.
         let mut pointer = None;
         if let Some(style) = &overlay.pointer {
             pointer = Some(PointerLayer::add(
@@ -82,6 +90,8 @@ impl OverlayLayers {
             container,
             panel,
             style: overlay.panel,
+            pill,
+            pill_style: overlay.pill,
             pointer,
             pointer_style: overlay.pointer.map(pointer_style_of),
             highlight,
@@ -98,6 +108,8 @@ impl OverlayLayers {
     /// la punta se mueve con `update`. La opacidad, la posición y la escala no reconstruyen.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
         self.style.tint == overlay.panel.tint
+            && self.pill.is_some() == overlay.pill.is_some()
+            && self.pill_style.map(pill_style_of) == overlay.pill.map(pill_style_of)
             && self.pointer.is_some() == overlay.pointer.is_some()
             && self.pointer_style == overlay.pointer.map(pointer_style_of)
             && self.highlight.is_some() == overlay.highlight.is_some()
@@ -123,6 +135,9 @@ impl OverlayLayers {
         self.container.SetOpacity(overlay.opacity)?;
         apply_scale(&self.container, overlay)?;
         self.panel.update(&overlay.panel)?;
+        if let (Some(layer), Some(pill)) = (&self.pill, &overlay.pill) {
+            layer.update(pill)?;
+        }
         if let (Some(layer), Some(pointer)) = (&self.pointer, &overlay.pointer) {
             layer.update(&overlay.panel, pointer)?;
         }
@@ -143,6 +158,16 @@ impl OverlayLayers {
         }
         Ok(())
     }
+}
+
+/// Lo que fija el aspecto de la píldora al crearse: `update` no lo cambia.
+fn pill_style_of(panel: Panel) -> (dokka_scene::Color, dokka_scene::Color, f32, f32) {
+    (
+        panel.tint,
+        panel.border,
+        panel.corner_radius,
+        panel.border_width,
+    )
 }
 
 /// Lo que fija el aspecto del resaltado al crearse: `update` no lo cambia.

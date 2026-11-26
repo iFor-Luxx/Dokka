@@ -1,4 +1,5 @@
-use dokka_components::calendar_panel::calendar_arrows;
+use dokka_components::calendar_panel::calendar_nav_pill;
+use dokka_components::nav_pill::{NavHalf, NavPillProps, nav_pill_at};
 use dokka_components::preview_card::{media_buttons, preview_slot, window_button_areas};
 use dokka_scene::Rect;
 
@@ -17,11 +18,16 @@ impl Previews {
         let content = self.open.as_ref()?.content.clone();
         match content {
             PreviewContent::Calendar => {
-                let (previous, next) = calendar_arrows(bounds);
-                if contains(previous, x, y) {
-                    self.month_offset -= 1;
-                } else if contains(next, x, y) {
-                    self.month_offset += 1;
+                let props = NavPillProps {
+                    bounds: calendar_nav_pill(bounds),
+                    can_previous: true,
+                    can_next: true,
+                    hovered: None,
+                };
+                match nav_pill_at(&props, x, y) {
+                    Some(NavHalf::Previous) => self.month_offset -= 1,
+                    Some(NavHalf::Next) => self.month_offset += 1,
+                    None => (),
                 }
                 Some(PreviewClick::Handled)
             }

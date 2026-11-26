@@ -11,6 +11,7 @@ pub struct Theme {
     pub menu: MenuColors,
     pub launchpad: LaunchpadColors,
     pub settings: SettingsColors,
+    pub nav_pill: NavPillColors,
     pub icons: IconColors,
 }
 
@@ -72,6 +73,17 @@ pub struct LaunchpadColors {
     pub dot_inactive: Color,
     /// Baldosa clara de los iconos uniformes.
     pub tile: Color,
+}
+
+/// Colores de la píldora segmentada de navegación (calendario y Preferencias).
+#[derive(Debug, Clone, Copy)]
+pub struct NavPillColors {
+    pub background: Color,
+    pub border: Color,
+    pub icon: Color,
+    pub icon_disabled: Color,
+    pub divider: Color,
+    pub hover: Color,
 }
 
 /// Colores de la ventana de Preferencias en tema claro.

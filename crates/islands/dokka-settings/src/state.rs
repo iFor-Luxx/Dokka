@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
-use dokka_icons::settings_back_icon;
-use dokka_icons::settings_forward_icon;
+use dokka_components::nav_pill::NavPillIcons;
 use dokka_scene::{Color, Drawing};
 use dokka_theme::{Theme, settings as measures};
 
@@ -17,7 +16,7 @@ pub struct Settings {
     hovered: Option<usize>,
     rows: Vec<Option<(Color, Arc<Drawing>)>>,
     search: Option<(Color, Arc<Drawing>)>,
-    nav: [Option<(Color, Arc<Drawing>)>; 2],
+    nav: Option<NavPillIcons>,
 }
 
 impl Default for Settings {
@@ -28,7 +27,7 @@ impl Default for Settings {
             hovered: None,
             rows: vec![None; measures::SECTIONS],
             search: None,
-            nav: [None, None],
+            nav: None,
         }
     }
 }
@@ -120,25 +119,12 @@ impl Settings {
         }
     }
 
-    /// Chevrones atenuados de la cabecera, creados una vez y reutilizados.
-    pub(crate) fn nav_drawings(&mut self, theme: &Theme) -> [Arc<Drawing>; 2] {
-        let color = theme.settings.nav;
-        let makers = [settings_back_icon, settings_forward_icon];
-        for (slot, make) in self.nav.iter_mut().zip(makers) {
-            if slot.as_ref().is_none_or(|(known, _)| *known != color) {
-                *slot = Some((color, Arc::new(make(color))));
-            }
+    /// Chevrones atenuados de la píldora, creados una vez y reutilizados.
+    pub(crate) fn nav_drawings(&mut self, theme: &Theme) -> NavPillIcons {
+        if self.nav.is_none() {
+            self.nav = Some(NavPillIcons::new(theme));
         }
-        [
-            self.nav_drawing(0, color, settings_back_icon),
-            self.nav_drawing(1, color, settings_forward_icon),
-        ]
-    }
-
-    fn nav_drawing(&self, index: usize, color: Color, make: fn(Color) -> Drawing) -> Arc<Drawing> {
-        match &self.nav[index] {
-            Some((_, drawing)) => Arc::clone(drawing),
-            None => Arc::new(make(color)),
-        }
+        // El tema no cambia con Dokka abierto: si hay caché, vale.
+        self.nav.clone().unwrap_or_else(|| NavPillIcons::new(theme))
     }
 }

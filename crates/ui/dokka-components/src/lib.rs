@@ -3,6 +3,7 @@
 pub mod app_grid;
 pub mod calendar_panel;
 pub mod menu_panel;
+pub mod nav_pill;
 pub mod page_dots;
 pub mod popup_panel;
 pub mod preview_card;

@@ -2,7 +2,10 @@ use dokka_scene::{Dot, Overlay, Rect, Size};
 use dokka_theme::{Theme, popup as measures, typography};
 
 use super::CalendarMonth;
-use super::arrows::{CalendarArrows, arrow_icons};
+use crate::nav_pill::{
+    NavPillIcons, NavPillProps, nav_pill_divider, nav_pill_highlight, nav_pill_icons,
+    nav_pill_panel,
+};
 use crate::popup_panel::{popup_panel, text};
 
 const WEEKDAYS: [&str; 7] = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
@@ -18,23 +21,24 @@ pub fn calendar_size() -> Size {
     }
 }
 
-/// Zonas pulsables para el mes anterior y el siguiente.
-pub fn calendar_arrows(bounds: Rect) -> (Rect, Rect) {
-    let side = measures::CALENDAR_ARROW_SIDE;
-    let arrow = |from_right: f32| Rect {
-        x: bounds.x + bounds.width - measures::PADDING - from_right,
-        y: bounds.y + (measures::CALENDAR_HEADER - side) / 2.0 + measures::CALENDAR_HEADER_DROP,
-        width: side,
-        height: side,
-    };
-    (arrow(side * 2.0), arrow(side))
+/// Cápsula de navegación, arriba a la derecha de la cabecera.
+pub fn calendar_nav_pill(bounds: Rect) -> Rect {
+    Rect {
+        x: bounds.x + bounds.width - measures::PADDING - measures::CALENDAR_NAV_PILL_WIDTH,
+        y: bounds.y
+            + (measures::CALENDAR_HEADER - measures::CALENDAR_NAV_PILL_HEIGHT) / 2.0
+            + measures::CALENDAR_HEADER_DROP,
+        width: measures::CALENDAR_NAV_PILL_WIDTH,
+        height: measures::CALENDAR_NAV_PILL_HEIGHT,
+    }
 }
 
 pub fn calendar_panel(
     theme: &Theme,
-    arrows: &CalendarArrows,
+    drawings: &NavPillIcons,
     bounds: Rect,
     month: &CalendarMonth,
+    pill: &NavPillProps,
 ) -> Overlay {
     let column_x = |column: u16| {
         bounds.x + measures::PADDING + (f32::from(column) + 0.5) * measures::CALENDAR_CELL_WIDTH
@@ -78,12 +82,13 @@ pub fn calendar_panel(
 
     Overlay {
         panel: popup_panel(theme, bounds),
-        highlight: None,
-        dividers: Vec::new(),
+        pill: Some(nav_pill_panel(theme, pill)),
+        highlight: Some(nav_pill_highlight(theme, pill)),
+        dividers: vec![nav_pill_divider(theme, pill)],
         dots,
         pointer: None,
         texts,
-        icons: arrow_icons(theme, arrows, bounds),
+        icons: nav_pill_icons(theme, drawings, pill),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,

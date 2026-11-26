@@ -15,13 +15,9 @@ pub const CALENDAR_CELL_HEIGHT: f32 = 29.0;
 pub const CALENDAR_HEADER: f32 = 40.0;
 /// Cuánto baja la cabecera respecto a su centro.
 pub const CALENDAR_HEADER_DROP: f32 = 2.0;
-pub const CALENDAR_ARROW_SIDE: f32 = 28.0;
-/// Lado del icono de cada flecha, centrado en su zona pulsable (28):
-/// deja 4 de aire por lado y la zona de clic no se reduce.
-pub const CALENDAR_ARROW_ICON_SIDE: f32 = 20.0;
-/// Tamaño del glifo Lucide para las flechas: llena el lienzo de 100,
-/// de modo que la fuente efectiva es 20 al mostrarse a 20 de lado.
-pub const CALENDAR_ARROW_GLYPH_SIZE: f32 = DRAWING_SIDE;
+/// Píldora de navegación del calendario, arriba a la derecha (~64 × 28).
+pub const CALENDAR_NAV_PILL_WIDTH: f32 = 64.0;
+pub const CALENDAR_NAV_PILL_HEIGHT: f32 = 28.0;
 /// Aire entre el círculo de hoy y su celda.
 pub const CALENDAR_TODAY_INSET: f32 = 3.0;
 

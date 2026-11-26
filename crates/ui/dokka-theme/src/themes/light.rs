@@ -1,8 +1,8 @@
 use super::light_icons::light_icons;
 use crate::palette;
 use crate::{
-    DockColors, LaunchpadColors, MediaColors, MenuColors, PanelColors, SettingsColors, Theme,
-    TooltipColors,
+    DockColors, LaunchpadColors, MediaColors, MenuColors, NavPillColors, PanelColors,
+    SettingsColors, Theme, TooltipColors,
 };
 
 /// Tema claro de cristal: el actual de Dokka.
@@ -53,6 +53,14 @@ pub fn light() -> Theme {
             tile: palette::APP_TILE,
         },
         icons: light_icons(),
+        nav_pill: NavPillColors {
+            background: palette::NAV_PILL_BACKGROUND,
+            border: palette::NAV_PILL_BORDER,
+            icon: palette::INK,
+            icon_disabled: palette::NAV_PILL_ICON_DISABLED,
+            divider: palette::NAV_PILL_DIVIDER,
+            hover: palette::NAV_PILL_HOVER,
+        },
         settings: settings_colors(border),
     }
 }

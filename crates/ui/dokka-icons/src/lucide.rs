@@ -7,7 +7,7 @@
 //! (texto normal o blanco de la fila resaltada).
 
 use dokka_scene::{Color, Drawing, Shape};
-use dokka_theme::{launchpad, menu, popup, settings};
+use dokka_theme::{launchpad, menu, nav_pill, popup, settings};
 
 const CENTER: f32 = 50.0;
 
@@ -37,20 +37,16 @@ pub fn checkmark_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Check, menu::CHECK_GLYPH_SIZE, color)
 }
 
-/// Flecha al mes anterior del calendario.
-pub fn calendar_previous_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::ChevronLeft,
-        popup::CALENDAR_ARROW_GLYPH_SIZE,
-        color,
-    )
+/// Chevrón izquierdo de la píldora de navegación.
+pub fn nav_previous_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::ChevronLeft, nav_pill::GLYPH_SIZE, color)
 }
 
-/// Flecha al mes siguiente del calendario.
-pub fn calendar_next_icon(color: Color) -> Drawing {
+/// Chevrón derecho de la píldora de navegación.
+pub fn nav_next_icon(color: Color) -> Drawing {
     glyph(
         lucide_icons::Icon::ChevronRight,
-        popup::CALENDAR_ARROW_GLYPH_SIZE,
+        nav_pill::GLYPH_SIZE,
         color,
     )
 }
@@ -113,24 +109,6 @@ pub fn settings_shortcuts_icon(color: Color) -> Drawing {
 /// Icono blanco de la sección Acerca de sobre su cuadrado de color.
 pub fn settings_about_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Info, settings::ROW_GLYPH_SIZE, color)
-}
-
-/// Chevrón de atrás de la cabecera, atenuado sin ajustes reales.
-pub fn settings_back_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::ChevronLeft,
-        settings::NAV_GLYPH_SIZE,
-        color,
-    )
-}
-
-/// Chevrón de adelante de la cabecera, atenuado sin ajustes reales.
-pub fn settings_forward_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::ChevronRight,
-        settings::NAV_GLYPH_SIZE,
-        color,
-    )
 }
 
 /// Botón de pista anterior.

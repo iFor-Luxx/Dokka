@@ -69,15 +69,12 @@ pub const ROW_HIGHLIGHT_RADIUS: f32 = 8.0;
 /// Alto de la zona arrastrable superior (mover la ventana).
 pub const DRAG_HEIGHT: f32 = 64.0;
 
-/// Lado de la zona pulsable de cada chevrón de la cabecera.
-pub const NAV_SIDE: f32 = 28.0;
-/// Lado del glifo de cada chevrón dentro de su zona.
-pub const NAV_ICON_SIDE: f32 = 20.0;
-/// Tamaño del glifo Lucide de los chevrones.
-pub const NAV_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
-/// Borde izquierdo del botón de atrás.
+/// Píldora de navegación de la cabecera, hoy con ambos lados atenuados (~72 × 34).
+pub const NAV_PILL_WIDTH: f32 = 72.0;
+pub const NAV_PILL_HEIGHT: f32 = 34.0;
+/// Borde izquierdo de la píldora.
 pub const NAV_LEFT: f32 = 276.0;
-/// Borde superior de los botones de la cabecera.
+/// Borde superior de la píldora de la cabecera.
 pub const NAV_TOP: f32 = 18.0;
 /// Aire entre cada chevrón y el título.
 pub const NAV_TITLE_GAP: f32 = 8.0;
@@ -118,14 +115,14 @@ pub fn search_width() -> f32 {
     SIDEBAR_WIDTH - SIDEBAR_MARGIN * 2.0
 }
 
-/// Borde izquierdo del título, tras los dos chevrones.
+/// Borde izquierdo del título, tras la píldora.
 pub fn title_left() -> f32 {
-    NAV_LEFT + NAV_SIDE * 2.0 + NAV_TITLE_GAP
+    NAV_LEFT + NAV_PILL_WIDTH + NAV_TITLE_GAP
 }
 
-/// Centro vertical del título y los chevrones.
+/// Centro vertical del título y la píldora.
 pub fn header_middle() -> f32 {
-    NAV_TOP + NAV_SIDE / 2.0
+    NAV_TOP + NAV_PILL_HEIGHT / 2.0
 }
 
 /// Límites de la tarjeta gris del contenido.
