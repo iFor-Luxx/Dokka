@@ -74,7 +74,9 @@ pub const ROW_ICON_SIDE: f32 = 18.0;
 pub const ROW_HIGHLIGHT_MARGIN: f32 = 8.0;
 /// Alto de la fila resaltada (selección y hover).
 pub const ROW_HIGHLIGHT_HEIGHT: f32 = 36.0;
-pub const ROW_HIGHLIGHT_RADIUS: f32 = 8.0;
+/// Esquinas de la fila resaltada, concéntricas con el panel:
+/// radio interior = radio exterior - separación.
+pub const ROW_HIGHLIGHT_RADIUS: f32 = SIDEBAR_RADIUS - ROW_HIGHLIGHT_MARGIN;
 
 /// Alto de la zona arrastrable superior (mover la ventana).
 pub const DRAG_HEIGHT: f32 = 64.0;
@@ -101,7 +103,7 @@ pub const HEADER_DIVIDER_HEIGHT: f32 = 1.0;
 pub const CARD_MARGIN: f32 = 24.0;
 pub const CARD_TOP: f32 = 88.0;
 pub const CARD_HEIGHT: f32 = 120.0;
-pub const CARD_RADIUS: f32 = 12.0;
+pub const CARD_RADIUS: f32 = 16.0;
 pub const CARD_BORDER_WIDTH: f32 = 1.0;
 pub const CARD_TEXT_SIZE: f32 = 14.0;
 /// Texto de la tarjeta, único contenido por ahora.

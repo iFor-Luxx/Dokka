@@ -16,7 +16,9 @@ use crate::Settings;
 /// planos, resaltado, líneas, iconos, puntos y textos. Nada cambia de forma al elegir
 /// sección: solo se mueven la selección y los textos.
 /// La barra es un panel flotante de cristal; el buscador, la selección y el
-/// hover son planos sobre ella para que el cristal no los oscurezca.
+/// hover son planos sobre ella para que el cristal no los oscurezca. La
+/// tarjeta es un plano sobre el fondo claro de la ventana: como cristal
+/// muestrearía el fondo de pantalla y saldría azul oscuro.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let props = SettingsListProps {
         selected: settings.selected(),
@@ -94,6 +96,21 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         },
         panels: vec![
             sidebar_panel(theme),
+            // Cada capa se inserta arriba: la píldora queda sobre el fondo.
+            nav_pill_panel(theme, &pill),
+        ],
+        // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
+        // y taparía su tinte. Siempre son cuatro para no reconstruir capas.
+        flat_panels: vec![
+            search_panel_at(
+                theme.settings.search_background,
+                theme.settings.search_border,
+                search,
+                measures::SEARCH_RADIUS,
+                measures::SEARCH_BORDER_WIDTH,
+            ),
+            row_selection(theme, &props),
+            row_hover(theme, &props),
             Panel {
                 bounds: Rect {
                     x: card_x,
@@ -106,21 +123,6 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
                 tint: theme.settings.card,
                 border: theme.settings.card_border,
             },
-            // Cada capa se inserta arriba: la píldora queda sobre el fondo.
-            nav_pill_panel(theme, &pill),
-        ],
-        // Planos sobre la barra: el cristal muestrearía el fondo de pantalla
-        // y taparía su tinte. Siempre son tres para no reconstruir capas.
-        flat_panels: vec![
-            search_panel_at(
-                theme.settings.search_background,
-                theme.settings.search_border,
-                search,
-                measures::SEARCH_RADIUS,
-                measures::SEARCH_BORDER_WIDTH,
-            ),
-            row_selection(theme, &props),
-            row_hover(theme, &props),
         ],
         highlight: None,
         dividers: vec![
