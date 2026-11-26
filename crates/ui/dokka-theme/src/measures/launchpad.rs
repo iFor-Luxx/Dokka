@@ -24,6 +24,8 @@ pub const TILE_REFERENCE_SIDE: f32 = 90.0;
 pub const TILE_RADIUS: f32 = 20.0;
 /// Parte del lado que ocupa el glifo sobre la baldosa.
 pub const TILE_CONTENT_SCALE: f32 = 0.66;
+/// Parte del color del icono en el fondo de la baldosa (el resto es la baldosa clara del tema).
+pub const TILE_TINT_SHARE: f32 = 0.22;
 /// Aire entre el icono y su nombre.
 pub const TEXT_GAP: f32 = 6.0;
 pub const TEXT_SIZE: f32 = 13.0;

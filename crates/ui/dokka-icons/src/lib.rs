@@ -7,6 +7,7 @@ mod explorer;
 mod launchpad;
 mod lucide;
 mod shapes;
+mod tile_color;
 mod tile_frame;
 mod tile_paint;
 mod tile_pixels;

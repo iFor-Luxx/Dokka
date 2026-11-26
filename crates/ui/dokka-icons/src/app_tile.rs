@@ -1,11 +1,14 @@
 //! Baldosa uniforme del Launchpad: cuadrado muy redondeado estilo macOS.
 //!
 //! Si el icono llena el cuadro (aunque traiga margen transparente) ocupa toda
-//! la baldosa; si es una silueta se centra, algo más pequeña, sobre la baldosa
-//! clara del tema. El marco fino de las imágenes pequeñas se quita antes.
+//! la baldosa; si es una silueta se centra, algo más pequeña, sobre un
+//! degradado claro sacado de los colores del propio icono. El marco fino de
+//! las imágenes pequeñas se quita antes.
 
 use dokka_scene::Bitmap;
 use dokka_theme::Theme;
+
+use crate::tile_color::tile_gradient;
 
 use crate::tile_frame::{border_fill, crop_white_frame, strip_thin_frame};
 use crate::tile_paint::{rounded_mask, tile_radius_px, tile_with_content};
@@ -29,10 +32,12 @@ pub fn app_tile(source: &Bitmap, theme: &Theme) -> Option<Bitmap> {
         return rounded_mask(&expanded, tile_radius_px(side));
     }
     if let Some(cropped) = crop_white_frame(&working) {
-        return Some(tile_with_content(side, &cropped, theme.launchpad.tile));
+        let (top, bottom) = tile_gradient(&cropped, theme.launchpad.tile);
+        return Some(tile_with_content(side, &cropped, top, bottom));
     }
     if border_fill(&working) > 0.55 {
         return rounded_mask(&working, tile_radius_px(side));
     }
-    Some(tile_with_content(side, &working, theme.launchpad.tile))
+    let (top, bottom) = tile_gradient(&working, theme.launchpad.tile);
+    Some(tile_with_content(side, &working, top, bottom))
 }
