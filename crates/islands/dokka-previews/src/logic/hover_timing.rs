@@ -13,6 +13,10 @@ impl Previews {
             self.pending = None;
             self.closing = None;
             self.reveal.cancel_exit();
+            self.hovered = self.open.as_ref().and_then(|open| {
+                self.bounds()
+                    .and_then(|bounds| super::hovered_at(open, bounds, x, y))
+            });
             return;
         }
         match request {
@@ -22,6 +26,7 @@ impl Previews {
                 self.reveal.cancel_exit();
             }
             Some(request) => {
+                self.hovered = None;
                 let waited = match &self.pending {
                     Some((old, waited)) if old.content == request.content => *waited,
                     _ => 0.0,
@@ -34,6 +39,7 @@ impl Previews {
 
     pub fn pointer_left(&mut self) {
         self.pending = None;
+        self.hovered = None;
         if self.open.is_some() && self.closing.is_none() && !self.reveal.is_leaving() {
             self.closing = Some(0.0);
         }
@@ -43,6 +49,7 @@ impl Previews {
         self.open = None;
         self.pending = None;
         self.closing = None;
+        self.hovered = None;
         self.month_offset = 0;
         self.reveal = Reveal::hidden();
     }
@@ -74,6 +81,7 @@ impl Previews {
             );
             if self.reveal.has_exited() {
                 self.open = None;
+                self.hovered = None;
                 self.month_offset = 0;
                 self.reveal = Reveal::hidden();
             }

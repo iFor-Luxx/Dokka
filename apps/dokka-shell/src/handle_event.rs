@@ -177,6 +177,12 @@ fn click(
         Some(PreviewClick::Activate(window)) => {
             session.control.activate(WindowId::new(window))?;
         }
+        Some(PreviewClick::Close(window)) => {
+            crate::preview_actions::close_preview_window(session, window);
+        }
+        Some(PreviewClick::TogglePin(window)) => {
+            crate::preview_actions::toggle_pin_preview_window(session, window);
+        }
         Some(PreviewClick::Media(command)) => send_media(session, command),
         Some(PreviewClick::Handled) => {}
         None => {

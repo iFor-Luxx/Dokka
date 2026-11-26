@@ -1,7 +1,7 @@
 # dokka-win-surface
 
 **Hace:** crea las ventanas de Dokka (dock sin foco, Launchpad a pantalla completa
-que sí lo toma, y superpuesta solo visual), cambia su tamaño y zona activa,
+que sí lo toma, vista grande a pantalla completa transparente al mouse, y superpuesta solo visual), cambia su tamaño y zona activa,
 entrega los eventos del mouse, las teclas escritas (`WM_CHAR` con `TranslateMessage`),
 el Retroceso, el Enter, las flechas izquierda/derecha y la rueda sobre el Launchpad, y un aviso por segundo, marca
 el ritmo de las animaciones, toma y devuelve el foco al abrir el menú o el Launchpad
