@@ -25,14 +25,21 @@ pub fn system_place(name: &str, address: &str) -> AppInfo {
     }
 }
 
-/// `true` si alguna unidad tiene algo en la papelera.
-pub fn recycle_bin_has_items() -> bool {
+/// Peso en bytes del contenido de la papelera si tiene elementos.
+/// `None` cuando está vacía o la consulta falla; una sola llamada a Windows.
+pub fn recycle_bin_size() -> Option<u64> {
     let mut info = SHQUERYRBINFO {
         cbSize: size_of::<SHQUERYRBINFO>() as u32,
         ..Default::default()
     };
     // SAFETY: `info` declara su tamaño y es escribible.
     let result = unsafe { SHQueryRecycleBinW(PCWSTR::null(), &mut info) };
-    let items = info.i64NumItems;
-    result.is_ok() && items > 0
+    if result.is_err() || info.i64NumItems <= 0 {
+        return None;
+    }
+    // La papelera tiene elementos; el peso puede ser legítimamente 0.
+    match u64::try_from(info.i64Size) {
+        Ok(size) => Some(size),
+        Err(_) => Some(0),
+    }
 }
