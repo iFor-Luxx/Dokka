@@ -63,7 +63,14 @@ impl OverlayLayers {
         }
         let mut highlight = None;
         if let Some(highlight_style) = &overlay.highlight {
-            highlight = Some(PanelLayer::add(compositor, &container, highlight_style)?);
+            // Plano, sin cristal: el tinte de la píldora es translúcido y el
+            // cristal muestrearía el fondo y lo taparía. El tinte del menú
+            // es opaco y se ve igual sin cristal.
+            highlight = Some(PanelLayer::add_flat(
+                compositor,
+                &container,
+                highlight_style,
+            )?);
         }
         let dividers = overlay
             .dividers
