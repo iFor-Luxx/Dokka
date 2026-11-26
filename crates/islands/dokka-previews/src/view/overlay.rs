@@ -26,6 +26,17 @@ impl Previews {
         ))
     }
 
+    /// `true` solo si el punto está dentro del panel abierto, sin el hueco
+    /// que lo separa del dock (ese hueco sigue siendo del dock).
+    pub fn contains(&self, x: f32, y: f32) -> bool {
+        self.bounds().is_some_and(|bounds| {
+            x >= bounds.x
+                && x <= bounds.x + bounds.width
+                && y >= bounds.y
+                && y <= bounds.y + bounds.height
+        })
+    }
+
     /// Zona que debe verse y recibir el mouse: el panel y el hueco hasta el dock.
     pub fn area(&self) -> Option<Rect> {
         let bounds = self.bounds()?;
