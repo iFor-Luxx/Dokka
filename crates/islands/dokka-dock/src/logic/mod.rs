@@ -1,3 +1,4 @@
+mod app_menu;
 mod clock_label;
 mod decide_click;
 mod divider_target;
@@ -10,6 +11,7 @@ mod menu_query;
 mod pin_target;
 mod place_dock;
 mod submenu;
+mod system_menus;
 mod trash_label;
 
 pub(crate) use clock_label::clock_label;

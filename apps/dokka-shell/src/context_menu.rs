@@ -95,6 +95,9 @@ pub(crate) fn run_menu_action(
             toggle_pin(session, info, true)?;
             session.resize(surface)?;
         }
+        other => {
+            crate::app_menu_actions::run_app_menu_action(session, surface, other)?;
+        }
     }
     Ok(())
 }

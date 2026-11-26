@@ -4,6 +4,11 @@
 calcula la lupa y el salto, y decide qué hace cada clic. Guarda el menú del clic derecho
 (`MenuAction`, con el menú completo en la separadora y sus submenús estilo Tahoe:
 «Elementos del dock», «Barra de tareas» y «Sistema») y da sus `Overlay` y sus zonas activas.
+Las apps tienen su propio menú (`logic/app_menu.rs`: hasta 6 ventanas con título acortado,
+«Abrir»/«Abrir otra vez», «Ejecutar como administrador», submenú «Opciones»,
+fijar/quitar, y si está abierta «Cerrar ventana»/«Salir»); los iconos del sistema
+tienen el suyo (`logic/system_menus.rs`: explorador con carpetas, papelera con vaciado
+solo con contenido, Launchpad con abrir y añadir). Reloj y calendario no tienen menú.
 «Preferencias» abre la ventana de ajustes (`MenuAction::OpenSettings`, en `settings.rs`).
 La ventana reserva a cada lado sitio para el menú con su submenú a la derecha
 (`menu::WIDTH + menu::SUBMENU_GAP`, o la lupa si pide más); la zona activa sigue

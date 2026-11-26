@@ -52,7 +52,7 @@ impl Dock {
     }
 }
 
-pub(super) fn entry_at<'a>(placement: &Placement<'a>, x: f32, y: f32) -> Option<Entry<'a>> {
+pub(crate) fn entry_at<'a>(placement: &Placement<'a>, x: f32, y: f32) -> Option<Entry<'a>> {
     let bottom = placement.bar.y + placement.bar.height;
     let reach = style::GAP / 2.0;
     placement
