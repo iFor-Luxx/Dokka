@@ -12,6 +12,7 @@ use dokka_win_surface::Surface;
 use crate::dock_session::DockSession;
 use crate::launchpad::launchpad_size;
 use crate::media::update_media;
+use crate::settings::render_settings;
 
 /// Dibuja el instante actual.
 pub(crate) fn render(
@@ -66,6 +67,7 @@ pub(crate) fn render(
     if session.launchpad.is_open() {
         render_launchpad(session, surface)?;
     }
+    render_settings(session, surface)?;
     Ok(())
 }
 

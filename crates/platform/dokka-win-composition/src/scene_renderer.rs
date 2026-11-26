@@ -22,15 +22,25 @@ struct WindowRoot {
     _target: DesktopWindowTarget,
 }
 
+/// Ventanas que dibuja el compositor, cada una en su árbol visual.
+pub struct WindowHandles {
+    pub main: SurfaceHandle,
+    pub above: SurfaceHandle,
+    pub launchpad: SurfaceHandle,
+    pub settings: SurfaceHandle,
+}
+
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
 pub struct SceneRenderer {
     thumbnails: WindowThumbnails,
     layers: Option<SceneLayers>,
     launchpad_layers: Option<SceneLayers>,
+    settings_layers: Option<SceneLayers>,
     controls: Option<ControlsLayer>,
     main: WindowRoot,
     above: WindowRoot,
     launchpad: WindowRoot,
+    settings: WindowRoot,
     painter: Painter,
     compositor: Compositor,
     // Va al final: el compositor necesita la cola mientras exista.
@@ -38,55 +48,71 @@ pub struct SceneRenderer {
 }
 
 impl SceneRenderer {
-    /// Prepara el dibujo. `above` es la ventana que va sobre las miniaturas.
-    /// Se llama una vez, desde el hilo de las ventanas.
-    /// `icon_bytes` son los bytes `&'static` de la fuente de iconos en memoria.
+    /// Prepara el dibujo desde el hilo de las ventanas. Un solo compositor y
+    /// una sola cola sirven a los cuatro árboles visuales.
     pub fn attach(
-        surface: SurfaceHandle,
-        above: SurfaceHandle,
-        launchpad: SurfaceHandle,
+        handles: WindowHandles,
         scale: f32,
+        settings_scale: f32,
         font_family: &str,
         icon_bytes: &'static [u8],
     ) -> std::result::Result<Self, CompositionError> {
         Ok(Self::build(
-            surface,
-            above,
-            launchpad,
+            handles,
             scale,
+            settings_scale,
             font_family,
             icon_bytes,
         )?)
     }
 
-    /// Muestra la escena. Si su forma no cambia, solo actualiza lo existente.
+    /// Muestra una escena en su árbol visual: el dock, el Launchpad a pantalla
+    /// completa o Preferencias. Si su forma no cambia, solo actualiza.
     pub fn draw(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
         Ok(self.apply(scene)?)
     }
-
-    /// Muestra el Launchpad a pantalla completa en su propio árbol visual.
     pub fn draw_launchpad(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
-        Ok(self.apply_launchpad(scene)?)
+        let layers = self.launchpad_layers.take();
+        self.launchpad_layers = Some(Self::apply_tree(
+            &self.compositor,
+            &self.painter,
+            &self.launchpad.root,
+            layers,
+            scene,
+        )?);
+        Ok(())
+    }
+    pub fn draw_settings(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
+        let layers = self.settings_layers.take();
+        self.settings_layers = Some(Self::apply_tree(
+            &self.compositor,
+            &self.painter,
+            &self.settings.root,
+            layers,
+            scene,
+        )?);
+        Ok(())
     }
 
     fn build(
-        surface: SurfaceHandle,
-        above: SurfaceHandle,
-        launchpad: SurfaceHandle,
+        handles: WindowHandles,
         scale: f32,
+        settings_scale: f32,
         font_family: &str,
         icon_bytes: &'static [u8],
     ) -> Result<Self> {
         let queue = create_queue()?;
         let compositor = Compositor::new()?;
         Ok(Self {
-            thumbnails: WindowThumbnails::new(surface.raw(), scale),
+            thumbnails: WindowThumbnails::new(handles.main.raw(), scale),
             layers: None,
             launchpad_layers: None,
+            settings_layers: None,
             controls: None,
-            main: window_root(&compositor, surface, scale)?,
-            above: window_root(&compositor, above, scale)?,
-            launchpad: window_root(&compositor, launchpad, scale)?,
+            main: window_root(&compositor, handles.main, scale)?,
+            above: window_root(&compositor, handles.above, scale)?,
+            launchpad: window_root(&compositor, handles.launchpad, scale)?,
+            settings: window_root(&compositor, handles.settings, settings_scale)?,
             painter: Painter::new(&compositor, font_family, icon_bytes, scale)?,
             compositor,
             _queue: queue,
@@ -104,7 +130,7 @@ impl SceneRenderer {
         let overlay = scene.overlay.as_ref();
         self.apply_controls(overlay.and_then(|overlay| overlay.controls.as_ref()))?;
 
-        let (floating, floating_opacity, floating_scale, floating_origin) = overlay
+        let (floating, opacity, floating_scale, origin) = overlay
             .map(|overlay| {
                 (
                     overlay.thumbnails.as_slice(),
@@ -114,13 +140,8 @@ impl SceneRenderer {
                 )
             })
             .unwrap_or((&[], 1.0, 1.0, (0.0, 0.0)));
-        self.thumbnails.show(
-            &scene.thumbnails,
-            floating,
-            floating_opacity,
-            floating_scale,
-            floating_origin,
-        )
+        self.thumbnails
+            .show(&scene.thumbnails, floating, opacity, floating_scale, origin)
     }
 
     fn apply_controls(&mut self, controls: Option<&Controls>) -> Result<()> {
@@ -139,14 +160,20 @@ impl SceneRenderer {
         Ok(())
     }
 
-    fn apply_launchpad(&mut self, scene: &Scene) -> Result<()> {
-        let mut layers = match self.launchpad_layers.take() {
+    /// Reutiliza las capas si la forma coincide; si no, las reconstruye.
+    fn apply_tree(
+        compositor: &Compositor,
+        painter: &Painter,
+        root: &ContainerVisual,
+        layers: Option<SceneLayers>,
+        scene: &Scene,
+    ) -> Result<SceneLayers> {
+        let mut layers = match layers {
             Some(layers) if layers.matches(scene) => layers,
-            _ => SceneLayers::build(&self.compositor, &self.painter, &self.launchpad.root, scene)?,
+            _ => SceneLayers::build(compositor, painter, root, scene)?,
         };
-        layers.update(&self.compositor, &self.painter, scene)?;
-        self.launchpad_layers = Some(layers);
-        Ok(())
+        layers.update(compositor, painter, scene)?;
+        Ok(layers)
     }
 }
 

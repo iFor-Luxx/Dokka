@@ -43,7 +43,7 @@ pub(crate) fn dock_menu(taskbar_hidden: bool, taskbar_auto: bool) -> MenuData {
         None,
         None,
         None,
-        None,
+        Some(MenuAction::OpenSettings),
         Some(MenuAction::Restart),
         Some(MenuAction::Quit),
     ];

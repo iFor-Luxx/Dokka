@@ -14,6 +14,7 @@ dokka-launchpad.workspace = true
 dokka-model.workspace = true
 dokka-previews.workspace = true
 dokka-scene.workspace = true
+dokka-settings.workspace = true
 dokka-state.workspace = true
 dokka-theme.workspace = true
 dokka-win-apps.workspace = true

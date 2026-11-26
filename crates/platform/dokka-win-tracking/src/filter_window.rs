@@ -1,8 +1,9 @@
 use windows::Win32::Foundation::HWND;
 use windows::Win32::Graphics::Dwm::{DWMWA_CLOAKED, DwmGetWindowAttribute};
+use windows::Win32::System::Threading::GetCurrentProcessId;
 use windows::Win32::UI::WindowsAndMessaging::{
     GW_OWNER, GWL_EXSTYLE, GetClassNameW, GetWindow, GetWindowLongPtrW, GetWindowTextLengthW,
-    IsWindowVisible, WS_EX_APPWINDOW, WS_EX_TOOLWINDOW,
+    GetWindowThreadProcessId, IsWindowVisible, WS_EX_APPWINDOW, WS_EX_TOOLWINDOW,
 };
 
 /// Mismo criterio general que usa la barra de tareas.
@@ -10,6 +11,12 @@ pub(crate) fn belongs_in_dock(window: HWND) -> bool {
     // SAFETY: son consultas de solo lectura; un handle ya destruido devuelve cero.
     unsafe {
         if !IsWindowVisible(window).as_bool() || GetWindowTextLengthW(window) == 0 {
+            return false;
+        }
+        // Las ventanas del propio Dokka (como Preferencias) no son apps abiertas.
+        let mut owner_process = 0;
+        GetWindowThreadProcessId(window, Some(&mut owner_process));
+        if owner_process == GetCurrentProcessId() {
             return false;
         }
         let style = GetWindowLongPtrW(window, GWL_EXSTYLE) as u32;

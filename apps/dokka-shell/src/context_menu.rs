@@ -11,6 +11,7 @@ use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
 use crate::pinned_apps::toggle_pin;
+use crate::settings::open_or_focus_settings;
 
 /// Abre el menú de ese punto. Otro clic derecho lo mueve al nuevo sitio.
 pub(crate) fn open_context_menu(
@@ -79,6 +80,7 @@ pub(crate) fn run_menu_action(
             .launch(&system_place("Barra de tareas", "ms-settings:taskbar"))?,
         MenuAction::Restart => restart(surface)?,
         MenuAction::Quit => quit(surface),
+        MenuAction::OpenSettings => open_or_focus_settings(session, surface)?,
         MenuAction::Pin(info) => {
             toggle_pin(session, info, false)?;
             session.resize(surface)?;

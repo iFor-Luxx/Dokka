@@ -10,6 +10,7 @@ pub struct Theme {
     pub media: MediaColors,
     pub menu: MenuColors,
     pub launchpad: LaunchpadColors,
+    pub settings: SettingsColors,
     pub icons: IconColors,
 }
 
@@ -71,6 +72,32 @@ pub struct LaunchpadColors {
     pub dot_inactive: Color,
     /// Baldosa clara de los iconos uniformes.
     pub tile: Color,
+}
+
+/// Colores de la ventana de Preferencias en tema claro.
+#[derive(Debug, Clone, Copy)]
+pub struct SettingsColors {
+    pub window: Color,
+    pub window_border: Color,
+    pub sidebar: Color,
+    pub search_background: Color,
+    pub search_border: Color,
+    pub search_text: Color,
+    pub search_icon: Color,
+    pub row_text: Color,
+    pub row_text_selected: Color,
+    pub selection: Color,
+    pub hover: Color,
+    pub title: Color,
+    pub nav: Color,
+    pub divider: Color,
+    pub card: Color,
+    pub card_border: Color,
+    pub card_text: Color,
+    /// Cuadrado de color de cada sección, en su orden.
+    pub badge: [Color; 7],
+    /// Semáforos rojo, amarillo y verde, en ese orden.
+    pub traffic: [Color; 3],
 }
 
 #[derive(Debug, Clone, Copy)]

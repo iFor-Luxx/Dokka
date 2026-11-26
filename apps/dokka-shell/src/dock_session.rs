@@ -8,6 +8,7 @@ use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
 use dokka_launchpad::Launchpad;
 use dokka_model::AppId;
 use dokka_previews::Previews;
+use dokka_settings::Settings;
 use dokka_state::DockState;
 use dokka_theme::{Theme, light};
 use dokka_win_apps::{
@@ -24,6 +25,9 @@ pub(crate) struct DockSession {
     pub(crate) dock: Dock,
     pub(crate) previews: Previews,
     pub(crate) launchpad: Launchpad,
+    pub(crate) settings: Settings,
+    /// Punto donde empezó el arrastre de Preferencias, si lo hay.
+    pub(crate) settings_drag: Option<[f32; 2]>,
     pub(crate) catalog: DesktopCatalog,
     pub(crate) theme: Arc<Theme>,
     pub(crate) explorer: AppId,
@@ -48,6 +52,8 @@ impl DockSession {
             dock: Dock::new(explorer.clone(), Arc::clone(&theme)),
             previews: Previews::new(Arc::clone(&theme)),
             launchpad: Launchpad::new(),
+            settings: Settings::new(),
+            settings_drag: None,
             catalog: DesktopCatalog::new(),
             theme,
             explorer,

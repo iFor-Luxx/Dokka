@@ -84,6 +84,44 @@ fn typed_character(message: &MSG) -> Option<SurfaceEvent> {
     Some(SurfaceEvent::LaunchpadTyped { character })
 }
 
+/// Traduce los mensajes de la ventana de Preferencias. Como el dock, pero con
+/// aviso de botón abajo para arrastrar la ventana desde su franja superior;
+/// el botón derecho no hace nada.
+pub(crate) fn read_settings_pointer(
+    message: &MSG,
+    scale: f32,
+    is_pressed: &mut bool,
+) -> Option<SurfaceEvent> {
+    match message.message {
+        WM_MOUSEMOVE => {
+            let (x, y) = pointer_position(message, scale);
+            let mut request = TRACKMOUSEEVENT {
+                cbSize: size_of::<TRACKMOUSEEVENT>() as u32,
+                dwFlags: TME_LEAVE,
+                hwndTrack: message.hwnd,
+                dwHoverTime: 0,
+            };
+            // SAFETY: `request` está completa; pide el aviso de salida del cursor.
+            let _ = unsafe { TrackMouseEvent(&mut request) };
+            Some(SurfaceEvent::SettingsMoved { x, y })
+        }
+        MOUSE_LEFT => {
+            *is_pressed = false;
+            Some(SurfaceEvent::SettingsLeft)
+        }
+        WM_LBUTTONDOWN => {
+            *is_pressed = true;
+            let (x, y) = pointer_position(message, scale);
+            Some(SurfaceEvent::SettingsPressed { x, y })
+        }
+        WM_LBUTTONUP if std::mem::take(is_pressed) => {
+            let (x, y) = pointer_position(message, scale);
+            Some(SurfaceEvent::SettingsClicked { x, y })
+        }
+        _ => None,
+    }
+}
+
 /// Desplazamiento de la rueda, en unidades de Windows (120 por paso).
 fn wheel_delta(message: &MSG) -> i16 {
     (message.wParam.0 >> 16) as i16

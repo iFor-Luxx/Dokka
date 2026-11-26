@@ -10,7 +10,8 @@ capas; las miniaturas del panel usan la misma transformación. El submenú reuti
 encima del menú y tampoco reconstruye al mover el resaltado. Cada escena cuelga de dos
 contenedores: el fondo y el contenido. La opacidad desvanece ambos y la escala agranda
 solo el contenido desde el centro del fondo, sin reconstruir capas. El Launchpad usa el mismo compositor en un tercer
-árbol visual (`draw_launchpad`). Los dibujos (incluidos los glifos Lucide, con la fuente en
+árbol visual (`draw_launchpad`) y Preferencias en un cuarto (`draw_settings`): un solo
+compositor y una sola cola sirven a todas las ventanas del hilo. Los dibujos (incluidos los glifos Lucide, con la fuente en
 memoria de `dokka-win-text`) se pintan al doble de su lado en pantalla, con un mínimo de 128
 para que los iconos grandes del dock no pierdan al crecer con la lupa; solo se repintan si
 cambia su imagen, nunca al moverse o escalarse.

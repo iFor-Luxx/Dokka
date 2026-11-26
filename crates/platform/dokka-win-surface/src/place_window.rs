@@ -70,6 +70,22 @@ pub(crate) fn fullscreen_size(window: HWND, scale: f32) -> [f32; 2] {
     ]
 }
 
+/// Centra una ventana de tamaño lógico en el área de trabajo y devuelve su
+/// escala. Se usa una sola vez al crearla; luego conserva su sitio al moverla.
+pub(crate) fn place_centered(window: HWND, width: f32, height: f32) -> Result<f32> {
+    let area = base_area(window, false)?;
+    // SAFETY: `window` es válida y la escala sale de su DPI real.
+    unsafe {
+        let scale = GetDpiForWindow(window) as f32 / BASE_DPI;
+        let width_px = (width * scale).round() as i32;
+        let height_px = (height * scale).round() as i32;
+        let x = area.left + (area.right - area.left - width_px) / 2;
+        let y = area.top + (area.bottom - area.top - height_px) / 2;
+        SetWindowPos(window, None, x, y, width_px, height_px, SWP_NOACTIVATE)?;
+        Ok(scale)
+    }
+}
+
 /// Rectángulo donde anclar el dock: el monitor completo si se tapa la barra,
 /// o el área de trabajo si la barra sigue visible.
 fn base_area(window: HWND, over_taskbar: bool) -> Result<RECT> {

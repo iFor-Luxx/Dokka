@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_scene::{Divider, Drawing, Icon, Panel, Rect, Text, TextAlign};
+use dokka_scene::{Color, Divider, Drawing, Icon, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, launchpad as measures};
 
 use super::SearchFieldProps;
@@ -24,12 +24,30 @@ fn text_left(props: &SearchFieldProps) -> f32 {
 
 /// Fondo de la casilla: panel nítido con tinte, borde fino y radio.
 pub fn search_panel(theme: &Theme, props: &SearchFieldProps) -> Panel {
+    search_panel_at(
+        theme.launchpad.search_background,
+        theme.launchpad.search_border,
+        search_bounds(props),
+        measures::search_radius(props.screen.height),
+        measures::SEARCH_BORDER_WIDTH,
+    )
+}
+
+/// Fondo de una casilla en un sitio fijo, como la de la barra lateral de
+/// Preferencias: reutiliza el mismo aspecto sin atarse a sus medidas.
+pub fn search_panel_at(
+    tint: Color,
+    border: Color,
+    bounds: Rect,
+    corner_radius: f32,
+    border_width: f32,
+) -> Panel {
     Panel {
-        bounds: search_bounds(props),
-        corner_radius: measures::search_radius(props.screen.height),
-        border_width: measures::SEARCH_BORDER_WIDTH,
-        tint: theme.launchpad.search_background,
-        border: theme.launchpad.search_border,
+        bounds,
+        corner_radius,
+        border_width,
+        tint,
+        border,
     }
 }
 
@@ -37,12 +55,29 @@ pub fn search_panel(theme: &Theme, props: &SearchFieldProps) -> Panel {
 /// El dibujo lo crea la isla una vez con `dokka_icons::search_icon` y lo reutiliza.
 pub fn search_magnifier(theme: &Theme, props: &SearchFieldProps, drawing: &Arc<Drawing>) -> Icon {
     let bounds = search_bounds(props);
+    search_magnifier_at(
+        theme.launchpad.search_text,
+        bounds.x + measures::SEARCH_ICON_INSET,
+        bounds.y + (bounds.height - measures::SEARCH_ICON_SIDE) / 2.0,
+        measures::SEARCH_ICON_SIDE,
+        drawing,
+    )
+}
+
+/// Lupa en un punto fijo, como la de Preferencias.
+pub fn search_magnifier_at(
+    placeholder: Color,
+    x: f32,
+    y: f32,
+    side: f32,
+    drawing: &Arc<Drawing>,
+) -> Icon {
     Icon {
-        x: bounds.x + measures::SEARCH_ICON_INSET,
-        y: bounds.y + (bounds.height - measures::SEARCH_ICON_SIDE) / 2.0,
-        side: measures::SEARCH_ICON_SIDE,
+        x,
+        y,
+        side,
         image: Some(dokka_scene::IconImage::Drawing(Arc::clone(drawing))),
-        placeholder: theme.launchpad.search_text,
+        placeholder,
         placeholder_radius: 0.0,
     }
 }
@@ -122,6 +157,25 @@ fn text_end(props: &SearchFieldProps) -> f32 {
 
 /// `true` si el punto cae dentro de la casilla.
 pub fn search_contains(props: &SearchFieldProps, x: f32, y: f32) -> bool {
-    let bounds = search_bounds(props);
-    x >= bounds.x && x < bounds.x + bounds.width && y >= bounds.y && y < bounds.y + bounds.height
+    search_contains_at(search_bounds(props), x, y)
+}
+
+/// `true` si el punto cae dentro de una casilla en un sitio fijo.
+pub fn search_contains_at(bounds: Rect, x: f32, y: f32) -> bool {
+    (bounds.x..bounds.x + bounds.width).contains(&x)
+        && (bounds.y..bounds.y + bounds.height).contains(&y)
+}
+
+/// Texto estático de una casilla en un sitio fijo, como el "Buscar" de
+/// Preferencias: a la izquierda, sin foco ni cursor.
+pub fn search_label_at(color: Color, x: f32, center_y: f32, content: &str, size: f32) -> Text {
+    Text {
+        x,
+        center_y,
+        content: content.to_owned(),
+        size,
+        is_bold: false,
+        color,
+        align: TextAlign::Left,
+    }
 }

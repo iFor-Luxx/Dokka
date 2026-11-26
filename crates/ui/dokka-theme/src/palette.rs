@@ -60,5 +60,19 @@ pub(crate) const LAUNCHPAD_SEARCH_TEXT: Color = Color::rgba(255, 255, 255, 190);
 pub(crate) const LAUNCHPAD_SEARCH_PLACEHOLDER: Color = Color::rgba(255, 255, 255, 120);
 /// Punto de la página actual: blanco.
 pub(crate) const LAUNCHPAD_DOT_ACTIVE: Color = Color::rgba(255, 255, 255, 255);
+/// Fondo claro de la ventana de Preferencias.
+pub(crate) const SETTINGS_WINDOW: Color = Color::rgba(246, 246, 248, 255);
+/// Barra lateral translúcida sobre la ventana.
+pub(crate) const SETTINGS_SIDEBAR: Color = Color::rgba(232, 232, 238, 190);
+/// Casilla de búsqueda: gris apenas visible.
+pub(crate) const SETTINGS_SEARCH_BACKGROUND: Color = Color::rgba(0, 0, 0, 18);
+/// Borde fino de la casilla de búsqueda.
+pub(crate) const SETTINGS_SEARCH_BORDER: Color = Color::rgba(0, 0, 0, 30);
+/// Resaltado suave al pasar sobre una fila.
+pub(crate) const SETTINGS_HOVER: Color = Color::rgba(0, 0, 0, 22);
+/// Tarjeta gris muy suave del contenido, todavía sin ajustes.
+pub(crate) const SETTINGS_CARD: Color = Color::rgba(0, 0, 0, 12);
+/// Línea bajo la cabecera del contenido.
+pub(crate) const SETTINGS_DIVIDER: Color = Color::rgba(0, 0, 0, 28);
 /// Puntos de las demás páginas.
 pub(crate) const LAUNCHPAD_DOT_INACTIVE: Color = Color::rgba(255, 255, 255, 110);

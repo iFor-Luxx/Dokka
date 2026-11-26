@@ -27,4 +27,4 @@ mod window_thumbnails;
 mod windows_color;
 
 pub use composition_error::CompositionError;
-pub use scene_renderer::SceneRenderer;
+pub use scene_renderer::{SceneRenderer, WindowHandles};
