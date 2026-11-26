@@ -66,6 +66,7 @@ impl Dock {
         let menu = self.menu.as_ref()?;
         Some(menu_overlay(
             &self.theme,
+            &self.menu_chevrons,
             menu.panel,
             menu.tip_x,
             &menu.rows,
@@ -78,6 +79,7 @@ impl Dock {
         let sub = self.menu.as_ref()?.submenu.as_ref()?;
         Some(submenu_overlay(
             &self.theme,
+            &self.menu_chevrons,
             sub.panel,
             &sub.rows,
             sub.highlighted,

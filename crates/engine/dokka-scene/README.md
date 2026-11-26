@@ -8,7 +8,8 @@
   (radio = mitad del alto) con punta del mismo tinte y borde.
 - `Overlay` añade `highlight`, `dividers` y `pointer` (la punta del menú:
   centro x y altura; base = 2 × altura; nace en el borde inferior del panel
-  y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos.
+  y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
+- `Overlay` lleva `icons` sobre el resaltado, junto a los textos (el chevrón del menú).
 - `Overlay` lleva `opacity` y escala con origen (`scale` y `origin`): los paneles
   animados crecen desde el icono; el menú siempre vale 1.
 - `Scene` añade `texts` sueltos, `highlight` opcional para el Launchpad y
