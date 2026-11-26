@@ -95,14 +95,15 @@ fn dock_scene(session: &mut DockSession) -> Scene {
 }
 
 /// Dibuja la cuadrícula del Launchpad en su ventana propia.
+/// Solo resuelve y trata las baldosas de la página visible: el resto sigue en
+/// caché entre fotogramas y entre aperturas.
 fn render_launchpad(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     let size = launchpad_size(surface);
-    let raw: HashMap<AppId, Arc<Bitmap>> = session
-        .launchpad
-        .apps()
+    let visible = session.launchpad.visible_apps(size);
+    let raw: HashMap<AppId, Arc<Bitmap>> = visible
         .iter()
         .filter_map(|app| {
             let image = session.icons.icon_for(&app.executable)?;
@@ -110,7 +111,7 @@ fn render_launchpad(
         })
         .collect();
     let theme = Arc::clone(&session.theme);
-    let images = session.launchpad.tiled_images(&raw, &theme);
+    let images = session.launchpad.tiled_images_for(&visible, &raw, &theme);
     let scene = launchpad_scene(&session.theme, size, &mut session.launchpad, &images);
     session.renderer.draw_launchpad(&scene)?;
     Ok(())

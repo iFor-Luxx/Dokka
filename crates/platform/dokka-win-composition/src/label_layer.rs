@@ -107,6 +107,7 @@ impl LabelLayer {
         painter: &Painter,
         label: &Label,
     ) -> Result<()> {
+        self.set_visible(true)?;
         let (text_width, text_height) = painter.measure_label(label)?;
         let width = (text_width + label.padding_x * 2.0).ceil();
         let body = (text_height + label.padding_y * 2.0).ceil();
@@ -193,7 +194,16 @@ impl LabelLayer {
             X: center_x - self.text_size.X / 2.0,
             Y: middle_y - self.text_size.Y / 2.0,
             Z: 0.0,
-        })
+        })?;
+        Ok(())
+    }
+
+    /// Oculta o muestra sin destruir la capa, conservando el orden de pintado.
+    pub(crate) fn set_visible(&self, visible: bool) -> Result<()> {
+        self.glass.SetIsVisible(visible)?;
+        self.tint.SetIsVisible(visible)?;
+        self.text_visual.SetIsVisible(visible)?;
+        self.pointer.set_visible(visible)
     }
 }
 

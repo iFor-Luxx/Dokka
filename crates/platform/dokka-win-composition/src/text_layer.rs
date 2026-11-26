@@ -51,6 +51,7 @@ impl TextLayer {
         painter: &Painter,
         text: &Text,
     ) -> Result<()> {
+        self.set_visible(true)?;
         if self.style.as_ref() != Some(&TextStyle::of(text)) {
             let (surface, size) = painter.paint_text(text)?;
             self.visual
@@ -67,6 +68,12 @@ impl TextLayer {
             X: left,
             Y: text.center_y - self.size.Y / 2.0,
             Z: 0.0,
-        })
+        })?;
+        Ok(())
+    }
+
+    /// Oculta o muestra sin destruir la capa, conservando el orden de pintado.
+    pub(crate) fn set_visible(&self, visible: bool) -> Result<()> {
+        self.visual.SetIsVisible(visible)
     }
 }

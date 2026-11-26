@@ -14,6 +14,7 @@ mod icon_layer;
 mod label_layer;
 mod label_pointer;
 mod large_preview;
+mod layer_sync;
 mod overlay_layers;
 mod paint_bitmap;
 mod paint_drawing;

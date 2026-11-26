@@ -7,6 +7,7 @@ use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
 use crate::label_layer::LabelLayer;
+use crate::layer_sync::{sync_dividers, sync_dots, sync_icons, sync_labels, sync_texts};
 use crate::overlay_layers::OverlayLayers;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
@@ -144,6 +145,10 @@ impl SceneLayers {
 
     /// `true` si la escena tiene la misma forma y basta con actualizar.
     /// La opacidad, la escala y el desenfoque no reconstruyen: los aplica `update`.
+    /// Los iconos, textos, puntos, líneas y etiquetas pueden encoger: sobran
+    /// capas que se ocultan sin reconstruir; si crecen, se reconstruye una vez
+    /// y la reserva ya cubre las vueltas. Así cambiar de página o escribir en
+    /// el Launchpad no rehace cristales ni el desenfoque.
     pub(crate) fn matches(&self, scene: &Scene) -> bool {
         let same_overlay = match (&self.overlay, &scene.overlay) {
             (Some(layers), Some(overlay)) => layers.matches(overlay),
@@ -166,11 +171,11 @@ impl SceneLayers {
                 .iter()
                 .zip(&scene.panels)
                 .all(|(style, panel)| *style == panel_style_of(panel))
-            && self.dots.len() == scene.dots.len()
-            && self.dividers.len() == scene.dividers.len()
-            && self.texts.len() == scene.texts.len()
-            && self.labels.len() == scene.labels.len()
-            && self.icons.len() == scene.icons.len()
+            && self.dots.len() >= scene.dots.len()
+            && self.dividers.len() >= scene.dividers.len()
+            && self.texts.len() >= scene.texts.len()
+            && self.labels.len() >= scene.labels.len()
+            && self.icons.len() >= scene.icons.len()
             && self
                 .icons
                 .iter()
@@ -191,27 +196,17 @@ impl SceneLayers {
         if let (Some(layer), Some(panel)) = (&self.highlight, &scene.highlight) {
             layer.update(panel)?;
         }
-        for (layer, divider) in self.dividers.iter().zip(&scene.dividers) {
-            layer.update(divider)?;
-        }
-        for (layer, icon) in self.icons.iter_mut().zip(&scene.icons) {
-            layer.update(compositor, painter, icon)?;
-        }
-        for (layer, dot) in self.dots.iter_mut().zip(&scene.dots) {
-            layer.update(compositor, dot)?;
-        }
-        for (layer, text) in self.texts.iter_mut().zip(&scene.texts) {
-            layer.update(compositor, painter, text)?;
-        }
+        sync_dividers(&self.dividers, &scene.dividers)?;
+        sync_icons(&mut self.icons, compositor, painter, &scene.icons)?;
+        sync_dots(&mut self.dots, compositor, &scene.dots)?;
+        sync_texts(&mut self.texts, compositor, painter, &scene.texts)?;
         if let (Some(layers), Some(overlay)) = (&mut self.overlay, &scene.overlay) {
             layers.update(compositor, painter, overlay)?;
         }
         if let (Some(layers), Some(submenu)) = (&mut self.submenu, &scene.submenu) {
             layers.update(compositor, painter, submenu)?;
         }
-        for (layer, label) in self.labels.iter_mut().zip(&scene.labels) {
-            layer.update(compositor, painter, label)?;
-        }
+        sync_labels(&mut self.labels, compositor, painter, &scene.labels)?;
         self.apply_stage(compositor, scene)?;
         Ok(())
     }

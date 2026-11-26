@@ -1,7 +1,8 @@
-//! Baldosas uniformes del Launchpad, calculadas una vez por apertura.
+//! Baldosas uniformes del Launchpad, calculadas una vez por app.
 //!
 //! El shell pide las imágenes en cada redibujado; aquí se guarda la baldosa
 //! ya tratada por app y se reutiliza mientras siga el mismo `Bitmap`.
+//! La caché sobrevive entre aperturas y solo se podan las apps que ya no están.
 
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
@@ -18,19 +19,20 @@ pub(crate) struct TileCache {
 }
 
 impl TileCache {
-    pub(crate) fn clear(&mut self) {
-        self.entries.clear();
+    /// Descarta las apps que ya no están, conservando el resto entre aperturas.
+    pub(crate) fn prune(&mut self, apps: &[AppInfo]) {
+        let wanted: HashSet<&str> = apps.iter().map(|app| app.id.as_str()).collect();
+        self.entries.retain(|id, _| wanted.contains(id.as_str()));
     }
 
-    /// Baldosas para las apps visibles, reutilizando las ya calculadas.
+    /// Baldosas para las apps pedidas, reutilizando las ya calculadas.
+    /// No poda: se poda una vez al abrir; por fotograma solo se reutiliza.
     pub(crate) fn tiled(
         &mut self,
         apps: &[AppInfo],
         images: &HashMap<AppId, Arc<Bitmap>>,
         theme: &Theme,
     ) -> HashMap<AppId, Arc<Bitmap>> {
-        let wanted: HashSet<&str> = apps.iter().map(|app| app.id.as_str()).collect();
-        self.entries.retain(|id, _| wanted.contains(id.as_str()));
         let mut out = HashMap::with_capacity(apps.len());
         for app in apps {
             let Some(source) = images.get(&app.id) else {

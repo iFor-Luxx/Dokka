@@ -1,5 +1,7 @@
 use std::collections::HashSet;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+use std::time::SystemTime;
 
 use dokka_contracts::{AppCatalog, ContractError};
 use dokka_model::AppInfo;
@@ -10,16 +12,30 @@ use crate::filter_target::{is_program_target, is_uninstaller, is_within_windows}
 use crate::read_url::game_protocol;
 use crate::resolve_lnk::resolve_lnk;
 
-/// Apps del Escritorio para el Launchpad: programas y juegos, sin repetidas.
+/// Huella barata del Escritorio: por cada entrada, nombre, fecha y tamaño.
+/// Leer el directorio y sus fechas cuesta poco; resolver cada `.lnk` por COM no.
+type DesktopFingerprint = Vec<(PathBuf, Option<SystemTime>, u64)>;
+
 #[derive(Debug, Default)]
-pub struct DesktopCatalog;
+struct CachedDesktop {
+    fingerprint: DesktopFingerprint,
+    apps: Vec<AppInfo>,
+}
+
+/// Apps del Escritorio para el Launchpad: programas y juegos, sin repetidas.
+/// Guarda el último resultado y lo reutiliza mientras el Escritorio no cambie,
+/// sin hilos nuevos y sin cambiar el contrato.
+#[derive(Debug, Default)]
+pub struct DesktopCatalog {
+    cache: Mutex<Option<CachedDesktop>>,
+}
 
 impl DesktopCatalog {
     pub fn new() -> Self {
-        Self
+        Self::default()
     }
 
-    fn collect(&self) -> Vec<AppInfo> {
+    fn collect_fresh() -> Vec<AppInfo> {
         let mut seen = HashSet::new();
         let mut apps = Vec::new();
         for folder in desktop_folders() {
@@ -36,13 +52,50 @@ impl DesktopCatalog {
     }
 }
 
+/// Huella actual del Escritorio; `None` si no se puede leer con fiabilidad.
+fn desktop_fingerprint() -> Option<DesktopFingerprint> {
+    let mut fingerprint = Vec::new();
+    for folder in desktop_folders() {
+        let entries = std::fs::read_dir(&folder).ok()?;
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let metadata = entry.metadata().ok()?;
+            if metadata.is_dir() {
+                continue;
+            }
+            fingerprint.push((
+                path,
+                metadata.modified().ok(),
+                metadata.len(),
+            ));
+        }
+    }
+    fingerprint.sort_by(|left, right| left.0.cmp(&right.0));
+    Some(fingerprint)
+}
+
 impl AppCatalog for DesktopCatalog {
     fn installed_apps(&self) -> Result<Vec<AppInfo>, ContractError> {
-        let apps = self.collect();
+        if let Some(fingerprint) = desktop_fingerprint()
+            && let Ok(cached) = self.cache.lock()
+            && let Some(known) = cached.as_ref()
+            && known.fingerprint == fingerprint
+        {
+            return Ok(known.apps.clone());
+        }
+        let apps = Self::collect_fresh();
         if apps.is_empty() && desktop_folders().is_empty() {
             return Err(ContractError::Failed(
                 "sin carpetas de escritorio".to_owned(),
             ));
+        }
+        if let Some(fingerprint) = desktop_fingerprint()
+            && let Ok(mut cached) = self.cache.lock()
+        {
+            *cached = Some(CachedDesktop {
+                fingerprint,
+                apps: apps.clone(),
+            });
         }
         Ok(apps)
     }

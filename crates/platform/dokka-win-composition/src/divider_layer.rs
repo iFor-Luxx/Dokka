@@ -22,6 +22,7 @@ impl DividerLayer {
     }
 
     pub(crate) fn update(&self, divider: &Divider) -> Result<()> {
+        self.set_visible(true)?;
         let bounds = divider.bounds;
         self.visual.SetOffset(Vector3 {
             X: bounds.x,
@@ -31,6 +32,12 @@ impl DividerLayer {
         self.visual.SetSize(Vector2 {
             X: bounds.width,
             Y: bounds.height,
-        })
+        })?;
+        Ok(())
+    }
+
+    /// Oculta o muestra sin destruir la capa, conservando el orden de pintado.
+    pub(crate) fn set_visible(&self, visible: bool) -> Result<()> {
+        self.visual.SetIsVisible(visible)
     }
 }
