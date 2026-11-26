@@ -2,6 +2,7 @@
 #![allow(unsafe_code)]
 
 mod control_window;
+mod front_window;
 mod start_menu;
 mod taskbar;
 
