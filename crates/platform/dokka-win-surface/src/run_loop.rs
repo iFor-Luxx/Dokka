@@ -1,0 +1,111 @@
+use std::time::Instant;
+
+use windows::Win32::Graphics::Dwm::DwmFlush;
+use windows::Win32::UI::WindowsAndMessaging::{
+    DispatchMessageW, GetMessageW, KillTimer, MSG, PM_REMOVE, PeekMessageW, SW_SHOWNOACTIVATE,
+    SetTimer, ShowWindow, TranslateMessage, WM_QUIT, WM_TIMER,
+};
+
+use crate::read_pointer::read_pointer;
+use crate::{Surface, SurfaceError, SurfaceEvent};
+
+/// Espera para agrupar ráfagas de avisos en una sola actualización.
+const SETTLE_MILLISECONDS: u32 = 200;
+/// Evita saltos grandes si un fotograma se retrasa.
+const LONGEST_FRAME_SECONDS: f32 = 0.05;
+
+#[derive(Default)]
+struct LoopState {
+    pending_timer: Option<usize>,
+    is_pressed: bool,
+}
+
+impl Surface {
+    /// Muestra la ventana y atiende eventos hasta que se cierre.
+    ///
+    /// `handle` devuelve `true` mientras quiera recibir fotogramas. En reposo el hilo duerme.
+    /// `refresh_message` en la cola del hilo se entrega como `Refresh`, tras una breve espera.
+    pub fn run(
+        &mut self,
+        refresh_message: u32,
+        mut handle: impl FnMut(&mut Self, SurfaceEvent) -> bool,
+    ) -> Result<(), SurfaceError> {
+        let mut message = MSG::default();
+        let mut state = LoopState::default();
+        let mut last_frame: Option<Instant> = None;
+        // SAFETY: la ventana pertenece a este hilo.
+        let _ = unsafe { ShowWindow(self.window, SW_SHOWNOACTIVATE) };
+        let mut is_animating = false;
+
+        loop {
+            if is_animating {
+                // SAFETY: `message` es escribible durante la llamada.
+                while unsafe { PeekMessageW(&mut message, None, 0, 0, PM_REMOVE) }.as_bool() {
+                    if message.message == WM_QUIT {
+                        return Ok(());
+                    }
+                    if let Some(event) = self.process(&message, refresh_message, &mut state) {
+                        // Lo que decide si se sigue animando es el fotograma de abajo.
+                        handle(self, event);
+                    }
+                }
+                let now = Instant::now();
+                let seconds = last_frame
+                    .map_or(0.0, |last| now.duration_since(last).as_secs_f32())
+                    .min(LONGEST_FRAME_SECONDS);
+                last_frame = Some(now);
+                is_animating = handle(self, SurfaceEvent::Frame { seconds });
+                // Espera al siguiente refresco de pantalla.
+                // SAFETY: no recibe argumentos.
+                if unsafe { DwmFlush() }.is_err() {
+                    std::thread::sleep(std::time::Duration::from_millis(16));
+                }
+            } else {
+                last_frame = None;
+                // SAFETY: `message` es escribible durante la llamada.
+                match unsafe { GetMessageW(&mut message, None, 0, 0) }.0 {
+                    0 => return Ok(()),
+                    -1 => return Err(windows::core::Error::from_thread().into()),
+                    _ => {}
+                }
+                if let Some(event) = self.process(&message, refresh_message, &mut state) {
+                    is_animating = handle(self, event);
+                }
+            }
+        }
+    }
+
+    fn process(
+        &self,
+        message: &MSG,
+        refresh_message: u32,
+        state: &mut LoopState,
+    ) -> Option<SurfaceEvent> {
+        if message.hwnd.is_invalid() && message.message == refresh_message {
+            // No se reinicia el temporizador: avisos continuos no deben aplazarlo siempre.
+            if state.pending_timer.is_none() {
+                // SAFETY: temporizador del hilo, sin callback.
+                let timer = unsafe { SetTimer(None, 0, SETTLE_MILLISECONDS, None) };
+                state.pending_timer = Some(timer);
+            }
+            return None;
+        }
+        if message.message == WM_TIMER && state.pending_timer == Some(message.wParam.0) {
+            // SAFETY: cancela el temporizador creado arriba.
+            let _ = unsafe { KillTimer(None, message.wParam.0) };
+            state.pending_timer = None;
+            return Some(SurfaceEvent::Refresh);
+        }
+        if message.hwnd == self.window
+            && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)
+        {
+            return Some(event);
+        }
+        // SAFETY: `message` acaba de ser rellenado por Windows.
+        unsafe {
+            let _ = TranslateMessage(message);
+            DispatchMessageW(message);
+        }
+        None
+    }
+}
