@@ -12,7 +12,7 @@ pub const BORDER_WIDTH: f32 = 1.0;
 pub const PLACEHOLDER_RADIUS: f32 = 12.0;
 
 /// Ancho extra que ocupa la línea separadora y su aire.
-pub const DIVIDER_SPACE: f32 = 13.0;
+pub const DIVIDER_SPACE: f32 = 29.0;
 pub const DIVIDER_INSET: f32 = 14.0;
 pub const DIVIDER_WIDTH: f32 = 1.0;
 
