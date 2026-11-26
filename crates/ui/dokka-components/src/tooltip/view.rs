@@ -9,11 +9,13 @@ pub fn tooltip(theme: &Theme, text: &str, center_x: f32, target_top: f32) -> Lab
         bottom: target_top - measures::GAP,
         font_size: typography::TOOLTIP_SIZE,
         text_color: theme.tooltip.text,
-        background: theme.tooltip.background,
+        tint: theme.tooltip.tint,
+        border: theme.tooltip.border,
+        border_width: measures::BORDER_WIDTH,
         padding_x: measures::PADDING_X,
         padding_y: measures::PADDING_Y,
-        corner_radius: measures::CORNER_RADIUS,
         pointer_height: measures::POINTER_HEIGHT,
+        pointer_radius: measures::POINTER_RADIUS,
     }
 }
 

@@ -1,7 +1,9 @@
 # dokka-win-composition
 
-**Hace:** dibuja una `Scene` (cristal, iconos, puntos y separador) y coloca las miniaturas en vivo
-de Windows (DWM). Solo repinta un icono cuando cambia su imagen. En el overlay pinta en orden
+**Hace:** dibuja una `Scene` (cristal, iconos, puntos, separador y etiquetas) y coloca las miniaturas en vivo
+de Windows (DWM). Solo repinta un icono cuando cambia su imagen. La etiqueta es una píldora de cristal
+con punta redondeada de la misma pieza: reutiliza sus capas al moverse entre iconos y solo repinta
+el texto si cambia. En el overlay pinta en orden
 panel, punta, resaltado, líneas, puntos y textos; el texto se repinta si cambia
 su contenido, estilo, color o alineación (izquierda o centro).
 

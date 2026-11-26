@@ -32,7 +32,8 @@ pub struct PanelColors {
 
 #[derive(Debug, Clone, Copy)]
 pub struct TooltipColors {
-    pub background: Color,
+    pub tint: Color,
+    pub border: Color,
     pub text: Color,
 }
 

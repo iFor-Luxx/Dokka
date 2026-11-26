@@ -7,7 +7,9 @@
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho;
+  `tooltip.rs` para la etiqueta flotante: píldora amplia con punta redondeada;
   `popup::SPACE` reserva 420 sobre el dock para que quepa el menú completo).
-- `theme.rs`: `MenuColors` (`theme.menu`) para el menú.
+- `theme.rs`: `MenuColors` (`theme.menu`) para el menú y `TooltipColors`
+  (`theme.tooltip`: tinte, borde y texto) para la etiqueta.
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.
