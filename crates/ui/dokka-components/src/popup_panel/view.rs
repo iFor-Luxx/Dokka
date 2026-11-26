@@ -1,4 +1,4 @@
-use dokka_scene::{Panel, Rect, Size, Text};
+use dokka_scene::{Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, popup};
 
 /// Rectángulo de tamaño `size` centrado en `center_x` y apoyado en `bottom`,
@@ -25,11 +25,12 @@ pub fn popup_panel(theme: &Theme, bounds: Rect) -> Panel {
 
 pub fn text(theme: &Theme, content: String, center: (f32, f32), size: f32, is_bold: bool) -> Text {
     Text {
-        center_x: center.0,
+        x: center.0,
         center_y: center.1,
         content,
         size,
         is_bold,
         color: theme.panel.text,
+        align: TextAlign::Center,
     }
 }

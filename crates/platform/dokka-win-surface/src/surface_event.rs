@@ -15,6 +15,8 @@ pub enum SurfaceEvent {
         x: f32,
         y: f32,
     },
+    /// El menú debe cerrarse: se perdió el foco o se pulsó Esc.
+    Dismissed,
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.

@@ -8,6 +8,7 @@ pub struct Theme {
     pub panel: PanelColors,
     pub tooltip: TooltipColors,
     pub media: MediaColors,
+    pub menu: MenuColors,
     pub icons: IconColors,
 }
 
@@ -40,6 +41,15 @@ pub struct MediaColors {
     pub background: Color,
     pub border: Color,
     pub icon: Color,
+}
+
+/// Colores del menú del clic derecho.
+#[derive(Debug, Clone, Copy)]
+pub struct MenuColors {
+    pub text: Color,
+    pub highlighted_text: Color,
+    pub highlight: Color,
+    pub separator: Color,
 }
 
 #[derive(Debug, Clone, Copy)]

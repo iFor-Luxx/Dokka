@@ -103,13 +103,7 @@ fn paint_shape(context: &ID2D1DeviceContext, text: &TextPainter, shape: &Shape) 
                 is_bold,
                 color,
             } => {
-                let line = CenteredText {
-                    text: content,
-                    x,
-                    y,
-                    size,
-                    is_bold,
-                };
+                let line = CenteredText::centered(content, x, y, size, is_bold);
                 text.draw(context, &brush(context, color)?, line)?;
             }
         }

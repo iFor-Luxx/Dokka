@@ -13,7 +13,7 @@ pub(crate) fn hovered_label(
     placement: &Placement<'_>,
     names: &HashMap<AppId, String>,
 ) -> Option<(String, Rect)> {
-    if !dock.is_hovered {
+    if !dock.is_hovered || dock.is_menu_open() {
         return None;
     }
     let reach = style::GAP / 2.0;

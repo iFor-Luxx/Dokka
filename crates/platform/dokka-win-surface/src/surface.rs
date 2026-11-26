@@ -37,6 +37,8 @@ pub struct Surface {
     pub(crate) scale: f32,
     /// Zonas activas en píxeles, para no repetir llamadas iguales.
     pub(crate) active_areas: Vec<[i32; 4]>,
+    /// Foco anterior al abrir el menú, para devolverlo al cerrarlo.
+    pub(crate) previous_focus: Option<HWND>,
 }
 
 impl Surface {
@@ -49,6 +51,7 @@ impl Surface {
             above_position: None,
             scale,
             active_areas: Vec::new(),
+            previous_focus: None,
         })
     }
 

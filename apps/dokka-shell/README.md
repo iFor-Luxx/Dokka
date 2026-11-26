@@ -1,5 +1,6 @@
 # dokka-shell
 
-**Hace:** es el ejecutable; arranca Dokka y conecta las piezas.
+**Hace:** es el ejecutable; arranca Dokka y conecta las piezas. Pide al dock abrir el menú
+y ejecuta su `MenuAction`; mientras el menú está abierto, el overlay del menú tiene prioridad.
 
 **No hace:** no contiene lógica. Se cierra con Ctrl+C.

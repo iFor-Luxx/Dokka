@@ -1,4 +1,4 @@
-use dokka_scene::Text;
+use dokka_scene::{Text, TextAlign};
 use dokka_win_text::{CenteredText, TextPainter};
 use windows::UI::Composition::{CompositionDrawingSurface, CompositionGraphicsDevice};
 use windows::Win32::Graphics::Direct2D::D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE;
@@ -23,6 +23,8 @@ pub(crate) fn paint_text(
     let height = measured_height.ceil();
 
     let pixels = |value: f32| (value * OVERSAMPLE) as u32;
+    let align_left = text.align == TextAlign::Left;
+    let line_x = if align_left { 1.0 } else { width / 2.0 };
     let surface = paint_surface(device, pixels(width), pixels(height), |context, offset| {
         let transform = Matrix3x2 {
             M11: OVERSAMPLE,
@@ -39,10 +41,11 @@ pub(crate) fn paint_text(
         }
         let line = CenteredText {
             text: &text.content,
-            x: width / 2.0,
+            x: line_x,
             y: height / 2.0,
             size: text.size,
             is_bold: text.is_bold,
+            align_left,
         };
         painter.draw(context, &solid_brush(context, text.color)?, line)
     })?;

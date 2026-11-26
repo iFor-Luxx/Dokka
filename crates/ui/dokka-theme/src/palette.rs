@@ -28,3 +28,6 @@ pub(crate) const SILVER_SOFT: Color = Color::rgba(222, 226, 232, 235);
 pub(crate) const STEEL: Color = Color::rgba(160, 166, 176, 255);
 pub(crate) const STEEL_SOFT: Color = Color::rgba(150, 156, 168, 200);
 pub(crate) const GRAY: Color = Color::rgba(140, 145, 155, 255);
+
+/// Azul de selección tipo macOS para el menú.
+pub(crate) const MACOS_BLUE: Color = Color::rgba(10, 132, 255, 255);

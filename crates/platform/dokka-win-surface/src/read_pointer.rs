@@ -1,6 +1,8 @@
-use windows::Win32::UI::Input::KeyboardAndMouse::{TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent};
+use windows::Win32::UI::Input::KeyboardAndMouse::{
+    TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent, VK_ESCAPE,
+};
 use windows::Win32::UI::WindowsAndMessaging::{
-    MSG, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_RBUTTONUP,
+    MSG, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_RBUTTONUP,
 };
 
 use crate::SurfaceEvent;
@@ -21,6 +23,7 @@ pub(crate) fn read_pointer(
     let y = f32::from((message.lParam.0 >> 16) as i16) / scale;
 
     match message.message {
+        WM_KEYDOWN if message.wParam.0 == VK_ESCAPE.0 as usize => Some(SurfaceEvent::Dismissed),
         WM_MOUSEMOVE => {
             let mut request = TRACKMOUSEEVENT {
                 cbSize: size_of::<TRACKMOUSEEVENT>() as u32,
