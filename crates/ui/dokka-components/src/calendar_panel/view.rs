@@ -84,7 +84,7 @@ pub fn calendar_panel(theme: &Theme, bounds: Rect, month: &CalendarMonth) -> Ove
         highlight: None,
         dividers: Vec::new(),
         dots,
-        icons: Vec::new(),
+        pointer: None,
         texts,
         thumbnails: Vec::new(),
         controls: None,

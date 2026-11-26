@@ -1,7 +1,5 @@
-use std::sync::Arc;
-
 use dokka_scene::TextAlign;
-use dokka_scene::{Divider, Drawing, Icon, IconImage, Overlay, Panel, Rect, Shape, Size, Text};
+use dokka_scene::{Divider, Overlay, Panel, Pointer, Rect, Size, Text};
 use dokka_theme::{Theme, menu as measures, typography};
 
 use super::MenuRow;
@@ -77,7 +75,7 @@ pub fn menu_overlay(
         highlight: Some(highlight_panel(theme, bounds, rows, highlighted)),
         dividers,
         dots: Vec::new(),
-        icons: vec![tip_icon(theme, bounds, tip_x)],
+        pointer: Some(menu_pointer(bounds, tip_x)),
         texts,
         thumbnails: Vec::new(),
         controls: None,
@@ -150,22 +148,13 @@ fn row_top(rows: &[MenuRow], bounds: Rect, index: usize) -> f32 {
     top
 }
 
-fn tip_icon(theme: &Theme, bounds: Rect, tip_x: f32) -> Icon {
-    let side = measures::POINTER_WIDTH;
-    // El lienzo del dibujo mide 100 unidades: la altura de la punta sale de las medidas.
-    let apex = measures::POINTER_HEIGHT * 100.0 / measures::POINTER_WIDTH;
-    let drawing = Drawing {
-        shapes: vec![Shape::Triangle {
-            points: [(0.0, 0.0), (100.0, 0.0), (50.0, apex)],
-            color: theme.menu.background,
-        }],
-    };
-    Icon {
-        x: (tip_x - side / 2.0).clamp(bounds.x, bounds.x + bounds.width - side),
-        y: bounds.y + bounds.height,
-        side,
-        image: Some(IconImage::Drawing(Arc::new(drawing))),
-        placeholder: theme.menu.background,
-        placeholder_radius: 0.0,
+fn menu_pointer(bounds: Rect, tip_x: f32) -> Pointer {
+    // La base (2 × altura) debe quedar sobre el tramo recto del borde inferior.
+    let half = measures::POINTER_HEIGHT;
+    let min = bounds.x + measures::CORNER_RADIUS + half;
+    let max = bounds.x + bounds.width - measures::CORNER_RADIUS - half;
+    Pointer {
+        center_x: tip_x.clamp(min, max),
+        height: measures::POINTER_HEIGHT,
     }
 }

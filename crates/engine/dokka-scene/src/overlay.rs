@@ -1,4 +1,4 @@
-use crate::{Divider, Dot, Icon, Panel, Text, Thumbnail};
+use crate::{Divider, Dot, Icon, Panel, Pointer, Text, Thumbnail};
 
 /// Botones que deben verse por encima de una miniatura.
 #[derive(Debug, Clone, PartialEq)]
@@ -8,7 +8,7 @@ pub struct Controls {
 }
 
 /// Panel flotante sobre la escena principal.
-/// Orden de pintado: panel, resaltado, líneas, puntos, iconos (punta), textos.
+/// Orden de pintado: panel, punta, resaltado, líneas, puntos, textos.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Overlay {
     pub panel: Panel,
@@ -16,7 +16,7 @@ pub struct Overlay {
     pub dividers: Vec<Divider>,
     /// Se dibujan debajo de los textos.
     pub dots: Vec<Dot>,
-    pub icons: Vec<Icon>,
+    pub pointer: Option<Pointer>,
     pub texts: Vec<Text>,
     pub thumbnails: Vec<Thumbnail>,
     /// La plataforma los pone en una capa propia, sobre las miniaturas.

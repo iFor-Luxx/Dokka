@@ -63,7 +63,7 @@ pub fn preview_card(
         highlight: None,
         dividers: Vec::new(),
         dots: Vec::new(),
-        icons: Vec::new(),
+        pointer: None,
         texts,
         thumbnails,
         controls: media.map(|(playing, icons)| media_controls(theme, icons, bounds, playing)),
