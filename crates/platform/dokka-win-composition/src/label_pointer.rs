@@ -111,6 +111,11 @@ impl LabelPointer {
         self.shape.SetStrokeBrush(stroke)?;
         self.shape.SetStrokeThickness(width)
     }
+
+    /// Oculta o muestra sin destruir la capa, conservando el orden de pintado.
+    pub(crate) fn set_visible(&self, visible: bool) -> Result<()> {
+        self.container.SetIsVisible(visible)
+    }
 }
 
 fn diamond(visual: &Visual, side: f32) -> Result<()> {

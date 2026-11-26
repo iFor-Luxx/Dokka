@@ -56,6 +56,7 @@ impl IconLayer {
         painter: &Painter,
         icon: &Icon,
     ) -> Result<()> {
+        self.set_visible(true)?;
         if let (Some(sprite), Some(old), Some(new)) = (&self.sprite, &self.image, &icon.image)
             && !old.is_same(new)
         {
@@ -73,7 +74,13 @@ impl IconLayer {
             X: icon.x,
             Y: icon.y,
             Z: 0.0,
-        })
+        })?;
+        Ok(())
+    }
+
+    /// Oculta o muestra sin destruir la capa, conservando el orden de pintado.
+    pub(crate) fn set_visible(&self, visible: bool) -> Result<()> {
+        self.visual.SetIsVisible(visible)
     }
 }
 

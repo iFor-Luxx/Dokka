@@ -35,24 +35,25 @@ impl Launchpad {
     }
 
     /// Abre con la lista ya unida y ordenada; la búsqueda empieza vacía y entra con zoom.
+    /// La caché de baldosas sobrevive: solo se podan las apps que ya no están.
     pub fn open(&mut self, apps: Vec<AppInfo>) {
         self.apps = apps;
+        self.tiles.prune(&self.apps);
         self.highlighted = None;
         self.search.reset();
         self.page = 0;
         self.motion = PageMotion::new();
         self.zoom.open();
-        self.tiles.clear();
         self.is_open = true;
     }
 
     /// Cierra del todo: se llama cuando termina la animación de cierre.
+    /// No vacía la caché de baldosas para que la siguiente apertura reutilice.
     pub fn close(&mut self) {
         self.is_open = false;
         self.highlighted = None;
         self.search.reset();
         self.zoom = ZoomMotion::new();
-        self.tiles.clear();
     }
 
     /// Empieza el cierre animado; sigue abierto hasta que termina.
@@ -129,18 +130,37 @@ impl Launchpad {
         self.tiles.tiled(&self.apps, images, theme)
     }
 
+    /// Baldosas solo para estas apps (la página visible), sin podar el resto.
+    pub fn tiled_images_for(
+        &mut self,
+        apps: &[AppInfo],
+        images: &HashMap<AppId, Arc<Bitmap>>,
+        theme: &Theme,
+    ) -> HashMap<AppId, Arc<Bitmap>> {
+        self.tiles.tiled(apps, images, theme)
+    }
+
     /// Clic: la casilla enfoca sin cerrar, los puntos cambian de página y el
     /// resto abre la app o cierra por vacío.
     pub fn click(&mut self, x: f32, y: f32, screen: Size) -> LaunchpadAction {
         crate::logic::click_launchpad(self, x, y, screen)
     }
 
-    /// Resalta la app que hay en el punto.
-    pub fn pointer_moved(&mut self, x: f32, y: f32, screen: Size) {
-        self.highlighted = app_index(self, x, y, screen);
+    /// Resalta la app que hay en el punto; indica si cambió para no redibujar.
+    pub fn pointer_moved(&mut self, x: f32, y: f32, screen: Size) -> bool {
+        let next = app_index(self, x, y, screen);
+        if next == self.highlighted {
+            return false;
+        }
+        self.highlighted = next;
+        true
     }
 
-    pub fn pointer_left(&mut self) {
+    pub fn pointer_left(&mut self) -> bool {
+        if self.highlighted.is_none() {
+            return false;
+        }
         self.highlighted = None;
+        true
     }
 }

@@ -1,7 +1,7 @@
 use dokka_model::AppInfo;
 
 /// Minúsculas sin tildes para comparar nombres.
-fn normalized(text: &str) -> String {
+pub(crate) fn normalized(text: &str) -> String {
     text.to_lowercase()
         .chars()
         .map(|letter| match letter {

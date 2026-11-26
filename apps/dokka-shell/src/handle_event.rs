@@ -57,10 +57,16 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::LaunchpadMoved { x, y } => {
-            move_over_launchpad(session, surface, x, y);
+            // Sin cambio de resaltado no se redibuja: el parpadeo del cursor
+            // llega por `Tick` y los iconos ya están en caché tras abrir.
+            if !move_over_launchpad(session, surface, x, y) {
+                return Ok(());
+            }
         }
         SurfaceEvent::LaunchpadLeft => {
-            session.launchpad.pointer_left();
+            if !session.launchpad.pointer_left() {
+                return Ok(());
+            }
         }
         SurfaceEvent::LaunchpadClicked { x, y } => {
             click_launchpad(session, surface, x, y)?;

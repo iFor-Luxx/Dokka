@@ -3,7 +3,7 @@
 //! Describe un `D2D1GaussianBlur` al compositor mediante una implementación
 //! propia de `IGraphicsEffect` + `IGraphicsEffectD2D1Interop`: expone las 3
 //! propiedades del efecto (índice 0: `BlurAmount` como Single; índice 1:
-//! optimización equilibrada como UInt32; índice 2: modo de borde suave como
+//! optimización de velocidad como UInt32; índice 2: modo de borde suave como
 //! UInt32) y una sola fuente, el parámetro `source`. Solo `BlurAmount` tiene
 //! nombre (`Blur.BlurAmount`) y es animable: el radio se cambia con
 //! `Properties().InsertScalar` sin reconstruir nada. La fábrica se crea una
@@ -44,8 +44,9 @@ pub(crate) const EFFECT_NAME: &str = "Blur";
 pub(crate) const BLUR_ANIMATABLE: &str = "Blur.BlurAmount";
 /// Propiedad del radio dentro del efecto.
 const BLUR_AMOUNT_NAME: &str = "BlurAmount";
-/// Optimización equilibrada (`D2D1_GAUSSIANBLUR_OPTIMIZATION_BALANCED`).
-const BLUR_OPTIMIZATION_BALANCED: u32 = 1;
+/// Optimización de velocidad (`D2D1_GAUSSIANBLUR_OPTIMIZATION_SPEED`).
+/// Mismo radio visible que la equilibrada, pero pensada para animarlo.
+const BLUR_OPTIMIZATION_SPEED: u32 = 0;
 /// Borde suave (`D2D1_BORDER_MODE_SOFT`).
 const BLUR_BORDER_MODE_SOFT: u32 = 0;
 
@@ -102,7 +103,7 @@ impl IGraphicsEffectD2D1Interop_Impl for GaussianBlurEffect_Impl {
         if index == 0 {
             PropertyValue::CreateSingle(self.amount)?.cast()
         } else if index == 1 {
-            PropertyValue::CreateUInt32(BLUR_OPTIMIZATION_BALANCED)?.cast()
+            PropertyValue::CreateUInt32(BLUR_OPTIMIZATION_SPEED)?.cast()
         } else if index == 2 {
             PropertyValue::CreateUInt32(BLUR_BORDER_MODE_SOFT)?.cast()
         } else {

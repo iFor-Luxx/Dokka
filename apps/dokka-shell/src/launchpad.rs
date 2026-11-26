@@ -73,13 +73,13 @@ pub(crate) fn reopen_launchpad(
     Ok(())
 }
 
-/// Resalta la app bajo el cursor.
-pub(crate) fn move_over_launchpad(session: &mut DockSession, surface: &Surface, x: f32, y: f32) {
+/// Resalta la app bajo el cursor; indica si cambió para no redibujar.
+pub(crate) fn move_over_launchpad(session: &mut DockSession, surface: &Surface, x: f32, y: f32) -> bool {
     if session.launchpad.is_closing() {
-        return;
+        return false;
     }
     let size = launchpad_size(surface);
-    session.launchpad.pointer_moved(x, y, size);
+    session.launchpad.pointer_moved(x, y, size)
 }
 
 /// Clic en la cuadrícula: abre la app, cambia de página o cierra por vacío.

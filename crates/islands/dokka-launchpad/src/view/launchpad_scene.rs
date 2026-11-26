@@ -31,11 +31,18 @@ pub fn launchpad_scene(
     launchpad: &mut Launchpad,
     images: &HashMap<AppId, Arc<Bitmap>>,
 ) -> Scene {
-    let visible = launchpad.visible_apps(screen);
-    let show_empty = visible.is_empty();
+    // Un solo filtrado por fotograma: de aquí salen la página visible y los puntos.
+    let filtered = launchpad.filtered_apps();
+    let per_page = launchpad.apps_per_page(screen);
+    let total_pages = (filtered.len().div_ceil(per_page)).max(1);
+    let current = launchpad.page.min(total_pages - 1);
+    let start = current * per_page;
+    let show_empty = filtered.is_empty();
     let offset = launchpad.motion_offset(screen.width);
-    let items = visible
+    let items = filtered
         .iter()
+        .skip(start)
+        .take(per_page)
         .map(|app| AppGridItem {
             name: app.name.clone(),
             image: images
@@ -57,8 +64,8 @@ pub fn launchpad_scene(
     };
     let dots = PageDotsProps {
         screen,
-        total: launchpad.page_count(screen),
-        current: launchpad.current_page(screen),
+        total: total_pages,
+        current,
     };
     let drawing = launchpad.magnifier(theme.launchpad.search_text);
     let mut icons = app_icons(theme, &grid);
