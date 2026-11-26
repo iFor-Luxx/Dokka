@@ -12,16 +12,28 @@ use windows_numerics::{Matrix3x2, Vector2};
 use crate::fill_triangle::fill_triangle;
 use crate::paint_surface::paint_surface;
 
-/// Resolución a la que se pintan los dibujos.
-const DRAWING_PIXELS: u32 = 128;
+/// Píxeles mínimos del mapa de un dibujo: los iconos grandes del dock,
+/// que la lupa escala por GPU sin repintar, nunca bajan de aquí.
+pub(crate) const MIN_DRAWING_PIXELS: u32 = 128;
+
+/// Sobremuestreo sobre el tamaño en pantalla, como los textos.
+pub(crate) const DRAWING_OVERSAMPLE: f32 = 2.0;
+
+/// Píxeles del mapa para un icono de `side` unidades lógicas
+/// visto a `scale` píxeles por unidad: el doble del lado en pantalla,
+/// sin bajar del mínimo de los iconos grandes del dock.
+pub(crate) fn drawing_pixels(side: f32, scale: f32) -> u32 {
+    ((side * scale * DRAWING_OVERSAMPLE).ceil() as u32).max(MIN_DRAWING_PIXELS)
+}
 
 pub(crate) fn paint_drawing(
     device: &CompositionGraphicsDevice,
     text: &TextPainter,
     drawing: &Drawing,
+    pixels: u32,
 ) -> Result<CompositionDrawingSurface> {
-    paint_surface(device, DRAWING_PIXELS, DRAWING_PIXELS, |context, offset| {
-        let scale = DRAWING_PIXELS as f32 / DRAWING_SIDE;
+    paint_surface(device, pixels, pixels, |context, offset| {
+        let scale = pixels as f32 / DRAWING_SIDE;
         let transform = Matrix3x2 {
             M11: scale,
             M12: 0.0,

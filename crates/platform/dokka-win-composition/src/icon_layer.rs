@@ -29,7 +29,7 @@ impl IconLayer {
         let (visual, sprite): (Visual, _) = match &icon.image {
             Some(image) => {
                 let sprite = compositor.CreateSpriteVisual()?;
-                let surface = painter.paint(image)?;
+                let surface = painter.paint(image, icon.side)?;
                 sprite.SetBrush(&compositor.CreateSurfaceBrushWithSurface(&surface)?)?;
                 (sprite.cast()?, Some(sprite))
             }
@@ -59,7 +59,7 @@ impl IconLayer {
         if let (Some(sprite), Some(old), Some(new)) = (&self.sprite, &self.image, &icon.image)
             && !old.is_same(new)
         {
-            let surface = painter.paint(new)?;
+            let surface = painter.paint(new, icon.side)?;
             sprite.SetBrush(&compositor.CreateSurfaceBrushWithSurface(&surface)?)?;
             self.image = Some(new.clone());
         }

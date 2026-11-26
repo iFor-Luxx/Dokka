@@ -1,8 +1,10 @@
 //! Iconos de interfaz desde la librería Lucide, por significado.
 //!
-//! Cada función crea un `Drawing` con un solo glifo centrado en el lienzo
-//! de 100. El tamaño del glifo sale de `dokka-theme`; el color lo pone quien
-//! llama (texto normal o blanco de la fila resaltada).
+//! Cada función crea un `Drawing` con un solo glifo que llena el lienzo
+//! de 100 (centrado en 50, 50). El tamaño del glifo sale de `dokka-theme`
+//! y es el lienzo completo, así que la fuente efectiva iguala al lado con
+//! que se muestra el icono (24); el color lo pone quien llama
+//! (texto normal o blanco de la fila resaltada).
 
 use dokka_scene::{Color, Drawing, Shape};
 use dokka_theme::{launchpad, menu, popup};
