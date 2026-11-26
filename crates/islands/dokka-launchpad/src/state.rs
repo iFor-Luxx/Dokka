@@ -1,8 +1,13 @@
+use std::collections::HashMap;
+use std::sync::Arc;
+
 use dokka_components::app_grid::{AppGridItem, AppGridProps, app_at};
-use dokka_model::AppInfo;
-use dokka_scene::Size;
+use dokka_model::{AppId, AppInfo};
+use dokka_scene::{Bitmap, Size};
+use dokka_theme::Theme;
 
 use crate::LaunchpadAction;
+use crate::tiles::TileCache;
 
 /// Estado abierto/cerrado, apps visibles y resaltado bajo el cursor.
 #[derive(Debug, Default)]
@@ -10,6 +15,7 @@ pub struct Launchpad {
     apps: Vec<AppInfo>,
     highlighted: Option<usize>,
     is_open: bool,
+    tiles: TileCache,
 }
 
 impl Launchpad {
@@ -21,12 +27,14 @@ impl Launchpad {
     pub fn open(&mut self, apps: Vec<AppInfo>) {
         self.apps = apps;
         self.highlighted = None;
+        self.tiles.clear();
         self.is_open = true;
     }
 
     pub fn close(&mut self) {
         self.is_open = false;
         self.highlighted = None;
+        self.tiles.clear();
     }
 
     pub fn is_open(&self) -> bool {
@@ -39,6 +47,15 @@ impl Launchpad {
 
     pub fn highlighted(&self) -> Option<usize> {
         self.highlighted
+    }
+
+    /// Baldosas uniformes para el redibujado, calculadas una sola vez por app.
+    pub fn tiled_images(
+        &mut self,
+        images: &HashMap<AppId, Arc<Bitmap>>,
+        theme: &Theme,
+    ) -> HashMap<AppId, Arc<Bitmap>> {
+        self.tiles.tiled(&self.apps, images, theme)
     }
 
     /// Resalta la app que hay en el punto.

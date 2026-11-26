@@ -1,12 +1,18 @@
 //! Iconos propios de Dokka.
 
+mod app_tile;
 mod calendar;
 mod clock;
 mod explorer;
 mod launchpad;
 mod media;
 mod shapes;
+mod tile_frame;
+mod tile_paint;
+mod tile_pixels;
 mod trash;
+
+pub use app_tile::app_tile;
 
 pub use calendar::calendar_icon;
 pub use clock::clock_icon;

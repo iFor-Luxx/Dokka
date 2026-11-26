@@ -2,6 +2,10 @@
 
 //! Icono grande, como en macOS.
 pub const ICON_SIDE: f32 = 90.0;
+/// Radio de la baldosa uniforme, para `ICON_SIDE`.
+pub const TILE_RADIUS: f32 = 20.0;
+/// Parte del lado que ocupa el glifo sobre la baldosa.
+pub const TILE_CONTENT_SCALE: f32 = 0.66;
 /// Hasta 7 columnas por pantalla.
 pub const MAX_COLUMNS: usize = 7;
 pub const COLUMN_GAP: f32 = 24.0;

@@ -44,6 +44,8 @@ pub(crate) const MENU_SEPARATOR: Color = Color::rgba(0, 0, 0, 35);
 
 /// Fondo del Launchpad: cristal oscuro que deja ver el escritorio.
 pub(crate) const LAUNCHPAD_BACKGROUND: Color = Color::rgba(24, 26, 32, 150);
+/// Baldosa clara donde apoya el glifo de cada app en el Launchpad.
+pub(crate) const APP_TILE: Color = Color::rgba(231, 234, 239, 255);
 /// Texto claro de los nombres bajo los iconos.
 pub(crate) const LAUNCHPAD_TEXT: Color = Color::rgba(250, 250, 250, 255);
 /// Resaltado suave detrás de la app bajo el cursor.
