@@ -15,17 +15,20 @@ impl Dock {
         }
     }
 
-    /// Parte del dock que se ve y recibe el mouse. El resto deja pasar los clics.
+    /// Parte del dock que se ve y recibe el mouse. El resto deja pasar los clics:
+    /// solo la barra más lo que crece con la lupa, sin el margen del submenú.
     pub fn active_area(&self, apps: &[DockApp]) -> Rect {
         let bar = place_dock(self, apps).bar;
         if !self.needs_headroom() {
             return bar;
         }
         let rise = style::rise_space();
+        let magnify = style::magnify_room();
+        let (entries, _) = list_entries(apps, &self.explorer);
         Rect {
-            x: 0.0,
+            x: style::side_room() - magnify,
             y: bar.y - rise,
-            width: self.surface_size(apps).width,
+            width: style::bar_width(entries.len()) + magnify * 2.0,
             height: rise + bar.height,
         }
     }

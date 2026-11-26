@@ -1,8 +1,8 @@
 //! Cuentas geométricas del dock. Los valores vienen de `dokka-theme`.
 
 pub use dokka_theme::dock::*;
-use dokka_theme::popup;
 use dokka_theme::tooltip;
+use dokka_theme::{menu, popup};
 
 /// Ancho en reposo de una barra con `slots` iconos y su separador.
 pub(crate) fn bar_width(slots: usize) -> f32 {
@@ -24,7 +24,13 @@ pub(crate) fn headroom() -> f32 {
     rise_space() + popup::SPACE
 }
 
-/// Espacio a cada lado: la mitad de lo que puede ensancharse la barra.
-pub(crate) fn side_room() -> f32 {
+/// Espacio a cada lado por lo que puede ensancharse la barra con la lupa.
+pub(crate) fn magnify_room() -> f32 {
     ((MAXIMUM_SCALE - 1.0) * magnify_range() / 2.0).ceil() + 2.0
+}
+
+/// Margen lateral de la ventana: lo mayor entre la lupa y el menú con su
+/// submenú a la derecha, para que quepan aunque el dock tenga pocos iconos.
+pub(crate) fn side_room() -> f32 {
+    magnify_room().max(menu::WIDTH + menu::SUBMENU_GAP)
 }
