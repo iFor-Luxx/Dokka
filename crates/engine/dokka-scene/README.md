@@ -15,6 +15,9 @@
   animados crecen desde el icono; el menú siempre vale 1.
 - `Scene` añade `texts` sueltos, `highlight` opcional para el Launchpad y
   `submenu` opcional para el segundo panel del menú (mismo cristal, sin punta).
+- `Scene` añade `flat_panels`: planos (tinte y borde, sin cristal) sobre el
+  cristal de la misma ventana, como el buscador, la selección y el hover de
+  Preferencias; el dock y el Launchpad no los usan.
 - `Scene` añade `opacity` y `scale`: cuánto se ve todo (1 en reposo) y cuánto
   escala el contenido sobre el fondo, con origen en su centro. El dock siempre vale 1.
 - `Scene` añade `blur`: desenfoque gaussiano del contenido en unidades lógicas

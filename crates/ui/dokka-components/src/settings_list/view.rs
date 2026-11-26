@@ -5,26 +5,28 @@ use dokka_theme::{Theme, settings as measures};
 
 use super::SettingsListProps;
 
-/// Fondo translúcido de la barra lateral izquierda.
+/// Panel flotante de la barra lateral: con margen parejo arriba, abajo y a la
+/// izquierda donde se ve el fondo de la ventana; esquinas concéntricas con la
+/// ventana y borde fino y luminoso. El borde derecho no se mueve.
 pub fn sidebar_panel(theme: &Theme) -> Panel {
     Panel {
         bounds: Rect {
-            x: 0.0,
-            y: 0.0,
-            width: measures::SIDEBAR_WIDTH,
-            height: measures::HEIGHT,
+            x: measures::SIDEBAR_INSET,
+            y: measures::SIDEBAR_INSET,
+            width: measures::sidebar_panel_width(),
+            height: measures::HEIGHT - measures::SIDEBAR_INSET * 2.0,
         },
-        corner_radius: measures::CORNER_RADIUS,
-        border_width: 0.0,
+        corner_radius: measures::SIDEBAR_RADIUS,
+        border_width: measures::SIDEBAR_BORDER_WIDTH,
         tint: theme.settings.sidebar,
-        border: theme.settings.sidebar,
+        border: theme.settings.sidebar_border,
     }
 }
 
-/// Sitio de la casilla de búsqueda bajo los semáforos.
+/// Sitio de la casilla de búsqueda bajo los semáforos, dentro del panel.
 pub fn search_bounds() -> Rect {
     Rect {
-        x: measures::SIDEBAR_MARGIN,
+        x: measures::SIDEBAR_INSET + measures::SIDEBAR_MARGIN,
         y: measures::SEARCH_TOP,
         width: measures::search_width(),
         height: measures::SEARCH_HEIGHT,
@@ -94,13 +96,13 @@ pub fn row_labels(theme: &Theme, props: &SettingsListProps, names: &[String]) ->
         .collect()
 }
 
-/// Fondo azul de la fila elegida. Siempre tiene el mismo estilo.
+/// Fondo azul de la fila elegida. Plano sobre la barra: siempre tiene el mismo estilo.
 pub fn row_selection(theme: &Theme, props: &SettingsListProps) -> Panel {
     Panel {
         bounds: Rect {
-            x: measures::ROW_HIGHLIGHT_MARGIN,
+            x: measures::SIDEBAR_INSET + measures::ROW_HIGHLIGHT_MARGIN,
             y: measures::row_middle(props.selected) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0,
-            width: measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
+            width: measures::sidebar_panel_width() - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
             height: measures::ROW_HIGHLIGHT_HEIGHT,
         },
         corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
@@ -110,7 +112,7 @@ pub fn row_selection(theme: &Theme, props: &SettingsListProps) -> Panel {
     }
 }
 
-/// Fondo suave de la fila bajo el cursor. Sin fila es de tamaño cero y no se
+/// Fondo suave de la fila bajo el cursor. Plano sobre la barra. Sin fila es de tamaño cero y no se
 /// ve; sobre la elegida se esconde para no tapar el azul.
 pub fn row_hover(theme: &Theme, props: &SettingsListProps) -> Panel {
     let hidden = Panel {
@@ -133,9 +135,9 @@ pub fn row_hover(theme: &Theme, props: &SettingsListProps) -> Panel {
     }
     Panel {
         bounds: Rect {
-            x: measures::ROW_HIGHLIGHT_MARGIN,
+            x: measures::SIDEBAR_INSET + measures::ROW_HIGHLIGHT_MARGIN,
             y: measures::row_middle(hovered) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0,
-            width: measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
+            width: measures::sidebar_panel_width() - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
             height: measures::ROW_HIGHLIGHT_HEIGHT,
         },
         corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
@@ -145,11 +147,11 @@ pub fn row_hover(theme: &Theme, props: &SettingsListProps) -> Panel {
     }
 }
 
-/// Fila que hay en el punto, si cae en su resaltado.
+/// Fila que hay en el punto, si cae en su resaltado dentro del panel.
 pub fn row_at(x: f32, y: f32) -> Option<usize> {
     (0..measures::SECTIONS).find(|&index| {
         let top = measures::row_middle(index) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0;
-        (measures::ROW_HIGHLIGHT_MARGIN..measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN)
+        (measures::row_highlight_left()..measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN)
             .contains(&x)
             && (top..top + measures::ROW_HIGHLIGHT_HEIGHT).contains(&y)
     })

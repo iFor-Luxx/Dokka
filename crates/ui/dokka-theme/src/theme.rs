@@ -92,6 +92,7 @@ pub struct SettingsColors {
     pub window: Color,
     pub window_border: Color,
     pub sidebar: Color,
+    pub sidebar_border: Color,
     pub search_background: Color,
     pub search_border: Color,
     pub search_text: Color,

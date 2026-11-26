@@ -42,7 +42,8 @@ impl PanelLayer {
     }
 
     /// Tinte plano con borde, sin cristal ni `HostBackdropBrush`.
-    /// Solo para el resaltado del `Overlay` (píldora y menú).
+    /// Para el resaltado del `Overlay` (píldora y menú) y los planos de la
+    /// `Scene` sobre cristal de la misma ventana (Preferencias).
     pub(crate) fn add_flat(
         compositor: &Compositor,
         parent: &ContainerVisual,

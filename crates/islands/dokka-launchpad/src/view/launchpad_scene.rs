@@ -102,6 +102,7 @@ pub fn launchpad_scene(
             border: theme.launchpad.background,
         },
         panels: vec![search_panel(theme, &search), dot_halo(theme, &dots)],
+        flat_panels: Vec::new(),
         icons,
         dots: page_dots(theme, &dots),
         dividers,

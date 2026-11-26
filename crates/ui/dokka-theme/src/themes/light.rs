@@ -71,6 +71,7 @@ fn settings_colors(border: dokka_scene::Color) -> SettingsColors {
         window: palette::SETTINGS_WINDOW,
         window_border: border,
         sidebar: palette::SETTINGS_SIDEBAR,
+        sidebar_border: palette::SETTINGS_SIDEBAR_BORDER,
         search_background: palette::SETTINGS_SEARCH_BACKGROUND,
         search_border: palette::SETTINGS_SEARCH_BORDER,
         search_text: palette::GRAY,

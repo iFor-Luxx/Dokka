@@ -13,8 +13,10 @@ use crate::Settings;
 
 /// Escena fija de la ventana: fondo, barra lateral, filas, cabecera y tarjeta.
 /// Cada capa visual se crea arriba, en orden de pintado: fondo, paneles,
-/// resaltado, líneas, iconos, puntos y textos. Nada cambia de forma al elegir
+/// planos, resaltado, líneas, iconos, puntos y textos. Nada cambia de forma al elegir
 /// sección: solo se mueven la selección y los textos.
+/// La barra es un panel flotante de cristal; el buscador, la selección y el
+/// hover son planos sobre ella para que el cristal no los oscurezca.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let props = SettingsListProps {
         selected: settings.selected(),
@@ -92,14 +94,6 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         },
         panels: vec![
             sidebar_panel(theme),
-            row_selection(theme, &props),
-            search_panel_at(
-                theme.settings.search_background,
-                theme.settings.search_border,
-                search,
-                measures::SEARCH_RADIUS,
-                measures::SEARCH_BORDER_WIDTH,
-            ),
             Panel {
                 bounds: Rect {
                     x: card_x,
@@ -115,7 +109,20 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             // Cada capa se inserta arriba: la píldora queda sobre el fondo.
             nav_pill_panel(theme, &pill),
         ],
-        highlight: Some(row_hover(theme, &props)),
+        // Planos sobre la barra: el cristal muestrearía el fondo de pantalla
+        // y taparía su tinte. Siempre son tres para no reconstruir capas.
+        flat_panels: vec![
+            search_panel_at(
+                theme.settings.search_background,
+                theme.settings.search_border,
+                search,
+                measures::SEARCH_RADIUS,
+                measures::SEARCH_BORDER_WIDTH,
+            ),
+            row_selection(theme, &props),
+            row_hover(theme, &props),
+        ],
+        highlight: None,
         dividers: vec![
             Divider {
                 bounds: Rect {
