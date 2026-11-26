@@ -5,10 +5,11 @@ use windows::Win32::UI::HiDpi::{
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, SetProcessDpiAwarenessContext,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    CreateWindowExW, IDC_ARROW, LoadCursorW, RegisterClassExW, WNDCLASSEXW, WS_EX_NOACTIVATE,
-    WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_EX_TRANSPARENT, WS_POPUP,
+    CreateWindowExW, IDC_ARROW, LoadCursorW, RegisterClassExW, WNDCLASSEXW, WS_EX_APPWINDOW,
+    WS_EX_NOACTIVATE, WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST,
+    WS_EX_TRANSPARENT, WS_POPUP,
 };
-use windows::core::{BOOL, Error, Result, w};
+use windows::core::{BOOL, Error, PCWSTR, Result, w};
 
 use crate::window_procedure::window_procedure;
 
@@ -18,6 +19,7 @@ pub(crate) fn create_window(owner: Option<HWND>) -> Result<HWND> {
     create_with_style(
         owner,
         WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+        w!("Dokka"),
     )
 }
 
@@ -26,6 +28,18 @@ pub(crate) fn create_launchpad_window() -> Result<HWND> {
     create_with_style(
         None,
         WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+        w!("Dokka"),
+    )
+}
+
+/// Ventana de Preferencias: normal y activable (sale en la barra de tareas y
+/// toma el foco), sin estar siempre encima. El contenido lo dibuja el mismo
+/// compositor en su propio árbol visual.
+pub(crate) fn create_settings_window() -> Result<HWND> {
+    create_with_style(
+        None,
+        WS_EX_NOREDIRECTIONBITMAP | WS_EX_APPWINDOW,
+        w!("Preferencias"),
     )
 }
 
@@ -38,12 +52,14 @@ pub(crate) fn create_preview_window() -> Result<HWND> {
             | WS_EX_TOOLWINDOW
             | WS_EX_NOACTIVATE
             | WS_EX_TRANSPARENT,
+        w!("Dokka"),
     )
 }
 
 fn create_with_style(
     owner: Option<HWND>,
     extended: windows::Win32::UI::WindowsAndMessaging::WINDOW_EX_STYLE,
+    title: PCWSTR,
 ) -> Result<HWND> {
     let class_name = w!("DokkaSurface");
     // SAFETY: las cadenas son estáticas, las estructuras viven durante cada llamada
@@ -69,7 +85,7 @@ fn create_with_style(
         let window = CreateWindowExW(
             extended,
             class_name,
-            w!("Dokka"),
+            title,
             WS_POPUP,
             0,
             0,

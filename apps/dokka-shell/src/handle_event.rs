@@ -17,13 +17,22 @@ use crate::launchpad::{
 };
 use crate::media::send_media;
 use crate::perform_click::perform_click;
+use crate::settings::handle_settings_event;
 
 pub(crate) fn handle_event(
     session: &mut DockSession,
     surface: &mut Surface,
     event: SurfaceEvent,
 ) -> Result<(), Box<dyn Error>> {
+    if handle_settings_event(session, surface, event)? {
+        return crate::session_render::render(session, surface);
+    }
     match event {
+        // Los eventos de Preferencias ya se atendieron arriba.
+        SurfaceEvent::SettingsMoved { .. }
+        | SurfaceEvent::SettingsLeft
+        | SurfaceEvent::SettingsPressed { .. }
+        | SurfaceEvent::SettingsClicked { .. } => {}
         SurfaceEvent::PointerMoved { x, y } => {
             if session.launchpad.is_open() {
                 session.dock.pointer_moved(x, y, session.state.apps());

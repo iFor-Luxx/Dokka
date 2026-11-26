@@ -1,8 +1,8 @@
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::{
     DefWindowProcW, GW_OWNER, GWL_EXSTYLE, GetWindow, GetWindowLongW, HTTRANSPARENT, MA_NOACTIVATE,
-    PostMessageW, PostQuitMessage, WA_INACTIVE, WM_ACTIVATE, WM_DESTROY, WM_MOUSEACTIVATE,
-    WM_NCHITTEST, WS_EX_NOACTIVATE, WS_EX_TRANSPARENT,
+    PostMessageW, PostQuitMessage, SW_HIDE, ShowWindow, WA_INACTIVE, WM_ACTIVATE, WM_CLOSE,
+    WM_DESTROY, WM_MOUSEACTIVATE, WM_NCHITTEST, WS_EX_NOACTIVATE, WS_EX_TRANSPARENT,
 };
 
 /// Aviso propio de que la ventana dejó de estar activa o se pulsó Esc.
@@ -35,6 +35,15 @@ pub(crate) unsafe extern "system" fn window_procedure(
         WM_DESTROY if !is_owned() => {
             // SAFETY: termina el bucle de mensajes de este hilo.
             unsafe { PostQuitMessage(0) };
+            LRESULT(0)
+        }
+        // Cerrar con la X, Alt+F4 o la barra de tareas solo oculta: destruir una
+        // ventana sin dueña terminaría la app. Vale para las tres ventanas.
+        WM_CLOSE if !is_owned() => {
+            // SAFETY: la ventana que recibe el mensaje sigue viva aquí.
+            unsafe {
+                let _ = ShowWindow(window, SW_HIDE);
+            }
             LRESULT(0)
         }
         // SAFETY: Windows entrega argumentos válidos para el mensaje que se está atendiendo.

@@ -7,4 +7,6 @@ pub mod page_dots;
 pub mod popup_panel;
 pub mod preview_card;
 pub mod search_field;
+pub mod settings_list;
 pub mod tooltip;
+pub mod window_controls;

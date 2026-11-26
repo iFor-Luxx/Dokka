@@ -10,6 +10,7 @@ mod preview_window;
 mod read_pointer;
 mod run_loop;
 mod set_active_area;
+mod settings_window;
 mod show_above;
 mod surface;
 mod surface_error;

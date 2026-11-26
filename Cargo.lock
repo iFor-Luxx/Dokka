@@ -94,6 +94,16 @@ name = "dokka-scene"
 version = "0.1.0"
 
 [[package]]
+name = "dokka-settings"
+version = "0.1.0"
+dependencies = [
+ "dokka-components",
+ "dokka-icons",
+ "dokka-scene",
+ "dokka-theme",
+]
+
+[[package]]
 name = "dokka-shell"
 version = "0.1.0"
 dependencies = [
@@ -106,6 +116,7 @@ dependencies = [
  "dokka-model",
  "dokka-previews",
  "dokka-scene",
+ "dokka-settings",
  "dokka-state",
  "dokka-theme",
  "dokka-win-apps",

@@ -2,7 +2,9 @@ use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::WindowsAndMessaging::PostQuitMessage;
 
 use crate::SurfaceError;
-use crate::create_window::{create_launchpad_window, create_preview_window, create_window};
+use crate::create_window::{
+    create_launchpad_window, create_preview_window, create_settings_window, create_window,
+};
 use crate::place_window::{fullscreen_size, place_at_bottom_center, place_fullscreen};
 
 /// Medidas lógicas de una superficie anclada abajo y centrada.
@@ -44,6 +46,14 @@ pub struct Surface {
     pub(crate) launchpad_visible: bool,
     /// Tamaño lógico del Launchpad para dibujar la cuadrícula.
     pub(crate) launchpad_size: [f32; 2],
+    /// Ventana de Preferencias, oculta hasta que se abre.
+    pub(crate) settings: HWND,
+    /// `true` mientras Preferencias está visible.
+    pub(crate) settings_visible: bool,
+    /// `true` cuando Preferencias ya se centró en su sitio.
+    pub(crate) settings_placed: bool,
+    /// Escala de la ventana de Preferencias para pasar a píxeles.
+    pub(crate) settings_scale: f32,
     /// Posición en pantalla de la superpuesta mientras está visible.
     pub(crate) above_position: Option<[i32; 4]>,
     pub(crate) scale: f32,
@@ -62,6 +72,7 @@ impl Surface {
         let launchpad = create_launchpad_window()?;
         let launchpad_scale = place_fullscreen(launchpad)?;
         let launchpad_size = fullscreen_size(launchpad, launchpad_scale);
+        let settings = create_settings_window()?;
         Ok(Self {
             window,
             above: create_window(Some(window))?,
@@ -70,6 +81,10 @@ impl Surface {
             preview_visible: false,
             launchpad_visible: false,
             launchpad_size,
+            settings,
+            settings_visible: false,
+            settings_placed: false,
+            settings_scale: 1.0,
             above_position: None,
             scale,
             active_areas: Vec::new(),

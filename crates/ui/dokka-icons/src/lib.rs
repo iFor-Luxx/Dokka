@@ -23,7 +23,9 @@ pub use launchpad::launchpad_icon;
 pub use lucide::{
     calendar_next_icon, calendar_previous_icon, checkmark_icon, media_next_icon, media_pause_icon,
     media_play_icon, media_previous_icon, preview_close_icon, preview_pin_icon,
-    preview_pinned_icon, search_icon, submenu_chevron_icon,
+    preview_pinned_icon, search_icon, settings_about_icon, settings_appearance_icon,
+    settings_back_icon, settings_dock_icon, settings_forward_icon, settings_general_icon,
+    settings_launchpad_icon, settings_shortcuts_icon, settings_taskbar_icon, submenu_chevron_icon,
 };
 pub use trash::trash_icon;
 

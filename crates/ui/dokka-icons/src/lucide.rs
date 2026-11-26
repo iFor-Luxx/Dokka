@@ -7,7 +7,7 @@
 //! (texto normal o blanco de la fila resaltada).
 
 use dokka_scene::{Color, Drawing, Shape};
-use dokka_theme::{launchpad, menu, popup};
+use dokka_theme::{launchpad, menu, popup, settings};
 
 const CENTER: f32 = 50.0;
 
@@ -60,6 +60,75 @@ pub fn search_icon(color: Color) -> Drawing {
     glyph(
         lucide_icons::Icon::Search,
         launchpad::SEARCH_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono blanco de la sección General sobre su cuadrado de color.
+pub fn settings_general_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Settings,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono blanco de la sección Dock sobre su cuadrado de color.
+pub fn settings_dock_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Dock, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono blanco de la sección Launchpad sobre su cuadrado de color.
+pub fn settings_launchpad_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::LayoutGrid,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono blanco de la sección Apariencia sobre su cuadrado de color.
+pub fn settings_appearance_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Palette, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono blanco de la sección Barra de tareas sobre su cuadrado de color.
+pub fn settings_taskbar_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::PanelBottom,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono blanco de la sección Atajos sobre su cuadrado de color.
+pub fn settings_shortcuts_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Keyboard,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono blanco de la sección Acerca de sobre su cuadrado de color.
+pub fn settings_about_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Info, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Chevrón de atrás de la cabecera, atenuado sin ajustes reales.
+pub fn settings_back_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::ChevronLeft,
+        settings::NAV_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Chevrón de adelante de la cabecera, atenuado sin ajustes reales.
+pub fn settings_forward_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::ChevronRight,
+        settings::NAV_GLYPH_SIZE,
         color,
     )
 }

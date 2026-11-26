@@ -47,6 +47,21 @@ pub enum SurfaceEvent {
     LaunchpadWheel {
         delta: i16,
     },
+    /// El cursor se mueve sobre Preferencias.
+    SettingsMoved {
+        x: f32,
+        y: f32,
+    },
+    SettingsLeft,
+    /// Botón abajo sobre Preferencias: empieza un posible arrastre.
+    SettingsPressed {
+        x: f32,
+        y: f32,
+    },
+    SettingsClicked {
+        x: f32,
+        y: f32,
+    },
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.

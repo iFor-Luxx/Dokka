@@ -1,7 +1,8 @@
 use super::light_icons::light_icons;
 use crate::palette;
 use crate::{
-    DockColors, LaunchpadColors, MediaColors, MenuColors, PanelColors, Theme, TooltipColors,
+    DockColors, LaunchpadColors, MediaColors, MenuColors, PanelColors, SettingsColors, Theme,
+    TooltipColors,
 };
 
 /// Tema claro de cristal: el actual de Dokka.
@@ -52,5 +53,39 @@ pub fn light() -> Theme {
             tile: palette::APP_TILE,
         },
         icons: light_icons(),
+        settings: settings_colors(border),
+    }
+}
+
+/// Colores de la ventana de Preferencias: cristal claro con la selección azul.
+fn settings_colors(border: dokka_scene::Color) -> SettingsColors {
+    SettingsColors {
+        window: palette::SETTINGS_WINDOW,
+        window_border: border,
+        sidebar: palette::SETTINGS_SIDEBAR,
+        search_background: palette::SETTINGS_SEARCH_BACKGROUND,
+        search_border: palette::SETTINGS_SEARCH_BORDER,
+        search_text: palette::GRAY,
+        search_icon: palette::GRAY,
+        row_text: palette::INK,
+        row_text_selected: palette::white(255),
+        selection: palette::MACOS_BLUE,
+        hover: palette::SETTINGS_HOVER,
+        title: palette::INK,
+        nav: palette::GRAY,
+        divider: palette::SETTINGS_DIVIDER,
+        card: palette::SETTINGS_CARD,
+        card_border: palette::SETTINGS_SEARCH_BORDER,
+        card_text: palette::GRAY,
+        badge: [
+            palette::GRAY,
+            palette::BLUE,
+            palette::PURPLE,
+            palette::TEAL,
+            palette::GREEN,
+            palette::ORANGE,
+            palette::RED,
+        ],
+        traffic: [palette::RED, palette::YELLOW, palette::GREEN],
     }
 }

@@ -11,6 +11,7 @@ mod pinned_apps;
 mod preview_actions;
 mod preview_large;
 mod session_render;
+mod settings;
 mod taskbar_mode;
 
 use std::error::Error;
@@ -18,7 +19,7 @@ use std::error::Error;
 use dokka_theme::typography;
 
 use dokka_win_apps::explorer_app;
-use dokka_win_composition::SceneRenderer;
+use dokka_win_composition::{SceneRenderer, WindowHandles};
 use dokka_win_control::set_taskbar_visible;
 use dokka_win_surface::{Surface, SurfaceOptions};
 use dokka_win_tracking::{ChangeWatcher, WINDOWS_CHANGED_MESSAGE};
@@ -38,12 +39,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         bottom_margin: 0.0,
         over_taskbar: false,
     })?;
+    surface.settings_place(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT)?;
     let renderer = SceneRenderer::attach(
-        surface.handle(),
-        surface.above_handle(),
-        surface.launchpad_handle(),
-        surface.preview_handle(),
+        WindowHandles {
+            main: surface.handle(),
+            above: surface.above_handle(),
+            launchpad: surface.launchpad_handle(),
+            preview: surface.preview_handle(),
+            settings: surface.settings_handle(),
+        },
         surface.scale(),
+        surface.settings_scale(),
         typography::FONT_FAMILY,
         dokka_icons::LUCIDE_FONT_BYTES,
     )?;

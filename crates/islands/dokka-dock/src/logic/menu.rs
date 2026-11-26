@@ -13,6 +13,7 @@ use crate::Dock;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MenuAction {
     AddApp,
+    OpenSettings,
     ShowTaskbar,
     HideTaskbar,
     TaskbarManual,

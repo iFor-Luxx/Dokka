@@ -14,6 +14,7 @@ use crate::launchpad::launchpad_size;
 use crate::media::update_media;
 use crate::preview_actions::update_pinned;
 use crate::preview_large::{above_window_area, update_large_preview};
+use crate::settings::render_settings;
 
 /// Dibuja el instante actual.
 pub(crate) fn render(
@@ -67,6 +68,7 @@ pub(crate) fn render(
     if session.launchpad.is_open() {
         render_launchpad(session, surface)?;
     }
+    render_settings(session, surface)?;
     Ok(())
 }
 

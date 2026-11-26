@@ -6,7 +6,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
     SetTimer, ShowWindow, TranslateMessage, WM_QUIT, WM_TIMER,
 };
 
-use crate::read_pointer::read_pointer;
+use crate::read_pointer::{read_pointer, read_settings_pointer};
 use crate::window_procedure::DISMISS_MESSAGE;
 use crate::{Surface, SurfaceError, SurfaceEvent};
 
@@ -22,6 +22,7 @@ struct LoopState {
     pending_timer: Option<usize>,
     is_pressed: bool,
     is_launchpad_pressed: bool,
+    is_settings_pressed: bool,
 }
 
 impl Surface {
@@ -122,6 +123,15 @@ impl Surface {
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_launchpad_pressed)
         {
             return Some(launchpad_event(event));
+        }
+        if message.hwnd == self.settings_window()
+            && let Some(event) = read_settings_pointer(
+                message,
+                self.settings_scale(),
+                &mut state.is_settings_pressed,
+            )
+        {
+            return Some(event);
         }
         // SAFETY: `message` acaba de ser rellenado por Windows.
         unsafe {
