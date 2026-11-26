@@ -87,7 +87,7 @@ impl SceneRenderer {
             main: window_root(&compositor, surface, scale)?,
             above: window_root(&compositor, above, scale)?,
             launchpad: window_root(&compositor, launchpad, scale)?,
-            painter: Painter::new(&compositor, font_family, icon_bytes)?,
+            painter: Painter::new(&compositor, font_family, icon_bytes, scale)?,
             compositor,
             _queue: queue,
         })
