@@ -80,6 +80,8 @@ pub fn menu_overlay(
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
+        scale: 1.0,
+        origin: (0.0, 0.0),
     }
 }
 

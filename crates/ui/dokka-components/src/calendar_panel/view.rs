@@ -89,5 +89,7 @@ pub fn calendar_panel(theme: &Theme, bounds: Rect, month: &CalendarMonth) -> Ove
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
+        scale: 1.0,
+        origin: (0.0, 0.0),
     }
 }

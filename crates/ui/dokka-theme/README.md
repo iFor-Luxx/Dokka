@@ -10,6 +10,7 @@
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho; `tooltip.rs` para la
   etiqueta en forma de píldora; `launchpad.rs` para la cuadrícula a pantalla completa;
-  `popup::SPACE` reserva 420 sobre el dock para que quepa el menú completo).
+  `popup.rs`: reserva 420 sobre el dock y animación de paneles — duraciones, escalas,
+  recorridos y tramo de opacidad).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.

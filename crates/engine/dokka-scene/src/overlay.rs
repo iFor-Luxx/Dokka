@@ -24,4 +24,10 @@ pub struct Overlay {
     /// Cuánto se ve el panel, de 0 (oculto) a 1 (reposo).
     /// El menú siempre vale 1.
     pub opacity: f32,
+    /// Escala del panel, con origen en `origin`. Los paneles animados
+    /// crecen desde el icono; el menú siempre vale 1.
+    pub scale: f32,
+    /// Punto que queda fijo al escalar, en unidades lógicas
+    /// (centro inferior del panel, sobre el icono).
+    pub origin: (f32, f32),
 }

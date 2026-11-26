@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::ffi::c_void;
 
-use dokka_scene::Thumbnail;
+use dokka_scene::{Rect, Thumbnail};
 use windows::Win32::Foundation::{HWND, RECT};
 use windows::Win32::Graphics::Dwm::{
     DWM_THUMBNAIL_PROPERTIES, DWM_TNP_OPACITY, DWM_TNP_RECTDESTINATION, DWM_TNP_VISIBLE,
@@ -37,17 +37,25 @@ impl WindowThumbnails {
 
     /// Deja visibles exactamente las miniaturas indicadas, en su sitio.
     /// Las del panel comparten la opacidad del panel; las del dock van opacas.
+    /// Las del panel se escalan sobre el icono con la misma transformación
+    /// que el contenedor del panel; las del dock no se tocan.
     pub(crate) fn show(
         &mut self,
         dock: &[Thumbnail],
         floating: &[Thumbnail],
         floating_opacity: f32,
+        floating_scale: f32,
+        floating_origin: (f32, f32),
     ) -> Result<()> {
         let opacity = (floating_opacity.clamp(0.0, 1.0) * 255.0).round() as u8;
+        let scaled: Vec<Thumbnail> = floating
+            .iter()
+            .map(|item| scaled_thumbnail(item, floating_scale, floating_origin))
+            .collect();
         let all: Vec<(&Thumbnail, u8)> = dock
             .iter()
             .map(|item| (item, u8::MAX))
-            .chain(floating.iter().map(|item| (item, opacity)))
+            .chain(scaled.iter().map(|item| (item, opacity)))
             .collect();
         // Una misma ventana puede verse en el dock y en un panel a la vez.
         let keys: Vec<Key> = all
@@ -114,6 +122,20 @@ impl WindowThumbnails {
         };
         // SAFETY: `properties` indica en `dwFlags` los campos que rellena.
         unsafe { DwmUpdateThumbnailProperties(handle, &properties) }
+    }
+}
+
+/// Misma transformación que el contenedor del panel: escala sobre el icono.
+fn scaled_thumbnail(item: &Thumbnail, scale: f32, origin: (f32, f32)) -> Thumbnail {
+    Thumbnail {
+        window: item.window,
+        bounds: Rect {
+            x: origin.0 + (item.bounds.x - origin.0) * scale,
+            y: origin.1 + (item.bounds.y - origin.1) * scale,
+            width: item.bounds.width * scale,
+            height: item.bounds.height * scale,
+        },
+        reserved_corner: item.reserved_corner * scale,
     }
 }
 
