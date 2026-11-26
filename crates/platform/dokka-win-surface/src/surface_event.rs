@@ -27,8 +27,22 @@ pub enum SurfaceEvent {
         x: f32,
         y: f32,
     },
-    /// El Launchpad debe cerrarse: se perdió el foco o se pulsó Esc.
+    /// El Launchpad perdió el foco y debe cerrarse.
     LaunchpadDismissed,
+    /// Letra escrita sobre el Launchpad, ya traducida de `WM_KEYDOWN`.
+    LaunchpadTyped {
+        character: char,
+    },
+    /// Retroceso sobre el Launchpad.
+    LaunchpadBackspace,
+    /// Enter sobre el Launchpad.
+    LaunchpadEnter,
+    /// Esc sobre el Launchpad: limpia la búsqueda antes de cerrar.
+    LaunchpadEscape,
+    /// Rueda sobre el Launchpad: cambia de página.
+    LaunchpadWheel {
+        delta: i16,
+    },
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.

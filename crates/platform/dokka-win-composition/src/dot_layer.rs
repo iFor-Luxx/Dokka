@@ -1,5 +1,5 @@
-use dokka_scene::Dot;
-use windows::UI::Composition::{Compositor, ContainerVisual, ShapeVisual};
+use dokka_scene::{Color, Dot};
+use windows::UI::Composition::{CompositionSpriteShape, Compositor, ContainerVisual, ShapeVisual};
 use windows::core::Result;
 use windows_numerics::{Vector2, Vector3};
 
@@ -7,6 +7,8 @@ use crate::windows_color::windows_color;
 
 pub(crate) struct DotLayer {
     visual: ShapeVisual,
+    shape: CompositionSpriteShape,
+    color: Color,
 }
 
 impl DotLayer {
@@ -33,10 +35,20 @@ impl DotLayer {
         })?;
         visual.Shapes()?.Append(&shape)?;
         parent.Children()?.InsertAtTop(&visual)?;
-        Ok(Self { visual })
+        Ok(Self {
+            visual,
+            shape,
+            color: dot.color,
+        })
     }
 
-    pub(crate) fn update(&self, dot: &Dot) -> Result<()> {
+    pub(crate) fn update(&mut self, compositor: &Compositor, dot: &Dot) -> Result<()> {
+        if dot.color != self.color {
+            // Solo se crea un pincel nuevo cuando el color cambia de verdad.
+            let brush = compositor.CreateColorBrushWithColor(windows_color(dot.color))?;
+            self.shape.SetFillBrush(&brush)?;
+            self.color = dot.color;
+        }
         self.visual.SetOffset(Vector3 {
             X: dot.x,
             Y: dot.y,

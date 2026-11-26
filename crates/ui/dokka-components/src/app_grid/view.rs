@@ -1,4 +1,4 @@
-use dokka_scene::{Icon, Panel, Rect, Text, TextAlign};
+use dokka_scene::{Icon, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, launchpad as measures};
 
 use super::AppGridProps;
@@ -12,55 +12,50 @@ pub struct GridCell {
     pub highlight: Rect,
 }
 
-/// Celdas que caben en la pantalla, centradas y sin pasar bajo el dock.
+/// Celdas de la página: 7 columnas fijas que empiezan arriba y se llenan de
+/// izquierda a derecha. La cuadrícula entera queda centrada, pero las apps que
+/// no llenan la fila ocupan las primeras columnas sin centrarse.
 pub fn grid_cells(props: &AppGridProps) -> Vec<GridCell> {
     let total = props.apps.len();
     if total == 0 {
         return Vec::new();
     }
-    let columns = grid_columns(total, props.screen.width);
-    if columns == 0 {
+    let icon = measures::icon_side(props.screen.width);
+    if icon <= 0.0 {
         return Vec::new();
     }
-    let usable_height = props.screen.height - measures::TOP_PADDING - measures::BOTTOM_RESERVE;
-    if usable_height < measures::ICON_SIDE {
-        return Vec::new();
-    }
-    let row_height = measures::ICON_SIDE + measures::TEXT_GAP + measures::TEXT_HEIGHT;
-    let rows_fit =
-        ((usable_height + measures::ROW_GAP) / (row_height + measures::ROW_GAP)) as usize;
+    let rows_fit = rows_that_fit(props.screen.width, props.screen.height, icon);
     if rows_fit == 0 {
         return Vec::new();
     }
-    let visible = total.min(columns * rows_fit);
-    let rows_used = visible.div_ceil(columns);
-    let total_width =
-        columns as f32 * measures::ICON_SIDE + (columns as f32 - 1.0) * measures::COLUMN_GAP;
-    let grid_height = rows_used as f32 * row_height + (rows_used as f32 - 1.0) * measures::ROW_GAP;
-    let start_x = (props.screen.width - total_width) / 2.0;
-    let start_y = measures::TOP_PADDING + (usable_height - grid_height) / 2.0;
+    let visible = total.min(measures::COLUMNS * rows_fit);
+    let start_x = measures::first_center_x(props.screen.width) - icon / 2.0;
+    let start_y = measures::grid_top(props.screen.height);
+    let pitch = measures::column_pitch(props.screen.width);
+    let row_step =
+        measures::row_height(props.screen.width) + measures::row_gap(props.screen.height);
 
     let mut cells = Vec::with_capacity(visible);
     for index in 0..visible {
-        let column = index % columns;
-        let row = index / columns;
-        let x = start_x + column as f32 * (measures::ICON_SIDE + measures::COLUMN_GAP);
-        let y = start_y + row as f32 * (row_height + measures::ROW_GAP);
+        let column = index % measures::COLUMNS;
+        let row = index / measures::COLUMNS;
+        let x = start_x + column as f32 * pitch;
+        let y = start_y + row as f32 * row_step;
         let highlight = Rect {
             x: x - measures::HIGHLIGHT_PADDING,
             y: y - measures::HIGHLIGHT_PADDING,
-            width: measures::ICON_SIDE + measures::HIGHLIGHT_PADDING * 2.0,
-            height: row_height + measures::HIGHLIGHT_PADDING * 2.0,
+            width: icon + measures::HIGHLIGHT_PADDING * 2.0,
+            height: measures::row_height(props.screen.width) + measures::HIGHLIGHT_PADDING * 2.0,
         };
         cells.push(GridCell {
             icon: Rect {
                 x,
                 y,
-                width: measures::ICON_SIDE,
-                height: measures::ICON_SIDE,
+                width: icon,
+                height: icon,
             },
-            text_x: x + measures::ICON_SIDE / 2.0,
-            text_y: y + measures::ICON_SIDE + measures::TEXT_GAP + measures::TEXT_HEIGHT / 2.0,
+            text_x: x + icon / 2.0,
+            text_y: y + icon + measures::TEXT_GAP + measures::TEXT_HEIGHT / 2.0,
             highlight,
         });
     }
@@ -70,6 +65,7 @@ pub fn grid_cells(props: &AppGridProps) -> Vec<GridCell> {
 /// Iconos grandes de las celdas visibles.
 pub fn app_icons(theme: &Theme, props: &AppGridProps) -> Vec<Icon> {
     let cells = grid_cells(props);
+    let side = measures::icon_side(props.screen.width);
     props
         .apps
         .iter()
@@ -77,7 +73,7 @@ pub fn app_icons(theme: &Theme, props: &AppGridProps) -> Vec<Icon> {
         .map(|(app, cell)| Icon {
             x: cell.icon.x,
             y: cell.icon.y,
-            side: measures::ICON_SIDE,
+            side,
             image: app.image.clone(),
             placeholder: theme.launchpad.highlight,
             placeholder_radius: measures::HIGHLIGHT_RADIUS,
@@ -104,18 +100,44 @@ pub fn app_texts(theme: &Theme, props: &AppGridProps) -> Vec<Text> {
         .collect()
 }
 
-/// Resaltado suave detrás de la app bajo el cursor.
-pub fn app_highlight(theme: &Theme, props: &AppGridProps) -> Option<Panel> {
+/// Resaltado suave detrás de la app bajo el cursor. Siempre entrega un panel con
+/// el mismo estilo: sin app resaltada tiene tamaño cero y no se ve, como el menú.
+pub fn app_highlight(theme: &Theme, props: &AppGridProps) -> Panel {
+    let hidden = Panel {
+        bounds: Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 0.0,
+            height: 0.0,
+        },
+        corner_radius: measures::HIGHLIGHT_RADIUS,
+        border_width: 0.0,
+        tint: theme.launchpad.highlight,
+        border: theme.launchpad.highlight,
+    };
     let cells = grid_cells(props);
-    let index = props.highlighted?;
-    let cell = cells.get(index)?;
-    Some(Panel {
+    let Some(index) = props.highlighted else {
+        return hidden;
+    };
+    let Some(cell) = cells.get(index) else {
+        return hidden;
+    };
+    Panel {
         bounds: cell.highlight,
         corner_radius: measures::HIGHLIGHT_RADIUS,
         border_width: 0.0,
         tint: theme.launchpad.highlight,
         border: theme.launchpad.highlight,
-    })
+    }
+}
+
+/// Cuántas apps caben en una página para esta pantalla.
+pub fn page_capacity(screen: Size) -> usize {
+    let icon = measures::icon_side(screen.width);
+    if icon <= 0.0 {
+        return 0;
+    }
+    rows_that_fit(screen.width, screen.height, icon) * measures::COLUMNS
 }
 
 /// Qué app hay en el punto, si es visible.
@@ -133,14 +155,16 @@ pub fn app_at(props: &AppGridProps, x: f32, y: f32) -> Option<usize> {
     None
 }
 
-fn grid_columns(total: usize, screen_width: f32) -> usize {
-    let usable = screen_width - measures::SIDE_PADDING * 2.0;
-    if usable < measures::ICON_SIDE {
+/// Filas que caben entre la primera fila y los puntos de página.
+fn rows_that_fit(screen_width: f32, screen_height: f32, icon: f32) -> usize {
+    let bottom =
+        measures::dots_center_y(screen_height) - screen_height * measures::GRID_BOTTOM_MARGIN_RATIO;
+    let usable = bottom - measures::grid_top(screen_height);
+    let row = measures::row_height(screen_width) + measures::row_gap(screen_height);
+    if usable < icon || row <= 0.0 {
         return 0;
     }
-    let by_width =
-        ((usable + measures::COLUMN_GAP) / (measures::ICON_SIDE + measures::COLUMN_GAP)) as usize;
-    total.min(measures::MAX_COLUMNS).min(by_width.max(1))
+    (((usable + measures::row_gap(screen_height)) / row) as usize).max(1)
 }
 
 fn short_name(name: &str) -> String {

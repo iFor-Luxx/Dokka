@@ -43,6 +43,11 @@ pub fn light() -> Theme {
             background: palette::LAUNCHPAD_BACKGROUND,
             text: palette::LAUNCHPAD_TEXT,
             highlight: palette::LAUNCHPAD_HIGHLIGHT,
+            search_background: palette::LAUNCHPAD_SEARCH_BACKGROUND,
+            search_border: palette::LAUNCHPAD_SEARCH_BORDER,
+            search_text: palette::LAUNCHPAD_SEARCH_TEXT,
+            dot_active: palette::LAUNCHPAD_DOT_ACTIVE,
+            dot_inactive: palette::LAUNCHPAD_DOT_INACTIVE,
         },
         icons: light_icons(),
     }

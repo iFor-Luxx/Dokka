@@ -133,14 +133,15 @@ impl Surface {
 }
 
 /// Traduce un evento del dock a su equivalente del Launchpad.
-/// Esc y el botón derecho también cierran el Launchpad.
+/// Esc llega como tecla propia para limpiar la búsqueda; la pérdida de foco
+/// sigue llegando como `LaunchpadDismissed`. El botón derecho también cierra.
 fn launchpad_event(event: SurfaceEvent) -> SurfaceEvent {
     match event {
         SurfaceEvent::PointerMoved { x, y } => SurfaceEvent::LaunchpadMoved { x, y },
         SurfaceEvent::PointerLeft => SurfaceEvent::LaunchpadLeft,
         SurfaceEvent::Clicked { x, y, .. } => SurfaceEvent::LaunchpadClicked { x, y },
         SurfaceEvent::RightClicked { x, y } => SurfaceEvent::LaunchpadClicked { x, y },
-        SurfaceEvent::Dismissed => SurfaceEvent::LaunchpadDismissed,
+        SurfaceEvent::Dismissed => SurfaceEvent::LaunchpadEscape,
         other => other,
     }
 }

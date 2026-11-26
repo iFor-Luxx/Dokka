@@ -7,4 +7,8 @@ pub enum LaunchpadAction {
     Open(AppInfo),
     /// Cerrar sin abrir nada.
     Close,
+    /// Mostrar esta página y seguir abierto.
+    ShowPage(usize),
+    /// Seguir abierto sin hacer nada más.
+    Stay,
 }
