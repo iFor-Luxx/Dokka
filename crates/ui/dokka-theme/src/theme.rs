@@ -62,6 +62,8 @@ pub struct LaunchpadColors {
     pub background: Color,
     pub text: Color,
     pub highlight: Color,
+    /// Baldosa clara de los iconos uniformes.
+    pub tile: Color,
 }
 
 #[derive(Debug, Clone, Copy)]

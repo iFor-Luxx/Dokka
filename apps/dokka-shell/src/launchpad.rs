@@ -1,10 +1,13 @@
 //! Abre y cierra el Launchpad a pantalla completa.
 
+use std::collections::HashMap;
 use std::error::Error;
+use std::sync::Arc;
 
 use dokka_contracts::{AppCatalog, AppLauncher};
 use dokka_launchpad::{LaunchpadAction, launchpad_scene, merge_apps};
-use dokka_scene::Size;
+use dokka_model::AppId;
+use dokka_scene::{Bitmap, Size};
 use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
@@ -88,7 +91,7 @@ pub(crate) fn render_launchpad(
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     let size = launchpad_size(surface);
-    let images = session
+    let raw: HashMap<AppId, Arc<Bitmap>> = session
         .launchpad
         .apps()
         .iter()
@@ -97,6 +100,8 @@ pub(crate) fn render_launchpad(
             Some((app.id.clone(), image))
         })
         .collect();
+    let theme = Arc::clone(&session.theme);
+    let images = session.launchpad.tiled_images(&raw, &theme);
     let scene = launchpad_scene(
         &session.theme,
         size,

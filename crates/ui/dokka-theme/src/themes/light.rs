@@ -43,6 +43,7 @@ pub fn light() -> Theme {
             background: palette::LAUNCHPAD_BACKGROUND,
             text: palette::LAUNCHPAD_TEXT,
             highlight: palette::LAUNCHPAD_HIGHLIGHT,
+            tile: palette::APP_TILE,
         },
         icons: light_icons(),
     }
