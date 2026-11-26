@@ -1,6 +1,7 @@
 use dokka_scene::{Color, Panel, Scene};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
+use windows_numerics::Vector3;
 
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
@@ -12,7 +13,14 @@ use crate::panel_layer::PanelLayer;
 use crate::text_layer::TextLayer;
 
 /// Elementos visuales creados para una escena.
+///
+/// El fondo cuelga de un contenedor y el resto del contenido de otro: el fondo
+/// solo se desvanece y el contenido además escala, sin reconstruir capas.
+/// Cada capa se inserta arriba: el fondo queda bajo el contenido, y dentro del
+/// contenido el orden es paneles, resaltado, líneas, iconos, puntos y textos.
 pub(crate) struct SceneLayers {
+    backdrop: ContainerVisual,
+    content: ContainerVisual,
     panel: PanelLayer,
     panels: Vec<PanelLayer>,
     panel_styles: Vec<PanelStyle>,
@@ -47,57 +55,64 @@ impl SceneLayers {
         scene: &Scene,
     ) -> Result<Self> {
         root.Children()?.RemoveAll()?;
-        let panel = PanelLayer::add(compositor, root, &scene.panel)?;
+        // El fondo se crea primero para quedar debajo del contenido.
+        let backdrop = compositor.CreateContainerVisual()?;
+        root.Children()?.InsertAtTop(&backdrop)?;
+        let content = compositor.CreateContainerVisual()?;
+        root.Children()?.InsertAtTop(&content)?;
+        let panel = PanelLayer::add(compositor, &backdrop, &scene.panel)?;
         // Cada capa se inserta arriba: los paneles quedan sobre el fondo y
         // bajo el resaltado, las líneas, los iconos, los puntos y los textos.
         let panels = scene
             .panels
             .iter()
-            .map(|panel| PanelLayer::add(compositor, root, panel))
+            .map(|panel| PanelLayer::add(compositor, &content, panel))
             .collect::<Result<_>>()?;
         let highlight = scene
             .highlight
             .as_ref()
-            .map(|panel| PanelLayer::add(compositor, root, panel))
+            .map(|panel| PanelLayer::add(compositor, &content, panel))
             .transpose()?;
         let dividers = scene
             .dividers
             .iter()
-            .map(|divider| DividerLayer::add(compositor, root, divider))
+            .map(|divider| DividerLayer::add(compositor, &content, divider))
             .collect::<Result<_>>()?;
         let icons = scene
             .icons
             .iter()
-            .map(|icon| IconLayer::add(compositor, painter, root, icon))
+            .map(|icon| IconLayer::add(compositor, painter, &content, icon))
             .collect::<Result<_>>()?;
         let dots = scene
             .dots
             .iter()
-            .map(|dot| DotLayer::add(compositor, root, dot))
+            .map(|dot| DotLayer::add(compositor, &content, dot))
             .collect::<Result<_>>()?;
         let texts = scene
             .texts
             .iter()
-            .map(|_| TextLayer::add(compositor, root))
+            .map(|_| TextLayer::add(compositor, &content))
             .collect::<Result<_>>()?;
         let overlay = scene
             .overlay
             .as_ref()
-            .map(|overlay| OverlayLayers::add(compositor, painter, root, overlay))
+            .map(|overlay| OverlayLayers::add(compositor, painter, &content, overlay))
             .transpose()?;
         // El submenú reutiliza las mismas capas y va encima del menú.
         let submenu = scene
             .submenu
             .as_ref()
-            .map(|submenu| OverlayLayers::add(compositor, painter, root, submenu))
+            .map(|submenu| OverlayLayers::add(compositor, painter, &content, submenu))
             .transpose()?;
         // Van al final para quedar por encima de los iconos.
         let labels = scene
             .labels
             .iter()
-            .map(|_| LabelLayer::add(compositor, root))
+            .map(|_| LabelLayer::add(compositor, &content))
             .collect::<Result<_>>()?;
-        Ok(Self {
+        let layers = Self {
+            backdrop,
+            content,
             panel,
             panels,
             panel_styles: scene.panels.iter().map(panel_style_of).collect(),
@@ -110,10 +125,13 @@ impl SceneLayers {
             labels,
             overlay,
             submenu,
-        })
+        };
+        layers.apply_stage(scene)?;
+        Ok(layers)
     }
 
     /// `true` si la escena tiene la misma forma y basta con actualizar.
+    /// La opacidad y la escala no reconstruyen: las aplica `update`.
     pub(crate) fn matches(&self, scene: &Scene) -> bool {
         let same_overlay = match (&self.overlay, &scene.overlay) {
             (Some(layers), Some(overlay)) => layers.matches(overlay),
@@ -182,7 +200,26 @@ impl SceneLayers {
         for (layer, label) in self.labels.iter_mut().zip(&scene.labels) {
             layer.update(compositor, painter, label)?;
         }
+        self.apply_stage(scene)?;
         Ok(())
+    }
+
+    /// Desvanece el fondo y el contenido, y escala el contenido desde el centro
+    /// del fondo. Con opacidad y escala en reposo no cambia nada visible.
+    fn apply_stage(&self, scene: &Scene) -> Result<()> {
+        let bounds = scene.panel.bounds;
+        self.backdrop.SetOpacity(scene.opacity)?;
+        self.content.SetOpacity(scene.opacity)?;
+        self.content.SetScale(Vector3 {
+            X: scene.scale,
+            Y: scene.scale,
+            Z: 1.0,
+        })?;
+        self.content.SetCenterPoint(Vector3 {
+            X: bounds.x + bounds.width / 2.0,
+            Y: bounds.y + bounds.height / 2.0,
+            Z: 0.0,
+        })
     }
 }
 

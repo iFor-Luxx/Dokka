@@ -18,4 +18,9 @@ pub struct Scene {
     pub overlay: Option<Overlay>,
     /// Segundo panel del menú (submenú), sobre el principal y sin punta.
     pub submenu: Option<Overlay>,
+    /// Cuánto se ve toda la escena, de 0 (oculta) a 1 (reposo). El dock siempre vale 1.
+    pub opacity: f32,
+    /// Escala del contenido sobre el fondo, con origen en el centro del fondo.
+    /// El fondo solo se desvanece; el dock siempre vale 1.
+    pub scale: f32,
 }

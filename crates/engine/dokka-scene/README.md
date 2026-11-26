@@ -15,5 +15,7 @@
   animados crecen desde el icono; el menú siempre vale 1.
 - `Scene` añade `texts` sueltos, `highlight` opcional para el Launchpad y
   `submenu` opcional para el segundo panel del menú (mismo cristal, sin punta).
+- `Scene` añade `opacity` y `scale`: cuánto se ve todo (1 en reposo) y cuánto
+  escala el contenido sobre el fondo, con origen en su centro. El dock siempre vale 1.
 
 **No hace:** no dibuja ni habla con Windows. Las medidas son lógicas, sin escalar por DPI.

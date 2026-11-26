@@ -3,6 +3,8 @@
 mod events;
 mod logic;
 mod motion;
+mod paging;
+mod search_box;
 mod state;
 mod tiles;
 mod view;

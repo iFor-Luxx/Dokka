@@ -56,6 +56,8 @@ pub(crate) const LAUNCHPAD_SEARCH_BACKGROUND: Color = Color::rgba(255, 255, 255,
 pub(crate) const LAUNCHPAD_SEARCH_BORDER: Color = Color::rgba(255, 255, 255, 110);
 /// Texto y lupa de la casilla, claros para leerse sobre el fondo vivo.
 pub(crate) const LAUNCHPAD_SEARCH_TEXT: Color = Color::rgba(255, 255, 255, 190);
+/// Marcador "Buscar" junto al cursor: el mismo blanco, más tenue.
+pub(crate) const LAUNCHPAD_SEARCH_PLACEHOLDER: Color = Color::rgba(255, 255, 255, 120);
 /// Punto de la página actual: blanco.
 pub(crate) const LAUNCHPAD_DOT_ACTIVE: Color = Color::rgba(255, 255, 255, 255);
 /// Puntos de las demás páginas.

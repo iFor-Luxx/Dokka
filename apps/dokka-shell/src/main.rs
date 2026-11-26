@@ -8,6 +8,7 @@ mod launchpad;
 mod media;
 mod perform_click;
 mod pinned_apps;
+mod session_render;
 mod taskbar_mode;
 
 use std::error::Error;
@@ -55,7 +56,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     session.sync()?;
     session.update_clock_and_trash();
     session.resize(&mut surface)?;
-    session.render(&mut surface)?;
+    crate::session_render::render(&mut session, &mut surface)?;
 
     println!("Dokka en marcha. Para cerrarlo: Ctrl+C en esta terminal.");
     let result = surface.run(WINDOWS_CHANGED_MESSAGE, |surface, event| {

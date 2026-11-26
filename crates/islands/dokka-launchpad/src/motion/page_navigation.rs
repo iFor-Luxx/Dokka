@@ -43,9 +43,11 @@ impl Launchpad {
         self.motion.start_slide(from, target);
     }
 
-    /// Avanza la transición; indica si la cuadrícula sigue moviéndose.
+    /// Avanza la transición y el zoom; indica si algo sigue moviéndose.
     pub fn advance(&mut self, seconds: f32) -> bool {
-        self.motion.advance(seconds)
+        let paging = self.motion.advance(seconds);
+        let zooming = self.zoom.advance(seconds);
+        paging || zooming
     }
 
     /// `true` mientras la cuadrícula se desliza o cede.
