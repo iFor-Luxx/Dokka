@@ -10,7 +10,7 @@ use dokka_previews::Previews;
 use dokka_scene::Scene;
 use dokka_state::DockState;
 use dokka_theme::light;
-use dokka_win_apps::{IconCache, NameCache, SystemLauncher, recycle_bin_has_items};
+use dokka_win_apps::{IconCache, NameCache, SystemLauncher, recycle_bin_size};
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
 use dokka_win_media::MediaMonitor;
@@ -80,7 +80,7 @@ impl DockSession {
         self.previews.set_today(now.year, now.month, now.day);
         // Consultar la papelera cuesta más: basta cada pocos segundos.
         if now.second.is_multiple_of(3) {
-            self.dock.set_trash_full(recycle_bin_has_items());
+            self.dock.set_trash(recycle_bin_size());
         }
     }
 

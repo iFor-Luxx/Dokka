@@ -28,8 +28,8 @@ pub(crate) struct SystemIcons {
     pub(crate) clock: Arc<Drawing>,
     pub(crate) trash: Arc<Drawing>,
     pub(crate) long_date: String,
+    pub(crate) trash_size: Option<u64>,
     time: DockTime,
-    trash_is_full: bool,
 }
 
 impl SystemIcons {
@@ -41,8 +41,8 @@ impl SystemIcons {
             clock: Arc::new(clock_icon(colors, 0, 0, 0)),
             trash: Arc::new(trash_icon(colors, false)),
             long_date: String::new(),
+            trash_size: None,
             time: DockTime::default(),
-            trash_is_full: false,
         }
     }
 }
@@ -63,9 +63,12 @@ impl Dock {
         }
     }
 
-    pub fn set_trash_full(&mut self, is_full: bool) {
-        if self.icons.trash_is_full != is_full {
-            self.icons.trash_is_full = is_full;
+    pub fn set_trash(&mut self, size: Option<u64>) {
+        // El icono solo distingue entre vacía y con contenido.
+        let was_full = self.icons.trash_size.is_some();
+        let is_full = size.is_some();
+        self.icons.trash_size = size;
+        if was_full != is_full {
             self.icons.trash = Arc::new(trash_icon(&self.theme.icons, is_full));
         }
     }
