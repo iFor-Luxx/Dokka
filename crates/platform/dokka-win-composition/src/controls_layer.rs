@@ -1,4 +1,4 @@
-use dokka_scene::{Controls, Icon, Panel, Rect};
+use dokka_scene::{Color, Controls, Icon, Panel, Rect};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
@@ -9,7 +9,20 @@ use crate::panel_layer::PanelLayer;
 /// Botones dibujados en la ventana que va sobre las miniaturas.
 pub(crate) struct ControlsLayer {
     panel: PanelLayer,
+    panel_style: PanelStyle,
     icons: Vec<IconLayer>,
+}
+
+/// Lo que fija el aspecto del panel al crearse: `update` no lo reconstruye.
+type PanelStyle = (Color, Color, f32, f32);
+
+fn panel_style_of(panel: &Panel) -> PanelStyle {
+    (
+        panel.tint,
+        panel.border,
+        panel.corner_radius,
+        panel.border_width,
+    )
 }
 
 impl ControlsLayer {
@@ -23,12 +36,28 @@ impl ControlsLayer {
         let local = in_own_window(controls);
         Ok(Self {
             panel: PanelLayer::add(compositor, root, &local.panel)?,
+            panel_style: panel_style_of(&controls.panel),
             icons: local
                 .icons
                 .iter()
                 .map(|icon| IconLayer::add(compositor, painter, root, icon))
                 .collect::<Result<_>>()?,
         })
+    }
+
+    /// `true` si los botones tienen la misma forma y basta con actualizar.
+    /// Sin música el panel es el "hidden_panel" de solo botones; con música
+    /// es la píldora: el tinte, el borde, el radio y el grosor obligan a
+    /// reconstruir. El cambio de imagen (pausa/play, fijado/no fijado) sigue
+    /// repintando en `update`.
+    pub(crate) fn matches(&self, controls: &Controls) -> bool {
+        self.icons.len() == controls.icons.len()
+            && self.panel_style == panel_style_of(&controls.panel)
+            && self
+                .icons
+                .iter()
+                .zip(&controls.icons)
+                .all(|(layer, icon)| layer.accepts(icon))
     }
 
     pub(crate) fn update(

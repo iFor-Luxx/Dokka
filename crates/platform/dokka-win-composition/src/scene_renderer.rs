@@ -186,10 +186,8 @@ impl SceneRenderer {
             return self.above.root.Children()?.RemoveAll();
         };
         let mut layer = match self.controls.take() {
-            Some(layer) => layer,
-            None => {
-                ControlsLayer::add(&self.compositor, &self.painter, &self.above.root, controls)?
-            }
+            Some(layer) if layer.matches(controls) => layer,
+            _ => ControlsLayer::add(&self.compositor, &self.painter, &self.above.root, controls)?,
         };
         layer.update(&self.compositor, &self.painter, controls)?;
         self.controls = Some(layer);
