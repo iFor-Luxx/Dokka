@@ -8,7 +8,7 @@ pub struct Controls {
 }
 
 /// Panel flotante sobre la escena principal.
-/// Orden de pintado: panel, punta, resaltado, líneas, puntos, textos.
+/// Orden de pintado: panel, punta, resaltado, líneas, puntos, textos, iconos.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Overlay {
     pub panel: Panel,
@@ -18,6 +18,8 @@ pub struct Overlay {
     pub dots: Vec<Dot>,
     pub pointer: Option<Pointer>,
     pub texts: Vec<Text>,
+    /// Iconos sobre el resaltado, junto a los textos (el chevrón del menú).
+    pub icons: Vec<Icon>,
     pub thumbnails: Vec<Thumbnail>,
     /// La plataforma los pone en una capa propia, sobre las miniaturas.
     pub controls: Option<Controls>,

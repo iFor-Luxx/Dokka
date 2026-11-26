@@ -10,9 +10,11 @@ pub const PADDING: f32 = 5.0;
 pub const TEXT_INSET: f32 = 10.0;
 /// Columna reservada a la izquierda para ✓ en los menús que la usan.
 pub const CHECK_WIDTH: f32 = 18.0;
-/// Columna reservada a la derecha para el chevrón "›" en las filas con submenú.
-/// El chevrón va centrado en esta columna.
+/// Columna reservada a la derecha para el icono del chevrón en las filas con submenú.
+/// El icono va centrado en esta columna.
 pub const ARROW_WIDTH: f32 = 18.0;
+/// Lado del icono del chevrón, centrado en la fila y en la columna del chevrón.
+pub const CHEVRON_SIDE: f32 = 12.0;
 /// Separación entre el menú madre y su submenú.
 pub const SUBMENU_GAP: f32 = 4.0;
 pub const CORNER_RADIUS: f32 = 10.0;

@@ -5,13 +5,14 @@ use windows_numerics::Vector3;
 
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
+use crate::icon_layer::IconLayer;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
 use crate::pointer_layer::{PointerLayer, pointer_style_of};
 use crate::text_layer::TextLayer;
 
 /// Elementos visuales de un panel flotante.
-/// Orden: panel, punta, resaltado, líneas, puntos, textos.
+/// Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
 /// Todo cuelga de un contenedor para fundir el panel sin tocar el dock ni las etiquetas.
 pub(crate) struct OverlayLayers {
     container: ContainerVisual,
@@ -27,11 +28,13 @@ pub(crate) struct OverlayLayers {
     dividers: Vec<DividerLayer>,
     dots: Vec<DotLayer>,
     texts: Vec<TextLayer>,
+    icons: Vec<IconLayer>,
 }
 
 impl OverlayLayers {
     pub(crate) fn add(
         compositor: &Compositor,
+        painter: &Painter,
         parent: &ContainerVisual,
         overlay: &Overlay,
     ) -> Result<Self> {
@@ -69,6 +72,12 @@ impl OverlayLayers {
             .iter()
             .map(|_| TextLayer::add(compositor, &container))
             .collect::<Result<Vec<_>>>()?;
+        // Encima del resaltado y junto a los textos: no se solapan con ellos.
+        let icons = overlay
+            .icons
+            .iter()
+            .map(|icon| IconLayer::add(compositor, painter, &container, icon))
+            .collect::<Result<Vec<_>>>()?;
         Ok(Self {
             container,
             panel,
@@ -80,6 +89,7 @@ impl OverlayLayers {
             dividers,
             dots,
             texts,
+            icons,
         })
     }
 
@@ -96,6 +106,12 @@ impl OverlayLayers {
             && self.dividers.len() == overlay.dividers.len()
             && self.dots.len() == overlay.dots.len()
             && self.texts.len() == overlay.texts.len()
+            && self.icons.len() == overlay.icons.len()
+            && self
+                .icons
+                .iter()
+                .zip(&overlay.icons)
+                .all(|(layer, icon)| layer.accepts(icon))
     }
 
     pub(crate) fn update(
@@ -121,6 +137,9 @@ impl OverlayLayers {
         }
         for (layer, text) in self.texts.iter_mut().zip(&overlay.texts) {
             layer.update(compositor, painter, text)?;
+        }
+        for (layer, icon) in self.icons.iter_mut().zip(&overlay.icons) {
+            layer.update(compositor, painter, icon)?;
         }
         Ok(())
     }

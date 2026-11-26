@@ -65,6 +65,7 @@ pub fn preview_card(
         dots: Vec::new(),
         pointer: None,
         texts,
+        icons: Vec::new(),
         thumbnails,
         controls: media.map(|(playing, icons)| media_controls(theme, icons, bounds, playing)),
         opacity: 1.0,

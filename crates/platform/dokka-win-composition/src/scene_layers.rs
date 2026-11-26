@@ -83,13 +83,13 @@ impl SceneLayers {
         let overlay = scene
             .overlay
             .as_ref()
-            .map(|overlay| OverlayLayers::add(compositor, root, overlay))
+            .map(|overlay| OverlayLayers::add(compositor, painter, root, overlay))
             .transpose()?;
         // El submenú reutiliza las mismas capas y va encima del menú.
         let submenu = scene
             .submenu
             .as_ref()
-            .map(|submenu| OverlayLayers::add(compositor, root, submenu))
+            .map(|submenu| OverlayLayers::add(compositor, painter, root, submenu))
             .transpose()?;
         // Van al final para quedar por encima de los iconos.
         let labels = scene

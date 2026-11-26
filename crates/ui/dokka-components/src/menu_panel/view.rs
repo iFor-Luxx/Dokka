@@ -3,6 +3,7 @@ use dokka_scene::{Divider, Overlay, Panel, Pointer, Rect, Size, Text};
 use dokka_theme::{Theme, menu as measures, typography};
 
 use super::MenuRow;
+use super::chevron::{MenuChevrons, chevron_icons};
 
 /// Alto del panel para estas filas.
 pub fn menu_size(rows: &[MenuRow]) -> Size {
@@ -19,26 +20,28 @@ pub fn menu_size(rows: &[MenuRow]) -> Size {
     }
 }
 
-/// Panel con resaltado, líneas, punta y textos.
+/// Panel con resaltado, líneas, punta, textos e iconos.
 pub fn menu_overlay(
     theme: &Theme,
+    chevrons: &MenuChevrons,
     bounds: Rect,
     tip_x: f32,
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
     let pointer = Some(menu_pointer(bounds, tip_x));
-    overlay_inner(theme, bounds, pointer, rows, highlighted)
+    overlay_inner(theme, chevrons, bounds, pointer, rows, highlighted)
 }
 
 /// Mismo cristal y resaltado que el menú, sin punta.
 pub fn submenu_overlay(
     theme: &Theme,
+    chevrons: &MenuChevrons,
     bounds: Rect,
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
-    overlay_inner(theme, bounds, None, rows, highlighted)
+    overlay_inner(theme, chevrons, bounds, None, rows, highlighted)
 }
 
 /// Fila de texto que hay en el punto, si es elegible.
@@ -77,6 +80,7 @@ pub fn menu_row_top(rows: &[MenuRow], bounds: Rect, index: usize) -> f32 {
 
 fn overlay_inner(
     theme: &Theme,
+    chevrons: &MenuChevrons,
     bounds: Rect,
     pointer: Option<Pointer>,
     rows: &[MenuRow],
@@ -113,14 +117,6 @@ fn overlay_inner(
                     ));
                 }
                 texts.push(mark_text(label_x, top, &item.label, color));
-                if item.has_submenu {
-                    texts.push(chevron_text(
-                        bounds.x + bounds.width - measures::PADDING - measures::ARROW_WIDTH / 2.0,
-                        top,
-                        "›",
-                        color,
-                    ));
-                }
                 top += measures::ROW_HEIGHT;
             }
             MenuRow::Separator => {
@@ -151,6 +147,7 @@ fn overlay_inner(
         dots: Vec::new(),
         pointer,
         texts,
+        icons: chevron_icons(theme, chevrons, bounds, rows, highlighted),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -168,19 +165,6 @@ fn mark_text(x: f32, top: f32, content: &str, color: dokka_scene::Color) -> Text
         is_bold: false,
         color,
         align: TextAlign::Left,
-    }
-}
-
-/// Chevrón "›" de las filas con submenú: centrado en su columna y en la fila.
-fn chevron_text(x_center: f32, top: f32, content: &str, color: dokka_scene::Color) -> Text {
-    Text {
-        x: x_center,
-        center_y: top + measures::ROW_HEIGHT / 2.0,
-        content: content.to_owned(),
-        size: typography::MENU_CHEVRON_SIZE,
-        is_bold: true,
-        color,
-        align: TextAlign::Center,
     }
 }
 
