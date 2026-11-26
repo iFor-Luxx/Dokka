@@ -22,7 +22,8 @@ pub fn light() -> Theme {
             highlight: palette::white(245),
         },
         tooltip: TooltipColors {
-            background: palette::MIST_SOLID,
+            tint: palette::TOOLTIP_TINT,
+            border: palette::TOOLTIP_BORDER,
             text: palette::INK,
         },
         media: MediaColors {

@@ -7,7 +7,6 @@ use windows_numerics::Vector2;
 use crate::graphics_device::create_graphics_device;
 use crate::paint_bitmap::paint_bitmap;
 use crate::paint_drawing::paint_drawing;
-use crate::paint_label::paint_label;
 use crate::paint_text::paint_text;
 
 /// Convierte contenido en superficies que el compositor puede mostrar.
@@ -35,11 +34,8 @@ impl Painter {
         paint_text(&self.device, &self.text, text)
     }
 
-    /// Superficie de la etiqueta y su tamaño lógico.
-    pub(crate) fn paint_label(
-        &self,
-        label: &Label,
-    ) -> Result<(CompositionDrawingSurface, Vector2)> {
-        paint_label(&self.device, &self.text, label)
+    /// Ancho y alto que ocupa el texto de la etiqueta en una línea.
+    pub(crate) fn measure_label(&self, label: &Label) -> Result<(f32, f32)> {
+        self.text.measure(&label.text, label.font_size, false)
     }
 }
