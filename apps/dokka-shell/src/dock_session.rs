@@ -4,17 +4,19 @@ use std::error::Error;
 
 use dokka_contracts::WindowSource;
 use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock};
+use dokka_model::AppId;
 use dokka_scene::Scene;
 use dokka_state::DockState;
-use dokka_win_apps::{IconCache, SystemLauncher};
+use dokka_win_apps::{IconCache, SystemLauncher, recycle_bin_has_items};
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
-use dokka_win_surface::{Surface, SurfaceOptions};
+use dokka_win_surface::{Surface, SurfaceOptions, local_time};
 use dokka_win_tracking::SystemWindows;
 
 pub(crate) struct DockSession {
     pub(crate) state: DockState,
     pub(crate) dock: Dock,
+    pub(crate) explorer: AppId,
     pub(crate) launcher: SystemLauncher,
     pub(crate) control: SystemWindowControl,
     windows: SystemWindows,
@@ -23,10 +25,11 @@ pub(crate) struct DockSession {
 }
 
 impl DockSession {
-    pub(crate) fn new(renderer: SceneRenderer) -> Self {
+    pub(crate) fn new(renderer: SceneRenderer, explorer: AppId) -> Self {
         Self {
             state: DockState::default(),
-            dock: Dock::default(),
+            dock: Dock::new(explorer.clone()),
+            explorer,
             launcher: SystemLauncher,
             control: SystemWindowControl,
             windows: SystemWindows,
@@ -49,9 +52,19 @@ impl DockSession {
         Ok(changed)
     }
 
-    /// Ajusta la ventana al número de apps.
+    pub(crate) fn update_clock_and_trash(&mut self) {
+        let now = local_time();
+        self.dock
+            .set_time(now.month, now.day, now.hour, now.minute, now.second);
+        // Consultar la papelera cuesta más: basta cada pocos segundos.
+        if now.second.is_multiple_of(3) {
+            self.dock.set_trash_full(recycle_bin_has_items());
+        }
+    }
+
+    /// Ajusta la ventana al número de iconos.
     pub(crate) fn resize(&self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
-        let size = self.dock.surface_size(self.state.apps().len());
+        let size = self.dock.surface_size(self.state.apps());
         surface.resize(SurfaceOptions {
             width: size.width,
             height: size.height,

@@ -21,8 +21,7 @@ pub(crate) fn describe_window(window: HWND) -> Option<OpenWindow> {
 
     Some(OpenWindow {
         app: AppInfo {
-            // Las rutas de Windows no distinguen mayúsculas.
-            id: AppId::new(executable.to_string_lossy().to_lowercase()),
+            id: AppId::from_executable(&executable),
             name,
             executable,
         },

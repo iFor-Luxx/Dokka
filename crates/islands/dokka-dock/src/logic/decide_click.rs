@@ -1,10 +1,10 @@
 use dokka_model::{AppId, AppWindow, DockApp, WindowId};
 
-use super::place_dock;
+use super::{Entry, Placement, place_dock};
 use crate::Dock;
 use crate::view::dock_style as style;
 
-/// Lo que debe pasar tras un clic sobre una app.
+/// Lo que debe pasar con una app tras un clic.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ClickAction {
     Launch,
@@ -12,8 +12,19 @@ pub enum ClickAction {
     Minimize(Vec<WindowId>),
 }
 
+/// Lo que se pidió al pulsar en el dock.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DockAction {
+    App(AppId, ClickAction),
+    Restore(WindowId),
+    Launchpad,
+    Calendar,
+    Clock,
+    Trash,
+}
+
 impl Dock {
-    /// App pulsada y acción a realizar. `new_instance` pide abrir otra copia.
+    /// Acción del punto pulsado. `new_instance` pide abrir otra copia de la app.
     pub fn click(
         &self,
         x: f32,
@@ -21,21 +32,36 @@ impl Dock {
         apps: &[DockApp],
         foreground: Option<WindowId>,
         new_instance: bool,
-    ) -> Option<(AppId, ClickAction)> {
+    ) -> Option<DockAction> {
         let placement = place_dock(self, apps);
-        let bottom = placement.bar.y + placement.bar.height;
-        let reach = style::GAP / 2.0;
-        let index = placement.icons.iter().position(|icon| {
-            x >= icon.x - reach && x <= icon.x + icon.width + reach && y >= icon.y && y <= bottom
-        })?;
-        let app = apps.get(index)?;
-        let action = if new_instance {
-            ClickAction::Launch
-        } else {
-            action_for(&app.windows, foreground)
-        };
-        Some((app.info.id.clone(), action))
+        Some(match entry_at(&placement, x, y)? {
+            Entry::App(app) | Entry::Explorer(app) => {
+                let action = if new_instance {
+                    ClickAction::Launch
+                } else {
+                    action_for(&app.windows, foreground)
+                };
+                DockAction::App(app.info.id.clone(), action)
+            }
+            Entry::Minimized(_, window) => DockAction::Restore(window),
+            Entry::Launchpad => DockAction::Launchpad,
+            Entry::Calendar => DockAction::Calendar,
+            Entry::Clock => DockAction::Clock,
+            Entry::Trash => DockAction::Trash,
+        })
     }
+}
+
+pub(super) fn entry_at<'a>(placement: &Placement<'a>, x: f32, y: f32) -> Option<Entry<'a>> {
+    let bottom = placement.bar.y + placement.bar.height;
+    let reach = style::GAP / 2.0;
+    placement
+        .slots
+        .iter()
+        .find(|(_, icon)| {
+            x >= icon.x - reach && x <= icon.x + icon.width + reach && y >= icon.y && y <= bottom
+        })
+        .map(|&(entry, _)| entry)
 }
 
 /// Cerrada: abrir. Al frente: minimizar. En otro caso: traer al frente.

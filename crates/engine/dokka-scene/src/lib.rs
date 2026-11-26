@@ -2,7 +2,9 @@
 
 mod bitmap;
 mod color;
+mod divider;
 mod dot;
+mod drawing;
 mod icon;
 mod panel;
 mod rect;
@@ -11,8 +13,10 @@ mod size;
 
 pub use bitmap::Bitmap;
 pub use color::Color;
+pub use divider::Divider;
 pub use dot::Dot;
-pub use icon::Icon;
+pub use drawing::{DRAWING_SIDE, Drawing, Shape};
+pub use icon::{Icon, IconImage};
 pub use panel::Panel;
 pub use rect::Rect;
 pub use scene::Scene;

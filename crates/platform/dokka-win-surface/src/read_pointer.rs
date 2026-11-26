@@ -1,5 +1,7 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::{TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent};
-use windows::Win32::UI::WindowsAndMessaging::{MSG, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE};
+use windows::Win32::UI::WindowsAndMessaging::{
+    MSG, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_RBUTTONUP,
+};
 
 use crate::SurfaceEvent;
 
@@ -43,6 +45,7 @@ pub(crate) fn read_pointer(
             y,
             with_shift: message.wParam.0 & SHIFT_HELD != 0,
         }),
+        WM_RBUTTONUP => Some(SurfaceEvent::RightClicked { x, y }),
         _ => None,
     }
 }

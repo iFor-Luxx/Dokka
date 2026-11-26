@@ -2,7 +2,7 @@ use dokka_scene::Scene;
 use dokka_win_surface::SurfaceHandle;
 use windows::System::DispatcherQueueController;
 use windows::UI::Composition::Desktop::DesktopWindowTarget;
-use windows::UI::Composition::{CompositionGraphicsDevice, Compositor, ContainerVisual};
+use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::Win32::System::WinRT::Composition::ICompositorDesktopInterop;
 use windows::Win32::System::WinRT::{
     CreateDispatcherQueueController, DQTAT_COM_STA, DQTYPE_THREAD_CURRENT, DispatcherQueueOptions,
@@ -11,14 +11,14 @@ use windows::core::{Interface, Result};
 use windows_numerics::Vector3;
 
 use crate::CompositionError;
-use crate::graphics_device::create_graphics_device;
+use crate::painter::Painter;
 use crate::scene_layers::SceneLayers;
 
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
 pub struct SceneRenderer {
     layers: Option<SceneLayers>,
     root: ContainerVisual,
-    device: CompositionGraphicsDevice,
+    painter: Painter,
     compositor: Compositor,
     _target: DesktopWindowTarget,
     // Va al final: el compositor necesita la cola mientras exista.
@@ -34,7 +34,7 @@ impl SceneRenderer {
         Ok(Self::build(surface, scale)?)
     }
 
-    /// Muestra la escena. Si las imágenes no cambian, solo recoloca lo existente.
+    /// Muestra la escena. Si su forma no cambia, solo actualiza lo existente.
     pub fn draw(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
         Ok(self.apply(scene)?)
     }
@@ -56,7 +56,7 @@ impl SceneRenderer {
 
         Ok(Self {
             layers: None,
-            device: create_graphics_device(&compositor)?,
+            painter: Painter::new(&compositor)?,
             root,
             compositor,
             _target: target,
@@ -65,11 +65,11 @@ impl SceneRenderer {
     }
 
     fn apply(&mut self, scene: &Scene) -> Result<()> {
-        let layers = match self.layers.take() {
+        let mut layers = match self.layers.take() {
             Some(layers) if layers.matches(scene) => layers,
-            _ => SceneLayers::build(&self.compositor, &self.device, &self.root, scene)?,
+            _ => SceneLayers::build(&self.compositor, &self.painter, &self.root, scene)?,
         };
-        layers.update(scene)?;
+        layers.update(&self.compositor, &self.painter, scene)?;
         self.layers = Some(layers);
         Ok(())
     }

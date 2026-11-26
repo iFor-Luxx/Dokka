@@ -11,8 +11,14 @@ pub enum SurfaceEvent {
         y: f32,
         with_shift: bool,
     },
+    RightClicked {
+        x: f32,
+        y: f32,
+    },
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
+    /// Pasó un segundo.
+    Tick,
     /// Nuevo fotograma de una animación en curso.
     Frame {
         seconds: f32,

@@ -1,7 +1,8 @@
 # dokka-dock
 
-**Hace:** decide dónde va cada icono, la lupa, el salto, el punto de "abierta" y qué hace cada clic.
+**Hace:** ordena el dock (explorador, launchpad, calendario, reloj, apps, ventanas minimizadas y papelera),
+calcula la lupa y el salto, y decide qué hace cada clic.
 
-**No hace:** no crea ventanas ni habla con Windows. Todavía no tiene menú, arrastre ni apps fijadas.
+**No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Todavía no tiene miniaturas ni arrastre.
 
 **Pendiente:** mover `view/dock_style.rs` a `dokka-theme` cuando exista.

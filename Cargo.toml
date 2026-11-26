@@ -6,6 +6,8 @@ members = [
     "crates/engine/*",
     "crates/islands/*",
     "crates/platform/*",
+    "crates/services/*",
+    "crates/ui/*",
 ]
 
 [workspace.package]
@@ -15,9 +17,11 @@ publish = false
 
 [workspace.dependencies]
 dokka-animation = { path = "crates/engine/dokka-animation" }
+dokka-config = { path = "crates/services/dokka-config" }
 dokka-contracts = { path = "crates/core/dokka-contracts" }
 dokka-dock = { path = "crates/islands/dokka-dock" }
 dokka-events = { path = "crates/core/dokka-events" }
+dokka-icons = { path = "crates/ui/dokka-icons" }
 dokka-interaction = { path = "crates/engine/dokka-interaction" }
 dokka-model = { path = "crates/core/dokka-model" }
 dokka-scene = { path = "crates/engine/dokka-scene" }
@@ -26,6 +30,7 @@ dokka-win-apps = { path = "crates/platform/dokka-win-apps" }
 dokka-win-composition = { path = "crates/platform/dokka-win-composition" }
 dokka-win-control = { path = "crates/platform/dokka-win-control" }
 dokka-win-surface = { path = "crates/platform/dokka-win-surface" }
+dokka-win-text = { path = "crates/platform/dokka-win-text" }
 dokka-win-tracking = { path = "crates/platform/dokka-win-tracking" }
 windows = "0.62"
 windows-numerics = "0.3"

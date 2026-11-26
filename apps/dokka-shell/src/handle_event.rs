@@ -4,6 +4,7 @@ use std::error::Error;
 
 use dokka_win_surface::{Surface, SurfaceEvent};
 
+use crate::context_menu::open_context_menu;
 use crate::dock_session::DockSession;
 use crate::perform_click::perform_click;
 
@@ -26,8 +27,12 @@ pub(crate) fn handle_event(
             }
             session.resize(surface)?;
         }
+        SurfaceEvent::Tick => session.update_clock_and_trash(),
         SurfaceEvent::Clicked { x, y, with_shift } => {
             perform_click(session, x, y, with_shift)?;
+        }
+        SurfaceEvent::RightClicked { x, y } => {
+            open_context_menu(session, surface, x, y)?;
         }
     }
     session.render(surface)

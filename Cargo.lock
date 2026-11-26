@@ -7,6 +7,14 @@ name = "dokka-animation"
 version = "0.1.0"
 
 [[package]]
+name = "dokka-config"
+version = "0.1.0"
+dependencies = [
+ "dokka-contracts",
+ "dokka-model",
+]
+
+[[package]]
 name = "dokka-contracts"
 version = "0.1.0"
 dependencies = [
@@ -18,6 +26,7 @@ name = "dokka-dock"
 version = "0.1.0"
 dependencies = [
  "dokka-animation",
+ "dokka-icons",
  "dokka-interaction",
  "dokka-model",
  "dokka-scene",
@@ -28,6 +37,13 @@ name = "dokka-events"
 version = "0.1.0"
 dependencies = [
  "dokka-model",
+]
+
+[[package]]
+name = "dokka-icons"
+version = "0.1.0"
+dependencies = [
+ "dokka-scene",
 ]
 
 [[package]]
@@ -46,8 +62,10 @@ version = "0.1.0"
 name = "dokka-shell"
 version = "0.1.0"
 dependencies = [
+ "dokka-config",
  "dokka-contracts",
  "dokka-dock",
+ "dokka-events",
  "dokka-model",
  "dokka-scene",
  "dokka-state",
@@ -82,6 +100,7 @@ version = "0.1.0"
 dependencies = [
  "dokka-scene",
  "dokka-win-surface",
+ "dokka-win-text",
  "windows",
  "windows-numerics",
 ]
@@ -97,6 +116,13 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-surface"
+version = "0.1.0"
+dependencies = [
+ "windows",
+]
+
+[[package]]
+name = "dokka-win-text"
 version = "0.1.0"
 dependencies = [
  "windows",

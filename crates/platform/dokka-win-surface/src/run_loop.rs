@@ -11,11 +11,13 @@ use crate::{Surface, SurfaceError, SurfaceEvent};
 
 /// Espera para agrupar ráfagas de avisos en una sola actualización.
 const SETTLE_MILLISECONDS: u32 = 200;
+const TICK_MILLISECONDS: u32 = 1000;
 /// Evita saltos grandes si un fotograma se retrasa.
 const LONGEST_FRAME_SECONDS: f32 = 0.05;
 
 #[derive(Default)]
 struct LoopState {
+    tick_timer: usize,
     pending_timer: Option<usize>,
     is_pressed: bool,
 }
@@ -31,7 +33,11 @@ impl Surface {
         mut handle: impl FnMut(&mut Self, SurfaceEvent) -> bool,
     ) -> Result<(), SurfaceError> {
         let mut message = MSG::default();
-        let mut state = LoopState::default();
+        let mut state = LoopState {
+            // SAFETY: temporizador del hilo, sin callback.
+            tick_timer: unsafe { SetTimer(None, 0, TICK_MILLISECONDS, None) },
+            ..Default::default()
+        };
         let mut last_frame: Option<Instant> = None;
         // SAFETY: la ventana pertenece a este hilo.
         let _ = unsafe { ShowWindow(self.window, SW_SHOWNOACTIVATE) };
@@ -89,6 +95,9 @@ impl Surface {
                 state.pending_timer = Some(timer);
             }
             return None;
+        }
+        if message.message == WM_TIMER && message.wParam.0 == state.tick_timer {
+            return Some(SurfaceEvent::Tick);
         }
         if message.message == WM_TIMER && state.pending_timer == Some(message.wParam.0) {
             // SAFETY: cancela el temporizador creado arriba.
