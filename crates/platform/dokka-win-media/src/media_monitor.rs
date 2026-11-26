@@ -51,7 +51,16 @@ impl MediaMonitor {
         &self.latest
     }
 
-    pub fn send(&self, source: &str, action: MediaAction) {
+    pub fn send(&mut self, source: &str, action: MediaAction) {
+        if action == MediaAction::Toggle {
+            // Parte del estado más fresco y adelanta el icono sin esperar al hilo.
+            let _ = self.sessions();
+            for media in &mut self.latest {
+                if media.source == source {
+                    media.is_playing = !media.is_playing;
+                }
+            }
+        }
         // Si el hilo ya terminó, la orden simplemente se pierde.
         let _ = self.commands.send((source.to_owned(), action));
     }
@@ -65,19 +74,29 @@ fn watch(
     unsafe { RoInitialize(RO_INIT_MULTITHREADED)? };
     let manager = Manager::RequestAsync()?.join()?;
     let mut previous = Vec::new();
+    // Tras una orden, la siguiente lectura se envía siempre para confirmar
+    // el valor adelantado (o corregirlo si la app no obedeció).
+    let mut confirm_pending = false;
     loop {
         match commands.recv_timeout(REFRESH) {
             Ok((source, action)) => {
                 if let Err(error) = perform(&manager, &source, action) {
                     eprintln!("No se pudo controlar la reproducción: {error}");
                 }
+                // Sin leer de inmediato: la app aún no ha cambiado y esa
+                // lectura antigua revertiría el icono adelantado. Si llega
+                // otra orden antes de la siguiente lectura, sigue valiendo
+                // esta misma obligación.
+                confirm_pending = true;
+                continue;
             }
             Err(RecvTimeoutError::Timeout) => {}
             Err(RecvTimeoutError::Disconnected) => return Ok(()),
         }
         let current = read_sessions(&manager);
-        if current != previous {
+        if confirm_pending || current != previous {
             previous.clone_from(&current);
+            confirm_pending = false;
             if updates.send(current).is_err() {
                 return Ok(());
             }
