@@ -3,6 +3,8 @@
 
 mod control_window;
 mod start_menu;
+mod taskbar;
 
 pub use control_window::{SystemWindowControl, foreground_window};
 pub use start_menu::{open_start_menu, show_desktop};
+pub use taskbar::set_taskbar_visible;

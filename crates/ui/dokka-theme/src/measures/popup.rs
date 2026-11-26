@@ -1,7 +1,7 @@
 //! Medidas de los paneles flotantes.
 
 /// Alto reservado sobre el dock para los paneles.
-pub const SPACE: f32 = 250.0;
+pub const SPACE: f32 = 420.0;
 /// Separación entre un panel y los iconos agrandados.
 pub const GAP: f32 = 10.0;
 pub const CORNER_RADIUS: f32 = 16.0;
