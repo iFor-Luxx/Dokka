@@ -13,9 +13,11 @@ use windows_numerics::Vector3;
 use crate::CompositionError;
 use crate::painter::Painter;
 use crate::scene_layers::SceneLayers;
+use crate::window_thumbnails::WindowThumbnails;
 
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
 pub struct SceneRenderer {
+    thumbnails: WindowThumbnails,
     layers: Option<SceneLayers>,
     root: ContainerVisual,
     painter: Painter,
@@ -55,6 +57,7 @@ impl SceneRenderer {
         target.SetRoot(&root)?;
 
         Ok(Self {
+            thumbnails: WindowThumbnails::new(surface.raw(), scale),
             layers: None,
             painter: Painter::new(&compositor)?,
             root,
@@ -71,7 +74,7 @@ impl SceneRenderer {
         };
         layers.update(&self.compositor, &self.painter, scene)?;
         self.layers = Some(layers);
-        Ok(())
+        self.thumbnails.show(&scene.thumbnails)
     }
 }
 

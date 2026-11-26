@@ -2,9 +2,10 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use dokka_model::{AppId, DockApp};
-use dokka_scene::{Bitmap, Divider, Dot, Icon, IconImage, Panel, Scene};
+use dokka_scene::{Bitmap, Divider, Dot, Icon, IconImage, Panel, Rect, Scene};
 
 use super::dock_style as style;
+use super::minimized_window::minimized_window;
 use crate::Dock;
 use crate::logic::{Entry, place_dock};
 
@@ -12,18 +13,20 @@ impl Dock {
     /// Escena actual. Una app sin imagen muestra un cuadro neutro.
     pub fn scene(&self, apps: &[DockApp], images: &HashMap<AppId, Arc<Bitmap>>) -> Scene {
         let placement = place_dock(self, apps);
-        let icons = placement
-            .slots
-            .iter()
-            .map(|&(entry, bounds)| Icon {
-                x: bounds.x,
-                y: bounds.y,
-                side: bounds.width,
-                image: self.image_for(entry, images),
-                placeholder: style::PLACEHOLDER,
-                placeholder_radius: style::PLACEHOLDER_RADIUS,
-            })
-            .collect();
+        let mut icons = Vec::with_capacity(placement.slots.len());
+        let mut thumbnails = Vec::new();
+        for &(entry, slot) in &placement.slots {
+            let bounds = match entry {
+                // La miniatura ocupa el hueco y el icono pasa a ser su insignia.
+                Entry::Minimized(_, window) => {
+                    let (thumbnail, badge) = minimized_window(window, slot);
+                    thumbnails.push(thumbnail);
+                    badge
+                }
+                _ => slot,
+            };
+            icons.push(self.icon(entry, bounds, images));
+        }
 
         let dot_y = placement.bar.y + placement.bar.height - style::DOT_FROM_BOTTOM;
         let dots = placement
@@ -54,6 +57,18 @@ impl Dock {
                 bounds: placement.divider,
                 color: style::DIVIDER_COLOR,
             }],
+            thumbnails,
+        }
+    }
+
+    fn icon(&self, entry: Entry<'_>, bounds: Rect, images: &HashMap<AppId, Arc<Bitmap>>) -> Icon {
+        Icon {
+            x: bounds.x,
+            y: bounds.y,
+            side: bounds.width,
+            image: self.image_for(entry, images),
+            placeholder: style::PLACEHOLDER,
+            placeholder_radius: style::PLACEHOLDER_RADIUS,
         }
     }
 

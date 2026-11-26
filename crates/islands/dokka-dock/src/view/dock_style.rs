@@ -20,6 +20,10 @@ pub(crate) const DIVIDER_SPACE: f32 = 13.0;
 pub(crate) const DIVIDER_INSET: f32 = 14.0;
 pub(crate) const DIVIDER_COLOR: Color = Color::rgba(255, 255, 255, 110);
 
+/// Tamaño de la insignia respecto al hueco, y qué parte queda dentro de él.
+pub(crate) const BADGE_SIZE: f32 = 0.44;
+pub(crate) const BADGE_INSIDE: f32 = 0.85;
+
 pub(crate) const MAXIMUM_SCALE: f32 = 1.6;
 /// Iconos afectados a cada lado del cursor.
 const MAGNIFIED_NEIGHBOURS: f32 = 3.0;

@@ -10,6 +10,7 @@ mod panel;
 mod rect;
 mod scene;
 mod size;
+mod thumbnail;
 
 pub use bitmap::Bitmap;
 pub use color::Color;
@@ -21,3 +22,4 @@ pub use panel::Panel;
 pub use rect::Rect;
 pub use scene::Scene;
 pub use size::Size;
+pub use thumbnail::Thumbnail;

@@ -4,6 +4,7 @@
 mod composition_error;
 mod divider_layer;
 mod dot_layer;
+mod fit_thumbnail;
 mod graphics_device;
 mod icon_layer;
 mod paint_bitmap;
@@ -13,6 +14,7 @@ mod painter;
 mod panel_layer;
 mod scene_layers;
 mod scene_renderer;
+mod window_thumbnails;
 mod windows_color;
 
 pub use composition_error::CompositionError;
