@@ -9,6 +9,7 @@ pub struct Theme {
     pub tooltip: TooltipColors,
     pub media: MediaColors,
     pub menu: MenuColors,
+    pub launchpad: LaunchpadColors,
     pub icons: IconColors,
 }
 
@@ -52,6 +53,14 @@ pub struct MenuColors {
     pub highlighted_text: Color,
     pub highlight: Color,
     pub separator: Color,
+}
+
+/// Colores del Launchpad a pantalla completa.
+#[derive(Debug, Clone, Copy)]
+pub struct LaunchpadColors {
+    pub background: Color,
+    pub text: Color,
+    pub highlight: Color,
 }
 
 #[derive(Debug, Clone, Copy)]

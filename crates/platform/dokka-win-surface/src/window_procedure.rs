@@ -1,7 +1,8 @@
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::{
-    DefWindowProcW, GW_OWNER, GetWindow, HTTRANSPARENT, MA_NOACTIVATE, PostMessageW,
-    PostQuitMessage, WA_INACTIVE, WM_ACTIVATE, WM_DESTROY, WM_MOUSEACTIVATE, WM_NCHITTEST,
+    DefWindowProcW, GW_OWNER, GWL_EXSTYLE, GetWindow, GetWindowLongW, HTTRANSPARENT, MA_NOACTIVATE,
+    PostMessageW, PostQuitMessage, WA_INACTIVE, WM_ACTIVATE, WM_DESTROY, WM_MOUSEACTIVATE,
+    WM_NCHITTEST, WS_EX_NOACTIVATE,
 };
 
 /// Aviso propio de que la ventana dejó de estar activa o se pulsó Esc.
@@ -18,8 +19,10 @@ pub(crate) unsafe extern "system" fn window_procedure(
     // SAFETY: consulta de solo lectura sobre la ventana que recibe el mensaje.
     let is_owned = || unsafe { GetWindow(window, GW_OWNER) }.is_ok_and(|w| !w.is_invalid());
     match message {
-        // Un clic en el dock no debe quitar el foco a la app que se está usando.
-        WM_MOUSEACTIVATE => LRESULT(MA_NOACTIVATE as isize),
+        // El dock no quita el foco a la app en uso; el Launchpad sí lo toma.
+        WM_MOUSEACTIVATE if !is_owned() && has_no_activate(window) => {
+            LRESULT(MA_NOACTIVATE as isize)
+        }
         // La ventana superpuesta es solo visual: el mouse llega a su dueña.
         WM_NCHITTEST if is_owned() => LRESULT(HTTRANSPARENT as isize),
         WM_ACTIVATE if !is_owned() && wparam.0 & 0xFFFF == WA_INACTIVE as usize => {
@@ -36,4 +39,11 @@ pub(crate) unsafe extern "system" fn window_procedure(
         // SAFETY: Windows entrega argumentos válidos para el mensaje que se está atendiendo.
         _ => unsafe { DefWindowProcW(window, message, wparam, lparam) },
     }
+}
+
+/// `true` si la ventana se creó para no activarse, como el dock.
+fn has_no_activate(window: HWND) -> bool {
+    // SAFETY: consulta de solo lectura del estilo extendido propio.
+    let style = unsafe { GetWindowLongW(window, GWL_EXSTYLE) } as u32;
+    style & WS_EX_NOACTIVATE.0 != 0
 }

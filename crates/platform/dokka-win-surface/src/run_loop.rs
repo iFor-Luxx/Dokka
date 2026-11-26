@@ -21,6 +21,7 @@ struct LoopState {
     tick_timer: usize,
     pending_timer: Option<usize>,
     is_pressed: bool,
+    is_launchpad_pressed: bool,
 }
 
 impl Surface {
@@ -109,10 +110,18 @@ impl Surface {
         if message.hwnd == self.window && message.message == DISMISS_MESSAGE {
             return Some(SurfaceEvent::Dismissed);
         }
+        if message.hwnd == self.launchpad_window() && message.message == DISMISS_MESSAGE {
+            return Some(SurfaceEvent::LaunchpadDismissed);
+        }
         if message.hwnd == self.window
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)
         {
             return Some(event);
+        }
+        if message.hwnd == self.launchpad_window()
+            && let Some(event) = read_pointer(message, self.scale, &mut state.is_launchpad_pressed)
+        {
+            return Some(launchpad_event(event));
         }
         // SAFETY: `message` acaba de ser rellenado por Windows.
         unsafe {
@@ -120,5 +129,18 @@ impl Surface {
             DispatchMessageW(message);
         }
         None
+    }
+}
+
+/// Traduce un evento del dock a su equivalente del Launchpad.
+/// Esc y el botón derecho también cierran el Launchpad.
+fn launchpad_event(event: SurfaceEvent) -> SurfaceEvent {
+    match event {
+        SurfaceEvent::PointerMoved { x, y } => SurfaceEvent::LaunchpadMoved { x, y },
+        SurfaceEvent::PointerLeft => SurfaceEvent::LaunchpadLeft,
+        SurfaceEvent::Clicked { x, y, .. } => SurfaceEvent::LaunchpadClicked { x, y },
+        SurfaceEvent::RightClicked { x, y } => SurfaceEvent::LaunchpadClicked { x, y },
+        SurfaceEvent::Dismissed => SurfaceEvent::LaunchpadDismissed,
+        other => other,
     }
 }

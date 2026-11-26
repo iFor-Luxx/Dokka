@@ -5,12 +5,15 @@ use std::sync::Arc;
 
 use dokka_contracts::WindowSource;
 use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
+use dokka_launchpad::Launchpad;
 use dokka_model::AppId;
 use dokka_previews::Previews;
 use dokka_scene::Scene;
 use dokka_state::DockState;
-use dokka_theme::light;
-use dokka_win_apps::{AppPicker, IconCache, NameCache, SystemLauncher, recycle_bin_size};
+use dokka_theme::{Theme, light};
+use dokka_win_apps::{
+    AppPicker, DesktopCatalog, IconCache, NameCache, SystemLauncher, recycle_bin_size,
+};
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::SystemWindowControl;
 use dokka_win_media::MediaMonitor;
@@ -23,6 +26,9 @@ pub(crate) struct DockSession {
     pub(crate) state: DockState,
     pub(crate) dock: Dock,
     pub(crate) previews: Previews,
+    pub(crate) launchpad: Launchpad,
+    pub(crate) catalog: DesktopCatalog,
+    pub(crate) theme: Arc<Theme>,
     pub(crate) explorer: AppId,
     pub(crate) launcher: SystemLauncher,
     pub(crate) control: SystemWindowControl,
@@ -30,9 +36,9 @@ pub(crate) struct DockSession {
     pub(crate) picker: AppPicker,
     taskbar_hidden: bool,
     windows: SystemWindows,
-    icons: IconCache,
+    pub(crate) icons: IconCache,
     names: NameCache,
-    renderer: SceneRenderer,
+    pub(crate) renderer: SceneRenderer,
 }
 
 impl DockSession {
@@ -42,7 +48,10 @@ impl DockSession {
         Self {
             state: DockState::default(),
             dock: Dock::new(explorer.clone(), Arc::clone(&theme)),
-            previews: Previews::new(theme),
+            previews: Previews::new(Arc::clone(&theme)),
+            launchpad: Launchpad::new(),
+            catalog: DesktopCatalog::new(),
+            theme,
             explorer,
             launcher: SystemLauncher,
             control: SystemWindowControl,
@@ -113,8 +122,11 @@ impl DockSession {
     pub(crate) fn render(&mut self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
         update_media(self);
         let mut scene = self.scene();
-        // El menú tiene prioridad sobre las vistas previas.
-        if self.dock.is_menu_open() {
+        if self.launchpad.is_open() {
+            // Con el Launchpad no hay menú ni vistas previas.
+            scene.overlay = None;
+            scene.labels.clear();
+        } else if self.dock.is_menu_open() {
             scene.overlay = self.dock.menu_overlay();
         } else {
             scene.overlay = self.previews.overlay();
@@ -129,18 +141,29 @@ impl DockSession {
             let area = controls.panel.bounds;
             [area.x, area.y, area.width, area.height]
         }))?;
-        let areas: Vec<[f32; 4]> = [
-            Some(self.dock.active_area(self.state.apps())),
-            self.dock.menu_area(),
-            (!self.dock.is_menu_open())
-                .then(|| self.previews.area())
-                .flatten(),
-        ]
-        .into_iter()
-        .flatten()
-        .map(|area| [area.x, area.y, area.width, area.height])
-        .collect();
+        let areas: Vec<[f32; 4]> = if self.launchpad.is_open() {
+            [Some(self.dock.active_area(self.state.apps()))]
+                .into_iter()
+                .flatten()
+                .map(|area| [area.x, area.y, area.width, area.height])
+                .collect()
+        } else {
+            [
+                Some(self.dock.active_area(self.state.apps())),
+                self.dock.menu_area(),
+                (!self.dock.is_menu_open())
+                    .then(|| self.previews.area())
+                    .flatten(),
+            ]
+            .into_iter()
+            .flatten()
+            .map(|area| [area.x, area.y, area.width, area.height])
+            .collect()
+        };
         surface.set_active_areas(&areas);
+        if self.launchpad.is_open() {
+            crate::launchpad::render_launchpad(self, surface)?;
+        }
         Ok(())
     }
 

@@ -9,6 +9,7 @@ dokka-config.workspace = true
 dokka-contracts.workspace = true
 dokka-dock.workspace = true
 dokka-events.workspace = true
+dokka-launchpad.workspace = true
 dokka-model.workspace = true
 dokka-previews.workspace = true
 dokka-scene.workspace = true

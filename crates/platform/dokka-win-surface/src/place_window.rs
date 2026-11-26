@@ -38,6 +38,38 @@ pub(crate) fn place_at_bottom_center(window: HWND, options: SurfaceOptions) -> R
     }
 }
 
+/// Cubre el monitor principal con la ventana y devuelve su escala.
+pub(crate) fn place_fullscreen(window: HWND) -> Result<f32> {
+    let area = base_area(window, true)?;
+    // SAFETY: `window` es válida y la escala sale de su DPI real.
+    unsafe {
+        let scale = GetDpiForWindow(window) as f32 / BASE_DPI;
+        SetWindowPos(
+            window,
+            Some(HWND_TOPMOST),
+            area.left,
+            area.top,
+            area.right - area.left,
+            area.bottom - area.top,
+            SWP_NOACTIVATE,
+        )?;
+        Ok(scale)
+    }
+}
+
+/// Tamaño lógico del monitor principal para la cuadrícula.
+pub(crate) fn fullscreen_size(window: HWND, scale: f32) -> [f32; 2] {
+    let area = match base_area(window, true) {
+        Ok(area) => area,
+        Err(_) => return [0.0, 0.0],
+    };
+    let scale = scale.max(1.0);
+    [
+        (area.right - area.left) as f32 / scale,
+        (area.bottom - area.top) as f32 / scale,
+    ]
+}
+
 /// Rectángulo donde anclar el dock: el monitor completo si se tapa la barra,
 /// o el área de trabajo si la barra sigue visible.
 fn base_area(window: HWND, over_taskbar: bool) -> Result<RECT> {

@@ -1,4 +1,4 @@
-use dokka_scene::Scene;
+use dokka_scene::{Panel, Scene};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
@@ -9,13 +9,17 @@ use crate::label_layer::LabelLayer;
 use crate::overlay_layers::OverlayLayers;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
+use crate::text_layer::TextLayer;
 
 /// Elementos visuales creados para una escena.
 pub(crate) struct SceneLayers {
     panel: PanelLayer,
+    highlight: Option<PanelLayer>,
+    highlight_style: Option<(dokka_scene::Color, f32)>,
     dividers: Vec<DividerLayer>,
     icons: Vec<IconLayer>,
     dots: Vec<DotLayer>,
+    texts: Vec<TextLayer>,
     labels: Vec<LabelLayer>,
     overlay: Option<OverlayLayers>,
 }
@@ -29,6 +33,11 @@ impl SceneLayers {
     ) -> Result<Self> {
         root.Children()?.RemoveAll()?;
         let panel = PanelLayer::add(compositor, root, &scene.panel)?;
+        let highlight = scene
+            .highlight
+            .as_ref()
+            .map(|panel| PanelLayer::add(compositor, root, panel))
+            .transpose()?;
         let dividers = scene
             .dividers
             .iter()
@@ -44,6 +53,11 @@ impl SceneLayers {
             .iter()
             .map(|dot| DotLayer::add(compositor, root, dot))
             .collect::<Result<_>>()?;
+        let texts = scene
+            .texts
+            .iter()
+            .map(|_| TextLayer::add(compositor, root))
+            .collect::<Result<_>>()?;
         let overlay = scene
             .overlay
             .as_ref()
@@ -57,9 +71,12 @@ impl SceneLayers {
             .collect::<Result<_>>()?;
         Ok(Self {
             panel,
+            highlight,
+            highlight_style: scene.highlight.map(highlight_style_of),
             dividers,
             icons,
             dots,
+            texts,
             labels,
             overlay,
         })
@@ -73,8 +90,11 @@ impl SceneLayers {
             _ => false,
         };
         same_overlay
+            && self.highlight.is_some() == scene.highlight.is_some()
+            && self.highlight_style == scene.highlight.map(highlight_style_of)
             && self.dots.len() == scene.dots.len()
             && self.dividers.len() == scene.dividers.len()
+            && self.texts.len() == scene.texts.len()
             && self.labels.len() == scene.labels.len()
             && self.icons.len() == scene.icons.len()
             && self
@@ -91,6 +111,9 @@ impl SceneLayers {
         scene: &Scene,
     ) -> Result<()> {
         self.panel.update(&scene.panel)?;
+        if let (Some(layer), Some(panel)) = (&self.highlight, &scene.highlight) {
+            layer.update(panel)?;
+        }
         for (layer, divider) in self.dividers.iter().zip(&scene.dividers) {
             layer.update(divider)?;
         }
@@ -100,6 +123,9 @@ impl SceneLayers {
         for (layer, dot) in self.dots.iter().zip(&scene.dots) {
             layer.update(dot)?;
         }
+        for (layer, text) in self.texts.iter_mut().zip(&scene.texts) {
+            layer.update(compositor, painter, text)?;
+        }
         if let (Some(layers), Some(overlay)) = (&mut self.overlay, &scene.overlay) {
             layers.update(compositor, painter, overlay)?;
         }
@@ -108,4 +134,9 @@ impl SceneLayers {
         }
         Ok(())
     }
+}
+
+/// Lo que fija el aspecto del resaltado al crearse.
+fn highlight_style_of(panel: Panel) -> (dokka_scene::Color, f32) {
+    (panel.tint, panel.corner_radius)
 }

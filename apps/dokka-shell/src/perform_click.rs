@@ -6,12 +6,15 @@ use dokka_contracts::{AppLauncher, WindowControl};
 use dokka_dock::{ClickAction, DockAction};
 use dokka_model::AppId;
 use dokka_win_apps::system_place;
-use dokka_win_control::{foreground_window, open_start_menu};
+use dokka_win_control::foreground_window;
+use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
+use crate::launchpad::{close_launchpad, toggle_launchpad};
 
 pub(crate) fn perform_click(
     session: &mut DockSession,
+    surface: &mut Surface,
     x: f32,
     y: f32,
     with_shift: bool,
@@ -24,11 +27,14 @@ pub(crate) fn perform_click(
         return Ok(());
     };
 
+    // Cualquier otra cosa del dock cierra primero el Launchpad.
+    if action != DockAction::Launchpad && session.launchpad.is_open() {
+        close_launchpad(session, surface);
+    }
     match action {
         DockAction::App(app_id, action) => perform_app_action(session, app_id, action)?,
         DockAction::Restore(window) => session.control.activate(window)?,
-        // Provisional hasta tener nuestro propio Launchpad.
-        DockAction::Launchpad => open_start_menu(),
+        DockAction::Launchpad => toggle_launchpad(session, surface)?,
         DockAction::Calendar => open_place(session, "Calendario", "outlookcal:")?,
         DockAction::Clock => open_place(session, "Reloj", "ms-clock:")?,
         DockAction::Trash => open_place(session, "Papelera", "shell:RecycleBinFolder")?,
