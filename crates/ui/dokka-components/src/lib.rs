@@ -11,6 +11,7 @@ pub mod page_dots;
 pub mod popup_panel;
 pub mod preview_card;
 pub mod search_field;
+pub mod search_panel;
 pub mod settings_list;
 pub mod slider;
 pub mod tooltip;

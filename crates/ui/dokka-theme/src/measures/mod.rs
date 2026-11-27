@@ -8,6 +8,7 @@ pub mod music_panel;
 pub mod nav_pill;
 pub mod network_language;
 pub mod popup;
+pub mod search;
 pub mod settings;
 pub mod tooltip;
 pub mod volume;
