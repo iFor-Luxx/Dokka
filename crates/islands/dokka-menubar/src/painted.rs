@@ -13,7 +13,7 @@ use dokka_components::language_panel::LanguageHit;
 use dokka_components::music_panel::MusicTrack;
 use dokka_components::network_panel::NetworkHit;
 use dokka_components::volume_panel::VolumePanelHit;
-use dokka_model::{MenubarPreferences, NetworkKind, TrayItemId};
+use dokka_model::{AudioOutput, MenubarPreferences, NetworkKind, TrayItemId};
 use dokka_scene::Bitmap;
 
 use super::logic::TrayKind;
@@ -41,6 +41,7 @@ pub struct MenubarPainted {
     pub volume_level: f32,
     pub volume_muted: bool,
     pub volume_hovered: Option<VolumePanelHit>,
+    pub audio_outputs: Vec<AudioOutput>,
     pub network_kind: NetworkKind,
     pub network_name: String,
     pub network_online: bool,
@@ -79,6 +80,7 @@ impl PartialEq for MenubarPainted {
             && self.volume_level == other.volume_level
             && self.volume_muted == other.volume_muted
             && self.volume_hovered == other.volume_hovered
+            && self.audio_outputs == other.audio_outputs
             && self.network_kind == other.network_kind
             && self.network_name == other.network_name
             && self.network_online == other.network_online

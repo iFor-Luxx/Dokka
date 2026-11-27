@@ -14,10 +14,20 @@ use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
 
 /// Dibuja y ajusta la vigilancia del cursor: solo suena con panel.
+/// También fija si el auto-ocultado debe esperar (menú, vista o Launchpad)
+/// y, al cerrar algo con el cursor fuera, confirma con el cursor real.
 pub(crate) fn render_and_watch(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
+    let busy =
+        session.dock.is_menu_open() || session.previews.has_panel() || session.launchpad.is_open();
+    session.dock.set_hide_busy(busy);
+    // Al cerrar con el cursor fuera, el aviso de salida pudo perderse con el
+    // menú abierto: el cursor real manda, sin sondeo continuo en reposo.
+    if !busy && surface.cursor_over_dock().is_none() {
+        session.dock.note_cursor_inside(false);
+    }
     crate::session_render::render(session, surface)?;
     surface.set_preview_watch(session.previews.has_panel());
     Ok(())

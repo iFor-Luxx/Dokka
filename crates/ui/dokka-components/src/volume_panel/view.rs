@@ -1,47 +1,68 @@
+use dokka_model::AudioOutput;
 use dokka_scene::{Divider, Overlay, Panel, Rect, Size};
 use dokka_theme::{Theme, volume as measures};
 
 use super::knob::slider_knob;
-use super::layout::{mute_row, separator_rect, settings_row, slider_bar, slider_touch, title_row};
-use super::rows::{row_icons, row_texts};
+use super::layout::{
+    mute_row, output_row, separator_rect, settings_row, slider_bar, slider_touch, title_row,
+    visible_count,
+};
+use super::rows::{Rows, row_icons, row_texts};
 use super::track::track_panels;
 use super::{VolumePanelHit, VolumePanelIcons, VolumePanelProps};
 
-/// Tamaño fijo del panel: un solo cristal con título, deslizador y dos filas.
-pub fn volume_panel_size() -> Size {
+/// Tamaño del panel para estas salidas (sin ninguna, el compacto de antes).
+pub fn volume_panel_size(output_count: usize) -> Size {
     Size {
         width: measures::PANEL_WIDTH,
-        height: measures::panel_height(),
+        height: measures::panel_height(output_count),
     }
 }
 
 /// Un solo cristal oscuro Tahoe: título con porcentaje, barra fina con
-/// tirador entre dos altavoces, línea, silenciar, línea y ajustes.
-/// `tiles` vacío y cantidad constante: dos planos, dos líneas, un punto,
-/// cuatro textos y cuatro iconos.
+/// tirador entre dos altavoces, sección de salidas si hay, línea,
+/// silenciar, línea y ajustes.
 pub fn volume_panel(
     theme: &Theme,
     icons: &VolumePanelIcons,
     bounds: Rect,
     props: &VolumePanelProps,
+    outputs: &[AudioOutput],
 ) -> Overlay {
     let title = title_row(bounds);
     let touch = slider_touch(bounds);
     let bar = slider_bar(touch);
-    let mute = mute_row(bounds);
-    let settings = settings_row(bounds);
+    let mute = mute_row(bounds, outputs);
+    let settings = settings_row(bounds, outputs);
     let flats = track_panels(theme, bar, props);
+    let rows = Rows {
+        bounds,
+        title,
+        touch,
+        mute,
+        settings,
+    };
     Overlay {
         panel: glass(theme, bounds),
         tiles: Vec::new(),
         pill: None,
-        highlight: Some(highlight_panel(theme, mute, settings, props.hovered)),
+        highlight: Some(highlight_panel(
+            theme,
+            bounds,
+            outputs,
+            mute,
+            settings,
+            props.hovered,
+        )),
         flat_panels: vec![flats[0], flats[1]],
-        dividers: vec![separator(theme, bounds, 0), separator(theme, bounds, 1)],
+        dividers: vec![
+            separator(theme, bounds, outputs, 0),
+            separator(theme, bounds, outputs, 1),
+        ],
         dots: vec![slider_knob(theme, bar, props)],
         pointer: None,
-        texts: row_texts(theme, title, mute, settings, props).into(),
-        icons: row_icons(theme, icons, touch, mute, settings, props).into(),
+        texts: row_texts(theme, rows, outputs, props),
+        icons: row_icons(theme, icons, rows, outputs, props),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -51,9 +72,9 @@ pub fn volume_panel(
 }
 
 /// Línea fina entre secciones, con el color del cristal.
-fn separator(theme: &Theme, bounds: Rect, index: usize) -> Divider {
+fn separator(theme: &Theme, bounds: Rect, outputs: &[AudioOutput], index: usize) -> Divider {
     Divider {
-        bounds: separator_rect(bounds, index),
+        bounds: separator_rect(bounds, outputs, index),
         color: theme.tray.separator,
     }
 }
@@ -80,10 +101,12 @@ fn capped(tile: Rect, maximum: f32) -> f32 {
         .max(0.0)
 }
 
-/// Resaltado suave de silenciar o ajustes. Existe siempre, de tamaño
-/// cero si no hay nada, para no reconstruir capas.
+/// Resaltado suave de una salida, silenciar o ajustes. Existe siempre, de
+/// tamaño cero si no hay nada, para no reconstruir capas.
 fn highlight_panel(
     theme: &Theme,
+    bounds: Rect,
+    outputs: &[AudioOutput],
     mute: Rect,
     settings: Rect,
     hovered: Option<VolumePanelHit>,
@@ -101,6 +124,13 @@ fn highlight_panel(
         border: theme.tray.hover,
     };
     let row = match hovered {
+        Some(VolumePanelHit::Output(index)) => {
+            if index < visible_count(outputs) {
+                output_row(bounds, index)
+            } else {
+                return hidden;
+            }
+        }
         Some(VolumePanelHit::Mute) => mute,
         Some(VolumePanelHit::Settings) => settings,
         _ => return hidden,

@@ -4,7 +4,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use dokka_contracts::WindowSource;
-use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
+use dokka_dock::{Dock, DockTime};
 use dokka_launchpad::Launchpad;
 use dokka_menubar::Menubar;
 use dokka_model::{AppId, Preferences, WindowId};
@@ -19,7 +19,7 @@ use dokka_win_apps::{
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::{SystemWindowControl, foreground_window};
 use dokka_win_media::MediaMonitor;
-use dokka_win_surface::{Surface, SurfaceOptions, local_time};
+use dokka_win_surface::local_time;
 use dokka_win_tracking::SystemWindows;
 use dokka_win_tray::TrayHost;
 
@@ -38,8 +38,10 @@ pub(crate) struct DockSession {
     pub(crate) background_host: Option<TrayHost>,
     /// Última revisión pasada a la isla; solo se pasa si cambia.
     pub(crate) background_revision: u64,
-    /// El error de arranque ya se avisó una vez.
+    /// El error de la bandeja ya se avisó una vez.
     pub(crate) background_error_logged: bool,
+    /// El error de salidas de audio ya se avisó una vez.
+    pub(crate) audio_error_logged: bool,
     pub(crate) previews: Previews,
     /// Ventana al frente en el último `Refresh`: otro primer plano también
     /// pide cerrar el panel, aunque la lista siga igual.
@@ -64,7 +66,7 @@ pub(crate) struct DockSession {
     pub(crate) recycle_bin: SystemRecycleBin,
     pub(crate) media: MediaMonitor,
     pub(crate) picker: AppPicker,
-    taskbar_hidden: bool,
+    pub(crate) taskbar_hidden: bool,
     taskbar_auto: bool,
     windows: SystemWindows,
     pub(crate) icons: IconCache,
@@ -86,6 +88,7 @@ impl DockSession {
             background_host: None,
             background_revision: 0,
             background_error_logged: false,
+            audio_error_logged: false,
             previews: Previews::new(Arc::clone(&theme)),
             foreground: None,
             launchpad: Launchpad::new(),
@@ -158,18 +161,6 @@ impl DockSession {
             || self.previews.is_waiting()
             || (self.launchpad.is_open() && self.launchpad.is_moving())
             || (self.launchpad.is_open() && self.launchpad.is_zooming())
-    }
-
-    /// Ajusta la ventana al número de iconos.
-    pub(crate) fn resize(&self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
-        let size = self.dock.surface_size(self.state.apps());
-        surface.resize(SurfaceOptions {
-            width: size.width,
-            height: size.height,
-            bottom_margin: DOCK_BOTTOM_MARGIN,
-            over_taskbar: self.taskbar_hidden,
-        })?;
-        Ok(())
     }
 
     /// Guarda si la barra está oculta; quien la cambia recoloca con `resize`.

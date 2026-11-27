@@ -6,6 +6,17 @@ pub struct VolumeState {
     pub is_muted: bool,
 }
 
+/// Salida de audio activa (punto de render).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AudioOutput {
+    /// Identificador del punto (`IMMDevice::GetId`).
+    pub id: String,
+    /// Nombre descriptivo (`PKEY_Device_FriendlyName`).
+    pub name: String,
+    /// `true` si es la predeterminada multimedia.
+    pub is_default: bool,
+}
+
 /// Cómo está conectado el equipo.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NetworkKind {

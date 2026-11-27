@@ -5,3 +5,4 @@
 **No hace:** no cambia el estado, no habla con Windows, no dibuja. No depende de ningún otro crate.
 
 También define las preferencias del usuario (`Preferences`) y un icono de la bandeja (`TrayItem`).
+El volumen trae además la salida activa (`AudioOutput`).

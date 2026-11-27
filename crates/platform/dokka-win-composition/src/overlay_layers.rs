@@ -29,8 +29,8 @@ pub(crate) struct OverlayLayers {
     /// Panel con el que se creó la píldora, si la hay.
     pill_style: Option<Panel>,
     pointer: Option<PointerLayer>,
-    /// Altura con la que se creó la punta, si la hay.
-    pointer_style: Option<f32>,
+    /// Altura y lado con los que se creó la punta, si la hay.
+    pointer_style: Option<(f32, dokka_scene::PointerSide)>,
     highlight: Option<PanelLayer>,
     /// Estilo con el que se creó el resaltado, si lo hay.
     highlight_style: Option<Panel>,

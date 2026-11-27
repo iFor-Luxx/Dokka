@@ -46,7 +46,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 
 | Archivo | Enganche |
 |---|---|
-| `volume.rs` | `open_volume` (mide y coloca), `set_volume`, gesto de botón abajo y arrastre del deslizador con `VolumeSetLevel` en vivo |
+| `volume.rs` | `open_volume` (mide y coloca), `set_volume`, `set_audio_outputs` (recoloca el alto), gesto de botón abajo y arrastre del deslizador con `VolumeSetLevel` en vivo, `ChooseOutput` por índice |
 | `network.rs` | `open_network`, `set_network`, clic en ajustes |
 | `language.rs` | `open_language`, `set_languages`, elección de idioma |
 | `music.rs` | `open_music`, `set_now_playing` (canción y carátula), botón anterior/pausa/siguiente; expone `artwork` para reutilizarla |
@@ -65,7 +65,7 @@ iconos nuevos, en un archivo propio de `dokka-icons` (no en `lucide.rs`, casi ll
 
 | Panel | Datos que le pasa el shell | Cómo vuelve su acción |
 |---|---|---|
-| Volumen | `VolumeState { level, is_muted }` cada `Tick` | `VolumeSetLevel(f32)` / `VolumeToggleMute` / `OpenSoundSettings` |
+| Volumen | `VolumeState` cada `Tick` y `Vec<AudioOutput>` al abrir y tras elegir | `VolumeSetLevel(f32)` / `VolumeToggleMute` / `ChooseOutput(usize)` / `OpenSoundSettings` |
 | Red | `NetworkState` cada pocos `Tick` y al abrir | `OpenNetworkSettings` |
 | Música | `NowPlayingInfo` y carátula (`artwork`) cada `Tick` | `MusicPrevious` / `MusicToggle` / `MusicNext` |
 | Idioma | `Vec<LanguageEntry>` + código (leído antes de tomar el foco) | `ChooseLanguage(id)` / `OpenLanguageSettings` |

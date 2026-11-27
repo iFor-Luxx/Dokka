@@ -13,6 +13,8 @@ pub enum MenubarAction {
     VolumeSetLevel(f32),
     VolumeToggleMute,
     OpenSoundSettings,
+    /// Elegir la salida con este índice de la lista guardada.
+    ChooseOutput(usize),
     OpenNetworkSettings,
     /// Activar este idioma en la app que estaba al frente.
     ChooseLanguage(u64),

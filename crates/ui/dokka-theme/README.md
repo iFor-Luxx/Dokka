@@ -46,11 +46,13 @@
   con icono de 28, resaltado redondeado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
-  desenfoque máximo (`ZOOM_BLUR_MAX`); `popup.rs`: reserva 420 sobre el dock, animación de paneles,
+  desenfoque máximo (`ZOOM_BLUR_MAX`); `dock.rs`: margen al borde (8 como abajo),
+franja fina de 3 al esconderse, espera de 0,6 s y deslizamiento de 0,25/0,18 s;
+`popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;
   `music_panel.rs`: cristal único de música Tahoe de 320 × 138, carátula cuadrada de 56
   con radio concéntrico (exterior menos separación), título y artista recortados y
   "Nada en reproducción" con controles atenuados, glifos Lucide blancos a 28;
-  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto; `background.rs` para el segundo plano (320 de ancho, título, filas de 34 con círculo de 26 e icono de 16, hasta diez filas y mensaje de vacío)).
+  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto; `background.rs` para el segundo plano (320 de ancho, título, filas de 34 con círculo de 26 e icono de 16, hasta diez filas y mensaje de vacío); `volume.rs` para el sonido (320 de ancho, título con porcentaje, barra fina con tirador, sección "Salida" con hasta seis filas de 34 con marca, silenciar y ajustes).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.

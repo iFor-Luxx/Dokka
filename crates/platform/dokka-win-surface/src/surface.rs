@@ -1,14 +1,16 @@
 use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::WindowsAndMessaging::PostQuitMessage;
 
+use dokka_model::DockPosition;
+
 use crate::SurfaceError;
 use crate::create_window::{
     create_launchpad_window, create_menubar_window, create_preview_window, create_settings_window,
     create_window,
 };
-use crate::place_window::{fullscreen_size, place_at_bottom_center, place_fullscreen};
+use crate::place_window::{fullscreen_size, place_dock_window, place_fullscreen};
 
-/// Medidas lógicas de una superficie anclada abajo y centrada.
+/// Medidas lógicas de la superficie del dock, anclada a su borde.
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceOptions {
     pub width: f32,
@@ -16,6 +18,9 @@ pub struct SurfaceOptions {
     pub bottom_margin: f32,
     /// Con `true` usa el monitor completo; si no, el área de trabajo.
     pub over_taskbar: bool,
+    pub position: DockPosition,
+    /// 0 visible, 1 escondido: desplaza la ventana hacia fuera.
+    pub hide: f32,
 }
 
 /// Referencia a la ventana para otras piezas de `platform`.
@@ -85,7 +90,7 @@ pub struct Surface {
 impl Surface {
     pub fn create(options: SurfaceOptions) -> Result<Self, SurfaceError> {
         let window = create_window(None)?;
-        let scale = place_at_bottom_center(window, options)?;
+        let scale = place_dock_window(window, options)?;
         let launchpad = create_launchpad_window()?;
         let launchpad_scale = place_fullscreen(launchpad)?;
         let launchpad_size = fullscreen_size(launchpad, launchpad_scale);
@@ -140,7 +145,7 @@ impl Surface {
     }
 
     pub fn resize(&mut self, options: SurfaceOptions) -> Result<(), SurfaceError> {
-        self.scale = place_at_bottom_center(self.window, options)?;
+        self.scale = place_dock_window(self.window, options)?;
         Ok(())
     }
 }

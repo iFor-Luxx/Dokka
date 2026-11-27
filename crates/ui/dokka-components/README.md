@@ -1,15 +1,16 @@
 # dokka-components
 
-**Hace:** componentes reutilizables de interfaz: etiqueta flotante de cristal (`tooltip`),
-fondo de paneles (`popup_panel`), calendario con su píldora de navegación (`calendar_panel`:
+**Hace:** componentes reutilizables de interfaz: etiqueta flotante de cristal (`tooltip`,
+con `tooltip_side` al lado hacia dentro para docks laterales),
+fondo de paneles (`popup_panel`, con `place_after`/`place_before` laterales), calendario con su píldora de navegación (`calendar_panel`:
 mes ya calculado, semanas, tamaño, píldora y paso entre meses compartidos por
 el dock y en la barra, con el mismo cristal claro;
 la tarjeta nunca se encoge al navegar), píldora
 segmentada (`nav_pill`: cápsula con dos chevrones Lucide y línea central, a partir
 de su rectángulo, qué lados están disponibles y el hover; sin saber qué navega),
 vistas previas con botones redondos de cerrar y fijar, menú del clic derecho
-(`menu_panel`: tamaño, `Overlay` y fila bajo un punto, con iconos Lucide de marca elegida y del chevrón
-y submenú sin punta; sin significado), cuadrícula de apps (`app_grid`: 7 columnas que empiezan arriba, iconos,
+(`menu_panel`: tamaño, `Overlay` y fila bajo un punto, con iconos Lucide de marca elegida y del chevrón,
+`menu_overlay_side` de punta lateral y submenú sin punta; sin significado), cuadrícula de apps (`app_grid`: 7 columnas que empiezan arriba, iconos,
 textos recortados con "…", mensaje de vacío centrado, resaltado y app bajo un punto), casilla de búsqueda (`search_field`:
 panel nítido, lupa Lucide reutilizable siempre a la izquierda, texto escrito a la izquierda y
 marcador "Buscar" también a la izquierda (tenue junto al cursor si hay foco), cursor vertical como
@@ -30,7 +31,8 @@ en blanco, "Nada en reproducción" con controles atenuados sin responder al golp
 canción entrega los mismos textos e iconos),
 panel de volumen (`volume_panel`: título con porcentaje a la derecha en texto
 secundario, barra fina con tirador redondo entre dos altavoces —atenuados
-con silencio—, botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+con silencio—, sección "Salida" con las salidas activas si hay, botón de
+silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
 con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
 idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),

@@ -2,4 +2,4 @@
 
 mod view;
 
-pub use view::tooltip;
+pub use view::{tooltip, tooltip_side};

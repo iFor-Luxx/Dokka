@@ -17,8 +17,19 @@ pub(crate) fn hovered_label(
         return None;
     }
     let reach = style::gap(dock) / 2.0;
+    // A lo largo del dock: x abajo, y en laterales.
+    let along = if super::is_vertical(dock) {
+        dock.cursor_y
+    } else {
+        dock.cursor_x
+    };
     let &(entry, slot) = placement.slots.iter().find(|(_, slot)| {
-        dock.cursor_x >= slot.x - reach && dock.cursor_x <= slot.x + slot.width + reach
+        let (start, end) = if super::is_vertical(dock) {
+            (slot.y - reach, slot.y + slot.height + reach)
+        } else {
+            (slot.x - reach, slot.x + slot.width + reach)
+        };
+        along >= start && along <= end
     })?;
 
     let app_name = |app: &DockApp| names.get(&app.info.id).unwrap_or(&app.info.name).to_owned();
