@@ -70,6 +70,13 @@ pub const EMPTY_TEXT: &str = "Sin resultados";
 /// Tamaño del mensaje de vacío.
 pub const EMPTY_TEXT_SIZE: f32 = 14.0;
 
+/// Sombra suave bajo la cápsula y la tarjeta: desenfoque difuso.
+pub const SHADOW_BLUR: f32 = 28.0;
+/// La sombra cae unos 8 hacia abajo, como en Tahoe.
+pub const SHADOW_OFFSET_Y: f32 = 8.0;
+/// Aire bajo el panel para que la sombra no la recorte la ventana.
+pub const SHADOW_MARGIN: f32 = 40.0;
+
 /// Lado del icono de la barra superior.
 pub const BAR_ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo Lucide de la barra: llena el lienzo de 100.
@@ -116,7 +123,8 @@ pub fn row_top(bounds: Rect, index: usize) -> f32 {
 
 /// Borde superior del buscador: centrado a lo ancho de la pantalla y separado
 /// de la barra, con la casilla al ~22% del alto del monitor. En pantallas bajas
-/// sube lo necesario para que quepan los resultados sin tapar la barra.
+/// sube lo necesario para que quepan los resultados sin tapar la barra,
+/// dejando aire para la sombra.
 pub fn spotlight_top(screen_height: f32, panel_height: f32) -> f32 {
     let min_top = bar::HEIGHT + bar::MENU_GAP;
     if screen_height.is_nan()
@@ -127,7 +135,7 @@ pub fn spotlight_top(screen_height: f32, panel_height: f32) -> f32 {
         return min_top;
     }
     let desired = screen_height * SPOTLIGHT_HEIGHT_FRACTION;
-    let max_top = screen_height - panel_height;
+    let max_top = screen_height - panel_height - SHADOW_MARGIN;
     if max_top <= min_top {
         return min_top;
     }
@@ -135,7 +143,8 @@ pub fn spotlight_top(screen_height: f32, panel_height: f32) -> f32 {
 }
 
 /// Alto de ventana necesario para dibujar el buscador en su sitio.
-/// Cubre la franja más el panel; si el monitor es bajo, no pasa de su alto.
+/// Cubre la franja más el panel y un aire para la sombra; si el monitor es
+/// bajo, no pasa de su alto.
 pub fn spotlight_window_height(screen_height: f32, panel_height: f32) -> f32 {
     if screen_height.is_nan()
         || screen_height <= 0.0
@@ -144,6 +153,6 @@ pub fn spotlight_window_height(screen_height: f32, panel_height: f32) -> f32 {
     {
         return bar::WINDOW_HEIGHT;
     }
-    let bottom = spotlight_top(screen_height, panel_height) + panel_height;
+    let bottom = spotlight_top(screen_height, panel_height) + panel_height + SHADOW_MARGIN;
     bottom.max(bar::WINDOW_HEIGHT).min(screen_height)
 }

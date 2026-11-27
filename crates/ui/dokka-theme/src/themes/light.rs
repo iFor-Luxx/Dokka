@@ -75,6 +75,7 @@ pub fn light() -> Theme {
             clear: palette::TRAY_CLEAR,
             tile: palette::TRAY_TILE,
             tile_border: border,
+            shadow: palette::SHADOW,
             tile_translucent: palette::TRAY_TILE_TRANSLUCENT,
             text: palette::INK,
             secondary: palette::TRAY_SECONDARY,

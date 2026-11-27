@@ -37,6 +37,7 @@ pub fn music_panel_panel(
             border: theme.tray.panel_border,
         },
         tiles: Vec::new(),
+        tile_shadow: None,
         pill: None,
         highlight: None,
         flat_panels: vec![artwork_panel(theme, bounds)],

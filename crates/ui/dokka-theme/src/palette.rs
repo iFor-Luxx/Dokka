@@ -144,3 +144,6 @@ pub(crate) const TRAY_PERCENT: Color = Color::rgba(30, 32, 36, 170);
 pub(crate) const HOME_LINE_FILL: Color = Color::rgba(248, 248, 250, 230);
 /// Borde fino y oscuro de la línea: la separa del fondo claro.
 pub(crate) const HOME_LINE_BORDER: Color = Color::rgba(0, 0, 0, 90);
+/// Sombra negra suave bajo las piezas del buscador: se distingue sobre
+/// fondos claros sin teñir el cristal (opacidad ~30%).
+pub(crate) const SHADOW: Color = Color::rgba(0, 0, 0, 77);

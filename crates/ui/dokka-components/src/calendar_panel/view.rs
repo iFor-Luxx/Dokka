@@ -102,6 +102,7 @@ pub fn calendar_panel(
     Overlay {
         panel: popup_panel(theme, bounds),
         tiles: Vec::new(),
+        tile_shadow: None,
         pill: Some(nav_pill_panel(theme, pill)),
         highlight: Some(nav_pill_highlight(theme, pill)),
         flat_panels: Vec::new(),

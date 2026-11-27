@@ -4,7 +4,7 @@
 
 - `palette.rs`: colores base. Único lugar con valores de color. `HOME_LINE_FILL`
   con `HOME_LINE_BORDER` dibujan la línea del dock oculto sobre fondos
-  claros y oscuros. `TRAY_TILE` y
+  claros y oscuros. `SHADOW` es la sombra negra suave del buscador. `TRAY_TILE` y
   `TRAY_TILE_TRANSLUCENT` comparten el tono neutro de `MIST` y `MIST_STRONG` con
   menos alfa para las piezas Liquid Glass, sin aclarar el resto de paneles.
 - `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
@@ -47,7 +47,8 @@
   la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560, casilla al ~22% del alto con subida en pantallas bajas,
   cápsula de 52 con lupa a 20 y cursor, tarjeta de resultados con hasta 7 filas de 44
-  con icono de 28, resaltado redondeado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
+  con icono de 28, resaltado redondeado concéntrico, "Sin resultados" y sombra
+  suave bajo ambas piezas (desenfoque, bajada y aire en `search.rs`); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `dock.rs`: margen al borde (8 como abajo;

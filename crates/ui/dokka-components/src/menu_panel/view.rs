@@ -156,6 +156,7 @@ fn overlay_inner(
         },
         highlight: Some(highlight_panel(theme, bounds, rows, highlighted)),
         tiles: Vec::new(),
+        tile_shadow: None,
         pill: None,
         flat_panels: Vec::new(),
         dividers,

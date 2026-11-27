@@ -1,4 +1,4 @@
-use crate::{Divider, Dot, Icon, Panel, Pointer, Text, Thumbnail};
+use crate::{Divider, Dot, Icon, Panel, Pointer, Shadow, Text, Thumbnail};
 
 /// Botones que deben verse por encima de una miniatura.
 #[derive(Debug, Clone, PartialEq)]
@@ -14,6 +14,9 @@ pub struct Overlay {
     pub panel: Panel,
     /// Piezas de cristal separadas (cápsulas y círculos) sobre el panel.
     pub tiles: Vec<Panel>,
+    /// Sombra suave bajo cada pieza (`tiles`), con su forma redondeada.
+    /// Solo el buscador la pide; el resto vale `None` y se ve igual que hoy.
+    pub tile_shadow: Option<Shadow>,
     /// Fondo de la píldora segmentada de navegación, sobre el panel.
     /// Su hover va en `highlight`.
     pub pill: Option<Panel>,

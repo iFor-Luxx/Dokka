@@ -50,6 +50,7 @@ pub fn volume_panel(
     Overlay {
         panel: glass(theme, bounds),
         tiles: Vec::new(),
+        tile_shadow: None,
         pill: None,
         highlight: Some(highlight_panel(
             theme,

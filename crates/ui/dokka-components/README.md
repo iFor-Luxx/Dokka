@@ -48,7 +48,7 @@ por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`; el Sonido
 y la Pantalla usan el componente `slider`, no dibujan el suyo) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado redondeado concéntrico,
-"Sin resultados" y `filter_search_order` con tildes ignoradas) y segundo plano
+sombra suave bajo ambas piezas, "Sin resultados" y `filter_search_order` con tildes ignoradas) y segundo plano
 (`background_panel`: cristal único Tahoe con título, hasta diez filas con círculo
 suave, icono real en píxeles y nombre recortado, "Sin apps en segundo plano",
 capas constantes y golpe por fila),

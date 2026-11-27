@@ -12,7 +12,8 @@ flechas), alineado a la derecha bajo el reloj; cada icono visible de la fila abr
 debajo su panel real (`volume_panel`, `network_panel`, `language_panel`,
 `music_panel`, `search_panel`, `control_center_panel`, `background_panel`), medido con su
 `<x>_size` y colocado bajo su icono sin salirse del ancho (el buscador va
-separado de la barra, centrado a lo ancho de la pantalla). `set_shown(MenubarPreferences)` elige qué iconos se ven
+separado de la barra, centrado a lo ancho de la pantalla, con sombra suave
+bajo la casilla y la tarjeta). `set_shown(MenubarPreferences)` elige qué iconos se ven
 y en qué orden: los apagados no se dibujan ni reciben clics, los demás se
 recolocan sin huecos según `order` y si estaba abierto su panel se cierra
 (también si cambia el orden con un panel abierto); el filtrado y el orden
