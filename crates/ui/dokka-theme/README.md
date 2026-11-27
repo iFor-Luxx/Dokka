@@ -56,7 +56,7 @@
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `dock.rs`: margen al borde (8 como abajo;
   0 con auto-ocultado y una app ocupando para que el píxel 0 siga dentro),
-línea de 220 × 7 a 10 del borde con toque de 320 × 24 desde el borde
+línea de 280 × 10 a 10 del borde con toque de 320 × 24 desde el borde
 y banda de retorno del borde a la barra, espera de 0,4 s
 y deslizamiento de 0,25/0,18 s;
 `popup.rs`: reserva 420 sobre el dock, animación de paneles,
