@@ -7,6 +7,7 @@ mod control_center;
 mod explorer;
 mod launchpad;
 mod lucide;
+mod menubar_tray;
 mod music;
 mod network_language;
 mod search;
@@ -42,6 +43,7 @@ pub use lucide::{
     traffic_close_icon, traffic_minimize_button, traffic_minimize_icon, traffic_zoom_button,
     traffic_zoom_icon,
 };
+pub use menubar_tray::{TRAY_GLYPH_SIDE, TrayIcons};
 pub use music::music_bar_icon;
 pub use network_language::{
     language_check_icon, network_ethernet_icon, network_offline_icon, network_other_icon,

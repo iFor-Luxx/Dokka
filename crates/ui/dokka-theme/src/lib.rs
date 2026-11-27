@@ -7,8 +7,8 @@ mod themes;
 pub mod typography;
 
 pub use measures::{
-    control_center, dock, launchpad, menu, menubar, music_panel, nav_pill, network_language, popup,
-    search, settings, tooltip, volume,
+    control_center, dock, launchpad, menu, menubar, menubar_tray, music_panel, nav_pill,
+    network_language, popup, search, settings, tooltip, volume,
 };
 pub use theme::{
     DockColors, IconColors, LaunchpadColors, MediaColors, MenuColors, MenubarColors, NavPillColors,

@@ -7,10 +7,11 @@ use dokka_scene::DRAWING_SIDE;
 
 /// Alto de la franja (28-32, como macOS).
 pub const HEIGHT: f32 = 30.0;
-/// Alto de la ventana: la franja más el hueco y el calendario colgando.
-/// El calendario de 6 semanas mide 255 (cabecera de 40, 7 filas de 29 y
-/// aire de 12): con la franja de 30 y el hueco de 6 suma 291, cabe en 300.
-pub const WINDOW_HEIGHT: f32 = 300.0;
+/// Alto de la ventana: la franja más el hueco y el panel colgando.
+/// El panel provisional de la fila derecha mide unos 420: con la franja
+/// de 30 y el hueco de 6 suma 456, cabe en 460. El calendario (291) sigue
+/// cabiendo igual.
+pub const WINDOW_HEIGHT: f32 = 460.0;
 /// Lado del icono de Dokka, Lucide a 20.
 pub const ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo: llena el lienzo de 100, fuente efectiva 20 a 20 de lado.

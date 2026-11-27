@@ -5,6 +5,7 @@ pub mod dock;
 pub mod launchpad;
 pub mod menu;
 pub mod menubar;
+pub mod menubar_tray;
 pub mod music_panel;
 pub mod nav_pill;
 pub mod network_language;

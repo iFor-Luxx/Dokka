@@ -1,12 +1,13 @@
-//! Resaltado al mover el cursor: icono, hora y píldora del calendario.
+//! Resaltado al mover el cursor: icono, hora, fila y píldora del calendario.
 
 use dokka_components::calendar_panel::calendar_hovered;
 use dokka_components::menu_panel::menu_row_at;
 
+use super::tray::tray_kind_at;
 use crate::Menubar;
 
 impl Menubar {
-    /// Actualiza el icono, la hora, la fila del menú y la píldora.
+    /// Actualiza el icono, la hora, la fila del menú, la fila y la píldora.
     pub fn pointer_moved(&mut self, x: f32, y: f32, bar_width: f32) {
         if self.menu.is_some() {
             self.move_over_menu(x, y, bar_width);
@@ -16,14 +17,20 @@ impl Menubar {
             self.move_over_calendar(x, y, bar_width);
             return;
         }
+        if self.tray.is_some() {
+            self.move_over_tray(x, y, bar_width);
+            return;
+        }
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
+        self.tray_hovered = tray_kind_at(bar_width, x, y);
     }
 
     pub fn pointer_left(&mut self) {
         self.icon_hovered = false;
         self.clock_hovered = false;
         self.nav_hovered = None;
+        self.tray_hovered = None;
         if let Some(menu) = self.menu.as_mut() {
             menu.highlighted = None;
         }
@@ -41,14 +48,22 @@ impl Menubar {
         menu.highlighted = None;
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
+        self.tray_hovered = tray_kind_at(bar_width, x, y);
     }
 
     fn move_over_calendar(&mut self, x: f32, y: f32, bar_width: f32) {
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
+        self.tray_hovered = tray_kind_at(bar_width, x, y);
         self.nav_hovered = self
             .calendar_bounds(bar_width)
             .and_then(|bounds| calendar_hovered(bounds, x, y));
+    }
+
+    fn move_over_tray(&mut self, x: f32, y: f32, bar_width: f32) {
+        self.icon_hovered = hit(x, y, &self.icon_hit());
+        self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
+        self.tray_hovered = tray_kind_at(bar_width, x, y);
     }
 }
 
