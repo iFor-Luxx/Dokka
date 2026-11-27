@@ -6,6 +6,8 @@
 `AppActions` abre como administrador y muestra el archivo en su carpeta; `RecycleBin` vacía la
 papelera con la confirmación de Windows.
 
+`VolumeControl`, `NetworkStatus` y `KeyboardLanguages` sirven a los iconos de la derecha de la barra.
+
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 
 Cambiar un contrato requiere aprobación.
