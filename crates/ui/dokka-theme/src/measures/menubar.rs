@@ -28,5 +28,5 @@ pub const MENU_X: f32 = 8.0;
 pub const HOVER_RADIUS: f32 = 8.0;
 /// Aire del resaltado alrededor del icono.
 pub const HOVER_PADDING: f32 = 4.0;
-/// Ancho del golpe de borde de la franja.
-pub const BORDER_WIDTH: f32 = 1.0;
+/// La franja no lleva borde, como en macOS.
+pub const BORDER_WIDTH: f32 = 0.0;

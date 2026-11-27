@@ -97,3 +97,7 @@ pub(crate) const TRAFFIC_MINIMIZE_SYMBOL: Color = Color::rgba(155, 98, 10, 255);
 pub(crate) const TRAFFIC_ZOOM_SYMBOL: Color = Color::rgba(23, 125, 43, 255);
 /// Puntos de las demás páginas.
 pub(crate) const LAUNCHPAD_DOT_INACTIVE: Color = Color::rgba(255, 255, 255, 110);
+
+/// Velo oscuro muy suave de la barra superior: el texto blanco se lee sobre
+/// cualquier fondo, como en macOS Tahoe.
+pub(crate) const MENUBAR_VEIL: Color = Color::rgba(0, 0, 0, 55);
