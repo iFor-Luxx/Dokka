@@ -13,15 +13,33 @@ use dokka_theme::{control_center as measures, menubar_tray};
 
 const CENTER: f32 = 50.0;
 
+/// El trazo de Lucide es fino: el mismo glifo se repite apenas desplazado en
+/// ocho direcciones para engrosarlo, sin dibujar iconos propios.
 fn glyph(icon: lucide_icons::Icon, size: f32, color: Color) -> Drawing {
+    let straight = measures::BOLD_SPREAD;
+    let diagonal = straight * std::f32::consts::FRAC_1_SQRT_2;
+    let offsets = [
+        (0.0, 0.0),
+        (straight, 0.0),
+        (-straight, 0.0),
+        (0.0, straight),
+        (0.0, -straight),
+        (diagonal, diagonal),
+        (diagonal, -diagonal),
+        (-diagonal, diagonal),
+        (-diagonal, -diagonal),
+    ];
     Drawing {
-        shapes: vec![Shape::Glyph {
-            glyph: char::from(icon),
-            x: CENTER,
-            y: CENTER,
-            size,
-            color,
-        }],
+        shapes: offsets
+            .into_iter()
+            .map(|(dx, dy)| Shape::Glyph {
+                glyph: char::from(icon),
+                x: CENTER + dx,
+                y: CENTER + dy,
+                size,
+                color,
+            })
+            .collect(),
     }
 }
 

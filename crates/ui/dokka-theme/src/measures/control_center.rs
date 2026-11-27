@@ -69,3 +69,5 @@ pub const CIRCLE_ICON_SIDE: f32 = 19.0;
 pub const TEXT_CHARACTERS: usize = 16;
 /// Tamaño del glifo Lucide: llena el lienzo de 100.
 pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
+/// Cuánto se desplazan las copias que engrosan cada glifo, en el lienzo de 100.
+pub const BOLD_SPREAD: f32 = 2.6;
