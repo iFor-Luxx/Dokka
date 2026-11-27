@@ -3,6 +3,7 @@ use std::sync::Arc;
 use dokka_scene::{Divider, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, network_language as measures};
 
+use super::layout::{code_rect, row_rect, separator_rect, settings_row, title_row};
 use super::{LanguageEntry, LanguageHit, LanguageIcons};
 
 /// Alto del panel para estos idiomas.
@@ -105,76 +106,10 @@ pub fn language_panel(
     }
 }
 
-/// Fila que hay en el punto, si es elegible.
-pub fn language_hit(
-    bounds: Rect,
-    x: f32,
-    y: f32,
-    languages: &[LanguageEntry],
-) -> Option<LanguageHit> {
-    if x < bounds.x || x >= bounds.x + bounds.width {
-        return None;
-    }
-    for (index, language) in languages.iter().enumerate() {
-        let row = row_rect(bounds, index);
-        if y >= row.y && y < row.y + row.height {
-            return Some(LanguageHit::Language(language.id));
-        }
-    }
-    let settings = settings_row(bounds, languages.len());
-    if y >= settings.y && y < settings.y + settings.height {
-        return Some(LanguageHit::Settings);
-    }
-    None
-}
-
-fn title_row(bounds: Rect) -> Rect {
-    Rect {
-        x: bounds.x,
-        y: bounds.y + measures::PADDING,
-        width: bounds.width,
-        height: measures::TITLE_HEIGHT,
-    }
-}
-
-fn row_rect(bounds: Rect, index: usize) -> Rect {
-    let title = title_row(bounds);
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: title.y
-            + title.height
-            + measures::TITLE_GAP
-            + index as f32 * (measures::ROW_HEIGHT + measures::ROW_GAP),
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::ROW_HEIGHT,
-    }
-}
-
-fn settings_row(bounds: Rect, count: usize) -> Rect {
-    let top = if count == 0 {
-        let title = title_row(bounds);
-        title.y + title.height + measures::TITLE_GAP
-    } else {
-        let last = row_rect(bounds, count - 1);
-        last.y + last.height
-    };
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: top + measures::SECTION_GAP + dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::ROW_HEIGHT,
-    }
-}
-
+/// Línea fina entre las filas y los ajustes, con el color del cristal.
 fn separator(theme: &Theme, bounds: Rect, count: usize) -> Divider {
-    let settings = settings_row(bounds, count);
     Divider {
-        bounds: Rect {
-            x: bounds.x + measures::PADDING,
-            y: settings.y - measures::SECTION_GAP,
-            width: bounds.width - measures::PADDING * 2.0,
-            height: dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        },
+        bounds: separator_rect(bounds, count),
         color: theme.tray.separator,
     }
 }
@@ -197,17 +132,6 @@ fn capped(tile: Rect, maximum: f32) -> f32 {
         .min(tile.width / 2.0)
         .min(tile.height / 2.0)
         .max(0.0)
-}
-
-/// Recuadro pequeño del código a la derecha de la fila.
-fn code_rect(bounds: Rect, index: usize, _language: &LanguageEntry) -> Rect {
-    let row = row_rect(bounds, index);
-    Rect {
-        x: row.x + row.width - measures::CODE_WIDTH,
-        y: row.y + (row.height - measures::CODE_HEIGHT) / 2.0,
-        width: measures::CODE_WIDTH,
-        height: measures::CODE_HEIGHT,
-    }
 }
 
 fn code_box(theme: &Theme, code: Rect) -> Panel {

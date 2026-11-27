@@ -3,8 +3,9 @@ use std::sync::Arc;
 use dokka_scene::{Divider, Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, volume as measures};
 
-use crate::slider::{SliderColors, SliderProps, slider_hit, slider_panels, slider_track_bounds};
+use crate::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
 
+use super::layout::{mute_row, separator_rect, settings_row, slider_touch, title_row};
 use super::{VolumePanelHit, VolumePanelIcons, VolumePanelProps};
 
 /// Tamaño fijo del panel: un solo cristal con título, cápsula y dos filas.
@@ -66,19 +67,12 @@ pub fn volume_panel(
     }
 }
 
-/// Zona tocada: silenciar, ajustes o valor sobre la cápsula.
-pub fn volume_panel_hit(bounds: Rect, x: f32, y: f32) -> Option<VolumePanelHit> {
-    if contains(mute_row(bounds), x, y) {
-        return Some(VolumePanelHit::Mute);
+/// Línea fina entre secciones, con el color del cristal.
+fn separator(theme: &Theme, bounds: Rect, index: usize) -> Divider {
+    Divider {
+        bounds: separator_rect(bounds, index),
+        color: theme.tray.separator,
     }
-    if contains(settings_row(bounds), x, y) {
-        return Some(VolumePanelHit::Settings);
-    }
-    slider_hit(slider_touch(bounds), x, y).map(VolumePanelHit::Slider)
-}
-
-fn contains(rect: Rect, x: f32, y: f32) -> bool {
-    (rect.x..rect.x + rect.width).contains(&x) && (rect.y..rect.y + rect.height).contains(&y)
 }
 
 /// Cristal único oscuro con borde fino y filo claro.
@@ -101,66 +95,6 @@ fn capped(tile: Rect, maximum: f32) -> f32 {
         .min(tile.width / 2.0)
         .min(tile.height / 2.0)
         .max(0.0)
-}
-
-fn title_row(bounds: Rect) -> Rect {
-    Rect {
-        x: bounds.x,
-        y: bounds.y + measures::PADDING,
-        width: bounds.width,
-        height: measures::TITLE_HEIGHT,
-    }
-}
-
-/// Zona de toque del deslizador, más alta que la cápsula.
-fn slider_touch(bounds: Rect) -> Rect {
-    let title = title_row(bounds);
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: title.y + title.height + measures::TITLE_GAP,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::SLIDER_ROW_HEIGHT,
-    }
-}
-
-fn mute_row(bounds: Rect) -> Rect {
-    let touch = slider_touch(bounds);
-    let top =
-        touch.y + touch.height + measures::SECTION_GAP + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: top,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::ROW_HEIGHT,
-    }
-}
-
-fn settings_row(bounds: Rect) -> Rect {
-    let mute = mute_row(bounds);
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: mute.y + mute.height + dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::ROW_HEIGHT,
-    }
-}
-
-fn separator(theme: &Theme, bounds: Rect, index: usize) -> Divider {
-    let mute = mute_row(bounds);
-    let y = if index == 0 {
-        mute.y - measures::SECTION_GAP
-    } else {
-        mute.y + mute.height
-    };
-    Divider {
-        bounds: Rect {
-            x: bounds.x + measures::PADDING,
-            y,
-            width: bounds.width - measures::PADDING * 2.0,
-            height: dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        },
-        color: theme.tray.separator,
-    }
 }
 
 /// Resaltado suave de silenciar o ajustes. Existe siempre, de tamaño

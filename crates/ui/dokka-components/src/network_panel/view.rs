@@ -3,6 +3,7 @@ use std::sync::Arc;
 use dokka_scene::{Divider, Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, network_language as measures};
 
+use super::layout::{circle_in, separator_rect, settings_row, status_row, title_row};
 use super::{NetworkHit, NetworkIcons, NetworkType};
 
 /// Alto fijo del panel de red.
@@ -112,58 +113,10 @@ pub fn network_panel(
     }
 }
 
-/// Fila de ajustes que hay en el punto, si cae en ella.
-pub fn network_hit(bounds: Rect, x: f32, y: f32) -> Option<NetworkHit> {
-    let row = settings_row(bounds);
-    if x >= row.x && x < row.x + row.width && y >= row.y && y < row.y + row.height {
-        Some(NetworkHit::Settings)
-    } else {
-        None
-    }
-}
-
-fn title_row(bounds: Rect) -> Rect {
-    Rect {
-        x: bounds.x,
-        y: bounds.y + measures::PADDING,
-        width: bounds.width,
-        height: measures::TITLE_HEIGHT,
-    }
-}
-
-fn status_row(bounds: Rect) -> Rect {
-    let title = title_row(bounds);
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: title.y + title.height + measures::TITLE_GAP,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::STATUS_HEIGHT,
-    }
-}
-
-fn settings_row(bounds: Rect) -> Rect {
-    let status = status_row(bounds);
-    let top = status.y
-        + status.height
-        + measures::SECTION_GAP
-        + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: top,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::ROW_HEIGHT,
-    }
-}
-
+/// Línea fina entre el estado y los ajustes, con el color del cristal.
 fn separator(theme: &Theme, bounds: Rect) -> Divider {
-    let settings = settings_row(bounds);
     Divider {
-        bounds: Rect {
-            x: bounds.x + measures::PADDING,
-            y: settings.y - measures::SECTION_GAP,
-            width: bounds.width - measures::PADDING * 2.0,
-            height: dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        },
+        bounds: separator_rect(bounds),
         color: theme.tray.separator,
     }
 }
@@ -186,15 +139,6 @@ fn capped(tile: Rect, maximum: f32) -> f32 {
         .min(tile.width / 2.0)
         .min(tile.height / 2.0)
         .max(0.0)
-}
-
-fn circle_in(status: Rect) -> Rect {
-    Rect {
-        x: status.x,
-        y: status.y + (status.height - measures::CIRCLE) / 2.0,
-        width: measures::CIRCLE,
-        height: measures::CIRCLE,
-    }
 }
 
 fn settings_highlight(theme: &Theme, row: Rect, highlighted: Option<NetworkHit>) -> Panel {

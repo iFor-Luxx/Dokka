@@ -6,10 +6,13 @@
 //! constante (el resaltado oculto es de tamaño cero) para no reconstruir
 //! capas.
 
+mod hit;
 mod icons;
+mod layout;
 mod props;
 mod view;
 
+pub use hit::volume_panel_hit;
 pub use icons::VolumePanelIcons;
 pub use props::{VolumePanelHit, VolumePanelProps};
-pub use view::{volume_panel, volume_panel_hit, volume_panel_size};
+pub use view::{volume_panel, volume_panel_size};
