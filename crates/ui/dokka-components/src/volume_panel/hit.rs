@@ -2,9 +2,7 @@ use dokka_model::AudioOutput;
 use dokka_scene::Rect;
 
 use super::VolumePanelHit;
-use super::layout::{
-    mute_row, output_row, settings_row, slider_area, slider_touch, visible_count,
-};
+use super::layout::{mute_row, output_row, settings_row, slider_area, slider_touch, visible_count};
 use crate::slider::{slider_hit, slider_track_bounds, slider_value_at};
 
 /// Zona tocada: salida, silenciar, ajustes o valor sobre la barra fina.

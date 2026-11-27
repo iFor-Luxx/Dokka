@@ -1,8 +1,10 @@
 use std::sync::Arc;
 
-use dokka_icons::{calendar_icon, clock_icon, explorer_icon, launchpad_icon, trash_icon};
+use dokka_icons::{
+    calendar_icon, clock_icon, explorer_icon, launchpad_icon, settings_general_icon, trash_icon,
+};
 use dokka_scene::Drawing;
-use dokka_theme::IconColors;
+use dokka_theme::Theme;
 
 use crate::Dock;
 
@@ -26,18 +28,21 @@ pub(crate) struct SystemIcons {
     pub(crate) calendar: Arc<Drawing>,
     pub(crate) clock: Arc<Drawing>,
     pub(crate) trash: Arc<Drawing>,
+    /// Engranaje blanco de Preferencias para su miniatura en el dock.
+    pub(crate) settings: Arc<Drawing>,
     pub(crate) trash_size: Option<u64>,
     pub(crate) time: DockTime,
 }
 
 impl SystemIcons {
-    pub(crate) fn new(colors: &IconColors) -> Self {
+    pub(crate) fn new(theme: &Theme) -> Self {
         Self {
-            explorer: Arc::new(explorer_icon(colors)),
-            launchpad: Arc::new(launchpad_icon(colors)),
-            calendar: Arc::new(calendar_icon(colors, 1, 1)),
-            clock: Arc::new(clock_icon(colors, 0, 0, 0)),
-            trash: Arc::new(trash_icon(colors, false)),
+            explorer: Arc::new(explorer_icon(&theme.icons)),
+            launchpad: Arc::new(launchpad_icon(&theme.icons)),
+            calendar: Arc::new(calendar_icon(&theme.icons, 1, 1)),
+            clock: Arc::new(clock_icon(&theme.icons, 0, 0, 0)),
+            trash: Arc::new(trash_icon(&theme.icons, false)),
+            settings: Arc::new(settings_general_icon(theme.settings.row_text_selected)),
             trash_size: None,
             time: DockTime::default(),
         }

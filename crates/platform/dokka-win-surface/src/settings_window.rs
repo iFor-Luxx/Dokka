@@ -6,7 +6,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::foreground::foreground_window;
-use crate::place_window::place_centered;
+use crate::place_window::{place_centered, place_centered_clamped};
 use crate::{Surface, SurfaceError, SurfaceHandle};
 
 impl Surface {
@@ -20,6 +20,15 @@ impl Surface {
             return Ok(());
         }
         self.settings_scale = place_centered(self.settings, width, height)?;
+        self.settings_placed = true;
+        Ok(())
+    }
+
+    /// Aplica un tamaño nuevo a Preferencias (zoom verde o vuelta a normal):
+    /// lo limita al área de trabajo y lo recentra sin salirse de la pantalla.
+    /// La barra lateral no se mueve; solo crece la zona de la derecha.
+    pub fn settings_apply_size(&mut self, width: f32, height: f32) -> Result<(), SurfaceError> {
+        self.settings_scale = place_centered_clamped(self.settings, width, height)?;
         self.settings_placed = true;
         Ok(())
     }

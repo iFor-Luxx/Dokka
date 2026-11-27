@@ -10,16 +10,17 @@ use super::content::{ContentScene, coming_soon, group_pieces, switch_pieces};
 
 /// Contenido de la barra de tareas: ocultar sola la barra de Windows.
 pub(crate) fn taskbar_content(theme: &Theme, settings: &Settings) -> ContentScene {
+    let width = settings.content_width();
     let tops = card_tops(SECTION_TASKBAR);
     let Some(top) = tops.into_iter().next() else {
-        return coming_soon(theme);
+        return coming_soon(theme, width);
     };
     let cards = section_cards(SECTION_TASKBAR);
     let Some(labels) = cards.into_iter().next() else {
-        return coming_soon(theme);
+        return coming_soon(theme, width);
     };
     let heights = card_heights(SECTION_TASKBAR, 0);
-    let (panel, dividers, texts) = group_pieces(theme, top, &labels, &heights, &[false]);
+    let (panel, dividers, texts) = group_pieces(theme, top, &labels, &heights, &[false], width);
     let mut flats = vec![panel];
     flats.append(&mut switch_pieces(
         theme,
@@ -27,6 +28,7 @@ pub(crate) fn taskbar_content(theme: &Theme, settings: &Settings) -> ContentScen
         &heights,
         0,
         settings.taskbar_auto(),
+        width,
     ));
     ContentScene {
         flats,

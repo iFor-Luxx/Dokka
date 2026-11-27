@@ -10,6 +10,7 @@ use dokka_components::search_panel::{SearchPanelItem, filter_search_order};
 use dokka_contracts::{AppCatalog, AppLauncher};
 use dokka_launchpad::merge_apps;
 use dokka_model::AppInfo;
+use dokka_theme::menubar;
 use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
@@ -28,7 +29,7 @@ fn search_apps(session: &mut DockSession) -> Vec<AppInfo> {
 }
 
 /// Recalcula los resultados con lo escrito; solo con el buscador abierto.
-pub(crate) fn refresh_search_results(session: &mut DockSession, surface: &Surface) {
+pub(crate) fn refresh_search_results(session: &mut DockSession, surface: &mut Surface) {
     if session.menubar.tray_kind() != Some(dokka_menubar::TrayKind::Search) {
         return;
     }
@@ -45,17 +46,22 @@ pub(crate) fn refresh_search_results(session: &mut DockSession, surface: &Surfac
         })
         .collect();
     let width = surface.menubar_width();
-    session.menubar.set_search_results(items, width);
+    let screen_height = surface.menubar_monitor_height();
+    session
+        .menubar
+        .set_search_results(items, width, screen_height);
+    let window_height = session.menubar.search_window_height(screen_height);
+    surface.menubar_set_window_height(window_height);
 }
 
 /// Letra escrita: filtra de nuevo con lo escrito.
-pub(crate) fn type_search(session: &mut DockSession, surface: &Surface, character: char) {
+pub(crate) fn type_search(session: &mut DockSession, surface: &mut Surface, character: char) {
     session.menubar.search_typed(character);
     refresh_search_results(session, surface);
 }
 
 /// Retroceso: borra y filtra de nuevo.
-pub(crate) fn erase_search(session: &mut DockSession, surface: &Surface) {
+pub(crate) fn erase_search(session: &mut DockSession, surface: &mut Surface) {
     session.menubar.search_erased();
     refresh_search_results(session, surface);
 }
@@ -96,6 +102,7 @@ pub(crate) fn launch_search_result(
     };
     let app = app.clone();
     session.menubar.close_tray();
+    surface.menubar_set_window_height(menubar::WINDOW_HEIGHT);
     surface.menubar_menu_dismissed();
     session.launcher.launch(&app)?;
     Ok(())

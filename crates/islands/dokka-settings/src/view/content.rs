@@ -32,7 +32,7 @@ pub(crate) fn content_scene(
 ) -> ContentScene {
     let selected = settings.selected();
     if !super::super::logic::has_content(selected) {
-        return coming_soon(theme);
+        return coming_soon(theme, settings.content_width());
     }
     if selected == SECTION_DOCK {
         super::dock_content::dock_content(theme, settings)
@@ -41,18 +41,17 @@ pub(crate) fn content_scene(
     } else if selected == SECTION_TASKBAR {
         super::other_content::taskbar_content(theme, settings)
     } else {
-        coming_soon(theme)
+        coming_soon(theme, settings.content_width())
     }
 }
 
 /// Tarjeta gris centrada de las secciones todavía sin ajustes.
-pub(crate) fn coming_soon(theme: &Theme) -> ContentScene {
-    let (card_x, card_top, card_width) = measures::card_bounds();
+pub(crate) fn coming_soon(theme: &Theme, width: f32) -> ContentScene {
     let panel = Panel {
         bounds: Rect {
-            x: card_x,
-            y: card_top,
-            width: card_width,
+            x: measures::CONTENT_LEFT,
+            y: measures::CARD_TOP,
+            width,
             height: measures::CARD_HEIGHT,
         },
         corner_radius: measures::CARD_RADIUS,
@@ -61,8 +60,8 @@ pub(crate) fn coming_soon(theme: &Theme) -> ContentScene {
         border: theme.settings.card_border,
     };
     let text = Text {
-        x: card_x + card_width / 2.0,
-        center_y: card_top + measures::CARD_HEIGHT / 2.0,
+        x: measures::CONTENT_LEFT + width / 2.0,
+        center_y: measures::CARD_TOP + measures::CARD_HEIGHT / 2.0,
         content: measures::CARD_TEXT.to_owned(),
         size: measures::CARD_TEXT_SIZE,
         is_bold: false,
@@ -122,18 +121,12 @@ pub(crate) fn slider_pieces(
     top: f32,
     heights: &[f32],
     index: usize,
-    value: f32,
-    neutral: f32,
-    active: bool,
+    props: &SliderProps,
+    width: f32,
 ) -> (Vec<Panel>, Vec<Text>) {
-    let area = super::super::logic::content_slider_area(top, heights, index);
+    let area = super::super::logic::content_slider_area(top, heights, index, width);
     let track = slider_track_bounds(area);
-    let props = SliderProps {
-        value,
-        neutral: Some(neutral),
-        active,
-    };
-    let panels = slider_panels(track, &props, &slider_colors(theme));
+    let panels = slider_panels(track, props, &slider_colors(theme));
     let captions = slider_captions(theme, area, track);
     (panels.into_iter().collect(), captions)
 }
@@ -145,8 +138,9 @@ pub(crate) fn switch_pieces(
     heights: &[f32],
     index: usize,
     on: bool,
+    width: f32,
 ) -> Vec<Panel> {
-    let row = super::super::logic::content_row(top, heights, index);
+    let row = super::super::logic::content_row(top, heights, index, width);
     let touch = switch_touch(row);
     let props = SwitchProps { on };
     switch_panels(theme, touch, &props).into_iter().collect()
@@ -159,12 +153,14 @@ pub(crate) fn group_pieces(
     labels: &[&'static str],
     heights: &[f32],
     dim: &[bool],
+    width: f32,
 ) -> (Panel, Vec<Divider>, Vec<Text>) {
     let owned: Vec<String> = labels.iter().map(|label| label.to_string()).collect();
     let props = SettingsGroupProps {
         top,
         rows: owned,
         heights: heights.to_vec(),
+        width,
     };
     let panel = group_panel(theme, &props);
     let dividers = group_dividers(theme, &props);

@@ -40,8 +40,8 @@ pub(crate) fn display_preferences(values: &ContentValues) -> Preferences {
 }
 
 /// Control bajo el punto en la sección elegida, si hay alguno.
-pub(crate) fn control_at(selected: usize, x: f32, y: f32) -> Option<PaintedControl> {
-    if let Some(switch) = dock_switch_at(selected, x, y) {
+pub(crate) fn control_at(selected: usize, width: f32, x: f32, y: f32) -> Option<PaintedControl> {
+    if let Some(switch) = dock_switch_at(selected, width, x, y) {
         let card = match switch {
             DockSwitch::Magnification => 0,
             DockSwitch::AutoHide => 1,
@@ -51,13 +51,13 @@ pub(crate) fn control_at(selected: usize, x: f32, y: f32) -> Option<PaintedContr
         };
         return Some(PaintedControl::DockSwitch(card));
     }
-    if let Some(row) = menubar_switch_at(selected, x, y) {
+    if let Some(row) = menubar_switch_at(selected, width, x, y) {
         return Some(PaintedControl::MenubarSwitch(row));
     }
-    if taskbar_switch_at(selected, x, y).is_some() {
+    if taskbar_switch_at(selected, width, x, y).is_some() {
         return Some(PaintedControl::TaskbarSwitch);
     }
-    match dock_slider_at(selected, x, y) {
+    match dock_slider_at(selected, width, x, y) {
         Some(SliderTarget::DockScale) => Some(PaintedControl::DockSlider(0)),
         Some(SliderTarget::DockStrength) => Some(PaintedControl::DockSlider(1)),
         None => None,
@@ -68,11 +68,12 @@ impl Settings {
     /// Resalta la fila visible, los semáforos, la píldora y el control bajo el
     /// punto. Si hay un deslizador o una fila agarrados, siguen al cursor.
     pub fn pointer_moved(&mut self, x: f32, y: f32) {
+        let width = self.content_width();
         self.set_hovered(self.filtered_at(x, y));
         self.set_traffic_hovered(Self::traffic_button_at(x, y).is_some());
         self.set_nav_hovered(self.pill_at(x, y));
         if let Some(target) = self.values().drag {
-            let value = clamped_slider_value(target, self.values(), x);
+            let value = clamped_slider_value(target, self.values(), width, x);
             self.values_mut().drag_value = value;
             self.values_mut().control = match target {
                 SliderTarget::DockScale => Some(PaintedControl::DockSlider(0)),
@@ -84,10 +85,10 @@ impl Settings {
             self.values_mut().control = if self.reorder_active() {
                 None
             } else {
-                control_at(self.selected(), x, y)
+                control_at(self.selected(), width, x, y)
             };
         } else {
-            self.values_mut().control = control_at(self.selected(), x, y);
+            self.values_mut().control = control_at(self.selected(), width, x, y);
         }
     }
 
@@ -119,7 +120,8 @@ impl Settings {
     /// la barra fuera del interruptor, recuerda la fila para reordenar.
     pub fn press(&mut self, x: f32, y: f32) -> bool {
         let selected = self.selected();
-        if let Some(target) = dock_slider_at(selected, x, y) {
+        let width = self.content_width();
+        if let Some(target) = dock_slider_at(selected, width, x, y) {
             // La cantidad atenuada no responde: pulsar no la agarra.
             if target == SliderTarget::DockStrength && !self.values().preferences.dock.magnification
             {
@@ -133,7 +135,7 @@ impl Settings {
                 }
             };
             let mut value = start;
-            if let Some(track) = drag_track(target) {
+            if let Some(track) = drag_track(target, width) {
                 let inside = x.clamp(track.x, track.x + track.width);
                 value = slider_value_at_x_for(track, inside, start);
             }
@@ -158,11 +160,12 @@ impl Settings {
     /// Suelta el botón: si había un deslizador o una fila agarrados, emite
     /// `Changed` una sola vez con el valor final; si no, resuelve el clic.
     pub fn release(&mut self, x: f32, y: f32) -> SettingsAction {
+        let width = self.content_width();
         if let Some(target) = self.values().drag {
             // Suelta fuera de la barra: se queda en el extremo más cercano.
-            let value = clamped_slider_value(target, self.values(), x);
+            let value = clamped_slider_value(target, self.values(), width, x);
             self.values_mut().drag = None;
-            self.values_mut().control = control_at(self.selected(), x, y);
+            self.values_mut().control = control_at(self.selected(), width, x, y);
             let mut preferences = self.values().preferences;
             match target {
                 SliderTarget::DockScale => {
@@ -178,7 +181,7 @@ impl Settings {
         if self.values().reorder.is_some() {
             let was_active = self.reorder_active();
             let action = self.finish_reorder();
-            self.values_mut().control = control_at(self.selected(), x, y);
+            self.values_mut().control = control_at(self.selected(), width, x, y);
             if was_active {
                 // Hubo arrastre: una sola vez y solo si cambió el orden.
                 return action.unwrap_or(SettingsAction::Stay);

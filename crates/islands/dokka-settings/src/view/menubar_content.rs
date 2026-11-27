@@ -38,9 +38,10 @@ pub(crate) fn menubar_content(
     settings: &Settings,
     grip: &Arc<Drawing>,
 ) -> ContentScene {
+    let width = settings.content_width();
     let values = settings.values();
     let Some(top) = menubar_top() else {
-        return coming_soon(theme);
+        return coming_soon(theme, width);
     };
     let bottom = menubar_bottom(top);
     let shown = super::super::pointer::display_preferences(values);
@@ -62,6 +63,7 @@ pub(crate) fn menubar_content(
         top,
         rows: owned,
         heights: heights.clone(),
+        width,
     };
     let card = group_panel(theme, &props);
     let dividers = group_dividers(theme, &props);
@@ -73,7 +75,7 @@ pub(crate) fn menubar_content(
             bounds: Rect {
                 x: measures::CONTENT_LEFT,
                 y,
-                width: measures::CONTENT_WIDTH,
+                width,
                 height: measures::CONTENT_ROW_HEIGHT,
             },
             corner_radius: measures::REORDER_HIGHLIGHT_RADIUS,
@@ -111,7 +113,7 @@ pub(crate) fn menubar_content(
         let row = Rect {
             x: measures::CONTENT_LEFT,
             y: visual,
-            width: measures::CONTENT_WIDTH,
+            width,
             height: measures::CONTENT_ROW_HEIGHT,
         };
         // Agarre a la izquierda en color secundario.

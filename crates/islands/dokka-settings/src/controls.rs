@@ -21,7 +21,7 @@ impl Settings {
                 dokka_components::window_controls::TrafficButton::Minimize => {
                     SettingsAction::Minimize
                 }
-                dokka_components::window_controls::TrafficButton::Zoom => SettingsAction::Stay,
+                dokka_components::window_controls::TrafficButton::Zoom => SettingsAction::Zoom,
             };
         }
         if Self::search_hit_at(x, y) {
@@ -37,8 +37,9 @@ impl Settings {
             return SettingsAction::Stay;
         }
         let selected = self.selected();
+        let width = self.content_width();
         // Interruptores del Dock: hábitos y ocultado.
-        if let Some(switch) = dock_switch_at(selected, x, y) {
+        if let Some(switch) = dock_switch_at(selected, width, x, y) {
             let mut preferences = self.values().preferences;
             match switch {
                 DockSwitch::Magnification => {
@@ -62,7 +63,7 @@ impl Settings {
         }
         // Interruptores de la barra superior: la fila de arriba es la de más a
         // la izquierda, así que el interruptor sigue al icono en su orden.
-        if let Some(row) = menubar_switch_at(selected, x, y) {
+        if let Some(row) = menubar_switch_at(selected, width, x, y) {
             let order = self.values().preferences.menubar.order;
             let Some(item) = order.get(row.min(6)).copied() else {
                 return SettingsAction::Stay;
@@ -73,25 +74,25 @@ impl Settings {
             return SettingsAction::Changed(preferences);
         }
         // Interruptor de la barra de tareas.
-        if taskbar_switch_at(selected, x, y).is_some() {
+        if taskbar_switch_at(selected, width, x, y).is_some() {
             let auto = !self.values().taskbar_auto;
             self.values_mut().taskbar_auto = auto;
             return SettingsAction::TaskbarAuto(auto);
         }
         // Segmentado de posición: el componente da el índice, la isla traduce.
-        if let Some(index) = dock_segment_at(selected, x, y) {
+        if let Some(index) = dock_segment_at(selected, width, x, y) {
             let mut preferences = self.values().preferences;
             preferences.dock.position = position_from_index(index);
             self.values_mut().preferences = preferences;
             return SettingsAction::Changed(preferences);
         }
         // Clic en un deslizador sin arrastrar: salta hasta el punto y emite.
-        if let Some(target) = dock_slider_at(selected, x, y) {
+        if let Some(target) = dock_slider_at(selected, width, x, y) {
             if target == SliderTarget::DockStrength && !self.values().preferences.dock.magnification
             {
                 return SettingsAction::Stay;
             }
-            let value = clamped_slider_value(target, self.values(), x);
+            let value = clamped_slider_value(target, self.values(), width, x);
             let mut preferences = self.values().preferences;
             match target {
                 SliderTarget::DockScale => {

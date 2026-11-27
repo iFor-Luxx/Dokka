@@ -22,15 +22,3 @@ pub use view::{
     slider_tick_bounds, slider_tick_panel, slider_track_bounds, slider_track_panel,
     slider_value_at,
 };
-
-mod icons;
-mod props;
-mod view;
-
-pub use icons::SliderIcons;
-pub use props::{SliderColors, SliderProps};
-pub use view::{
-    slider_fill_panel, slider_hit, slider_knob_bounds, slider_knob_panel, slider_panels,
-    slider_tick_bounds, slider_tick_panel, slider_track_bounds, slider_track_panel,
-    slider_value_at,
-};

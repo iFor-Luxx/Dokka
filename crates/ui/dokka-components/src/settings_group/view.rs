@@ -2,7 +2,7 @@ use dokka_scene::{Divider, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
 use super::SettingsGroupProps;
-use super::layout::{divider_rect, group_height, group_panel_bounds, row_bounds};
+use super::layout::{divider_rect_for, group_height, group_panel_bounds_for, row_bounds_for};
 
 /// Radio recortado para no superar la mitad del lado menor.
 fn capped(maximum: f32, width: f32, height: f32) -> f32 {
@@ -15,7 +15,7 @@ fn capped(maximum: f32, width: f32, height: f32) -> f32 {
 /// Tarjeta clara con el mismo radio y borde de siempre: cambiar de sección
 /// solo cambia la cantidad de planos, no su estilo.
 pub fn group_panel(theme: &Theme, props: &SettingsGroupProps) -> Panel {
-    let bounds = group_panel_bounds(props.top, group_height(&props.heights));
+    let bounds = group_panel_bounds_for(props.top, group_height(&props.heights), props.width);
     Panel {
         bounds,
         corner_radius: capped(measures::CARD_RADIUS, bounds.width, bounds.height),
@@ -30,7 +30,7 @@ pub fn group_dividers(theme: &Theme, props: &SettingsGroupProps) -> Vec<Divider>
     let last = props.rows.len().saturating_sub(1);
     (0..last)
         .map(|index| Divider {
-            bounds: divider_rect(props.top, &props.heights, index),
+            bounds: divider_rect_for(props.top, &props.heights, index, props.width),
             color: theme.settings.divider,
         })
         .collect()
@@ -44,7 +44,7 @@ pub fn group_labels(theme: &Theme, props: &SettingsGroupProps, dim: &[bool]) -> 
         .iter()
         .enumerate()
         .map(|(index, label)| {
-            let row: Rect = row_bounds(props.top, &props.heights, index);
+            let row: Rect = row_bounds_for(props.top, &props.heights, index, props.width);
             let dimmed = dim.get(index).copied().unwrap_or(false);
             Text {
                 x: row.x + measures::CONTENT_PADDING,

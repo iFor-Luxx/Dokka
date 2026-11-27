@@ -81,6 +81,44 @@ impl Surface {
         }
     }
 
+    /// Alto lógico del monitor principal.
+    pub fn menubar_monitor_height(&self) -> f32 {
+        if self.menubar.is_invalid() {
+            return 0.0;
+        }
+        let scale = self.menubar_scale.max(1.0);
+        match primary_monitor_rect(self.menubar) {
+            Ok(area) => (area.bottom - area.top) as f32 / scale,
+            Err(_) => 0.0,
+        }
+    }
+
+    /// Cambia el alto de la ventana sin tocar la reserva de la barra.
+    pub fn menubar_set_window_height(&mut self, window_height: f32) {
+        if self.menubar.is_invalid() {
+            return;
+        }
+        let scale = self.menubar_scale.max(1.0);
+        let monitor = match primary_monitor_rect(self.menubar) {
+            Ok(area) => area,
+            Err(_) => return,
+        };
+        let window_px = (window_height.max(1.0) * scale).round() as i32;
+        // SAFETY: la ventana es propia; se mantiene topmost sin activarse y sin
+        // forzar su visibilidad (ante un pantalla completa sigue oculta).
+        unsafe {
+            let _ = SetWindowPos(
+                self.menubar,
+                Some(HWND_TOPMOST),
+                monitor.left,
+                monitor.top,
+                monitor.right - monitor.left,
+                window_px.max(1),
+                SWP_NOACTIVATE,
+            );
+        }
+    }
+
     /// Escala de la barra (la misma que la del dock en el principal).
     pub fn menubar_scale(&self) -> f32 {
         self.menubar_scale.max(1.0)

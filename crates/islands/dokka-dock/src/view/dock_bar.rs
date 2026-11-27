@@ -149,6 +149,9 @@ impl Dock {
             Entry::Clock => &self.icons.clock,
             Entry::Trash => &self.icons.trash,
             Entry::App(app) | Entry::Minimized(app, _) => {
+                if crate::logic::is_settings_app(app) {
+                    return Some(IconImage::Drawing(Arc::clone(&self.icons.settings)));
+                }
                 return images.get(&app.info.id).cloned().map(IconImage::Pixels);
             }
         };

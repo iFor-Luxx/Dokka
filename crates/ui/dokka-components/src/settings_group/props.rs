@@ -8,4 +8,6 @@ pub struct SettingsGroupProps {
     pub rows: Vec<String>,
     /// Alto de cada fila, en el mismo orden.
     pub heights: Vec<f32>,
+    /// Ancho de la tarjeta: el del contenido actual (crece con el zoom verde).
+    pub width: f32,
 }
