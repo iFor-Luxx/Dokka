@@ -76,7 +76,11 @@ pub const ACTIVE_SUBTITLE: &str = "Activa";
 
 /// Alto del panel de red: título, estado, línea y ajustes.
 pub fn network_height() -> f32 {
-    PADDING + TITLE_HEIGHT + TITLE_GAP + STATUS_HEIGHT + SECTION_GAP
+    PADDING
+        + TITLE_HEIGHT
+        + TITLE_GAP
+        + STATUS_HEIGHT
+        + SECTION_GAP
         + tray_glass::SEPARATOR_HEIGHT
         + ROW_HEIGHT
         + PADDING
@@ -85,7 +89,11 @@ pub fn network_height() -> f32 {
 /// Alto del panel de idioma: título, una fila compacta por idioma y ajustes.
 pub fn language_height(count: usize) -> f32 {
     let rows = count as f32 * ROW_HEIGHT + (count as f32 - 1.0).max(0.0) * ROW_GAP;
-    PADDING + TITLE_HEIGHT + TITLE_GAP + rows + SECTION_GAP
+    PADDING
+        + TITLE_HEIGHT
+        + TITLE_GAP
+        + rows
+        + SECTION_GAP
         + tray_glass::SEPARATOR_HEIGHT
         + ROW_HEIGHT
         + PADDING

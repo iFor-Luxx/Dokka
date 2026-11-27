@@ -4,8 +4,8 @@
 //! de 100 (centrado en 50, 50). El tamaño del glifo sale de
 //! `dokka-theme/src/measures/control_center.rs` y es el lienzo completo,
 //! así que la fuente efectiva iguala al lado con que se muestra el icono
-//! (20); el color lo pone quien llama (blanco de la barra u oscuro de las
-//! tarjetas claras). El icono de la barra usa la medida de la barra superior.
+//! (20); el color lo pone quien llama (blanco de cristal o azul Tahoe para
+//! la cápsula activa). El icono de la barra usa la medida de la barra superior.
 
 use dokka_scene::{Color, Drawing, Shape};
 use dokka_theme::{control_center as measures, menubar};

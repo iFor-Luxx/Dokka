@@ -141,7 +141,9 @@ fn row_rect(bounds: Rect, index: usize) -> Rect {
     let title = title_row(bounds);
     Rect {
         x: bounds.x + measures::PADDING,
-        y: title.y + title.height + measures::TITLE_GAP
+        y: title.y
+            + title.height
+            + measures::TITLE_GAP
             + index as f32 * (measures::ROW_HEIGHT + measures::ROW_GAP),
         width: bounds.width - measures::PADDING * 2.0,
         height: measures::ROW_HEIGHT,
@@ -220,12 +222,7 @@ fn code_box(theme: &Theme, code: Rect) -> Panel {
 
 /// Marca de verificación a la izquierda solo en el idioma activo.
 /// Existe siempre (lado cero si no está activo) para no reconstruir capas.
-fn check_icon(
-    theme: &Theme,
-    icons: &LanguageIcons,
-    row: Rect,
-    language: &LanguageEntry,
-) -> Icon {
+fn check_icon(theme: &Theme, icons: &LanguageIcons, row: Rect, language: &LanguageEntry) -> Icon {
     if language.is_active {
         Icon {
             x: row.x,
@@ -254,7 +251,12 @@ fn highlight_panel(
     highlighted: Option<LanguageHit>,
 ) -> Panel {
     let hidden = Panel {
-        bounds: Rect { x: 0.0, y: 0.0, width: 0.0, height: 0.0 },
+        bounds: Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 0.0,
+            height: 0.0,
+        },
         corner_radius: 0.0,
         border_width: 0.0,
         tint: theme.tray.hover,
@@ -281,7 +283,12 @@ fn highlight_panel(
 
 /// Código corto del idioma para su recuadro (dos primeras letras).
 fn language_code(language: &LanguageEntry) -> String {
-    language.name.chars().take(2).collect::<String>().to_uppercase()
+    language
+        .name
+        .chars()
+        .take(2)
+        .collect::<String>()
+        .to_uppercase()
 }
 
 fn short(name: &str) -> String {

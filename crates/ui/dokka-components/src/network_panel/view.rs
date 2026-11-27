@@ -143,7 +143,9 @@ fn status_row(bounds: Rect) -> Rect {
 
 fn settings_row(bounds: Rect) -> Rect {
     let status = status_row(bounds);
-    let top = status.y + status.height + measures::SECTION_GAP
+    let top = status.y
+        + status.height
+        + measures::SECTION_GAP
         + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
     Rect {
         x: bounds.x + measures::PADDING,

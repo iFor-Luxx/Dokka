@@ -125,8 +125,8 @@ fn slider_touch(bounds: Rect) -> Rect {
 
 fn mute_row(bounds: Rect) -> Rect {
     let touch = slider_touch(bounds);
-    let top = touch.y + touch.height + measures::SECTION_GAP
-        + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
+    let top =
+        touch.y + touch.height + measures::SECTION_GAP + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
     Rect {
         x: bounds.x + measures::PADDING,
         y: top,
@@ -147,7 +147,11 @@ fn settings_row(bounds: Rect) -> Rect {
 
 fn separator(theme: &Theme, bounds: Rect, index: usize) -> Divider {
     let mute = mute_row(bounds);
-    let y = if index == 0 { mute.y - measures::SECTION_GAP } else { mute.y + mute.height };
+    let y = if index == 0 {
+        mute.y - measures::SECTION_GAP
+    } else {
+        mute.y + mute.height
+    };
     Divider {
         bounds: Rect {
             x: bounds.x + measures::PADDING,
@@ -168,7 +172,12 @@ fn highlight_panel(
     hovered: Option<VolumePanelHit>,
 ) -> Panel {
     let hidden = Panel {
-        bounds: Rect { x: 0.0, y: 0.0, width: 0.0, height: 0.0 },
+        bounds: Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 0.0,
+            height: 0.0,
+        },
         corner_radius: 0.0,
         border_width: 0.0,
         tint: theme.tray.hover,

@@ -60,7 +60,11 @@ pub fn calendar_panel(
             + (f32::from(row) + 0.5) * measures::CALENDAR_CELL_HEIGHT
     };
 
-    let main = if dark { theme.tray.text } else { theme.panel.text };
+    let main = if dark {
+        theme.tray.text
+    } else {
+        theme.panel.text
+    };
     let faint = if dark {
         theme.tray.secondary
     } else {

@@ -27,14 +27,15 @@ y cristal único de música Tahoe (`music_panel`: carátula cuadrada con título
 con "…", controles grandes de anterior, pausa/reproducir y siguiente con los glifos Lucide
 en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
 canción entrega los mismos textos e iconos),
-panel de volumen (`volume_panel`: un solo cristal con título, cápsula ancha con el número
-en gris dentro a la izquierda y tirador blanco, líneas finas, silenciar y ajustes),
-panel de red (`network_panel`: cristal único con título, fila de estado con círculo,
-tipo y nombre en gris, línea y ajustes), lista de
-idiomas (`language_panel`: cristal único con título, filas compactas con marca
-de verificación Lucide en el activo y código en recuadro, línea y ajustes),
-centro de control (`control_center_panel`: tarjetas de red, volumen con
-deslizador y música más botones redondos, sin resaltar) y buscador Spotlight
+panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
+botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
+idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
+"Activa", resaltado suave y ajustes aparte, sin marca),
+centro de control (`control_center_panel`: rejilla Tahoe de cuatro columnas
+con cápsula de red y dos círculos blancos, música de dos por dos, cápsula de
+Preferencias con un círculo y Sonido a todo lo ancho, en cristal translúcido
+por zonas: `capsules`, `music`, `circles`, `slider`) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado en cápsula translúcida,
 "Sin resultados" y `filter_search_order` con tildes ignoradas).
