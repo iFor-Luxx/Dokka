@@ -4,7 +4,7 @@
 Lucide de Dokka a 20, nombre de la app activa en negrita a la izquierda, fila
 de iconos pulsables a la izquierda de la fecha (de derecha a izquierda:
 centro de control, buscar, idioma como texto de código, música, red y volumen)
-y fecha con hora a la derecha. El clic en el icono abre debajo el mismo menú
+y la hora a la derecha. El clic en el icono abre debajo el mismo menú
 de cristal del dock (`menu_panel` sin punta); el clic en la hora abre
 debajo el mismo calendario del dock (`calendar_panel` con su píldora de
 flechas), alineado a la derecha bajo el reloj; cada icono de la fila abre
