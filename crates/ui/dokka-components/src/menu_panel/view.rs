@@ -3,9 +3,8 @@ use dokka_scene::{Divider, Overlay, Panel, Pointer, Rect, Size, Text};
 use dokka_theme::{Theme, menu as measures, typography};
 
 use super::MenuRow;
-use super::check::MenuChecks;
+use super::check::{MenuChecks, check_icons};
 use super::chevron::{MenuChevrons, chevron_icons};
-use super::leading::leading_icons;
 
 /// Alto del panel para estas filas.
 pub fn menu_size(rows: &[MenuRow]) -> Size {
@@ -91,9 +90,17 @@ fn overlay_inner(
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
-    // Una sola columna a la izquierda: todos los textos empiezan igual,
-    // tengan o no icono o marca.
-    let label_x = bounds.x + measures::PADDING + measures::ICON_COLUMN;
+    let with_checks = rows
+        .iter()
+        .any(|row| matches!(row, MenuRow::Item(item) if item.checked));
+    let label_x = bounds.x
+        + measures::PADDING
+        + measures::TEXT_INSET
+        + if with_checks {
+            measures::CHECK_WIDTH
+        } else {
+            0.0
+        };
     let mut top = bounds.y + measures::PADDING;
     let mut texts = Vec::new();
     let mut dividers = Vec::new();
@@ -140,10 +147,8 @@ fn overlay_inner(
         pointer,
         texts,
         icons: {
-            // Primeros los de la izquierda en orden de fila, luego los
-            // chevrones: el número de capas no cambia al resaltar.
-            let mut icons = leading_icons(theme, checks, bounds, rows, highlighted);
-            icons.extend(chevron_icons(theme, chevrons, bounds, rows, highlighted));
+            let mut icons = chevron_icons(theme, chevrons, bounds, rows, highlighted);
+            icons.extend(check_icons(theme, checks, bounds, rows, highlighted));
             icons
         },
         thumbnails: Vec::new(),
