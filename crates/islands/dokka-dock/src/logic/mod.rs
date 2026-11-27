@@ -22,7 +22,7 @@ pub(crate) use clock_label::clock_label;
 pub use decide_click::{ClickAction, DockAction};
 pub(crate) use home_line::{home_line, home_touch, return_band};
 pub use hover_target::{HoverKind, HoverTarget};
-pub(crate) use hovered_label::hovered_label;
+pub(crate) use hovered_label::{hovered_label, hovered_slot};
 pub(crate) use list_entries::{Entry, list_entries};
 pub use menu::MenuAction;
 pub(crate) use menu::OpenMenu;

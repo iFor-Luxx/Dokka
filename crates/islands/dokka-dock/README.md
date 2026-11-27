@@ -16,7 +16,11 @@ derecha del separador, con el engranaje blanco de ajustes como insignia y nombre
 y con menú propio (ventana al frente + "Cerrar ventana" que solo la oculta).
 La ventana reserva a cada lado sitio para el menú con su submenú a la derecha
 (`menu::WIDTH + menu::SUBMENU_GAP`, o la lupa si pide más); la zona activa sigue
-cubriendo solo la barra más la lupa para no tapar clics a otras apps.
+cubriendo solo la barra más la lupa para no tapar clics a otras apps. La etiqueta
+lateral tiene su propia zona (`label_area`): solo en vertical y mientras se
+muestra, desde el borde interior del hueco hasta el ancho reservado
+(`tooltip::RESERVED_WIDTH`), con el alto reservado (`tooltip::RESERVED_HEIGHT`)
+centrado en el hueco; abajo la ventana queda idéntica.
 El contenido vive en `logic/dock_menu.rs` y el paso entre madre e hijo en `logic/submenu.rs`;
 recibe si la barra está oculta o en automático como dato. Los dos chevrones y las dos marcas
 de opción elegida del menú (normal y resaltado) se crean una vez con los colores del tema

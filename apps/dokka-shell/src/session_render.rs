@@ -55,6 +55,7 @@ pub(crate) fn render(
             Some(session.dock.active_area(session.state.apps())),
             session.dock.menu_area(),
             session.dock.submenu_area(),
+            session.dock.label_area(session.state.apps()),
             (!session.dock.is_menu_open())
                 .then(|| session.previews.area())
                 .flatten(),
