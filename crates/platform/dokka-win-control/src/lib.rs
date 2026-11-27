@@ -1,6 +1,7 @@
 //! Acciones sobre ventanas ya abiertas y sobre el escritorio.
 #![allow(unsafe_code)]
 
+mod brightness;
 mod control_window;
 mod front_window;
 mod keyboard;
@@ -9,6 +10,8 @@ mod network;
 mod shutdown_dialog;
 mod start_menu;
 mod taskbar;
+
+pub use brightness::SystemBrightness;
 
 pub use control_window::{SystemWindowControl, foreground_window, window_rect};
 pub use keyboard::SystemKeyboard;

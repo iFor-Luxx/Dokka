@@ -9,11 +9,7 @@ use crate::dock_session::DockSession;
 /// Pide a la ventana que se cierre como su propia X.
 /// Si ya no existe, no hace nada: el refresco cerrará el panel.
 /// Preferencias solo se oculta y limpia su navegación.
-pub(crate) fn close_preview_window(
-    session: &mut DockSession,
-    surface: &mut Surface,
-    window: u64,
-) {
+pub(crate) fn close_preview_window(session: &mut DockSession, surface: &mut Surface, window: u64) {
     if session.is_settings_window_id(window) {
         crate::settings::close_settings(session, surface);
         return;

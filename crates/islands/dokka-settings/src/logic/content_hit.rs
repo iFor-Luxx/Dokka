@@ -3,7 +3,7 @@
 //! Usa la misma geometría que el dibujo para que el clic, el hover y el
 //! arrastre caigan donde se ve cada control.
 
-use super::content::{card_heights, card_tops, content_segmented, content_slider_area, content_switch};
+use super::content::{card_tops, content_segmented, content_slider_area, content_switch};
 use super::sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
 
 /// Deslizador arrastrado, si hay alguno a medias.

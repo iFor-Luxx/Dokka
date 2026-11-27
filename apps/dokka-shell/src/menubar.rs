@@ -84,13 +84,23 @@ pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) 
         session.menubar.close_tray();
         surface.menubar_menu_closed();
     }
+    reset_search_window(session, surface);
 }
 
-/// Datos de los paneles en cada `Tick`: volumen y música siempre; red e
-/// idioma cada pocos `Tick` y con la fila cerrada (el idioma activo es el
-/// de la ventana al frente, antes de que la barra tome el foco).
+/// Sin el buscador abierto, la ventana vuelve a su alto para los demás paneles.
+fn reset_search_window(session: &DockSession, surface: &mut Surface) {
+    if session.menubar.tray_kind() != Some(dokka_menubar::TrayKind::Search) {
+        surface.menubar_set_window_height(menubar::WINDOW_HEIGHT);
+    }
+}
+
+/// Datos de los paneles en cada `Tick`: volumen, brillo (solo el último valor
+/// conocido, sin DDC) y música siempre; red e idioma cada pocos `Tick` y con
+/// la fila cerrada (el idioma activo es el de la ventana al frente, antes de
+/// que la barra tome el foco).
 fn refresh_panels(session: &mut DockSession) {
     crate::menubar_volume::refresh_volume(session);
+    crate::menubar_brightness::refresh_brightness(session);
     crate::menubar_music::refresh_music(session);
     crate::menubar_background::refresh_background_apps(session);
     session.menubar.tick_search_cursor();
@@ -192,10 +202,11 @@ fn click_menubar(
     y: f32,
 ) -> Result<(), Box<dyn Error>> {
     let width = surface.menubar_width();
+    let screen_height = surface.menubar_monitor_height();
     let was_menu = session.menubar.is_menu_open();
     let was_calendar = session.menubar.is_calendar_open();
     let was_tray = session.menubar.is_tray_open();
-    let chosen = session.menubar.click(x, y, width);
+    let chosen = session.menubar.click(x, y, width, screen_height);
     if let Some(action) = chosen {
         return run_menubar_action(session, surface, action);
     }
@@ -203,6 +214,9 @@ fn click_menubar(
         match session.menubar.tray_kind() {
             Some(dokka_menubar::TrayKind::Volume) => {
                 crate::menubar_volume::refresh_audio_outputs(session);
+            }
+            Some(dokka_menubar::TrayKind::ControlCenter) => {
+                crate::menubar_brightness::request_brightness(session);
             }
             Some(dokka_menubar::TrayKind::Network) => {
                 crate::menubar_network::refresh_network(session);
@@ -238,5 +252,6 @@ fn click_menubar(
     } else if was_open && !now_open {
         surface.menubar_menu_closed();
     }
+    reset_search_window(session, surface);
     Ok(())
 }

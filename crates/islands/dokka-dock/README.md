@@ -31,9 +31,12 @@ centrados, con el mismo margen, que calculan en «a lo largo / hacia dentro»
 sitio: lupa, rebote hacia dentro, puntos en el lado del borde, separador
 horizontal, etiquetas al lado hacia dentro, menús y submenús al lado
 (`logic/menu_place.rs`, sin tocar sus filas), zonas activas y cursor.
-Respeta `auto_hide` (`motion/hide.rs`: espera con retardo y deslizamiento suave;
-escondido solo deja la franja fina del borde y vuelve al tocarla, sin sondeo
-en reposo). En vertical encoge (`fit`) para caber bajo la barra superior.
+Respeta `auto_hide` (`motion/hide.rs` + `logic/home_line.rs`: solo con una
+app ocupando la pantalla principal se esconde con espera corta de 0,4 s y
+deslizamiento suave; escondido dibuja solo la línea al borde —cápsula de
+140 × 5 a 6 del borde— y vuelve al tocar su zona (180 × 28 pegada al borde),
+sin sondeo en reposo; con menú, vista previa o Launchpad no se esconde).
+En vertical la línea es vertical y encoge (`fit`) para caber.
 Si algo no puede calcularse, abajo y visible.
 Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los
 en curso para que el icono vuelva a su sitio sin pedir fotogramas

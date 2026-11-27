@@ -3,7 +3,7 @@
 //! La isla decide y dibuja; aquí solo se conecta con la plataforma y con lo
 //! que ya hace `context_menu.rs`. Abrir con el lanzador usa `SystemLauncher`
 //! con `system_place`, sin contratos nuevos. Los ajustes y las apps nuevas
-//! usan `menubar_menu_dismissed` para quedar delante; volumen y música
+//! usan `menubar_menu_dismissed` para quedar delante; volumen, brillo y música
 //! mantienen su panel abierto.
 
 use std::error::Error;
@@ -60,6 +60,9 @@ pub(crate) fn run_menubar_action(
         }
         MenubarAction::VolumeSetLevel(level) => {
             crate::menubar_volume::set_level(session, level)?;
+        }
+        MenubarAction::BrightnessSetLevel(level) => {
+            crate::menubar_brightness::set_brightness_level(session, level);
         }
         MenubarAction::VolumeToggleMute => {
             crate::menubar_volume::toggle_mute(session)?;

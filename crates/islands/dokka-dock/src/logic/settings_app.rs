@@ -8,9 +8,9 @@ use dokka_model::DockApp;
 
 /// Identidad estable de Preferencias en el dock, la misma que publica el
 /// seguimiento. No es un ejecutable real.
-pub const SETTINGS_APP_ID: &str = "dokka-preferencias";
+const SETTINGS_APP_ID: &str = "dokka-preferencias";
 
 /// `true` si esta app del dock es la ventana de Preferencias.
-pub fn is_settings_app(app: &DockApp) -> bool {
+pub(crate) fn is_settings_app(app: &DockApp) -> bool {
     app.info.id.as_str() == SETTINGS_APP_ID
 }

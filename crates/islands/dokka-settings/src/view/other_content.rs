@@ -23,7 +23,12 @@ pub(crate) fn taskbar_content(theme: &Theme, settings: &Settings) -> ContentScen
     let (panel, dividers, texts) = group_pieces(theme, top, &labels, &heights, &[false], width);
     let mut flats = vec![panel];
     flats.append(&mut switch_pieces(
-        theme, top, &heights, 0, settings.taskbar_auto(), width,
+        theme,
+        top,
+        &heights,
+        0,
+        settings.taskbar_auto(),
+        width,
     ));
     ContentScene {
         flats,

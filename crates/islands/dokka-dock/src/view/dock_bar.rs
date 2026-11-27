@@ -8,16 +8,20 @@ use dokka_scene::{Bitmap, Divider, Dot, Icon, IconImage, Panel, Rect, Scene};
 use super::dock_style as style;
 use super::minimized_window::minimized_window;
 use crate::Dock;
-use crate::logic::{Entry, hovered_label, place_dock};
+use crate::logic::{Entry, home_line, hovered_label, place_dock};
 
 impl Dock {
     /// Escena actual. Una app sin imagen muestra un cuadro neutro.
+    /// Escondido con línea solo dibuja la cápsula al borde.
     pub fn scene(
         &self,
         apps: &[DockApp],
         images: &HashMap<AppId, Arc<Bitmap>>,
         names: &HashMap<AppId, String>,
     ) -> Scene {
+        if self.hide.is_hidden() {
+            return self.line_scene(apps);
+        }
         let placement = place_dock(self, apps);
         let mut icons = Vec::with_capacity(placement.slots.len());
         let mut thumbnails = Vec::new();
@@ -152,5 +156,35 @@ impl Dock {
             }
         };
         Some(IconImage::Drawing(Arc::clone(drawing)))
+    }
+
+    /// Solo la línea al borde, con su cristal y sin iconos: la ventana recorta
+    /// el resto con la zona activa, así no tapa clics ni deja rectángulo.
+    fn line_scene(&self, apps: &[DockApp]) -> Scene {
+        let size = self.surface_size(apps);
+        let bounds = home_line(self, size);
+        Scene {
+            panel: Panel {
+                bounds,
+                corner_radius: bounds.height / 2.0,
+                border_width: 1.0,
+                tint: self.theme.dock.home_line,
+                border: self.theme.dock.home_line_border,
+            },
+            panels: Vec::new(),
+            flat_panels: Vec::new(),
+            icons: Vec::new(),
+            dots: Vec::new(),
+            dividers: Vec::new(),
+            thumbnails: Vec::new(),
+            texts: Vec::new(),
+            highlight: None,
+            overlay: None,
+            submenu: None,
+            labels: Vec::new(),
+            opacity: 1.0,
+            scale: 1.0,
+            blur: 0.0,
+        }
     }
 }

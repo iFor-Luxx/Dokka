@@ -65,14 +65,6 @@ impl Navigation {
         self.history.len()
     }
 
-    pub(crate) fn can_previous(&self) -> bool {
-        self.position > 0
-    }
-
-    pub(crate) fn can_next(&self) -> bool {
-        self.position + 1 < self.history.len()
-    }
-
     pub(crate) fn push_history(&mut self, index: usize) {
         self.history.truncate(self.position + 1);
         self.history.push(index);

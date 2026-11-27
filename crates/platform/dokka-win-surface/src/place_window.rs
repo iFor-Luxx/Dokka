@@ -13,13 +13,14 @@ use windows::core::Result;
 use crate::SurfaceOptions;
 
 const BASE_DPI: f32 = 96.0;
-/// Franja visible al esconderse, en unidades lógicas.
-const HIDE_STRIP: f32 = 3.0;
+/// Zona de toque de la línea al esconderse, en unidades lógicas.
+/// Como el tema: más generosa que la línea y pegada al borde.
+const HIDE_TOUCH: f32 = 28.0;
 
 /// Coloca la ventana en el monitor principal y devuelve la escala usada.
 /// Abajo queda centrada como hoy; en laterales centrada en vertical
 /// pegada a su borde con el mismo margen, bajo la reserva superior.
-/// Con `hide` se desplaza hacia fuera dejando solo la franja fina.
+/// Con `hide` se desplaza hacia fuera dejando la zona de toque de la línea.
 pub(crate) fn place_dock_window(window: HWND, options: SurfaceOptions) -> Result<f32> {
     let base = base_area(window, options.over_taskbar)?;
     // SAFETY: `window` es válida y la escala sale de su DPI real.
@@ -29,7 +30,7 @@ pub(crate) fn place_dock_window(window: HWND, options: SurfaceOptions) -> Result
         let height = (options.height * scale).round() as i32;
         let margin = (options.bottom_margin * scale).round() as i32;
         let hide = options.hide.clamp(0.0, 1.0);
-        let strip = (HIDE_STRIP * scale).round() as i32;
+        let strip = (HIDE_TOUCH * scale).round() as i32;
         let (mut x, mut y) = match options.position {
             DockPosition::Left => (
                 base.left + margin,
@@ -46,8 +47,8 @@ pub(crate) fn place_dock_window(window: HWND, options: SurfaceOptions) -> Result
         };
         if hide > 0.0 {
             // Hacia fuera hasta el borde: abajo baja, izquierda retrocede,
-            // derecha avanza. Incluye el margen para que la franja toque el borde
-            // aunque la barra de tareas siga visible.
+            // derecha avanza. Incluye el margen para que la zona de toque toque
+            // el borde aunque la barra de tareas siga visible.
             let eased = hide * hide * (3.0 - 2.0 * hide);
             match options.position {
                 DockPosition::Left => {

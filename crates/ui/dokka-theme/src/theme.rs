@@ -24,6 +24,10 @@ pub struct DockColors {
     pub placeholder: Color,
     pub divider: Color,
     pub running_dot: Color,
+    /// Relleno claro de la línea cuando el dock está oculto.
+    pub home_line: Color,
+    /// Borde oscuro de la línea, que la recorta sobre fondos claros.
+    pub home_line_border: Color,
 }
 
 /// Calendario y vistas previas.

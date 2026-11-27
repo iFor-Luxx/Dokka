@@ -178,13 +178,14 @@ pub(crate) fn handle_event(
             let changed = session.sync()?;
             // Otra ventana al frente también avisa, aunque la lista siga igual.
             let foreground_changed = session.poll_foreground_changed();
-            if !changed && !foreground_changed {
+            let occluded_changed = session.refresh_occlusion();
+            if !changed && !foreground_changed && !occluded_changed {
                 return Ok(());
             }
             if !session.launchpad.is_open() {
                 preview_safety::close_if_cursor_away(session, surface);
             }
-            if !changed {
+            if !changed && !occluded_changed {
                 return preview_safety::render_and_watch(session, surface);
             }
             if session.dock.is_menu_open() {
@@ -197,6 +198,9 @@ pub(crate) fn handle_event(
             crate::taskbar_mode::keep_taskbar_hidden(session);
             session.update_clock_and_trash();
             preview_safety::check_preview_cursor(session, surface);
+            if session.refresh_occlusion() {
+                session.resize(surface)?;
+            }
             if session.launchpad.is_open() {
                 session.launchpad.tick();
             }

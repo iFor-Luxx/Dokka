@@ -11,6 +11,14 @@ pub use theme::{DOCK_BOTTOM_MARGIN, DOCK_EDGE_MARGIN};
 
 use crate::Dock;
 
+/// Margen hacia el borde según la posición (el mismo abajo y en laterales).
+pub(crate) fn bottom_margin(dock: &Dock) -> f32 {
+    match dock.preferences.position {
+        dokka_model::DockPosition::Bottom => DOCK_BOTTOM_MARGIN,
+        _ => DOCK_EDGE_MARGIN,
+    }
+}
+
 fn icon_scale(dock: &Dock) -> f32 {
     dock.preferences
         .icon_scale

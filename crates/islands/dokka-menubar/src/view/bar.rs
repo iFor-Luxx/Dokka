@@ -57,6 +57,8 @@ impl Menubar {
     }
 
     /// Franja y, abierto, el menú, el calendario o la fila con su hueco.
+    /// El buscador deja pasar los clics en todo lo vacío: solo la franja,
+    /// la casilla y la tarjeta de resultados reciben el ratón.
     pub fn active_areas(&self, bar_width: f32) -> Vec<Rect> {
         let mut areas = vec![Rect {
             x: 0.0,
@@ -79,12 +81,19 @@ impl Menubar {
                 height: bounds.y - measures::HEIGHT + bounds.height,
             });
         } else if let Some(bounds) = self.tray_bounds() {
-            areas.push(Rect {
-                x: bounds.x,
-                y: measures::HEIGHT,
-                width: bounds.width,
-                height: bounds.y - measures::HEIGHT + bounds.height,
-            });
+            if self.tray_kind() == Some(crate::TrayKind::Search) {
+                let search = dokka_theme::search::search_box(bounds);
+                let results = dokka_theme::search::results_box(bounds);
+                areas.push(search);
+                areas.push(results);
+            } else {
+                areas.push(Rect {
+                    x: bounds.x,
+                    y: measures::HEIGHT,
+                    width: bounds.width,
+                    height: bounds.y - measures::HEIGHT + bounds.height,
+                });
+            }
         }
         areas
     }

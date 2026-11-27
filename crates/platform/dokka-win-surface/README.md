@@ -5,8 +5,8 @@ que sí lo toma, Preferencias normal y activable con sitio en la barra de tareas
 y superpuesta solo visual), cambia su tamaño y zona activa y coloca el dock
 según su borde (`place_window.rs`: abajo centrado como hoy; en laterales
 centrado en vertical pegado a su borde con el mismo margen, bajo la reserva
-superior; con auto-ocultado se desplaza hacia fuera dejando la franja fina
-y vuelve al tocarla, también junto a la barra de tareas visible),
+superior; con auto-ocultado se desplaza hacia fuera dejando la zona de toque
+de la línea (28) y vuelve al tocarla, también junto a la barra de tareas visible),
 que sí lo toma, vista grande a pantalla completa transparente al mouse, y superpuesta solo visual), cambia su tamaño y zona activa,
 entrega los eventos del mouse, las teclas escritas (`WM_CHAR` con `TranslateMessage`),
 el Retroceso, el Enter, las flechas izquierda/derecha y la rueda sobre el Launchpad, y sobre
@@ -40,7 +40,9 @@ Crea además la barra superior (`menubar_window.rs`, como el dock: sin activaci�
 reserva arriba con AppBar (`ABM_NEW`, `ABM_QUERYPOS`, `ABM_SETPOS` borde superior,
 `ABM_REMOVE` en `menubar_hide` y en `Drop`) y coloca una ventana más alta para el
 menú desplegado, recortada por región (`menubar_area.rs`); `menubar_width`,
-`menubar_scale` y `menubar_set_active_areas` usan esa escala, y
+`menubar_monitor_height` y `menubar_set_active_areas` usan esa escala, y
+`menubar_set_window_height` agranda la ventana para el buscador separado sin
+tocar la reserva de la barra, y
 `menubar_menu_opened/closed/dismissed` guardan el foco igual que el menú del dock,
 pero `menubar_menu_opened` une la entrada al hilo activo (`AttachThreadInput`)
 y fija el foco del teclado (`SetFocus`), como el Launchpad, para recibir teclas.

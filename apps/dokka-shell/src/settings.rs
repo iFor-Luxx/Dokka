@@ -48,10 +48,8 @@ pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
     session.settings_painted = None;
     surface.settings_hide();
     // Vuelve al tamaño normal ya oculta, sin parpadeo.
-    let _ = surface.settings_apply_size(
-        dokka_theme::settings::WIDTH,
-        dokka_theme::settings::HEIGHT,
-    );
+    let _ =
+        surface.settings_apply_size(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT);
     // Ocultar quita la miniatura del dock: el observador ignora el proceso
     // propio, así que se sincroniza aquí.
     let _ = session.sync();

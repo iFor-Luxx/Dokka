@@ -2,8 +2,11 @@
 //!
 //! Rejilla estricta de cuatro columnas: celda cuadrada de lado `CELL` con
 //! hueco `GAP` igual en horizontal y vertical. La cápsula ancha ocupa dos
-//! celdas más un hueco y la música dos por dos. Filas: Red + música,
-//! dos círculos, Preferencias + dos círculos, Sonido y cuatro círculos.
+//! celdas más un hueco y la música dos por dos. Filas sin brillo: Red +
+//! música, dos círculos, Preferencias + dos círculos, Sonido y cuatro
+//! círculos. Con brillo: Pantalla justo encima de Sonido, con su misma forma
+//! y hueco, y las filas de debajo recolocadas. Sin brillo la geometría es
+//! exactamente la de antes.
 
 use dokka_scene::Rect;
 use dokka_theme::control_center as measures;
@@ -18,16 +21,29 @@ fn top_y(bounds: Rect) -> f32 {
     bounds.y + measures::PADDING
 }
 
-/// Borde superior de la fila `row` (0 a 4): filas 0-2 de alto `CELL`,
-/// fila 3 de alto `SOUND_HEIGHT` y fila 4 de alto `CELL`.
-fn row_y(bounds: Rect, row: usize) -> f32 {
+/// Borde superior de la fila `row`.
+///
+/// Sin brillo: filas 0-2 de alto `CELL`, fila 3 de alto `SOUND_HEIGHT`
+/// (Sonido) y fila 4 de alto `CELL` (círculos). Con brillo: fila 3 de alto
+/// `BRIGHTNESS_HEIGHT` (Pantalla), fila 4 de alto `SOUND_HEIGHT` (Sonido) y
+/// fila 5 de alto `CELL` (círculos). La fila 3 cae en el mismo sitio con y
+/// sin brillo: la Pantalla ocupa donde estaba el Sonido y este baja.
+fn row_y(bounds: Rect, row: usize, with_brightness: bool) -> f32 {
     let top = top_y(bounds);
+    let third = top + (measures::CELL + measures::GAP) * 3.0;
     match row {
         0 => top,
         1 => top + measures::CELL + measures::GAP,
         2 => top + (measures::CELL + measures::GAP) * 2.0,
-        3 => top + (measures::CELL + measures::GAP) * 3.0,
-        _ => top + (measures::CELL + measures::GAP) * 3.0 + measures::SOUND_HEIGHT + measures::GAP,
+        3 => third,
+        4 => third + measures::SOUND_HEIGHT + measures::GAP,
+        _ => {
+            if with_brightness {
+                third + (measures::SOUND_HEIGHT + measures::GAP) * 2.0
+            } else {
+                third + measures::SOUND_HEIGHT + measures::GAP
+            }
+        }
     }
 }
 
@@ -40,7 +56,7 @@ fn column_x(bounds: Rect, column: usize) -> f32 {
 pub(crate) fn network_capsule(bounds: Rect) -> Rect {
     Rect {
         x: column_x(bounds, 0),
-        y: row_y(bounds, 0),
+        y: row_y(bounds, 0, false),
         width: measures::SPAN,
         height: measures::CELL,
     }
@@ -48,21 +64,22 @@ pub(crate) fn network_capsule(bounds: Rect) -> Rect {
 
 /// Círculo `index`: 0 Escritorio y 1 Bloquear (fila 2);
 /// 2 Vista de tareas y 3 Proyectar (fila 3);
-/// 4 Calculadora, 5 Recorte, 6 Reloj y 7 Tareas (fila 5).
-pub(crate) fn circle_slot(bounds: Rect, index: usize) -> Rect {
+/// 4 Calculadora, 5 Recorte, 6 Reloj y 7 Tareas (última fila).
+pub(crate) fn circle_slot(bounds: Rect, index: usize, with_brightness: bool) -> Rect {
+    let bottom = if with_brightness { 5 } else { 4 };
     let (column, row) = match index {
         0 => (0, 1),
         1 => (1, 1),
         2 => (2, 2),
         3 => (3, 2),
-        4 => (0, 4),
-        5 => (1, 4),
-        6 => (2, 4),
-        _ => (3, 4),
+        4 => (0, bottom),
+        5 => (1, bottom),
+        6 => (2, bottom),
+        _ => (3, bottom),
     };
     Rect {
         x: column_x(bounds, column),
-        y: row_y(bounds, row),
+        y: row_y(bounds, row, with_brightness),
         width: measures::CELL,
         height: measures::CELL,
     }
@@ -72,7 +89,7 @@ pub(crate) fn circle_slot(bounds: Rect, index: usize) -> Rect {
 pub(crate) fn music_tile(bounds: Rect) -> Rect {
     Rect {
         x: column_x(bounds, 2),
-        y: row_y(bounds, 0),
+        y: row_y(bounds, 0, false),
         width: measures::SPAN,
         height: measures::SPAN,
     }
@@ -82,17 +99,28 @@ pub(crate) fn music_tile(bounds: Rect) -> Rect {
 pub(crate) fn prefs_capsule(bounds: Rect) -> Rect {
     Rect {
         x: column_x(bounds, 0),
-        y: row_y(bounds, 2),
+        y: row_y(bounds, 2, false),
         width: measures::SPAN,
         height: measures::CELL,
     }
 }
 
-/// Tarjeta de Sonido a todo lo ancho, fila 4.
-pub(crate) fn sound_card(bounds: Rect) -> Rect {
+/// Tarjeta de Pantalla a todo lo ancho, justo encima de Sonido.
+/// Solo existe con brillo; misma forma y márgenes que Sonido.
+pub(crate) fn brightness_card(bounds: Rect) -> Rect {
     Rect {
         x: content_x(bounds),
-        y: row_y(bounds, 3),
+        y: row_y(bounds, 3, true),
+        width: measures::CELL * 4.0 + measures::GAP * 3.0,
+        height: measures::BRIGHTNESS_HEIGHT,
+    }
+}
+
+/// Tarjeta de Sonido a todo lo ancho: fila 4 sin brillo, fila 5 con él.
+pub(crate) fn sound_card(bounds: Rect, with_brightness: bool) -> Rect {
+    Rect {
+        x: content_x(bounds),
+        y: row_y(bounds, if with_brightness { 4 } else { 3 }, with_brightness),
         width: measures::CELL * 4.0 + measures::GAP * 3.0,
         height: measures::SOUND_HEIGHT,
     }
@@ -154,6 +182,7 @@ pub(crate) fn sound_left_icon(card: Rect) -> Rect {
 
 /// Caja del silencio: icono pequeño a la derecha, con aire para pulsarlo.
 /// Se conserva para el golpe; lo visible va en `sound_mute_icon`.
+/// También vale para el icono derecho del brillo: misma geometría.
 pub(crate) fn sound_mute_box(card: Rect) -> Rect {
     Rect {
         x: card.x + card.width - measures::PADDING - measures::MUTE_HIT_SIDE,
@@ -165,6 +194,7 @@ pub(crate) fn sound_mute_box(card: Rect) -> Rect {
 
 /// Icono visible del silencio: termina a la misma distancia del borde que
 /// empieza el izquierdo (`SOUND_ICON_MARGIN`), centrado en la pista.
+/// También vale para el icono derecho del brillo: misma geometría.
 pub(crate) fn sound_mute_icon(card: Rect) -> Rect {
     Rect {
         x: card.x + card.width - measures::SOUND_ICON_MARGIN - measures::END_ICON_SIDE,
@@ -175,7 +205,7 @@ pub(crate) fn sound_mute_icon(card: Rect) -> Rect {
 }
 
 /// Pista fina del deslizador, entre los dos iconos visibles para que la barra
-/// quede simétrica.
+/// quede simétrica. Vale para Sonido y Pantalla: misma geometría.
 pub(crate) fn slider_track(card: Rect) -> Rect {
     let left = sound_left_icon(card);
     let right = sound_mute_icon(card);

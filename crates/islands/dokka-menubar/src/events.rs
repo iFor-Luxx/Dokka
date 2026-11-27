@@ -12,6 +12,8 @@ pub enum MenubarAction {
     /// Fijar el volumen de 0 a 1 (clic o arrastre en el deslizador).
     VolumeSetLevel(f32),
     VolumeToggleMute,
+    /// Fijar el brillo DDC de 0 a 1 (clic o arrastre en su deslizador).
+    BrightnessSetLevel(f32),
     OpenSoundSettings,
     /// Elegir la salida con este índice de la lista guardada.
     ChooseOutput(usize),

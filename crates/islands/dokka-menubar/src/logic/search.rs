@@ -13,9 +13,9 @@ use super::tray::tray_place_centered;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
-    /// Abre centrado en lo alto con la consulta vacía y el cursor visible.
+    /// Abre separado de la barra, centrado a lo ancho de la pantalla.
     /// El shell rellena los resultados justo después con `set_search_results`.
-    pub fn open_search(&mut self, bar_width: f32) {
+    pub fn open_search(&mut self, bar_width: f32, screen_height: f32) {
         if !self.is_shown(super::TrayKind::Search) {
             return;
         }
@@ -25,14 +25,19 @@ impl Menubar {
         let size = search_panel_size(&self.search_props());
         self.show_tray(
             super::TrayKind::Search,
-            tray_place_centered(size, bar_width),
+            tray_place_centered(size, bar_width, screen_height),
         );
     }
 
     /// Resultados ya filtrados en su orden (el shell los calcula).
     /// Recorta el resaltado si la lista encogió y recoloca el panel
-    /// centrado, que cambia de alto con el número de filas.
-    pub fn set_search_results(&mut self, results: Vec<SearchPanelItem>, bar_width: f32) {
+    /// separado de la barra, que cambia de alto con el número de filas.
+    pub fn set_search_results(
+        &mut self,
+        results: Vec<SearchPanelItem>,
+        bar_width: f32,
+        screen_height: f32,
+    ) {
         self.search_results = results;
         let visible = self
             .search_results
@@ -47,10 +52,16 @@ impl Menubar {
         if self.tray_kind() == Some(super::TrayKind::Search) {
             let size = search_panel_size(&self.search_props());
             self.tray = self.tray.map(|open| super::OpenTray {
-                panel: tray_place_centered(size, bar_width),
+                panel: tray_place_centered(size, bar_width, screen_height),
                 ..open
             });
         }
+    }
+
+    /// Alto de ventana necesario con el buscador abierto en este monitor.
+    pub fn search_window_height(&self, screen_height: f32) -> f32 {
+        let size = search_panel_size(&self.search_props());
+        dokka_theme::search::spotlight_window_height(screen_height, size.height)
     }
 
     pub fn search_query(&self) -> &str {

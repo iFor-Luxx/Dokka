@@ -1,7 +1,8 @@
 //! Fila de iconos a la izquierda de la fecha y colocación de sus paneles.
 //!
 //! Cada panel real mide lo suyo con su `<x>_size`; aquí solo se centra bajo
-//! su icono sin salirse del ancho. El buscador, más ancho, va centrado.
+//! su icono sin salirse del ancho. El buscador, más ancho, va centrado a lo
+//! ancho de la pantalla y separado de la barra (estilo Spotlight).
 //! Solo los iconos encendidos en Preferencias tienen caja: los apagados no
 //! se dibujan ni reciben clics y los demás se recolocan sin huecos.
 
@@ -78,12 +79,14 @@ pub(crate) fn tray_place(anchor: Rect, size: Size, bar_width: f32) -> Rect {
     }
 }
 
-/// Panel centrado en lo alto, para el buscador ancho.
-pub(crate) fn tray_place_centered(size: Size, bar_width: f32) -> Rect {
+/// Panel del buscador: centrado a lo ancho de la pantalla y separado de la
+/// barra, con la casilla al ~22% del alto del monitor; en pantallas bajas sube
+/// lo necesario para que quepan los resultados sin tapar la barra.
+pub(crate) fn tray_place_centered(size: Size, bar_width: f32, screen_height: f32) -> Rect {
     let x = ((bar_width - size.width) / 2.0).max(0.0);
     Rect {
         x,
-        y: menubar::HEIGHT + menubar::MENU_GAP,
+        y: dokka_theme::search::spotlight_top(screen_height, size.height),
         width: size.width,
         height: size.height,
     }

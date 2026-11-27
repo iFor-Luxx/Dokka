@@ -7,10 +7,13 @@
 
 use dokka_scene::{DRAWING_SIDE, Rect};
 
+use super::menubar as bar;
 use super::tray_glass as glass;
 
 /// Ancho del buscador, mayor que los demás paneles de la barra.
 pub const WIDTH: f32 = 560.0;
+/// Fracción del alto del monitor donde cae la casilla, como Spotlight.
+pub const SPOTLIGHT_HEIGHT_FRACTION: f32 = 0.22;
 /// Hueco entre la cápsula de búsqueda y la tarjeta de resultados.
 pub const GAP: f32 = glass::GAP;
 /// Aire dentro de la tarjeta de resultados, arriba y abajo.
@@ -109,4 +112,38 @@ pub fn results_box(bounds: Rect) -> Rect {
 /// Borde superior de la fila `index` dentro del panel.
 pub fn row_top(bounds: Rect, index: usize) -> f32 {
     results_box(bounds).y + PADDING + index as f32 * ROW_HEIGHT
+}
+
+/// Borde superior del buscador: centrado a lo ancho de la pantalla y separado
+/// de la barra, con la casilla al ~22% del alto del monitor. En pantallas bajas
+/// sube lo necesario para que quepan los resultados sin tapar la barra.
+pub fn spotlight_top(screen_height: f32, panel_height: f32) -> f32 {
+    let min_top = bar::HEIGHT + bar::MENU_GAP;
+    if screen_height.is_nan()
+        || screen_height <= 0.0
+        || panel_height.is_nan()
+        || panel_height <= 0.0
+    {
+        return min_top;
+    }
+    let desired = screen_height * SPOTLIGHT_HEIGHT_FRACTION;
+    let max_top = screen_height - panel_height;
+    if max_top <= min_top {
+        return min_top;
+    }
+    desired.clamp(min_top, max_top)
+}
+
+/// Alto de ventana necesario para dibujar el buscador en su sitio.
+/// Cubre la franja más el panel; si el monitor es bajo, no pasa de su alto.
+pub fn spotlight_window_height(screen_height: f32, panel_height: f32) -> f32 {
+    if screen_height.is_nan()
+        || screen_height <= 0.0
+        || panel_height.is_nan()
+        || panel_height <= 0.0
+    {
+        return bar::WINDOW_HEIGHT;
+    }
+    let bottom = spotlight_top(screen_height, panel_height) + panel_height;
+    bottom.max(bar::WINDOW_HEIGHT).min(screen_height)
 }

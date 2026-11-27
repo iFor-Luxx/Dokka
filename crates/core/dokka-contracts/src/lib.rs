@@ -19,7 +19,9 @@ pub use contract_error::ContractError;
 pub use pinned_apps_store::PinnedAppsStore;
 pub use preferences_store::PreferencesStore;
 pub use recycle_bin::RecycleBin;
-pub use system_status::{AudioOutputs, KeyboardLanguages, NetworkStatus, VolumeControl};
+pub use system_status::{
+    AudioOutputs, BrightnessControl, KeyboardLanguages, NetworkStatus, VolumeControl,
+};
 pub use system_tray::SystemTray;
 pub use window_control::WindowControl;
 pub use window_source::WindowSource;

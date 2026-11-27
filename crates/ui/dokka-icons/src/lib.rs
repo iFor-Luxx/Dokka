@@ -30,8 +30,9 @@ pub use control_center::{
     control_center_lock_icon, control_center_muted_icon, control_center_next_icon,
     control_center_pause_icon, control_center_play_icon, control_center_preferences_icon,
     control_center_previous_icon, control_center_project_icon, control_center_screen_clip_icon,
-    control_center_task_manager_icon, control_center_task_view_icon, control_center_volume_icon,
-    control_center_wifi_icon, control_center_wifi_off_icon,
+    control_center_sun_dim_icon, control_center_sun_icon, control_center_task_manager_icon,
+    control_center_task_view_icon, control_center_volume_icon, control_center_wifi_icon,
+    control_center_wifi_off_icon,
 };
 pub use explorer::explorer_icon;
 pub use launchpad::launchpad_icon;

@@ -7,7 +7,8 @@ con `foreground_app` + `NameCache` y hora con `local_time` (y el hoy del calenda
 fila derecha a la izquierda de la fecha (de derecha a izquierda: centro de control,
 buscar, idioma como texto con el código real, música, red y volumen con sus
 dibujos según los datos) con su panel real por icono (medido con su `<x>_size`,
-colocado bajo su icono sin salirse salvo el buscador, centrado en lo alto);
+colocado bajo su icono sin salirse salvo el buscador, separado de la barra y
+centrado a lo ancho de la pantalla);
 su menú reutiliza `context_menu.rs` para Preferencias, escritorio, administrador, reiniciar y
 salir, con `menubar_menu_dismissed` antes de Preferencias, administrador, ajustes
 y apps nuevas y `menubar_hide` al salir o reiniciar; su calendario comparte `calendar_panel`
@@ -16,11 +17,12 @@ al repetir la hora, al pulsar fuera, al perder el foco o al abrir el menú, la f
 panel del dock (y al revés; solo uno abierto a la vez, también entre iconos de la fila:
 repetir el mismo lo cierra); mientras la barra está desplegada no se abren
 previas) en su ventana (`menubar_show` con las medidas del tema, ventana de 480 para
-que quepa el buscador y el idioma con una docena de filas, y `draw_menubar`), redibujándola solo si cambia
+que quepa el idioma con una docena de filas y que crece con el monitor para el
+buscador separado, sin tocar la reserva, y `draw_menubar`), redibujándola solo si cambia
 (`MenubarPainted`: mes, hover, idioma, apertura y datos de cada panel incluidos).
 Los paneles viven un archivo por panel en el shell (`menubar_volume.rs`,
-`menubar_network.rs`, `menubar_language.rs`, `menubar_music.rs`,
-`menubar_search.rs`: el shell les pasa `VolumeState`/`NetworkState`/
+`menubar_brightness.rs`, `menubar_network.rs`, `menubar_language.rs`, `menubar_music.rs`,
+`menubar_search.rs`: el shell les pasa `VolumeState`/brillo/`NetworkState`/
 `Vec<LanguageEntry>`/`NowPlayingInfo`/`Vec<AudioOutput>` y ejecuta su `MenubarAction` en
 `run_menubar_action`; el centro de control delega en esas mismas variantes). El segundo plano (`background_panel`:
 cristal único Tahoe con título, una fila por app con círculo suave, icono real y nombre
@@ -31,7 +33,10 @@ una vez y parte apagada; `TrayActivate`/`TrayMenu` cierran con `menubar_menu_dis
 para no devolver el foco; clic derecho con `MenubarRightClicked`).
 Volumen cada `Tick` y salidas al abrir el panel y tras elegir (`ChooseOutput`
 las cambia, las relee con el volumen y deja el panel abierto; un error se
-avisa una vez y la sección desaparece); red e idioma cada pocos `Tick` y al abrir (el idioma solo
+avisa una vez y la sección desaparece); brillo DDC sin esperar (`SystemBrightness`
+en su hilo, último valor cada `Tick`, relectura solo al abrir el centro y
+`BrightnessSetLevel` con valor adelantado; sin DDC no hay tarjeta y el panel
+es el de antes); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El buscador filtra el catálogo del
 Escritorio más las fijadas (como el Launchpad) con `filter_search_order` e
@@ -40,7 +45,7 @@ iconos de `IconCache`; flechas, Enter, clic y Esc. Pide al dock abrir el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Preferencias» abre la ventana de configuración (o la trae al frente);
 atiende su foco (semáforos grises sin foco), sus botones abajo y arrastres
-(`MenubarPressed` fija el volumen ya, `MenubarMoved` lo sigue, `MenubarClicked`
+(`MenubarPressed` fija el volumen o el brillo ya, `MenubarMoved` lo sigue, `MenubarClicked`
 al soltar; Esc llega como `MenubarDismissed`), su búsqueda (teclear, Retroceso, Enter,
 flechas y Esc) y su historial atrás/adelante, y solo la repinta si cambió lo dibujado;
 «Reiniciar Dokka» relanza el ejecutable actual. Las acciones de apps e iconos del sistema

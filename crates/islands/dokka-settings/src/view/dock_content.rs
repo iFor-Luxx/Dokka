@@ -99,7 +99,12 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
     flats.extend(segmented_panels(theme, touch, &props));
     texts.extend(segmented_texts(theme, touch, &props));
     flats.append(&mut switch_pieces(
-        theme, second_top, &second_heights, 1, shown.dock.auto_hide, width,
+        theme,
+        second_top,
+        &second_heights,
+        1,
+        shown.dock.auto_hide,
+        width,
     ));
     let (Some(third_top), Some(third_labels)) = (tops.get(2).copied(), cards.get(2)) else {
         return ContentScene {
@@ -110,8 +115,14 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         };
     };
     let third_heights = card_heights(SECTION_DOCK, 2);
-    let (panel, mut card_dividers, mut card_texts) =
-        group_pieces(theme, third_top, third_labels, &third_heights, &[false; 3], width);
+    let (panel, mut card_dividers, mut card_texts) = group_pieces(
+        theme,
+        third_top,
+        third_labels,
+        &third_heights,
+        &[false; 3],
+        width,
+    );
     flats.push(panel);
     dividers.append(&mut card_dividers);
     texts.append(&mut card_texts);
@@ -132,7 +143,12 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         width,
     ));
     flats.append(&mut switch_pieces(
-        theme, third_top, &third_heights, 2, shown.dock.previews, width,
+        theme,
+        third_top,
+        &third_heights,
+        2,
+        shown.dock.previews,
+        width,
     ));
     ContentScene {
         flats,

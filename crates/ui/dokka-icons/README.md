@@ -17,7 +17,8 @@ de la mitad superior y de la inferior, mezclados con la baldosa clara del tema);
 o fino se quita). Más iconos del Centro de control (`control_center`: deslizadores blancos
 para la barra y wifi, cable, globo, volumen, música, ajustes, escritorio, bloqueo, vista de tareas,
 proyectar, calculadora, recorte, reloj y actividad oscuros para sus tarjetas claras, con las variantes
-azules de red, escritorio y bloqueo sobre círculo blanco).
+azules de red, escritorio y bloqueo sobre círculo blanco y soles tenue y pleno
+para el brillo).
 
 **No hace:** no pinta, no lee la hora ni la papelera: recibe esos datos. Los de color son diseños
 propios, no copias de Apple; los de interfaz son Lucide.
