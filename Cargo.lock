@@ -229,6 +229,8 @@ dependencies = [
  "dokka-contracts",
  "dokka-model",
  "dokka-scene",
+ "dokka-win-apps",
+ "windows",
 ]
 
 [[package]]

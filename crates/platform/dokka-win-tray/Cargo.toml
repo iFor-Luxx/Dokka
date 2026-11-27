@@ -8,6 +8,14 @@ publish.workspace = true
 dokka-contracts.workspace = true
 dokka-model.workspace = true
 dokka-scene.workspace = true
+dokka-win-apps.workspace = true
+windows = { workspace = true, features = [
+    "Win32_Foundation",
+    "Win32_System_DataExchange",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Threading",
+    "Win32_UI_WindowsAndMessaging",
+] }
 
 [lints]
 workspace = true
