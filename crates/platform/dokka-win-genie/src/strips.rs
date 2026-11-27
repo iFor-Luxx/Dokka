@@ -80,7 +80,7 @@ impl GenieCompositor {
                     None,
                     D3D_DRIVER_TYPE_HARDWARE,
                     Default::default(),
-                    D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+                    D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_SINGLETHREADED,
                     None,
                     D3D11_SDK_VERSION,
                     Some(&mut d3d),

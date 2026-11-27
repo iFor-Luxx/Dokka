@@ -9,3 +9,11 @@ minimiza o restaura como siempre.
 **No hace:** no decide cuándo minimizar ni dónde está el hueco del dock (lo
 pide el shell con rectángulos en píxeles de pantalla); no guarda preferencias
 ni dibuja el dock. Solo vive mientras dura un vuelo.
+
+**Vía inmediata:** el shell avisa la ventana concreta al empezar a minimizar
+y la foto fija va primero (`from` entera con bordes para la miniatura DWM,
+`frame` visible para copiar y volar; maximizadas desde su área de trabajo);
+el hueco llega después con `aim`. El vuelo pasa tras el cristal solo con el
+dock oculto. Cada salida temprana escribe una línea `genio: ...` con el
+motivo; al empezar, apuntar, despegar y terminar también. Sin líneas por
+fotograma.

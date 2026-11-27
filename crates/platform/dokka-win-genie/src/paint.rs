@@ -25,7 +25,7 @@
 
 use windows::Win32::Foundation::POINT;
 use windows::Win32::Graphics::Direct2D::Common::{
-    D2D_SIZE_U, D2D1_ALPHA_MODE_PREMULTIPLIED, D2D1_PIXEL_FORMAT,
+    D2D_SIZE_U, D2D1_ALPHA_MODE_PREMULTIPLIED, D2D1_COLOR_F, D2D1_PIXEL_FORMAT,
 };
 use windows::Win32::Graphics::Direct2D::{
     D2D1_BITMAP_OPTIONS_NONE, D2D1_BITMAP_PROPERTIES1, D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
@@ -35,6 +35,14 @@ use windows::Win32::Graphics::Dxgi::Common::DXGI_FORMAT_B8G8R8A8_UNORM;
 use windows_numerics::Matrix3x2;
 
 use crate::GenieImage;
+
+/// Fondo transparente para pintar la foto a su propio tamaño.
+const TRANSPARENT: D2D1_COLOR_F = D2D1_COLOR_F {
+    r: 0.0,
+    g: 0.0,
+    b: 0.0,
+    a: 0.0,
+};
 
 /// Dibuja la foto en la superficie en su punto de atlas.
 pub(crate) fn paint_image(
@@ -54,7 +62,9 @@ pub(crate) fn paint_image(
     };
     // SAFETY: `bgra` trae `width * height * 4` bytes y el paso es `width * 4`.
     unsafe {
+        context.SetDpi(96.0, 96.0);
         context.SetTransform(&Matrix3x2::translation(offset.x as f32, offset.y as f32));
+        context.Clear(Some(&TRANSPARENT));
         let bitmap = context.CreateBitmap(
             D2D_SIZE_U {
                 width: image.width,

@@ -115,6 +115,11 @@ pub enum SurfaceEvent {
     SettingsEscape,
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
+    /// Una ventana empezó a minimizarse: trae su handle sin agrupar.
+    /// Vía de Muelle (MIT): avisa la ventana concreta de inmediato.
+    MinimizeStarted {
+        window: u64,
+    },
     /// Pasó un segundo.
     Tick,
     /// El cursor debe seguir sobre el panel abierto o pendiente.

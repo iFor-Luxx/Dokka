@@ -12,8 +12,8 @@ use crate::dock_session::DockSession;
 use crate::floating_panels::preview_request;
 use crate::launchpad::{
     begin_close_launchpad, click_launchpad, confirm_over_launchpad, erase_over_launchpad,
-    escape_over_launchpad, finish_close_launchpad, move_over_launchpad, page_back_launchpad,
-    page_forward_launchpad, scroll_launchpad, type_over_launchpad,
+    escape_over_launchpad, move_over_launchpad, page_back_launchpad, page_forward_launchpad,
+    scroll_launchpad, type_over_launchpad,
 };
 use crate::media::send_media;
 use crate::perform_click::perform_click;
@@ -141,41 +141,11 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::Frame { seconds } => {
-            session.dock.advance(seconds);
-            // El genio avanza en su propio reloj y pide restaurar al llegar.
-            for window in session.genie.on_frame(std::time::Instant::now()) {
-                if session.is_settings_window(window, surface) {
-                    if let Err(error) = crate::settings::open_or_focus_settings(session, surface) {
-                        eprintln!("Dokka no pudo restaurar Preferencias: {error}");
-                    }
-                } else if let Err(error) = session.control.activate(window) {
-                    eprintln!("Dokka no pudo restaurar la ventana: {error}");
-                }
-            }
-            // El auto-ocultado mueve la ventana: solo mientras anima.
-            if session.dock.is_hide_animating() {
-                if let Err(error) = session.apply_hide(surface) {
-                    eprintln!("Dokka no pudo deslizar el dock: {error}");
-                }
-                // Al volver, el cursor ya está sobre la franja: actualiza la lupa.
-                if let Some((x, y)) = surface.cursor_over_dock()
-                    && !session.dock.is_menu_open()
-                    && !session.previews.has_panel()
-                {
-                    session.dock.pointer_moved(x, y, session.state.apps());
-                }
-            }
-            if session.launchpad.is_open() {
-                session.launchpad.advance(seconds);
-                if session.launchpad.close_finished() {
-                    finish_close_launchpad(session, surface);
-                }
-            }
-            if !session.launchpad.is_open() {
-                // Si el aviso de salida se perdió, el cursor real manda.
-                preview_safety::check_preview_cursor(session, surface);
-                session.previews.advance(seconds);
-            }
+            crate::handle_frame::handle_frame(session, surface, seconds)?;
+        }
+        SurfaceEvent::MinimizeStarted { window } => {
+            // Vía de Muelle (MIT): la ventana concreta de inmediato.
+            crate::genie_flow::on_minimize_started(session, surface, window)?;
         }
         SurfaceEvent::CursorCheck => {
             if !session.launchpad.is_open() {
@@ -189,7 +159,7 @@ pub(crate) fn handle_event(
             // El genio detecta minimizadas nuevas; si cambió la lista, tras
             // recolocar el dock para apuntar al hueco definitivo.
             if !changed {
-                crate::genie::refresh(session, surface);
+                crate::genie_flow::refresh(session, surface);
             }
             // Otra ventana al frente también avisa, aunque la lista siga igual.
             let foreground_changed = session.poll_foreground_changed();
@@ -209,7 +179,7 @@ pub(crate) fn handle_event(
             }
             session.resize(surface)?;
             if changed {
-                crate::genie::refresh(session, surface);
+                crate::genie_flow::refresh(session, surface);
             }
         }
         SurfaceEvent::Tick => {

@@ -10,7 +10,9 @@ frente a `MonitorFromWindow`; ignora el escritorio y a Dokka; si no se sabe,
 Observa también el cambio de primer plano (`EVENT_SYSTEM_FOREGROUND`) y el movimiento
 solo de la ventana al frente (`EVENT_OBJECT_LOCATIONCHANGE`, avisando solo cuando
 cambia lo ocupado para no inundar), así que activar, maximizar o restaurar
-otra ventana produce el aviso `WINDOWS_CHANGED_MESSAGE`.
+otra ventana produce el aviso `WINDOWS_CHANGED_MESSAGE`. Al empezar a minimizar
+el aviso es urgente (`wParam` a 1) y lleva la ventana concreta en `lParam`
+para actuar de inmediato, sin deducirlo comparando listas.
 Incluye SOLO Preferencias
 del proceso propio (`settings_entry.rs`: identidad `dokka-preferencias`, nombre
 "Preferencias", icono de engranaje del dock): solo minimizada, a la derecha del
