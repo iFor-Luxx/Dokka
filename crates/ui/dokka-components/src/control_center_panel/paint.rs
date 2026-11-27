@@ -69,11 +69,22 @@ pub(crate) fn picture(theme: &Theme, drawing: &Arc<Drawing>, area: Rect, side: f
 }
 
 pub(crate) fn title(theme: &Theme, x: f32, center_y: f32, content: String) -> Text {
+    title_sized(theme, x, center_y, content, glass::TITLE_SIZE)
+}
+
+/// Título con tamaño dado: las cápsulas pasan el suyo, más pequeño.
+pub(crate) fn title_sized(
+    theme: &Theme,
+    x: f32,
+    center_y: f32,
+    content: String,
+    size: f32,
+) -> Text {
     Text {
         x,
         center_y,
         content,
-        size: glass::TITLE_SIZE,
+        size,
         is_bold: true,
         color: theme.tray.text,
         align: TextAlign::Left,
@@ -81,11 +92,22 @@ pub(crate) fn title(theme: &Theme, x: f32, center_y: f32, content: String) -> Te
 }
 
 pub(crate) fn subtitle(theme: &Theme, x: f32, center_y: f32, content: String) -> Text {
+    subtitle_sized(theme, x, center_y, content, glass::SUBTITLE_SIZE)
+}
+
+/// Subtítulo con tamaño dado: las cápsulas pasan el suyo, más pequeño.
+pub(crate) fn subtitle_sized(
+    theme: &Theme,
+    x: f32,
+    center_y: f32,
+    content: String,
+    size: f32,
+) -> Text {
     Text {
         x,
         center_y,
         content,
-        size: glass::SUBTITLE_SIZE,
+        size,
         is_bold: false,
         color: theme.tray.secondary,
         align: TextAlign::Left,
@@ -93,12 +115,14 @@ pub(crate) fn subtitle(theme: &Theme, x: f32, center_y: f32, content: String) ->
 }
 
 pub(crate) fn shorten(content: &str) -> String {
-    if content.chars().count() <= measures::TEXT_CHARACTERS {
+    shorten_to(content, measures::TEXT_CHARACTERS)
+}
+
+/// Recorta al límite dado con "…": la música pasa 16, las cápsulas 12.
+pub(crate) fn shorten_to(content: &str, limit: usize) -> String {
+    if content.chars().count() <= limit {
         return content.to_owned();
     }
-    let kept: String = content
-        .chars()
-        .take(measures::TEXT_CHARACTERS - 1)
-        .collect();
+    let kept: String = content.chars().take(limit.saturating_sub(1)).collect();
     format!("{}…", kept.trim_end())
 }

@@ -42,7 +42,8 @@
   e inset de 10 y radio concéntrico de 10, cápsula de 60
   con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
   la rejilla estricta del Centro de control (celda de 66, hueco de 12,
-  cápsula doble de 144 × 66 con círculo de 42, música de 144 × 144,
+  cápsula doble de 144 × 66 con círculo de 42 y textos en 12/11 recortados
+  a 12 con "…" (la música sigue en 16), música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual justo encima si hay DDC,
   alto total 404 sin brillo y 484 con él, y sombra suave bajo cada pieza
   (desenfoque 10 y caída 2, que caben en el aire exterior de 12)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
