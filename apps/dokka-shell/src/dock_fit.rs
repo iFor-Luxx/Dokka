@@ -14,7 +14,11 @@ impl DockSession {
     /// si algo no puede calcularse, abajo y visible (falla sola).
     pub(crate) fn resize(&mut self, surface: &mut Surface) -> Result<(), Box<dyn Error>> {
         let position = self.preferences.dock.position;
-        self.fit_to_work_area(surface, position);
+        // Con una app ocupando, el dock baja hasta el monitor completo para
+        // que la línea quede al borde; si no, usa el área de trabajo.
+        let over_taskbar = self.taskbar_hidden
+            || (self.preferences.dock.auto_hide && self.dock.is_occluded());
+        self.fit_to_work_area(surface, position, over_taskbar);
         let size = self.dock.surface_size(self.state.apps());
         let margin = match position {
             dokka_model::DockPosition::Bottom => DOCK_BOTTOM_MARGIN,
@@ -24,7 +28,7 @@ impl DockSession {
             width: size.width,
             height: size.height,
             bottom_margin: margin,
-            over_taskbar: self.taskbar_hidden,
+            over_taskbar,
             position,
             hide: self.dock.hide_eased(),
         });
@@ -36,7 +40,7 @@ impl DockSession {
                 width: size.width,
                 height: size.height,
                 bottom_margin: DOCK_BOTTOM_MARGIN,
-                over_taskbar: self.taskbar_hidden,
+                over_taskbar,
                 position: dokka_model::DockPosition::Bottom,
                 hide: 0.0,
             })?;
@@ -52,7 +56,12 @@ impl DockSession {
         self.resize(surface)
     }
 
-    fn fit_to_work_area(&mut self, surface: &Surface, position: dokka_model::DockPosition) {
+    fn fit_to_work_area(
+        &mut self,
+        surface: &Surface,
+        position: dokka_model::DockPosition,
+        over_taskbar: bool,
+    ) {
         if !matches!(
             position,
             dokka_model::DockPosition::Left | dokka_model::DockPosition::Right
@@ -60,7 +69,7 @@ impl DockSession {
             self.dock.set_fit(1.0);
             return;
         }
-        let [_, work_height] = surface.work_area_logical(self.taskbar_hidden);
+        let [_, work_height] = surface.work_area_logical(over_taskbar);
         if work_height <= 0.0 {
             self.dock.set_fit(1.0);
             return;

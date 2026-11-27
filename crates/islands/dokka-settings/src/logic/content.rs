@@ -61,7 +61,7 @@ pub(crate) fn section_cards(section: usize) -> Vec<Vec<&'static str>> {
                 "Ampliación",
                 "Cantidad de ampliación",
             ],
-            vec!["Posición en pantalla", "Ocultar automáticamente"],
+            vec!["Posición en pantalla", "Ocultar con apps a pantalla completa"],
             vec![
                 "Animar al abrir apps",
                 "Mostrar indicadores de apps abiertas",

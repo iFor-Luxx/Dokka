@@ -3,6 +3,7 @@ mod clock_label;
 mod decide_click;
 mod divider_target;
 mod dock_menu;
+mod home_line;
 mod hover_target;
 mod hovered_label;
 mod list_entries;
@@ -18,6 +19,7 @@ mod trash_label;
 
 pub(crate) use clock_label::clock_label;
 pub use decide_click::{ClickAction, DockAction};
+pub(crate) use home_line::{home_line, home_touch};
 pub use hover_target::{HoverKind, HoverTarget};
 pub(crate) use hovered_label::hovered_label;
 pub(crate) use list_entries::{Entry, list_entries};
