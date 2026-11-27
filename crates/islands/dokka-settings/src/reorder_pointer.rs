@@ -7,14 +7,14 @@
 
 use dokka_theme::settings as measures;
 
-use super::logic::{
-    SECTION_MENUBAR, menubar_row_at, menubar_top, reorder_target,
-};
+use super::logic::{SECTION_MENUBAR, menubar_row_at, menubar_top, reorder_target};
 use super::menubar_drag::MenubarDrag;
 use super::state::Settings;
 
 /// Orden mostrado con el arrastre a medias, para dibujar sin guardar todavía.
-pub(crate) fn display_order(values: &super::values::ContentValues) -> [dokka_model::MenubarItem; 7] {
+pub(crate) fn display_order(
+    values: &super::values::ContentValues,
+) -> [dokka_model::MenubarItem; 7] {
     match values.reorder {
         Some(drag) => drag.display(),
         None => values.preferences.menubar.order,
@@ -85,8 +85,6 @@ impl Settings {
 
     /// `true` si hay una fila agarrada que ya sigue al cursor.
     pub(crate) fn reorder_active(&self) -> bool {
-        self.values()
-            .reorder
-            .is_some_and(|drag| drag.is_active())
+        self.values().reorder.is_some_and(|drag| drag.is_active())
     }
 }

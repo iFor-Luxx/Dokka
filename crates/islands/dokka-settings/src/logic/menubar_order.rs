@@ -36,10 +36,7 @@ pub(crate) fn menubar_on(preferences: &MenubarPreferences, item: MenubarItem) ->
 }
 
 /// Enciende o apaga el icono en estas preferencias.
-pub(crate) fn toggle_menubar(
-    preferences: &mut MenubarPreferences,
-    item: MenubarItem,
-) {
+pub(crate) fn toggle_menubar(preferences: &mut MenubarPreferences, item: MenubarItem) {
     match item {
         MenubarItem::Volume => preferences.volume = !preferences.volume,
         MenubarItem::Network => preferences.network = !preferences.network,
@@ -83,7 +80,11 @@ pub(crate) fn menubar_row_at(display: &[MenubarItem; 7], x: f32, y: f32) -> Opti
     }
     let slot = ((y - top) / measures::CONTENT_ROW_HEIGHT).floor() as usize;
     let slot = slot.min(6);
-    if slot < display.len() { Some(slot) } else { None }
+    if slot < display.len() {
+        Some(slot)
+    } else {
+        None
+    }
 }
 
 /// Hueco donde caería la fila arrastrada con el cursor en `y`.
@@ -94,11 +95,7 @@ pub(crate) fn reorder_target(top: f32, y: f32) -> usize {
 }
 
 /// Orden con la fila `from` movida al hueco `to`.
-pub(crate) fn reordered(
-    base: &[MenubarItem; 7],
-    from: usize,
-    to: usize,
-) -> [MenubarItem; 7] {
+pub(crate) fn reordered(base: &[MenubarItem; 7], from: usize, to: usize) -> [MenubarItem; 7] {
     let mut kept: Vec<MenubarItem> = base.to_vec();
     let item = kept.remove(from.min(6));
     kept.insert(to.min(kept.len()), item);

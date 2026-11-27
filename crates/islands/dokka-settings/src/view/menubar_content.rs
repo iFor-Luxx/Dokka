@@ -54,7 +54,10 @@ pub(crate) fn menubar_content(
         .map(|drag| float_top(top, drag.current_y()));
 
     let heights = card_heights(SECTION_MENUBAR, 0);
-    let owned: Vec<String> = base.iter().map(|item| menubar_label(*item).to_owned()).collect();
+    let owned: Vec<String> = base
+        .iter()
+        .map(|item| menubar_label(*item).to_owned())
+        .collect();
     let props = SettingsGroupProps {
         top,
         rows: owned,
@@ -133,9 +136,13 @@ pub(crate) fn menubar_content(
             align: TextAlign::Left,
         });
         let touch = switch_touch(row);
-        let panels = switch_panels(theme, touch, &SwitchProps {
-            on: menubar_on(&shown.menubar, item),
-        });
+        let panels = switch_panels(
+            theme,
+            touch,
+            &SwitchProps {
+                on: menubar_on(&shown.menubar, item),
+            },
+        );
         flats.extend(panels);
     }
     texts.push(Text {

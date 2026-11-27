@@ -19,11 +19,7 @@ pub(crate) fn drag_track(target: SliderTarget) -> Option<dokka_scene::Rect> {
 
 /// Valor de 0 a 1 del deslizador agarrado bajo este `x`, aunque el cursor se
 /// pase de la barra: se queda en 0 o en 1.
-pub(crate) fn clamped_slider_value(
-    target: SliderTarget,
-    values: &ContentValues,
-    x: f32,
-) -> f32 {
+pub(crate) fn clamped_slider_value(target: SliderTarget, values: &ContentValues, x: f32) -> f32 {
     let Some(track) = drag_track(target) else {
         return values.drag_value;
     };

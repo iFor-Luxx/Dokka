@@ -80,11 +80,7 @@ impl CachedDrawings {
     /// Agarre de las filas reordenables, creado una vez y reutilizado.
     pub(crate) fn grip(&mut self, theme: &Theme) -> Arc<Drawing> {
         let color = theme.settings.card_text;
-        if self
-            .grip
-            .as_ref()
-            .is_none_or(|(known, _)| *known != color)
-        {
+        if self.grip.as_ref().is_none_or(|(known, _)| *known != color) {
             self.grip = Some((color, Arc::new(dokka_icons::settings_grip_icon(color))));
         }
         match &self.grip {

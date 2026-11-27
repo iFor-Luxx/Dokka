@@ -12,9 +12,7 @@ use super::logic::{
     magnification_from, magnification_to, menubar_switch_at, taskbar_switch_at,
 };
 use super::painted::PaintedControl;
-use super::slider_pointer::{
-    clamped_slider_value, drag_track, slider_value_at_x_for,
-};
+use super::slider_pointer::{clamped_slider_value, drag_track, slider_value_at_x_for};
 use super::state::Settings;
 use super::values::ContentValues;
 use crate::SettingsAction;
@@ -123,16 +121,13 @@ impl Settings {
         let selected = self.selected();
         if let Some(target) = dock_slider_at(selected, x, y) {
             // La cantidad atenuada no responde: pulsar no la agarra.
-            if target == SliderTarget::DockStrength
-                && !self.values().preferences.dock.magnification
+            if target == SliderTarget::DockStrength && !self.values().preferences.dock.magnification
             {
                 self.remember_reorder_press(x, y);
                 return false;
             }
             let start = match target {
-                SliderTarget::DockScale => {
-                    icon_scale_to(self.values().preferences.dock.icon_scale)
-                }
+                SliderTarget::DockScale => icon_scale_to(self.values().preferences.dock.icon_scale),
                 SliderTarget::DockStrength => {
                     magnification_to(self.values().preferences.dock.magnification_strength)
                 }

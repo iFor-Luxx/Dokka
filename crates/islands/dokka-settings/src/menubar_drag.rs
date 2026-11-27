@@ -27,12 +27,7 @@ pub(crate) struct MenubarDrag {
 }
 
 impl MenubarDrag {
-    pub(crate) fn pressed(
-        x: f32,
-        y: f32,
-        from: usize,
-        base: [MenubarItem; 7],
-    ) -> Self {
+    pub(crate) fn pressed(x: f32, y: f32, from: usize, base: [MenubarItem; 7]) -> Self {
         Self {
             press_x: x,
             press_y: y,

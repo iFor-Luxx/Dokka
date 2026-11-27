@@ -65,6 +65,7 @@ pub(crate) fn parse_order(value: &str) -> [MenubarItem; 7] {
 fn format_order(order: &[MenubarItem; 7]) -> String {
     order
         .iter()
+        .copied()
         .map(item_name)
         .collect::<Vec<_>>()
         .join(",")
