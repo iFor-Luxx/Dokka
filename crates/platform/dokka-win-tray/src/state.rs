@@ -6,12 +6,15 @@
 
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
+use std::path::Path;
 use std::sync::Arc;
 
 use dokka_model::{TrayItem, TrayItemId};
 use dokka_scene::Bitmap;
+use dokka_win_apps::NameCache;
 
 use crate::notify::{Action, Parsed};
+use crate::owner;
 
 /// Quién es cada icono para Dokka.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -47,17 +50,20 @@ struct TrayRecord {
     version: u32,
     title: String,
     hidden: bool,
+    explorer: bool,
     image: Option<Arc<Bitmap>>,
 }
 
 /// Estado compartido entre el hilo de la ventana y `TrayHost`.
-/// Solo memoria propia: nunca se llama a Windows con el candado tomado.
+/// Solo memoria propia y nombres ya leídos: con el candado tomado no se
+/// toca ninguna ventana; la ruta del dueño se resuelve en la entrada.
 #[derive(Debug)]
 pub(crate) struct Shared {
     next_id: u64,
     revision: u64,
     order: Vec<TrayKey>,
     records: HashMap<TrayKey, TrayRecord>,
+    names: NameCache,
 }
 
 impl Shared {
@@ -67,6 +73,7 @@ impl Shared {
             revision: 0,
             order: Vec::new(),
             records: HashMap::new(),
+            names: NameCache::default(),
         }
     }
 
@@ -74,22 +81,31 @@ impl Shared {
         self.revision
     }
 
+    /// `true` si ese icono ya está registrado.
+    pub(crate) fn knows(&self, parsed: &Parsed) -> bool {
+        self.records.contains_key(&TrayKey::from_parsed(parsed))
+    }
+
     /// Aplica un aviso ya leído; `Focus` no cambia nada visible.
-    pub(crate) fn apply(&mut self, parsed: &Parsed, icon: IconUpdate) {
+    /// `owner_exe` solo llega al aparecer: dice si es del Explorador y da
+    /// nombre al icono que llega sin texto.
+    pub(crate) fn apply(&mut self, parsed: &Parsed, icon: IconUpdate, owner_exe: Option<&Path>) {
         match parsed.action {
-            Action::Add | Action::Modify => self.upsert(parsed, icon),
+            Action::Add | Action::Modify => self.upsert(parsed, icon, owner_exe),
             Action::Delete => self.remove(&TrayKey::from_parsed(parsed)),
             Action::Version => self.set_version(parsed),
             Action::Focus => {}
         }
     }
 
-    /// Iconos visibles en el orden en que aparecieron.
+    /// Iconos visibles en el orden en que aparecieron, sin los del
+    /// Explorador: la lista es de apps en segundo plano.
     pub(crate) fn items(&self) -> Vec<TrayItem> {
         let mut out = Vec::new();
         for key in &self.order {
             if let Some(record) = self.records.get(key)
                 && !record.hidden
+                && !record.explorer
             {
                 out.push(TrayItem {
                     id: record.id,
@@ -138,6 +154,7 @@ impl Shared {
         for key in dead {
             if let Some(record) = self.records.remove(key)
                 && !record.hidden
+                && !record.explorer
             {
                 self.bump();
             }
@@ -145,9 +162,17 @@ impl Shared {
         self.order.retain(|key| !dead.contains(key));
     }
 
-    fn upsert(&mut self, parsed: &Parsed, icon: IconUpdate) {
+    fn upsert(&mut self, parsed: &Parsed, icon: IconUpdate, owner_exe: Option<&Path>) {
         let key = TrayKey::from_parsed(parsed);
         let fresh = !self.records.contains_key(&key);
+        let tip_empty = parsed.tip.as_ref().is_none_or(|tip| tip.trim().is_empty());
+        // Solo al aparecer y sin texto: el nombre se lee una vez, no en
+        // cada `MODIFY`.
+        let fallback = if fresh && tip_empty {
+            owner_exe.and_then(|executable| owner::app_title(executable, &mut self.names))
+        } else {
+            None
+        };
         let id = self.next_id;
         let record = match self.records.entry(key) {
             Entry::Occupied(slot) => slot.into_mut(),
@@ -161,19 +186,30 @@ impl Shared {
                     version: 0,
                     title: String::new(),
                     hidden: false,
+                    explorer: false,
                     image: None,
                 })
             }
         };
-        let was_visible = !fresh && !record.hidden;
+        let was_visible = !fresh && !record.hidden && !record.explorer;
         let old_title = record.title.clone();
         record.hwnd_raw = parsed.hwnd_raw;
         record.uid = parsed.uid;
         if let Some(callback) = parsed.callback {
             record.callback = callback;
         }
-        if let Some(tip) = &parsed.tip {
+        if fresh {
+            record.explorer = owner_exe.is_some_and(owner::is_explorer);
+        }
+        if let Some(tip) = &parsed.tip
+            && !tip.trim().is_empty()
+        {
             record.title = tip.clone();
+        }
+        if let Some(name) = fallback
+            && record.title.is_empty()
+        {
+            record.title = name;
         }
         if let Some(hidden) = parsed.hidden {
             record.hidden = hidden;
@@ -193,7 +229,7 @@ impl Shared {
         if fresh {
             self.order.push(key);
         }
-        let visible = !record.hidden;
+        let visible = !record.hidden && !record.explorer;
         if was_visible != visible || (visible && changed) {
             self.bump();
         }
@@ -202,7 +238,7 @@ impl Shared {
     fn remove(&mut self, key: &TrayKey) {
         if let Some(record) = self.records.remove(key) {
             self.order.retain(|known| known != key);
-            if !record.hidden {
+            if !record.hidden && !record.explorer {
                 self.bump();
             }
         }
