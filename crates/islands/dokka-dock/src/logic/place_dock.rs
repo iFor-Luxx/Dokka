@@ -47,7 +47,7 @@ pub(crate) fn place_dock<'a>(dock: &Dock, apps: &'a [DockApp]) -> Placement<'a> 
     // Cruce hacia dentro: la barra toca el borde en laterales izquierdos,
     // y deja la reserva por delante en el resto.
     let bar_cross = match position_or_bottom(dock) {
-        DockPosition::Left => 0.0,
+        DockPosition::Left => style::lift(dock),
         _ => style::headroom(dock),
     };
     // Margen para centrar el icono en reposo dentro del grosor.
