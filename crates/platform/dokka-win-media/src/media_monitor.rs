@@ -14,6 +14,8 @@ use crate::artwork::read_artwork;
 use crate::read_sessions::{perform, read_current_source, read_sessions};
 
 const REFRESH: Duration = Duration::from_millis(700);
+/// Veces que se relee la carátula tras cambiar de canción (unos 4 segundos).
+const ARTWORK_TRIES: u8 = 6;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MediaAction {
@@ -128,6 +130,10 @@ fn watch(
     let mut previous = Vec::new();
     let mut previous_current: Option<String> = None;
     let mut previous_song: Option<(String, String, String)> = None;
+    // Lecturas de carátula que quedan: muchas apps la publican un poco después
+    // de cambiar el título, o aún entregan la de la canción anterior.
+    let mut artwork_tries = 0_u8;
+    let mut artwork_pixels: Option<Arc<Bitmap>> = None;
     // Tras una orden, la siguiente lectura se envía siempre para confirmar
     // el valor adelantado (o corregirlo si la app no obedeció).
     let mut confirm_pending = false;
@@ -149,27 +155,39 @@ fn watch(
         }
         let current = read_sessions(&manager);
         let current_source = read_current_source(&manager);
-        if confirm_pending || current != previous || current_source != previous_current {
-            previous.clone_from(&current);
-            previous_current.clone_from(&current_source);
-            confirm_pending = false;
-            // La carátula solo se relee cuando cambia la canción; si es la
-            // misma, el `Arc` anterior sigue valiendo y no se repinta.
-            let song = current_source.as_ref().and_then(|source| {
-                current
-                    .iter()
-                    .find(|media| &media.source == source)
-                    .map(|media| (source.clone(), media.title.clone(), media.artist.clone()))
-            });
-            if song != previous_song {
-                let artwork = song
-                    .as_ref()
-                    .and_then(|(source, _, _)| read_artwork(&manager, source));
-                previous_song = song;
+        let song = current_source.as_ref().and_then(|source| {
+            current
+                .iter()
+                .find(|media| &media.source == source)
+                .map(|media| (source.clone(), media.title.clone(), media.artist.clone()))
+        });
+        let song_changed = song != previous_song;
+        if song_changed {
+            previous_song = song.clone();
+            artwork_tries = ARTWORK_TRIES;
+        }
+        if artwork_tries > 0 {
+            artwork_tries -= 1;
+            let artwork = song
+                .as_ref()
+                .and_then(|(source, _, _)| read_artwork(&manager, source));
+            // Solo se avisa si cambia la imagen, para no repintar de más.
+            let same = match (&artwork, &artwork_pixels) {
+                (Some(new), Some(old)) => new.pixels == old.pixels,
+                (None, None) => true,
+                _ => false,
+            };
+            if song_changed || !same {
+                artwork_pixels.clone_from(&artwork);
                 if artwork_updates.send(artwork).is_err() {
                     return Ok(());
                 }
             }
+        }
+        if confirm_pending || current != previous || current_source != previous_current {
+            previous.clone_from(&current);
+            previous_current.clone_from(&current_source);
+            confirm_pending = false;
             if updates.send(current).is_err() {
                 return Ok(());
             }

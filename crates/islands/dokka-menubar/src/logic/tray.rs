@@ -33,6 +33,7 @@ impl TrayKind {
     fn cell_width(self) -> f32 {
         match self {
             Self::Language => measures::LANG_WIDTH,
+            Self::ControlCenter => measures::CONTROL_CELL,
             _ => measures::CELL,
         }
     }

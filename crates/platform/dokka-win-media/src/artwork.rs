@@ -40,18 +40,23 @@ pub(crate) fn read_artwork(manager: &Manager, source: &str) -> Option<Arc<Bitmap
     if width == 0 || height == 0 {
         return None;
     }
-    let side = width.min(height);
+    // Windows escala primero y recorta después, así que el recorte va en las
+    // medidas ya reducidas: el lado corto queda en `ARTWORK_SIDE`.
+    let short = u64::from(width.min(height));
+    let scale = |length: u32| (u64::from(length) * u64::from(ARTWORK_SIDE) / short) as u32;
+    let scaled_width = scale(width).max(ARTWORK_SIDE);
+    let scaled_height = scale(height).max(ARTWORK_SIDE);
     let transform = BitmapTransform::new().ok()?;
+    transform.SetScaledWidth(scaled_width).ok()?;
+    transform.SetScaledHeight(scaled_height).ok()?;
     transform
         .SetBounds(BitmapBounds {
-            X: (width - side) / 2,
-            Y: (height - side) / 2,
-            Width: side,
-            Height: side,
+            X: (scaled_width - ARTWORK_SIDE) / 2,
+            Y: (scaled_height - ARTWORK_SIDE) / 2,
+            Width: ARTWORK_SIDE,
+            Height: ARTWORK_SIDE,
         })
         .ok()?;
-    transform.SetScaledWidth(ARTWORK_SIDE).ok()?;
-    transform.SetScaledHeight(ARTWORK_SIDE).ok()?;
     transform
         .SetInterpolationMode(BitmapInterpolationMode::Fant)
         .ok()?;
