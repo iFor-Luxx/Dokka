@@ -8,49 +8,58 @@ y la hora a la derecha. El clic en el icono abre debajo el mismo menú
 de cristal del dock (`menu_panel` sin punta); el clic en la hora abre
 debajo el mismo calendario del dock (`calendar_panel` con su píldora de
 flechas), alineado a la derecha bajo el reloj; cada icono de la fila abre
-debajo su panel provisional (tarjeta de cristal de 340 × 420 con su título),
-alineado bajo su icono sin salirse del ancho. Navega meses con las flechas,
-con hover, sin encogerse al navegar; la hora y la fila se resaltan suave
-(plano, como el icono) al pasar o con su panel abierto. Solo uno de los ocho
-a la vez: abrir uno cierra los demás. Guarda el nombre, la hora, el hoy, el
-código de idioma, si el menú, el calendario o la fila están abiertos, el
-desfase de mes, las semanas vistas y los resaltados; decide el clic y devuelve
-`MenubarAction`. Da su `Scene` (con el menú, el calendario o el provisional
-como `overlay`) y sus zonas activas (la franja y, abierto, lo desplegado con
-su hueco). Expone `MenubarPainted` para repintar solo si cambia (mes, hover,
-idioma y apertura incluidos) y `TrayKind` para saber qué panel está abierto.
+debajo su panel real (`volume_panel`, `network_panel`, `language_panel`,
+`music_panel`, `search_panel`, `control_center_panel`), medido con su
+`<x>_size` y colocado bajo su icono sin salirse del ancho (el buscador va
+centrado en lo alto). Navega meses con las flechas, con hover, sin encogerse
+al navegar; la hora y la fila se resaltan suave (plano, como el icono) al
+pasar o con su panel abierto. Solo uno de los ocho a la vez: abrir uno cierra
+los demás. Guarda el nombre, la hora, el hoy, el código de idioma, si el menú,
+el calendario o la fila están abiertos, el desfase de mes, las semanas vistas,
+los resaltados y los datos de cada panel (volumen, red, idiomas, canción,
+texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre
+del deslizador y devuelve `MenubarAction`. Da su `Scene` (con el menú, el
+calendario o el panel real como `overlay`) y sus zonas activas (la franja y,
+abierto, lo desplegado con su hueco). Expone `MenubarPainted` para repintar
+solo si cambia (datos de los paneles incluidos) y `TrayKind` para saber qué
+panel está abierto.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco.
 No mide texto: el reloj va centrado en su hueco derecho y el idioma en el suyo.
 
-## Dónde y cómo se enchufa cada panel real (un archivo por panel)
+## Dónde vive cada panel real (un archivo por panel en `src/logic/`)
 
-Los provisionales los hacen otros agentes como piezas sueltas en
-`crates/ui/dokka-components` (una carpeta por panel: `mod.rs`, `props.rs`,
-`view.rs`...), con la forma común:
+Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
+`mod.rs`, `props.rs`, `view.rs`...) con la forma común:
 
-- `pub fn <x>_size(props...) -> dokka_scene::Size`
-- `pub fn <x>_panel(theme, iconos, bounds: Rect, props...) -> dokka_scene::Overlay`
-- `pub fn <x>_hit(bounds, x, y, props...) -> Option<<X>Hit>`
+- `pub fn <x>_size(...) -> dokka_scene::Size`
+- `pub fn <x>_panel(theme, iconos, bounds: Rect, ...) -> dokka_scene::Overlay`
+- `pub fn <x>_hit(bounds, x, y, ...) -> Option<<X>Hit>`
 - `pub struct <X>Icons { .. }` con `new(theme)` (dibujos creados una vez)
 
-El enganche en esta isla vive en `src/logic/`, un archivo por panel
-(`control_center.rs`, `buscar.rs`, `idioma.rs`, `musica.rs`, `red.rs`,
-`volumen.rs`): cada uno expone `open_<panel>(&mut self, datos..., bar_width)`
-que mide con `<x>_size`, coloca con `tray_panel_for` (el mismo centrado bajo
-su icono con tope al borde que usa el provisional), guarda su estado abierto
-y traduce el clic con `<x>_hit` a una variante nueva de `MenubarAction`.
-`view/tray.rs::tray_overlay` llamará a su `<x>_panel` con el mismo `bounds`
-en vez de al provisional, y `MenubarPainted` ya incluye qué panel está abierto
-para repintar al cambiar sus datos. Medidas nuevas van en
-`dokka-theme/src/measures/menubar_tray.rs`; iconos nuevos, en un archivo propio
-de `dokka-icons` (no en `lucide.rs`, casi lleno).
+| Archivo | Enganche |
+|---|---|
+| `volume.rs` | `open_volume` (mide y coloca), `set_volume`, gesto de botón abajo y arrastre del deslizador con `VolumeSetLevel` en vivo |
+| `network.rs` | `open_network`, `set_network`, clic en ajustes |
+| `language.rs` | `open_language`, `set_languages`, elección de idioma |
+| `music.rs` | `open_music`, `set_now_playing`, botones anterior/pausa/siguiente |
+| `search.rs` | `open_search` (centrado), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
+| `control_center.rs` | `open_control_center` con los datos combinados; el deslizador delega en volumen, los botones en sus variantes y la tarjeta de red abre el panel de red |
+| `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
+| `tray.rs` | `TrayKind`, celdas de la fila y colocación (`tray_place`, `tray_place_centered`) |
+| `click.rs` | `click` (suelta el arrastre), `pressed` (fija el nivel ya) y `pointer_moved` (lo sigue arrastrando) |
+| `pointer.rs` | resaltados de la fila y de cada panel |
+
+`view/tray.rs` llama a cada `<x>_panel` con el mismo `bounds` y dibuja los
+iconos de la barra según los datos. Los iconos de cada panel se crean una vez
+en `Menubar::new`. Medidas nuevas van en `dokka-theme/src/measures/menubar_tray.rs`;
+iconos nuevos, en un archivo propio de `dokka-icons` (no en `lucide.rs`, casi lleno).
 
 | Panel | Datos que le pasa el shell | Cómo vuelve su acción |
 |---|---|---|
-| Volumen | `VolumeState { level, is_muted }` (cada `Tick`; el shell lo lee de la plataforma) | `MenubarAction` nueva (p. ej. fijar nivel o silenciar) → el shell la ejecuta en `run_menubar_action` |
-| Red | `NetworkState { kind, name, has_internet }` | igual: variante nueva → el shell abre el panel de red o cambia de red |
-| Música | `NowPlayingInfo { title, artist, is_playing }` | igual: variante nueva (reproducir/pausar/siguiente) → el shell llama a la plataforma |
-| Idioma | `KeyboardLanguage { id, code, name, is_active }` (el shell ya pasa `code` con `set_language_code`) | igual: variante nueva (elegir idioma) → el shell cambia la distribución |
-| Buscar | texto escrito (lo guarda esta isla como el calendario guarda su mes) | igual: variante nueva (abrir búsqueda) → el shell abre el lanzador |
-| Centro de control | combinados de arriba (volumen + red + música) | igual: delega en las variantes de cada panel |
+| Volumen | `VolumeState { level, is_muted }` cada `Tick` | `VolumeSetLevel(f32)` / `VolumeToggleMute` / `OpenSoundSettings` |
+| Red | `NetworkState` cada pocos `Tick` y al abrir | `OpenNetworkSettings` |
+| Música | `NowPlayingInfo` cada `Tick` | `MusicPrevious` / `MusicToggle` / `MusicNext` |
+| Idioma | `Vec<LanguageEntry>` + código (leído antes de tomar el foco) | `ChooseLanguage(id)` / `OpenLanguageSettings` |
+| Buscar | resultados filtrados (`set_search_results`) | `SearchOpen(index)` |
+| Centro de control | combinados de arriba | delega en las variantes de cada panel |

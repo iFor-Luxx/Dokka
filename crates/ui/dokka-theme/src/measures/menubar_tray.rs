@@ -1,7 +1,7 @@
 //! Medidas de la fila de iconos de la derecha, a la izquierda de la fecha.
 //! De derecha a izquierda: centro de control, buscar, idioma (texto),
 //! música, red y volumen. Cada icono es un botón con hover plano suave;
-//! el panel provisional mide unos 420 de alto (ver `menubar::WINDOW_HEIGHT`).
+//! cada panel real mide lo suyo y la ventana cubre al más alto.
 
 use dokka_scene::DRAWING_SIDE;
 
@@ -19,7 +19,3 @@ pub const CLOCK_GAP: f32 = 8.0;
 pub const HOVER_RADIUS: f32 = 8.0;
 /// Aire del hover alrededor del icono.
 pub const HOVER_PADDING: f32 = 4.0;
-/// Ancho del panel provisional (los reales lo deciden con su `<x>_size`).
-pub const PANEL_WIDTH: f32 = 340.0;
-/// Alto del panel provisional: unos 420.
-pub const PANEL_HEIGHT: f32 = 420.0;

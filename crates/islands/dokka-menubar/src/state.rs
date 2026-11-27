@@ -1,19 +1,26 @@
 use std::sync::Arc;
 
-use dokka_components::calendar_panel::{calendar_month, calendar_weeks};
+use dokka_components::control_center_panel::ControlCenterIcons;
+use dokka_components::language_panel::LanguageHit;
+use dokka_components::language_panel::{LanguageEntry, LanguageIcons};
 use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
+use dokka_components::music_panel::{MusicPanelIcons, MusicTrack};
 use dokka_components::nav_pill::{NavHalf, NavPillIcons};
+use dokka_components::network_panel::NetworkHit;
+use dokka_components::network_panel::NetworkIcons;
+use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
+use dokka_components::volume_panel::VolumePanelHit;
+use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{TrayIcons, menubar_icon};
-use dokka_scene::{Drawing, Rect};
-use dokka_theme::{Theme, menubar as measures};
+use dokka_model::{NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
+use dokka_scene::Drawing;
+use dokka_theme::Theme;
 
-use super::logic::{
-    OpenCalendar, OpenMenu, OpenTray, TrayKind, calendar_panel_for, menu_actions, menu_panel_for,
-    menu_rows, tray_open_panel,
-};
+use super::logic::{OpenCalendar, OpenMenu, TrayKind};
 
 /// Huella de la barra ya dibujada: app, hora, hoy, idioma, aperturas,
-/// resaltados, mes y píldora. Vive aquí para no exponer los tipos del componente.
+/// resaltados, mes, píldora y los datos que muestra cada panel.
+/// Vive aquí para no exponer los tipos del componente.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MenubarPainted {
     pub app: String,
@@ -30,10 +37,24 @@ pub struct MenubarPainted {
     pub clock_hovered: bool,
     pub tray_open: Option<TrayKind>,
     pub tray_hovered: Option<TrayKind>,
+    pub volume_level: f32,
+    pub volume_muted: bool,
+    pub volume_hovered: Option<VolumePanelHit>,
+    pub network_kind: NetworkKind,
+    pub network_name: String,
+    pub network_online: bool,
+    pub network_hovered: Option<NetworkHit>,
+    pub languages: Vec<LanguageEntry>,
+    pub language_hovered: Option<LanguageHit>,
+    pub track: Option<MusicTrack>,
+    pub search_query: String,
+    pub search_results: Vec<String>,
+    pub search_highlighted: Option<usize>,
+    pub search_cursor: bool,
 }
 
 /// Lo que la barra recuerda entre eventos: nombre, hora, idioma, menú,
-/// calendario, fila derecha y resaltados.
+/// calendario, fila derecha con sus datos y resaltados.
 #[derive(Debug)]
 pub struct Menubar {
     pub(crate) theme: Arc<Theme>,
@@ -42,6 +63,12 @@ pub struct Menubar {
     pub(crate) checks: MenuChecks,
     pub(crate) nav_pill: NavPillIcons,
     pub(crate) tray_icons: TrayIcons,
+    pub(crate) volume_icons: VolumePanelIcons,
+    pub(crate) network_icons: NetworkIcons,
+    pub(crate) language_icons: LanguageIcons,
+    pub(crate) music_icons: MusicPanelIcons,
+    pub(crate) control_icons: ControlCenterIcons,
+    pub(crate) search_icons: SearchPanelIcons,
     pub(crate) app_name: String,
     pub(crate) clock: String,
     pub(crate) icon_hovered: bool,
@@ -51,19 +78,37 @@ pub struct Menubar {
     pub(crate) calendar: Option<OpenCalendar>,
     pub(crate) today: (u16, u16, u16),
     pub(crate) language_code: String,
-    pub(crate) tray: Option<OpenTray>,
+    pub(crate) tray: Option<super::logic::OpenTray>,
     pub(crate) tray_hovered: Option<TrayKind>,
+    pub(crate) volume: VolumeState,
+    pub(crate) volume_hovered: Option<VolumePanelHit>,
+    pub(crate) network: NetworkState,
+    pub(crate) network_hovered: Option<NetworkHit>,
+    pub(crate) languages: Vec<LanguageEntry>,
+    pub(crate) language_hovered: Option<LanguageHit>,
+    pub(crate) track: Option<MusicTrack>,
+    pub(crate) now_playing: NowPlayingInfo,
+    pub(crate) search_query: String,
+    pub(crate) search_results: Vec<SearchPanelItem>,
+    pub(crate) search_highlighted: Option<usize>,
+    pub(crate) search_cursor: bool,
+    pub(crate) dragging_slider: bool,
 }
 
 impl Menubar {
     pub fn new(theme: Arc<Theme>) -> Self {
         let icon = Arc::new(menubar_icon(theme.menubar.text));
-        let tray_icons = TrayIcons::new(&theme);
         Self {
+            volume_icons: VolumePanelIcons::new(&theme),
+            network_icons: NetworkIcons::new(&theme),
+            language_icons: LanguageIcons::new(&theme),
+            music_icons: MusicPanelIcons::new(&theme),
+            control_icons: ControlCenterIcons::new(&theme),
+            search_icons: SearchPanelIcons::new(&theme),
             chevrons: MenuChevrons::new(&theme),
             checks: MenuChecks::new(&theme),
             nav_pill: NavPillIcons::new(&theme),
-            tray_icons,
+            tray_icons: TrayIcons::new(&theme),
             theme,
             icon,
             app_name: String::new(),
@@ -77,6 +122,30 @@ impl Menubar {
             language_code: "ES".to_owned(),
             tray: None,
             tray_hovered: None,
+            volume: VolumeState {
+                level: 0.0,
+                is_muted: false,
+            },
+            volume_hovered: None,
+            network: NetworkState {
+                kind: NetworkKind::Offline,
+                name: String::new(),
+                has_internet: false,
+            },
+            network_hovered: None,
+            languages: Vec::new(),
+            language_hovered: None,
+            track: None,
+            now_playing: NowPlayingInfo {
+                title: String::new(),
+                artist: String::new(),
+                is_playing: false,
+            },
+            search_query: String::new(),
+            search_results: Vec::new(),
+            search_highlighted: None,
+            search_cursor: false,
+            dragging_slider: false,
         }
     }
 
@@ -93,7 +162,7 @@ impl Menubar {
     }
 
     /// Código corto del idioma ("ES"): el shell lo rellena con
-    /// `KeyboardLanguage.code`; provisionalmente vale "ES".
+    /// `KeyboardLanguage.code` cada pocos `Tick`.
     pub fn set_language_code(&mut self, code: String) {
         self.language_code = code;
     }
@@ -138,8 +207,7 @@ impl Menubar {
         self.menu.as_ref().and_then(|menu| menu.highlighted)
     }
 
-    /// Huella de lo dibujado (app, hora, hoy, idioma, aperturas, resaltados,
-    /// mes y píldora): el shell solo repinta si cambia.
+    /// Huella de lo dibujado: el shell solo repinta si cambia.
     pub fn painted(&self) -> MenubarPainted {
         MenubarPainted {
             app: self.app_name.clone(),
@@ -156,6 +224,24 @@ impl Menubar {
             clock_hovered: self.clock_hovered,
             tray_open: self.tray_kind(),
             tray_hovered: self.tray_hovered,
+            volume_level: self.volume.level,
+            volume_muted: self.volume.is_muted,
+            volume_hovered: self.volume_hovered,
+            network_kind: self.network.kind,
+            network_name: self.network.name.clone(),
+            network_online: self.network.has_internet,
+            network_hovered: self.network_hovered,
+            languages: self.languages.clone(),
+            language_hovered: self.language_hovered,
+            track: self.track.clone(),
+            search_query: self.search_query.clone(),
+            search_results: self
+                .search_results
+                .iter()
+                .map(|item| item.name.clone())
+                .collect(),
+            search_highlighted: self.search_highlighted,
+            search_cursor: self.search_cursor,
         }
     }
 
@@ -173,99 +259,9 @@ impl Menubar {
     pub fn close_tray(&mut self) {
         self.tray = None;
         self.tray_hovered = None;
-    }
-
-    /// Caja del icono: franja izquierda de la barra.
-    pub(crate) fn icon_hit(&self) -> Rect {
-        Rect {
-            x: 0.0,
-            y: 0.0,
-            width: measures::SIDE_PADDING + measures::ICON_SIDE + measures::ICON_GAP,
-            height: measures::HEIGHT,
-        }
-    }
-
-    /// Caja de la hora: hueco derecho de la barra.
-    pub(crate) fn clock_hit(&self, bar_width: f32) -> Rect {
-        Rect {
-            x: bar_width - measures::SIDE_PADDING - measures::CLOCK_SLOT,
-            y: 0.0,
-            width: measures::CLOCK_SLOT,
-            height: measures::HEIGHT,
-        }
-    }
-
-    /// Fondo suave detrás del icono, al pasar o con el menú abierto.
-    pub(crate) fn icon_hover_bounds(&self) -> Rect {
-        Rect {
-            x: measures::SIDE_PADDING - measures::HOVER_PADDING,
-            y: (measures::HEIGHT - measures::ICON_SIDE) / 2.0 - measures::HOVER_PADDING,
-            width: measures::ICON_SIDE + measures::HOVER_PADDING * 2.0,
-            height: measures::ICON_SIDE + measures::HOVER_PADDING * 2.0,
-        }
-    }
-
-    /// Fondo suave detrás de la hora, al pasar o con el calendario abierto.
-    pub(crate) fn clock_hover_bounds(&self, bar_width: f32) -> Rect {
-        Rect {
-            x: bar_width - measures::SIDE_PADDING - measures::CLOCK_SLOT - measures::HOVER_PADDING,
-            y: (measures::HEIGHT - measures::ICON_SIDE) / 2.0 - measures::HOVER_PADDING,
-            width: measures::CLOCK_SLOT + measures::HOVER_PADDING * 2.0,
-            height: measures::ICON_SIDE + measures::HOVER_PADDING * 2.0,
-        }
-    }
-
-    /// Rectángulo del calendario abierto, con el recuerdo de semanas.
-    pub(crate) fn calendar_bounds(&self, bar_width: f32) -> Option<Rect> {
-        let open = self.calendar?;
-        let month = calendar_month(self.today, open.month_offset);
-        Some(calendar_panel_for(
-            bar_width,
-            calendar_weeks(&month).max(open.calendar_weeks),
-        ))
-    }
-
-    pub(crate) fn open_at(&mut self, bar_width: f32) {
-        let rows = menu_rows();
-        let panel = menu_panel_for(&rows, bar_width);
-        self.menu = Some(OpenMenu {
-            rows,
-            actions: menu_actions(),
-            panel,
-            highlighted: None,
-        });
-        self.calendar = None;
-        self.nav_hovered = None;
-        self.clock_hovered = false;
-        self.tray = None;
-        self.tray_hovered = None;
-        self.icon_hovered = true;
-    }
-
-    pub(crate) fn open_calendar(&mut self) {
-        self.calendar = Some(OpenCalendar {
-            month_offset: 0,
-            calendar_weeks: 0,
-        });
-        self.menu = None;
-        self.icon_hovered = false;
-        self.tray = None;
-        self.tray_hovered = None;
-        self.nav_hovered = None;
-        self.clock_hovered = true;
-    }
-
-    /// Abre el panel provisional del icono dado, cerrando menú y calendario.
-    pub(crate) fn open_tray(&mut self, kind: TrayKind, bar_width: f32) {
-        let Some(panel) = tray_open_panel(kind, bar_width) else {
-            return;
-        };
-        self.tray = Some(OpenTray { kind, panel });
-        self.menu = None;
-        self.icon_hovered = false;
-        self.calendar = None;
-        self.nav_hovered = None;
-        self.clock_hovered = false;
-        self.tray_hovered = Some(kind);
+        self.volume_hovered = None;
+        self.network_hovered = None;
+        self.language_hovered = None;
+        self.dragging_slider = false;
     }
 }

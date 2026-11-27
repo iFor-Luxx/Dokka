@@ -1,5 +1,6 @@
 //! Barra superior: app activa, hora con calendario, menú del icono y fila
-//! derecha con sus paneles provisionales.
+//! derecha con sus paneles reales (volumen, red, música, idioma, buscar y
+//! centro de control).
 //!
 //! La isla decide y dibuja; aquí solo se conecta con la plataforma y con lo
 //! que ya hace `context_menu.rs`, sin duplicarlo. Abrir el menú, el
@@ -12,6 +13,7 @@ use dokka_dock::MenuAction;
 use dokka_menubar::{MenubarAction, clock_text};
 use dokka_theme::menubar;
 use dokka_win_control::{lock_screen, show_shutdown_dialog};
+use dokka_win_media::MediaAction;
 use dokka_win_surface::{Surface, SurfaceEvent, local_time};
 use dokka_win_tracking::foreground_app;
 
@@ -86,6 +88,23 @@ pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) 
     }
 }
 
+/// Datos de los paneles en cada `Tick`: volumen y música siempre; red e
+/// idioma cada pocos `Tick` y con la fila cerrada (el idioma activo es el
+/// de la ventana al frente, antes de que la barra tome el foco).
+fn refresh_panels(session: &mut DockSession) {
+    crate::menubar_volume::refresh_volume(session);
+    crate::menubar_music::refresh_music(session);
+    session.menubar.tick_search_cursor();
+    session.menubar_ticks += 1;
+    if session.menubar_ticks.is_multiple_of(3) {
+        crate::menubar_network::refresh_network(session);
+        // Con la fila abierta el foco es de Dokka y el activo saldría mal.
+        if !session.menubar.is_tray_open() {
+            crate::menubar_language::refresh_languages(session);
+        }
+    }
+}
+
 /// Atiende un evento de la plataforma. Devuelve si lo consumió.
 /// `Refresh` y `Tick` solo actualizan datos y dejan seguir al resto.
 pub(crate) fn handle_menubar_event(
@@ -96,22 +115,46 @@ pub(crate) fn handle_menubar_event(
     match event {
         SurfaceEvent::Refresh => {
             refresh_foreground(session);
+            crate::menubar_search::refresh_search_results(session, surface);
             return Ok(false);
         }
         SurfaceEvent::Tick => {
             refresh_foreground(session);
             refresh_clock(session);
+            refresh_panels(session);
             return Ok(false);
         }
         SurfaceEvent::MenubarMoved { x, y } => {
             let width = surface.menubar_width();
-            session.menubar.pointer_moved(x, y, width);
+            if let Some(action) = session.menubar.pointer_moved(x, y, width) {
+                run_menubar_action(session, surface, action)?;
+            }
+        }
+        SurfaceEvent::MenubarPressed { x, y } => {
+            if let Some(action) = session.menubar.pressed(x, y) {
+                run_menubar_action(session, surface, action)?;
+            }
         }
         SurfaceEvent::MenubarLeft => {
             session.menubar.pointer_left();
         }
         SurfaceEvent::MenubarClicked { x, y } => {
             click_menubar(session, surface, x, y)?;
+        }
+        SurfaceEvent::MenubarTyped { character } => {
+            crate::menubar_search::type_search(session, surface, character);
+        }
+        SurfaceEvent::MenubarBackspace => {
+            crate::menubar_search::erase_search(session, surface);
+        }
+        SurfaceEvent::MenubarEnter => {
+            crate::menubar_search::confirm_search(session, surface)?;
+        }
+        SurfaceEvent::MenubarUp => {
+            crate::menubar_search::step_search_up(session);
+        }
+        SurfaceEvent::MenubarDown => {
+            crate::menubar_search::step_search_down(session);
         }
         SurfaceEvent::MenubarDismissed => {
             dismiss_menubar(session, surface);
@@ -123,7 +166,8 @@ pub(crate) fn handle_menubar_event(
 
 /// Clic en la barra: icono, hora, fila, píldora o cerrar fuera. Abrir el menú,
 /// el calendario o la fila cierra los otros dos, el del dock y las previas;
-/// cerrar devuelve el foco.
+/// cerrar devuelve el foco. Al abrir red o idioma se releen con la app de
+/// delante aún al frente; al abrir buscar se calculan sus resultados.
 fn click_menubar(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -137,6 +181,20 @@ fn click_menubar(
     let chosen = session.menubar.click(x, y, width);
     if let Some(action) = chosen {
         return run_menubar_action(session, surface, action);
+    }
+    if !was_tray && session.menubar.is_tray_open() {
+        match session.menubar.tray_kind() {
+            Some(dokka_menubar::TrayKind::Network) => {
+                crate::menubar_network::refresh_network(session);
+            }
+            Some(dokka_menubar::TrayKind::Language) => {
+                crate::menubar_language::refresh_languages(session);
+            }
+            Some(dokka_menubar::TrayKind::Search) => {
+                crate::menubar_search::refresh_search_results(session, surface);
+            }
+            _ => {}
+        }
     }
     let now_menu = session.menubar.is_menu_open();
     let now_calendar = session.menubar.is_calendar_open();
@@ -164,7 +222,9 @@ fn click_menubar(
 }
 
 /// Ejecuta la opción reutilizando `context_menu.rs` donde ya existe.
-fn run_menubar_action(
+/// Los ajustes y las apps nuevas usan `menubar_menu_dismissed` para quedar
+/// delante; volumen y música mantienen su panel abierto.
+pub(crate) fn run_menubar_action(
     session: &mut DockSession,
     surface: &mut Surface,
     action: MenubarAction,
@@ -201,6 +261,36 @@ fn run_menubar_action(
             surface.menubar_menu_closed();
             run_menu_action(session, surface, MenuAction::Quit)?;
             surface.menubar_hide();
+        }
+        MenubarAction::VolumeSetLevel(level) => {
+            crate::menubar_volume::set_level(session, level)?;
+        }
+        MenubarAction::VolumeToggleMute => {
+            crate::menubar_volume::toggle_mute(session)?;
+        }
+        MenubarAction::OpenSoundSettings => {
+            crate::menubar_volume::open_sound_settings(session, surface)?;
+        }
+        MenubarAction::OpenNetworkSettings => {
+            crate::menubar_network::open_network_settings(session, surface)?;
+        }
+        MenubarAction::ChooseLanguage(id) => {
+            crate::menubar_language::choose_language(session, surface, id)?;
+        }
+        MenubarAction::OpenLanguageSettings => {
+            crate::menubar_language::open_language_settings(session, surface)?;
+        }
+        MenubarAction::MusicPrevious => {
+            crate::menubar_music::send_music(session, MediaAction::Previous);
+        }
+        MenubarAction::MusicToggle => {
+            crate::menubar_music::send_music(session, MediaAction::Toggle);
+        }
+        MenubarAction::MusicNext => {
+            crate::menubar_music::send_music(session, MediaAction::Next);
+        }
+        MenubarAction::SearchOpen(index) => {
+            crate::menubar_search::launch_search_result(session, surface, index)?;
         }
     }
     Ok(())

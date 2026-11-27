@@ -1,20 +1,28 @@
+use windows::Win32::UI::Input::KeyboardAndMouse::SetFocus;
 use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, SetForegroundWindow};
 
 use crate::Surface;
+use crate::foreground::foreground_window;
 
 impl Surface {
-    /// Toma el foco para saber cuándo cerrar: la pérdida llega como `MenubarDismissed`.
+    /// Toma el foco para saber cuándo cerrar y recibir el teclado: la pérdida
+    /// llega como `MenubarDismissed`. Une la entrada al hilo activo para que
+    /// Windows conceda el primer plano y fija el foco del teclado.
     pub fn menubar_menu_opened(&mut self) {
         if self.menubar.is_invalid() {
             return;
         }
-        // SAFETY: consulta y cambio de foco de ventanas del mismo escritorio.
+        // SAFETY: consulta de solo lectura de la ventana activa.
         unsafe {
             let current = GetForegroundWindow();
             if current != self.menubar {
                 self.menubar_previous = Some(current);
-                let _ = SetForegroundWindow(self.menubar);
             }
+        }
+        foreground_window(self.menubar);
+        // SAFETY: la ventana es propia y sigue viva.
+        unsafe {
+            let _ = SetFocus(Some(self.menubar));
         }
     }
 

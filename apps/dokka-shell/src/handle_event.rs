@@ -46,7 +46,13 @@ pub(crate) fn handle_event(
         | SurfaceEvent::SettingsEscape
         | SurfaceEvent::MenubarMoved { .. }
         | SurfaceEvent::MenubarLeft
+        | SurfaceEvent::MenubarPressed { .. }
         | SurfaceEvent::MenubarClicked { .. }
+        | SurfaceEvent::MenubarTyped { .. }
+        | SurfaceEvent::MenubarBackspace
+        | SurfaceEvent::MenubarEnter
+        | SurfaceEvent::MenubarUp
+        | SurfaceEvent::MenubarDown
         | SurfaceEvent::MenubarDismissed => {}
         SurfaceEvent::PointerMoved { x, y } => {
             if session.launchpad.is_open() {

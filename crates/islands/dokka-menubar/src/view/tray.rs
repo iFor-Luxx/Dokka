@@ -1,60 +1,58 @@
-//! Fila derecha en la escena: iconos, idioma, hovers y panel provisional.
+//! Fila derecha en la escena: iconos según los datos y su panel real.
+
+use std::sync::Arc;
 
 use dokka_scene::{Icon, IconImage, Overlay, Panel, Rect, Text, TextAlign};
 use dokka_theme::{menubar as bar_measures, menubar_tray as measures, typography};
 
-use super::super::logic::tray_placeholder_overlay;
+use super::super::logic::TrayKind;
 use crate::Menubar;
 
 impl Menubar {
-    /// Iconos Lucide de la fila (el idioma es texto, no icono).
-    /// Siempre 5: no se reconstruyen las capas al pasar el cursor.
+    /// Iconos de la fila: el altavoz sigue al nivel y al silencio, la red a
+    /// su tipo, la lupa y los deslizadores a sus dibujos; el idioma es texto.
+    /// Siempre 5 iconos + texto: no se reconstruyen las capas al pasar.
     pub(crate) fn tray_bar_icons(&self, bar_width: f32) -> Vec<Icon> {
         let cells = self.tray_cells(bar_width);
-        let at = |kind: super::super::logic::TrayKind| {
+        let at = |kind: TrayKind| {
             cells
                 .iter()
                 .find(|(cell, _)| *cell == kind)
                 .map(|(_, area)| *area)
         };
-        let drawings = [
-            (
-                super::super::logic::TrayKind::ControlCenter,
-                &self.tray_icons.control,
+        let place = |kind: TrayKind, drawing: Arc<dokka_scene::Drawing>| {
+            let area = at(kind).unwrap_or(Rect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            });
+            Icon {
+                x: area.x + (area.width - measures::ICON_SIDE) / 2.0,
+                y: (bar_measures::HEIGHT - measures::ICON_SIDE) / 2.0,
+                side: measures::ICON_SIDE,
+                image: Some(IconImage::Drawing(drawing)),
+                placeholder: self.theme.menubar.background,
+                placeholder_radius: 0.0,
+            }
+        };
+        vec![
+            place(TrayKind::ControlCenter, Arc::clone(&self.control_icons.bar)),
+            place(TrayKind::Search, Arc::clone(self.search_icons.bar())),
+            place(TrayKind::Music, Arc::clone(&self.tray_icons.music)),
+            place(
+                TrayKind::Network,
+                self.network_icons
+                    .for_bar(super::super::logic::network_type(self.network.kind)),
             ),
-            (
-                super::super::logic::TrayKind::Search,
-                &self.tray_icons.search,
+            place(
+                TrayKind::Volume,
+                Arc::clone(
+                    self.volume_icons
+                        .bar(self.volume.level, self.volume.is_muted),
+                ),
             ),
-            (super::super::logic::TrayKind::Music, &self.tray_icons.music),
-            (
-                super::super::logic::TrayKind::Network,
-                &self.tray_icons.network,
-            ),
-            (
-                super::super::logic::TrayKind::Volume,
-                &self.tray_icons.volume,
-            ),
-        ];
-        drawings
-            .into_iter()
-            .map(|(kind, drawing)| {
-                let area = at(kind).unwrap_or(Rect {
-                    x: 0.0,
-                    y: 0.0,
-                    width: 0.0,
-                    height: 0.0,
-                });
-                Icon {
-                    x: area.x + (area.width - measures::ICON_SIDE) / 2.0,
-                    y: (bar_measures::HEIGHT - measures::ICON_SIDE) / 2.0,
-                    side: measures::ICON_SIDE,
-                    image: Some(IconImage::Drawing(std::sync::Arc::clone(drawing))),
-                    placeholder: self.theme.menubar.background,
-                    placeholder_radius: 0.0,
-                }
-            })
-            .collect()
+        ]
     }
 
     /// Hovers planos de la fila, uno por icono. Siempre 6 (cero si no se ve).
@@ -92,7 +90,7 @@ impl Menubar {
         let (_, area) = self
             .tray_cells(bar_width)
             .into_iter()
-            .find(|(kind, _)| *kind == super::super::logic::TrayKind::Language)?;
+            .find(|(kind, _)| *kind == TrayKind::Language)?;
         Some(Text {
             x: area.x + area.width / 2.0,
             center_y: bar_measures::HEIGHT / 2.0,
@@ -104,10 +102,16 @@ impl Menubar {
         })
     }
 
-    /// Panel provisional bajo su icono. Los reales sustituyen esta llamada
-    /// por su `<x>_panel` con el mismo `bounds` (ver `README.md`).
+    /// Panel real bajo su icono, según qué fila lo abrió.
     pub(crate) fn tray_overlay(&self) -> Option<Overlay> {
         let open = self.tray?;
-        Some(tray_placeholder_overlay(&self.theme, open.panel, open.kind))
+        Some(match open.kind {
+            TrayKind::Volume => self.volume_overlay(),
+            TrayKind::Network => self.network_overlay(),
+            TrayKind::Music => self.music_overlay(),
+            TrayKind::Language => self.language_overlay(),
+            TrayKind::Search => self.search_overlay(),
+            TrayKind::ControlCenter => self.control_overlay(),
+        })
     }
 }

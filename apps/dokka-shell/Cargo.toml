@@ -5,6 +5,7 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
+dokka-components.workspace = true
 dokka-config.workspace = true
 dokka-contracts.workspace = true
 dokka-dock.workspace = true

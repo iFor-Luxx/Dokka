@@ -1,5 +1,6 @@
 //! Qué significa un clic: icono, hora, fila, píldora o cerrar fuera.
 
+use super::pointer::hit;
 use dokka_components::calendar_panel::calendar_step;
 use dokka_components::menu_panel::menu_row_at;
 
@@ -7,7 +8,7 @@ use super::tray::tray_kind_at;
 use crate::{Menubar, MenubarAction};
 
 /// Resultado interno del clic.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) enum MenubarClick {
     MenuOpened,
     CalendarOpened,
@@ -22,7 +23,9 @@ impl Menubar {
     /// Decide el clic. Solo uno abierto a la vez: la hora, el icono y cada
     /// icono de la fila cambian directamente de uno a otro; repetir el
     /// mismo lo cierra; fuera o el panel del dock lo cierran.
+    /// También suelta cualquier arrastre del deslizador.
     pub fn click(&mut self, x: f32, y: f32, bar_width: f32) -> Option<MenubarAction> {
+        self.dragging_slider = false;
         match self.click_inner(x, y, bar_width) {
             MenubarClick::Chosen(action) => Some(action),
             MenubarClick::MenuOpened
@@ -32,6 +35,47 @@ impl Menubar {
             | MenubarClick::TrayKept
             | MenubarClick::Dismissed => None,
         }
+    }
+
+    /// Botón abajo: el deslizador fija el nivel ya; lo demás espera al clic.
+    pub fn pressed(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
+        match self.tray_kind() {
+            Some(super::TrayKind::Volume) if self.tray_contains(x, y) => self.volume_press(x, y),
+            Some(super::TrayKind::ControlCenter) if self.tray_contains(x, y) => {
+                self.control_press(x, y)
+            }
+            _ => None,
+        }
+    }
+
+    /// Con el botón abajo (también arrastrando): el nivel sigue al cursor.
+    pub fn pointer_moved(&mut self, x: f32, y: f32, bar_width: f32) -> Option<MenubarAction> {
+        if self.menu.is_some() {
+            self.move_over_menu(x, y, bar_width);
+            return None;
+        }
+        if self.calendar.is_some() {
+            self.move_over_calendar(x, y, bar_width);
+            return None;
+        }
+        if self.dragging_slider {
+            return match self.tray_kind() {
+                Some(super::TrayKind::Volume) => self.volume_drag(x, y),
+                Some(super::TrayKind::ControlCenter) => self.control_drag(x, y),
+                _ => {
+                    self.dragging_slider = false;
+                    None
+                }
+            };
+        }
+        if self.tray.is_some() {
+            self.move_over_tray(x, y, bar_width);
+            return None;
+        }
+        self.icon_hovered = hit(x, y, &self.icon_hit());
+        self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
+        self.tray_hovered = tray_kind_at(bar_width, x, y);
+        None
     }
 
     pub(crate) fn click_inner(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
@@ -144,14 +188,31 @@ impl Menubar {
     }
 
     fn click_over_tray(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
-        // Dentro del panel provisional no se cierra (los reales deciden).
-        if self.tray_contains(x, y) {
+        // Dentro del panel real: su propio golpe decide (o no cierra).
+        if self.tray_contains(x, y)
+            && let Some(kind) = self.tray_kind()
+        {
+            let chosen = match kind {
+                super::TrayKind::Volume => self.volume_click(x, y),
+                super::TrayKind::Network => self.network_click(x, y),
+                super::TrayKind::Music => self.music_click(x, y),
+                super::TrayKind::Language => self.language_click(x, y),
+                super::TrayKind::Search => self.search_click(x, y),
+                super::TrayKind::ControlCenter => self.control_click(x, y, bar_width),
+            };
+            if let Some(action) = chosen {
+                return MenubarClick::Chosen(action);
+            }
+            // La tarjeta de red del centro abre el panel de red.
+            if self.tray_kind() != Some(kind) {
+                return MenubarClick::TrayOpened;
+            }
             return MenubarClick::TrayKept;
         }
         // Repetir el mismo icono lo cierra; otro cambia de panel.
         if let Some(kind) = tray_kind_at(bar_width, x, y) {
             if self.tray_kind() == Some(kind) {
-                self.tray = None;
+                self.close_tray();
                 self.tray_hovered = Some(kind);
                 return MenubarClick::Dismissed;
             }
@@ -159,19 +220,16 @@ impl Menubar {
             return MenubarClick::TrayOpened;
         }
         if in_icon(x, y, &self.icon_hit()) {
-            self.tray = None;
-            self.tray_hovered = None;
+            self.close_tray();
             self.open_at(bar_width);
             return MenubarClick::MenuOpened;
         }
         if in_clock(x, y, &self.clock_hit(bar_width)) {
-            self.tray = None;
-            self.tray_hovered = None;
+            self.close_tray();
             self.open_calendar();
             return MenubarClick::CalendarOpened;
         }
-        self.tray = None;
-        self.tray_hovered = None;
+        self.close_tray();
         self.icon_hovered = false;
         self.clock_hovered = false;
         MenubarClick::Dismissed
