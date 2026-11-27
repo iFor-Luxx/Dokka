@@ -1,7 +1,6 @@
-//! Puente del efecto genio: detecta minimizar y restaurar y pide los vuelos.
-//! La vía inmediata (minimizar con el hwnd) pone la foto fija antes de
-//! sincronizar; el aviso agrupado (`Refresh`) sigue valiendo para restaurar
-//! por fuera y como red de seguridad. El destino lo da el dock en sus
+//! Puente del efecto genio: apaga la animación de Windows, apunta cada vuelo
+//! al hueco del dock y pide el de vuelta. Minimizar entra por `genie_flow`.
+//! El destino lo da el dock en sus
 //! coordenadas y aquí pasa a píxeles de pantalla. Si algo falla, la ventana
 //! sigue su curso normal.
 //! Recibe las piezas por separado para no pedir prestado el `DockSession`
@@ -19,11 +18,9 @@ use dokka_win_surface::Surface;
 /// Estado del genio entre eventos. Solo el shell lo posee.
 pub(crate) struct GenieBridge {
     director: dokka_win_genie::GenieDirector,
-    last_minimized: Vec<isize>,
     /// Último rectángulo visto por ventana no minimizada, para volar desde
     /// donde estaba (la ventana ya no lo dice cuando avisa).
     last_rects: HashMap<isize, [i32; 4]>,
-    started: bool,
     settings_window: Option<u64>,
 }
 
@@ -31,9 +28,7 @@ impl GenieBridge {
     pub(crate) fn new() -> Self {
         Self {
             director: dokka_win_genie::GenieDirector::new(),
-            last_minimized: Vec::new(),
             last_rects: HashMap::new(),
-            started: false,
             settings_window: None,
         }
     }
@@ -119,35 +114,15 @@ impl GenieBridge {
         minimized
     }
 
-    /// Tras sincronizar: detecta nuevas minimizadas y restaura por fuera.
-    pub(crate) fn on_refresh(
-        &mut self,
-        dock: &Dock,
-        apps: &[DockApp],
-        position: DockPosition,
-        surface: &Surface,
-    ) {
-        let minimized = Self::current_minimized(apps);
-        if !self.started {
-            self.last_minimized = minimized;
-            self.last_rects.clear();
-            self.remember_rects(apps);
-            self.started = true;
-            self.director.mark_started();
-            self.calm_open(apps);
-            return;
-        }
+    /// Tras sincronizar: recuerda dónde está cada ventana, apaga su animación
+    /// propia y descarta el vuelo y las fotos que ya no valen.
+    pub(crate) fn on_refresh(&mut self, apps: &[DockApp]) {
         self.remember_rects(apps);
         self.calm_open(apps);
+        self.director.mark_started();
         let foreground = foreground_window().map_or(0, |id| id.value() as isize);
-        self.director.cancel_if_stale(foreground, &minimized);
-        for &hwnd in &minimized {
-            if self.last_minimized.contains(&hwnd) {
-                continue;
-            }
-            self.begin_minimize(dock, apps, position, surface, hwnd, foreground);
-        }
-        self.last_minimized = minimized;
+        self.director
+            .cancel_if_stale(foreground, &Self::current_minimized(apps));
     }
 
     /// Foto fija inmediata: lo último visto más lo que diga Windows ahora.
@@ -179,36 +154,6 @@ impl GenieBridge {
         Some(frame)
     }
 
-    /// Empieza el vuelo de una ventana recién minimizada (vía agrupada).
-    fn begin_minimize(
-        &mut self,
-        dock: &Dock,
-        apps: &[DockApp],
-        position: DockPosition,
-        surface: &Surface,
-        hwnd: isize,
-        foreground: isize,
-    ) {
-        if self.is_settings(hwnd as u64) {
-            return;
-        }
-        let seen = self.last_rects.get(&hwnd).copied();
-        let Some((from, frame)) = rect_before_minimize(hwnd, seen) else {
-            eprintln!("genio: sin vuelo para {hwnd} (vía agrupada): no se supo de donde volar");
-            return;
-        };
-        let screen = monitor_rect_for_window(hwnd);
-        if !self
-            .director
-            .begin_minimize(hwnd, from, frame, screen, position, foreground)
-        {
-            return;
-        }
-        let aspect = (frame[2] - frame[0]) as f32 / (frame[3] - frame[1]).max(1) as f32;
-        self.last_rects.remove(&hwnd);
-        self.aim_with_aspect(dock, apps, surface, hwnd, aspect);
-    }
-
     /// Apunta el vuelo en curso al hueco definitivo del dock.
     pub(crate) fn aim_with_aspect(
         &mut self,
@@ -235,13 +180,6 @@ impl GenieBridge {
         );
         self.director.aim_current(slot_screen);
         self.director.tuck_current_if_hidden(dock.is_hidden());
-    }
-
-    /// Marca una ventana como ya vista minimizada (la puso la vía inmediata).
-    pub(crate) fn note_minimized(&mut self, hwnd: isize) {
-        if !self.last_minimized.contains(&hwnd) {
-            self.last_minimized.push(hwnd);
-        }
     }
 
     /// Clic en la miniatura: vuela al revés desde su foto.

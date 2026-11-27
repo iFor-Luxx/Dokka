@@ -174,7 +174,7 @@ pub(crate) fn cut(
 }
 
 /// Ata cada tira a dos valores compartidos (`bend`, `shift`) con expresiones
-/// que reescriben `Genie::frame` para el compositor.
+/// que doblan los bordes hacia el hueco y deslizan la imagen dentro.
 pub(crate) fn bind(
     gfx: &GenieCompositor,
     genie: &Genie,

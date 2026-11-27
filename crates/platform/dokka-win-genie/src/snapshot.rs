@@ -31,7 +31,7 @@ use crate::geometry::{GenieEdge, PixelRect};
 
 /// Lo que parecia una ventana minimizada, para restaurarla con genio.
 #[derive(Debug, Clone)]
-pub struct Snapshot {
+pub(crate) struct Snapshot {
     /// Girada segun el borde del dock de entonces.
     pub(crate) image: GenieImage,
     /// Donde estaba la ventana, en pixeles de pantalla.
@@ -51,7 +51,7 @@ impl Snapshot {
     }
 
     /// Ancho entre alto en pantalla.
-    pub fn aspect(&self) -> f32 {
+    pub(crate) fn aspect(&self) -> f32 {
         self.window.width() as f32 / self.window.height().max(1) as f32
     }
 }

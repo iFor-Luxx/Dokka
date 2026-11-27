@@ -26,7 +26,7 @@
 //! Como `App::on_minimize_start` de Muelle: si la ventana es de las que sigue
 //! el dock y no es de Dokka ni de Preferencias, primero se pone la foto fija,
 //! luego se sincroniza, se recoloca el dock y se apunta el vuelo al hueco
-//! definitivo (o a la barrita si está oculto). El aviso agrupado sigue igual.
+//! definitivo (o a la barrita si está oculto).
 
 use std::error::Error;
 
@@ -74,7 +74,6 @@ pub(crate) fn on_minimize_started(
         return Ok(());
     }
     session.genie.remember_rects(session.state.apps());
-    session.genie.note_minimized(hwnd);
     let aspect = (frame[2] - frame[0]) as f32 / (frame[3] - frame[1]).max(1) as f32;
     let (genie, dock, state) = (&mut session.genie, &session.dock, &session.state);
     genie.aim_with_aspect(dock, state.apps(), surface, hwnd, aspect);
@@ -86,8 +85,6 @@ pub(crate) fn on_minimize_started(
 }
 
 /// Pasa al puente el estado ya sincronizado de la sesión.
-pub(crate) fn refresh(session: &mut crate::dock_session::DockSession, surface: &Surface) {
-    let position = session.preferences.dock.position;
-    let (genie, dock, state) = (&mut session.genie, &session.dock, &session.state);
-    genie.on_refresh(dock, state.apps(), position, surface);
+pub(crate) fn refresh(session: &mut DockSession) {
+    session.genie.on_refresh(session.state.apps());
 }

@@ -190,7 +190,7 @@ pub fn rect_before_minimize(
 }
 
 /// `true` si la ventana sigue minimizada ahora mismo.
-pub fn is_iconic_now(hwnd: isize) -> bool {
+pub(crate) fn is_iconic_now(hwnd: isize) -> bool {
     // SAFETY: consulta de solo lectura; un handle destruido dice que no.
     unsafe { IsIconic(HWND(hwnd as *mut core::ffi::c_void)).as_bool() }
 }
