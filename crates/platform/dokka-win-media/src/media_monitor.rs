@@ -1,13 +1,16 @@
+use std::sync::Arc;
 use std::sync::mpsc::{Receiver, RecvTimeoutError, Sender, channel};
 use std::thread;
 use std::time::Duration;
 
 use dokka_model::NowPlayingInfo;
+use dokka_scene::Bitmap;
 use windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager as Manager;
 use windows::Win32::System::WinRT::{RO_INIT_MULTITHREADED, RoInitialize};
 use windows::core::Result;
 
 use crate::MediaSession;
+use crate::artwork::read_artwork;
 use crate::read_sessions::{perform, read_current_source, read_sessions};
 
 const REFRESH: Duration = Duration::from_millis(700);
@@ -25,8 +28,10 @@ pub struct MediaMonitor {
     commands: Sender<(String, MediaAction)>,
     updates: Receiver<Vec<MediaSession>>,
     current_updates: Receiver<Option<String>>,
+    artwork_updates: Receiver<Option<Arc<Bitmap>>>,
     latest: Vec<MediaSession>,
     latest_current: Option<String>,
+    latest_artwork: Option<Arc<Bitmap>>,
 }
 
 impl MediaMonitor {
@@ -34,9 +39,15 @@ impl MediaMonitor {
         let (commands, command_queue) = channel();
         let (update_sender, updates) = channel();
         let (current_sender, current_updates) = channel();
+        let (artwork_sender, artwork_updates) = channel();
         // El hilo termina solo cuando se suelta este monitor.
         thread::spawn(move || {
-            if let Err(error) = watch(&command_queue, &update_sender, &current_sender) {
+            if let Err(error) = watch(
+                &command_queue,
+                &update_sender,
+                &current_sender,
+                &artwork_sender,
+            ) {
                 eprintln!("Controles de música no disponibles: {error}");
             }
         });
@@ -44,8 +55,10 @@ impl MediaMonitor {
             commands,
             updates,
             current_updates,
+            artwork_updates,
             latest: Vec::new(),
             latest_current: None,
+            latest_artwork: None,
         }
     }
 
@@ -76,6 +89,18 @@ impl MediaMonitor {
             .map(MediaSession::now_playing)
     }
 
+    /// Carátula de la canción actual, sin esperar.
+    ///
+    /// La lee el hilo del monitor solo cuando cambia la canción y reutiliza
+    /// el mismo `Arc` mientras no cambia, para no repintar. Sin canción o
+    /// sin miniatura devuelve `None`.
+    pub fn artwork(&mut self) -> Option<Arc<Bitmap>> {
+        if let Some(newest) = self.artwork_updates.try_iter().last() {
+            self.latest_artwork = newest;
+        }
+        self.latest_artwork.clone()
+    }
+
     pub fn send(&mut self, source: &str, action: MediaAction) {
         if action == MediaAction::Toggle {
             // Parte del estado más fresco y adelanta el icono sin esperar al hilo.
@@ -95,12 +120,14 @@ fn watch(
     commands: &Receiver<(String, MediaAction)>,
     updates: &Sender<Vec<MediaSession>>,
     current_updates: &Sender<Option<String>>,
+    artwork_updates: &Sender<Option<Arc<Bitmap>>>,
 ) -> Result<()> {
     // SAFETY: inicializa Windows Runtime solo para este hilo, que vive con el proceso.
     unsafe { RoInitialize(RO_INIT_MULTITHREADED)? };
     let manager = Manager::RequestAsync()?.join()?;
     let mut previous = Vec::new();
     let mut previous_current: Option<String> = None;
+    let mut previous_song: Option<(String, String, String)> = None;
     // Tras una orden, la siguiente lectura se envía siempre para confirmar
     // el valor adelantado (o corregirlo si la app no obedeció).
     let mut confirm_pending = false;
@@ -126,6 +153,22 @@ fn watch(
             previous.clone_from(&current);
             previous_current.clone_from(&current_source);
             confirm_pending = false;
+            // La carátula solo se relee cuando cambia la canción; si es la
+            // misma, el `Arc` anterior sigue valiendo y no se repinta.
+            let song = current_source.as_ref().and_then(|source| {
+                current.iter().find(|media| &media.source == source).map(
+                    |media| (source.clone(), media.title.clone(), media.artist.clone()),
+                )
+            });
+            if song != previous_song {
+                let artwork = song
+                    .as_ref()
+                    .and_then(|(source, _, _)| read_artwork(&manager, source));
+                previous_song = song;
+                if artwork_updates.send(artwork).is_err() {
+                    return Ok(());
+                }
+            }
             if updates.send(current).is_err() {
                 return Ok(());
             }

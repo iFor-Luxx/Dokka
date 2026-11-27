@@ -1,18 +1,25 @@
 //! Panel de música: canción actual, apertura, dibujo y botones.
 
+use std::sync::Arc;
+
 use dokka_components::music_panel::{
     MusicPanelHit, MusicTrack, music_panel_hit, music_panel_panel, music_panel_size,
 };
 use dokka_model::NowPlayingInfo;
-use dokka_scene::Overlay;
+use dokka_scene::{Bitmap, Overlay};
 
 use super::tray::{tray_anchor, tray_place};
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
     /// Lo que suena ahora; sin nada, el panel muestra su vacío.
-    /// El shell la rellena cada `Tick` desde `MediaMonitor`.
-    pub fn set_now_playing(&mut self, current: Option<NowPlayingInfo>) {
+    /// El shell la rellena cada `Tick` desde `MediaMonitor`, con la
+    /// carátula que leyó su hilo. Sin canción no se guarda carátula.
+    pub fn set_now_playing(
+        &mut self,
+        current: Option<NowPlayingInfo>,
+        artwork: Option<Arc<Bitmap>>,
+    ) {
         self.track = current
             .filter(|info| !info.title.trim().is_empty())
             .map(|info| MusicTrack {
@@ -32,6 +39,12 @@ impl Menubar {
                 is_playing: track.is_playing,
             },
         );
+        self.artwork = self.track.as_ref().and(artwork);
+    }
+
+    /// Carátula actual, para reutilizarla en otros paneles.
+    pub fn artwork(&self) -> Option<Arc<Bitmap>> {
+        self.artwork.clone()
     }
 
     /// Mide con su tamaño real y lo coloca bajo su icono.
@@ -50,7 +63,13 @@ impl Menubar {
             width: music_panel_size(self.track.as_ref()).width,
             height: music_panel_size(self.track.as_ref()).height,
         });
-        music_panel_panel(&self.theme, &self.music_icons, bounds, self.track.as_ref())
+        music_panel_panel(
+            &self.theme,
+            &self.music_icons,
+            bounds,
+            self.track.as_ref(),
+            self.artwork.as_ref(),
+        )
     }
 
     pub(crate) fn music_click(&mut self, x: f32, y: f32) -> Option<MenubarAction> {

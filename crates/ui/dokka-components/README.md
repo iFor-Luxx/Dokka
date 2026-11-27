@@ -23,7 +23,8 @@ pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
 `filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna)
-y cristal único de música Tahoe (`music_panel`: carátula cuadrada con título y artista recortados
+y cristal único de música Tahoe (`music_panel`: carátula cuadrada con la foto
+real en píxeles cuando hay (marcador si no), título y artista recortados
 con "…", controles grandes de anterior, pausa/reproducir y siguiente con los glifos Lucide
 en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
 canción entrega los mismos textos e iconos),
