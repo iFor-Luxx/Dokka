@@ -17,16 +17,8 @@ impl Previews {
         let content = self.open.as_ref()?.content.clone();
         match content {
             PreviewContent::Calendar => {
-                if let Some((offset, weeks)) = calendar_step(
-                    self.today,
-                    self.month_offset,
-                    self.calendar_weeks,
-                    bounds,
-                    x,
-                    y,
-                ) {
+                if let Some(offset) = calendar_step(self.month_offset, bounds, x, y) {
                     self.month_offset = offset;
-                    self.calendar_weeks = weeks;
                 }
                 Some(PreviewClick::Handled)
             }

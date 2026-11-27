@@ -18,11 +18,11 @@ y en qué orden: los apagados no se dibujan ni reciben clics, los demás se
 recolocan sin huecos según `order` y si estaba abierto su panel se cierra
 (también si cambia el orden con un panel abierto); el filtrado y el orden
 viven en `logic/tray.rs` (`is_shown` y `saved_order`: añadir un `TrayKind`
-nuevo es una línea en cada uno) y la huella lo nota. Navega meses con las flechas, con hover, sin encogerse
-al navegar; la hora y la fila se resaltan suave (plano, como el icono) al
+nuevo es una línea en cada uno) y la huella lo nota. Navega meses con las flechas, con hover, midiendo siempre
+6 filas con los vecinos atenuados; la hora y la fila se resaltan suave (plano, como el icono) al
 pasar o con su panel abierto. Solo uno de los nueve a la vez: abrir uno cierra
 los demás. Guarda el nombre, la hora, el hoy, el código de idioma, si el menú,
-el calendario o la fila están abiertos, el desfase de mes, las semanas vistas,
+el calendario o la fila están abiertos, el desfase de mes,
 los resaltados y los datos de cada panel (volumen, brillo DDC, red, idiomas, segundo plano con iconos
 por identidad, canción y
 carátula, texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre

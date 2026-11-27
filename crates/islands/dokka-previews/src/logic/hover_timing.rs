@@ -70,7 +70,6 @@ impl Previews {
         self.large_wait = None;
         self.nav_hovered = None;
         self.month_offset = 0;
-        self.calendar_weeks = 0;
         self.reveal = Reveal::hidden();
     }
 
@@ -93,7 +92,6 @@ impl Previews {
             self.open = None;
             self.closing = None;
             self.month_offset = 0;
-            self.calendar_weeks = 0;
             self.nav_hovered = None;
             self.large = None;
             self.large_wait = None;
@@ -114,7 +112,6 @@ impl Previews {
                 self.large_wait = None;
                 self.nav_hovered = None;
                 self.month_offset = 0;
-                self.calendar_weeks = 0;
                 self.reveal = Reveal::hidden();
             }
         }

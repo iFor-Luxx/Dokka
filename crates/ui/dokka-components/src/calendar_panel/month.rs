@@ -20,10 +20,16 @@ pub fn calendar_month(today: (u16, u16, u16), offset: i32) -> CalendarMonth {
     let months = i32::from(today.0) * 12 + i32::from(today.1.max(1)) - 1 + offset;
     let year = months.div_euclid(12);
     let month = months.rem_euclid(12) as usize + 1;
+    let (prev_year, prev_month) = if month == 1 {
+        (year - 1, 12)
+    } else {
+        (year, month - 1)
+    };
     CalendarMonth {
         title: format!("{} {year}", MONTHS[month - 1]),
         first_column: weekday_of_first(year, month),
         days: days_in(year, month),
+        prev_days: days_in(prev_year, prev_month),
         today: (offset == 0).then_some(today.2),
     }
 }

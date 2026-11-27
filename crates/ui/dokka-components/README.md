@@ -3,9 +3,10 @@
 **Hace:** componentes reutilizables de interfaz: etiqueta flotante de cristal (`tooltip`,
 con `tooltip_side` al lado hacia dentro para docks laterales),
 fondo de paneles (`popup_panel`, con `place_after`/`place_before` laterales), calendario con su píldora de navegación (`calendar_panel`:
-mes ya calculado, semanas, tamaño, píldora y paso entre meses compartidos por
+mes ya calculado con los días del mes anterior, tamaño fijo de 6 filas,
+píldora y paso entre meses compartidos por
 el dock y en la barra, con el mismo cristal claro;
-la tarjeta nunca se encoge al navegar), píldora
+dibuja siempre 42 números con los vecinos atenuados), píldora
 segmentada (`nav_pill`: cápsula con dos chevrones Lucide y línea central, a partir
 de su rectángulo, qué lados están disponibles y el hover; sin saber qué navega),
 vistas previas con botones redondos de cerrar y fijar, menú del clic derecho

@@ -174,10 +174,6 @@ impl Menubar {
         self.calendar.map(|open| open.month_offset).unwrap_or(0)
     }
 
-    pub(crate) fn calendar_weeks_seen(&self) -> u16 {
-        self.calendar.map(|open| open.calendar_weeks).unwrap_or(0)
-    }
-
     pub fn highlighted(&self) -> Option<usize> {
         self.menu.as_ref().and_then(|menu| menu.highlighted)
     }
@@ -195,7 +191,6 @@ impl Menubar {
             highlighted: self.highlighted(),
             calendar_open: self.calendar.is_some(),
             month_offset: self.calendar_month_offset(),
-            weeks_seen: self.calendar_weeks_seen(),
             nav_hovered: self.nav_hovered,
             clock_hovered: self.clock_hovered,
             tray_open: self.tray_kind(),
