@@ -34,39 +34,43 @@ impl Dock {
             icons.push(self.icon(entry, bounds, images));
         }
 
-        let dots = placement
-            .slots
-            .iter()
-            .filter(|(entry, _)| match entry {
-                Entry::App(app) | Entry::Explorer(app) => app.is_running(),
-                _ => false,
-            })
-            .map(|(_, bounds)| {
-                let diameter = style::dot_diameter(self);
-                match self.preferences.position {
-                    DockPosition::Left => Dot {
-                        x: placement.bar.x + style::dot_from_bottom(self) - diameter,
-                        y: bounds.y + (bounds.height - diameter) / 2.0,
-                        diameter,
-                        color: self.theme.dock.running_dot,
-                    },
-                    DockPosition::Right => Dot {
-                        x: placement.bar.x + placement.bar.width
-                            - style::dot_from_bottom(self),
-                        y: bounds.y + (bounds.height - diameter) / 2.0,
-                        diameter,
-                        color: self.theme.dock.running_dot,
-                    },
-                    _ => Dot {
-                        x: bounds.x + (bounds.width - diameter) / 2.0,
-                        y: placement.bar.y + placement.bar.height
-                            - style::dot_from_bottom(self),
-                        diameter,
-                        color: self.theme.dock.running_dot,
-                    },
-                }
-            })
-            .collect();
+        // Sin indicadores la lista se encoge; `SceneLayers` la reutiliza sin problema.
+        let dots: Vec<Dot> = if self.preferences.show_indicators {
+            placement
+                .slots
+                .iter()
+                .filter(|(entry, _)| match entry {
+                    Entry::App(app) | Entry::Explorer(app) => app.is_running(),
+                    _ => false,
+                })
+                .map(|(_, bounds)| {
+                    let diameter = style::dot_diameter(self);
+                    match self.preferences.position {
+                        DockPosition::Left => Dot {
+                            x: placement.bar.x + style::dot_from_bottom(self) - diameter,
+                            y: bounds.y + (bounds.height - diameter) / 2.0,
+                            diameter,
+                            color: self.theme.dock.running_dot,
+                        },
+                        DockPosition::Right => Dot {
+                            x: placement.bar.x + placement.bar.width - style::dot_from_bottom(self),
+                            y: bounds.y + (bounds.height - diameter) / 2.0,
+                            diameter,
+                            color: self.theme.dock.running_dot,
+                        },
+                        _ => Dot {
+                            x: bounds.x + (bounds.width - diameter) / 2.0,
+                            y: placement.bar.y + placement.bar.height
+                                - style::dot_from_bottom(self),
+                            diameter,
+                            color: self.theme.dock.running_dot,
+                        },
+                    }
+                })
+                .collect()
+        } else {
+            Vec::new()
+        };
 
         let labels = hovered_label(self, &placement, names)
             .map(|(text, slot)| match self.preferences.position {

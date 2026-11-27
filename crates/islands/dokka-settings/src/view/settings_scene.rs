@@ -133,7 +133,8 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         ],
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
         // y taparía su tinte. Las tarjetas, los deslizadores (barra, relleno
-        // y tirador en cápsula), los interruptores (pista y tirador) y el
+        // desde la fábrica, marca y tirador en cápsula), el segmentado (fondo
+        // y pastilla), los interruptores (pista y tirador) y el
         // resaltado de la píldora van aquí. Los tiradores son planos porque
         // los puntos son círculos. El contenido cambia de tamaño entre
         // secciones: `SceneLayers` reconstruye si crece o cambia el estilo;

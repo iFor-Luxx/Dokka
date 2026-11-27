@@ -2,6 +2,7 @@
 
 use dokka_components::menu_panel::{MenuRow, menu_row_at, menu_row_top};
 use dokka_model::{AppInfo, DockApp, WindowId};
+use dokka_scene::Rect;
 
 use super::dock_menu::{MenuData, dock_menu};
 use super::submenu::{OpenSubmenu, submenu_contains, submenu_panel};

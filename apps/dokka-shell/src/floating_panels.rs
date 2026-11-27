@@ -33,16 +33,8 @@ pub(crate) fn preview_request(session: &DockSession, x: f32, y: f32) -> Option<P
     };
     let size = session.dock.surface_size(apps);
     let (edge, bar_side, limit_along) = match target.position {
-        DockPosition::Left => (
-            target.icons_side + popup::GAP,
-            target.bar_side,
-            size.height,
-        ),
-        DockPosition::Right => (
-            target.icons_side - popup::GAP,
-            target.bar_side,
-            size.height,
-        ),
+        DockPosition::Left => (target.icons_side + popup::GAP, target.bar_side, size.height),
+        DockPosition::Right => (target.icons_side - popup::GAP, target.bar_side, size.height),
         _ => (0.0, 0.0, 0.0),
     };
     Some(PreviewRequest {

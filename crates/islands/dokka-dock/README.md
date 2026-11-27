@@ -31,6 +31,10 @@ Respeta `auto_hide` (`motion/hide.rs`: espera con retardo y deslizamiento suave;
 escondido solo deja la franja fina del borde y vuelve al tocarla, sin sondeo
 en reposo). En vertical encoge (`fit`) para caber bajo la barra superior.
 Si algo no puede calcularse, abajo y visible.
+Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los
+en curso para que el icono vuelva a su sitio sin pedir fotogramas
+(el hueco sobre la barra se mantiene). Sin indicadores (`show_indicators`)
+la lista de puntos queda vacía.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Todavía no tiene miniaturas ni arrastre.
 

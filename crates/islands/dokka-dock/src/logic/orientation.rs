@@ -22,13 +22,7 @@ pub(crate) fn position_or_bottom(dock: &Dock) -> DockPosition {
 /// Convierte coordenadas a lo largo / hacia dentro a un rectángulo.
 /// Abajo: a lo largo es x, hacia dentro es y.
 /// Laterales: a lo largo es y, hacia dentro es x.
-pub(crate) fn pack(
-    dock: &Dock,
-    along: f32,
-    cross: f32,
-    size_along: f32,
-    size_cross: f32,
-) -> Rect {
+pub(crate) fn pack(dock: &Dock, along: f32, cross: f32, size_along: f32, size_cross: f32) -> Rect {
     if is_vertical(dock) {
         Rect {
             x: cross,
@@ -45,6 +39,3 @@ pub(crate) fn pack(
         }
     }
 }
-
-/// Tamaño de la ventana: a lo largo cabe la barra con sus márgenes,
-/// hacia dentro el grosor más la reserva para crecer y paneles.

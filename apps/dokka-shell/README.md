@@ -59,3 +59,5 @@ cierra el panel si otro primer plano llega por `Refresh` sin el cursor
 encima, sin quitarlo de debajo del cursor.
 
 **No hace:** no contiene lógica. Se cierra con Ctrl+C.
+
+Mientras la barra de Windows deba estar oculta, se vuelve a ocultar en cada aviso y cada segundo.

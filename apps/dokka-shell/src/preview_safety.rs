@@ -20,9 +20,8 @@ pub(crate) fn render_and_watch(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
-    let busy = session.dock.is_menu_open()
-        || session.previews.has_panel()
-        || session.launchpad.is_open();
+    let busy =
+        session.dock.is_menu_open() || session.previews.has_panel() || session.launchpad.is_open();
     session.dock.set_hide_busy(busy);
     // Al cerrar con el cursor fuera, el aviso de salida pudo perderse con el
     // menú abierto: el cursor real manda, sin sondeo continuo en reposo.

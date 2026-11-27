@@ -68,7 +68,13 @@ impl LabelPointer {
             Y: container_height,
         })?;
         self.clip.SetCornerRadius(Vector2 { X: 0.0, Y: 0.0 })?;
-        self.place_square(label, center_x - height - border, body_bottom - border, center_x, body_bottom)
+        self.place_square(
+            label,
+            center_x - height - border,
+            body_bottom - border,
+            center_x,
+            body_bottom,
+        )
     }
 
     /// Punta lateral: `edge` es el borde vertical de la píldora hacia el icono

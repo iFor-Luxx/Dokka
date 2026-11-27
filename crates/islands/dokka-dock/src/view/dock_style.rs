@@ -95,10 +95,9 @@ pub(crate) fn rise_space(dock: &Dock) -> f32 {
 /// En vertical reserva además el ancho de la vista previa más ancha.
 pub(crate) fn headroom(dock: &Dock) -> f32 {
     if crate::logic::is_vertical(dock) {
-        let preview_width =
-            popup::PREVIEW_SLOT_WIDTH * popup::PREVIEW_MAXIMUM_WINDOWS as f32
-                + popup::PREVIEW_PADDING * 2.0
-                + popup::GAP;
+        let preview_width = popup::PREVIEW_SLOT_WIDTH * popup::PREVIEW_MAXIMUM_WINDOWS as f32
+            + popup::PREVIEW_PADDING * 2.0
+            + popup::GAP;
         rise_space(dock) + preview_width.max(popup::SPACE)
     } else {
         rise_space(dock) + popup::SPACE

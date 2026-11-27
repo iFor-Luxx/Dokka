@@ -26,9 +26,24 @@ impl Previews {
             ),
         };
         match request.position {
-            DockPosition::Left => Some(place_after(size, request.edge, request.center_y, request.limit_along)),
-            DockPosition::Right => Some(place_before(size, request.edge, request.center_y, request.limit_along)),
-            _ => Some(place_above(size, request.center_x, request.bottom, request.limit)),
+            DockPosition::Left => Some(place_after(
+                size,
+                request.edge,
+                request.center_y,
+                request.limit_along,
+            )),
+            DockPosition::Right => Some(place_before(
+                size,
+                request.edge,
+                request.center_y,
+                request.limit_along,
+            )),
+            _ => Some(place_above(
+                size,
+                request.center_x,
+                request.bottom,
+                request.limit,
+            )),
         }
     }
 

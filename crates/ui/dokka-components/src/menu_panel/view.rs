@@ -36,18 +36,18 @@ pub fn menu_overlay(
 }
 
 /// Menú lateral con la punta hacia el dock.
-/// `on_left` dice si la punta nace en el borde izquierdo (dock a la izquierda).
+/// `tip` es la altura de la punta y si nace en el borde izquierdo (dock a la
+/// izquierda).
 pub fn menu_overlay_side(
     theme: &Theme,
     chevrons: &MenuChevrons,
     checks: &MenuChecks,
     bounds: Rect,
-    tip_y: f32,
-    on_left: bool,
+    tip: (f32, bool),
     rows: &[MenuRow],
     highlighted: Option<usize>,
 ) -> Overlay {
-    let pointer = Some(menu_pointer_side(bounds, tip_y, on_left));
+    let pointer = Some(menu_pointer_side(bounds, tip.0, tip.1));
     overlay_inner(theme, chevrons, checks, bounds, pointer, rows, highlighted)
 }
 

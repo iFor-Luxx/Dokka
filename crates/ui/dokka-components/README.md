@@ -54,9 +54,13 @@ ajusta) y grupo de filas de ajustes (`settings_group`: tarjeta clara con
 filas de alto variable separadas por líneas finas con aire a ambos lados,
 etiqueta a la izquierda y control a la derecha, sin saber qué ajusta cada
 fila; da la tarjeta, las líneas, las etiquetas y la geometría de cada fila
-para que la isla coloque sus interruptores y deslizadores) y deslizador
-(`slider`: pista fina de 4 con relleno y tirador blanco en cápsula alargada
-de 22 × 15 con borde fino, que solo usa Preferencias; el volumen y el centro
-de control tienen su propio dibujo).
+para que la isla coloque sus interruptores, deslizadores y segmentado) y deslizador
+(`slider`: pista fina de 4 con relleno desde la fábrica hasta el valor, marca
+de fábrica y tirador blanco en cápsula alargada de 22 × 15 con borde fino
+—cuatro planos siempre—, que solo usa Preferencias; el volumen y el centro
+de control tienen su propio dibujo) y segmentado (`segmented_control`:
+cápsula gris de 204 × 28 con la opción elegida en pastilla blanca de radios
+concéntricos y texto centrado por tercio, sin saber qué ajusta: la isla
+traduce índices).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

@@ -93,10 +93,16 @@ fn container_offset(panel: &Panel, pointer: &Pointer) -> (f32, f32) {
             let bottom = panel.bounds.y + panel.bounds.height;
             (pointer.center_x - pointer.height - border, bottom - border)
         }
-        PointerSide::Left => (panel.bounds.x - pointer.height - border, pointer_center_y(panel, pointer) - pointer.height - border),
+        PointerSide::Left => (
+            panel.bounds.x - pointer.height - border,
+            pointer_center_y(panel, pointer) - pointer.height - border,
+        ),
         PointerSide::Right => {
             let right = panel.bounds.x + panel.bounds.width;
-            (right - border, pointer_center_y(panel, pointer) - pointer.height - border)
+            (
+                right - border,
+                pointer_center_y(panel, pointer) - pointer.height - border,
+            )
         }
     }
 }
@@ -147,10 +153,7 @@ fn square_offset(panel: &Panel, pointer: &Pointer, side: f32) -> (f32, f32) {
             // El centro del cuadrado queda sobre el borde inferior del panel.
             (pointer.center_x - side / 2.0, bottom - side / 2.0)
         }
-        PointerSide::Left => (
-            panel.bounds.x - side / 2.0,
-            pointer.center_y - side / 2.0,
-        ),
+        PointerSide::Left => (panel.bounds.x - side / 2.0, pointer.center_y - side / 2.0),
         PointerSide::Right => (
             panel.bounds.x + panel.bounds.width - side / 2.0,
             pointer.center_y - side / 2.0,

@@ -96,5 +96,9 @@ pub(crate) fn place_dock<'a>(dock: &Dock, apps: &'a [DockApp]) -> Placement<'a> 
         style::height(dock) - style::divider_inset(dock) * 2.0,
     );
     // Con vertical el grosor y la línea quedan horizontales gracias a `pack`.
-    Placement { bar, slots, divider }
+    Placement {
+        bar,
+        slots,
+        divider,
+    }
 }

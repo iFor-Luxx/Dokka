@@ -5,7 +5,7 @@ use dokka_components::window_controls::traffic_at;
 use dokka_scene::Rect;
 use dokka_theme::settings as measures;
 
-use super::content::content_control_at;
+use super::content_hit::content_control_at;
 use super::sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
 
 /// `true` si el punto cae en la píldora de la cabecera.

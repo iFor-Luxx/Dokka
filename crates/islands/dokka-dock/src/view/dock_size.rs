@@ -41,7 +41,12 @@ impl Dock {
         let (entries, _) = list_entries(apps, &self.explorer);
         if is_vertical(self) {
             Rect {
-                x: bar.x - if self.preferences.position == dokka_model::DockPosition::Right { rise } else { 0.0 },
+                x: bar.x
+                    - if self.preferences.position == dokka_model::DockPosition::Right {
+                        rise
+                    } else {
+                        0.0
+                    },
                 y: style::side_room(self) - magnify,
                 width: rise + bar.width,
                 height: style::bar_width(self, entries.len()) + magnify * 2.0,

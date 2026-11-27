@@ -32,3 +32,20 @@ pub struct PreviewRequest {
     /// Alto disponible para centrar en laterales.
     pub limit_along: f32,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MediaCommand {
+    Previous,
+    Toggle,
+    Next,
+}
+
+/// Resultado de un clic dentro de un panel.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PreviewClick {
+    Handled,
+    Activate(u64),
+    Close(u64),
+    TogglePin(u64),
+    Media(MediaCommand),
+}

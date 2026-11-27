@@ -119,6 +119,9 @@ fn settings_colors(border: dokka_scene::Color) -> SettingsColors {
         slider_track: palette::SETTINGS_SLIDER_TRACK,
         slider_fill: palette::SETTINGS_SLIDER_FILL,
         slider_muted: palette::SETTINGS_SLIDER_MUTED,
+        slider_tick: palette::SETTINGS_SLIDER_TICK,
+        segment_track: palette::SETTINGS_SEGMENT_TRACK,
+        segment_selected: palette::SETTINGS_SEGMENT_SELECTED,
         badge: [
             palette::GRAY,
             palette::BLUE,

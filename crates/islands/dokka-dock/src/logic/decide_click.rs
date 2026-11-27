@@ -66,7 +66,10 @@ pub(crate) fn entry_at<'a>(
             .slots
             .iter()
             .find(|(_, icon)| {
-                x >= icon.x - reach && x <= icon.x + icon.width + reach && y >= icon.y && y <= bottom
+                x >= icon.x - reach
+                    && x <= icon.x + icon.width + reach
+                    && y >= icon.y
+                    && y <= bottom
             })
             .map(|&(entry, _)| entry);
     }

@@ -78,12 +78,6 @@ pub(crate) fn place_dock_window(window: HWND, options: SurfaceOptions) -> Result
     }
 }
 
-/// Coloca la ventana en el monitor principal y devuelve la escala usada.
-/// Abajo y visible: idéntico a `place_dock_window` sin esconder.
-pub(crate) fn place_at_bottom_center(window: HWND, options: SurfaceOptions) -> Result<f32> {
-    place_dock_window(window, options)
-}
-
 /// Cubre el monitor principal con la ventana y devuelve su escala.
 pub(crate) fn place_fullscreen(window: HWND) -> Result<f32> {
     let area = base_area(window, true)?;
