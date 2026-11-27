@@ -61,3 +61,11 @@ pub(crate) fn show_taskbar_now(
     session.resize(surface)?;
     Ok(())
 }
+
+/// Vuelve a ocultar la barra si Windows la sacó sola (al registrarse iconos o
+/// barras, o al reiniciarse el Explorador). Ocultar una ya oculta no hace nada.
+pub(crate) fn keep_taskbar_hidden(session: &DockSession) {
+    if session.taskbar_hidden() {
+        set_taskbar_visible(false);
+    }
+}
