@@ -28,11 +28,12 @@ impl Settings {
         if self.selected() != SECTION_MENUBAR {
             return;
         }
-        if super::logic::menubar_switch_at(self.selected(), x, y).is_some() {
+        let width = self.content_width();
+        if super::logic::menubar_switch_at(self.selected(), width, x, y).is_some() {
             return;
         }
         let display = display_order(self.values());
-        let Some(row) = menubar_row_at(&display, x, y) else {
+        let Some(row) = menubar_row_at(&display, width, x, y) else {
             return;
         };
         let base = self.values().preferences.menubar.order;

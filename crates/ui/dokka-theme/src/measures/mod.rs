@@ -13,6 +13,7 @@ pub mod network_language;
 pub mod popup;
 pub mod search;
 pub mod settings;
+mod settings_content;
 pub mod tooltip;
 pub mod tray_glass;
 pub mod volume;

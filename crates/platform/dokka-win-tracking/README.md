@@ -11,6 +11,11 @@ Observa también el cambio de primer plano (`EVENT_SYSTEM_FOREGROUND`) y el movi
 solo de la ventana al frente (`EVENT_OBJECT_LOCATIONCHANGE`, avisando solo cuando
 cambia lo ocupado para no inundar), así que activar, maximizar o restaurar
 otra ventana produce el aviso `WINDOWS_CHANGED_MESSAGE`.
+Incluye SOLO Preferencias
+del proceso propio (`settings_entry.rs`: identidad `dokka-preferencias`, nombre
+"Preferencias", icono de engranaje del dock): solo minimizada, a la derecha del
+separador como cualquier minimizada; nunca dock, barra, paneles, vista grande,
+Launchpad ni bandeja. No cuenta como app que ocupa la pantalla.
 
 **No hace:** no obtiene iconos, no activa ni minimiza ventanas y no avisa de cambios de título.
 La identidad de una app es la ruta de su ejecutable.

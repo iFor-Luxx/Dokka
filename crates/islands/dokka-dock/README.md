@@ -10,6 +10,10 @@ fijar/quitar, y si está abierta «Cerrar ventana»/«Salir»); los iconos del s
 tienen el suyo (`logic/system_menus.rs`: explorador con carpetas, papelera con vaciado
 solo con contenido, Launchpad con abrir y añadir). Reloj y calendario no tienen menú.
 «Preferencias» abre la ventana de ajustes (`MenuAction::OpenSettings`, en `settings.rs`).
+Preferencias en el dock (`logic/settings_app.rs`): solo su miniatura minimizada a la
+derecha del separador, con el engranaje blanco de ajustes como insignia y nombre
+"Preferencias"; sin hueco de app a la izquierda, sin fijar, sin lanzar otra instancia
+y con menú propio (ventana al frente + "Cerrar ventana" que solo la oculta).
 La ventana reserva a cada lado sitio para el menú con su submenú a la derecha
 (`menu::WIDTH + menu::SUBMENU_GAP`, o la lupa si pide más); la zona activa sigue
 cubriendo solo la barra más la lupa para no tapar clics a otras apps.

@@ -8,25 +8,23 @@ use dokka_scene::{Drawing, Rect};
 use dokka_theme::{Theme, settings as measures};
 
 use super::drawings::CachedDrawings;
+use super::navigation::Navigation;
 use super::painted::{PaintedSettings, painted_drag, painted_reorder};
 use super::values::ContentValues;
 
-/// Ventana abierta o cerrada, historial de secciones, búsqueda y focos, con
-/// los dibujos creados una vez y reutilizados en cada redibujado. Los valores
-/// reales del contenido van en `values`: el shell los fija al abrir con
-/// `set_values` y la isla avisa con `Changed` o `TaskbarAuto` al soltar.
+/// Ventana abierta o cerrada, zoom, hovers y dibujos creados una vez.
+/// La navegación (sección, historial, búsqueda) vive en `navigation` para que
+/// este archivo no crezca; los valores reales van en `values`: el shell los
+/// fija al abrir con `set_values` y la isla avisa con `Changed` o `TaskbarAuto`.
 #[derive(Debug)]
 pub struct Settings {
     is_open: bool,
-    selected: usize,
+    navigation: Navigation,
     hovered: Option<usize>,
-    history: Vec<usize>,
-    position: usize,
-    query: String,
-    search_focused: bool,
     traffic_hovered: bool,
     nav_hovered: Option<NavHalf>,
     window_focused: bool,
+    zoomed: bool,
     values: ContentValues,
     drawings: CachedDrawings,
 }
@@ -35,15 +33,12 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             is_open: false,
-            selected: 0,
+            navigation: Navigation::default(),
             hovered: None,
-            history: vec![0],
-            position: 0,
-            query: String::new(),
-            search_focused: false,
             traffic_hovered: false,
             nav_hovered: None,
             window_focused: true,
+            zoomed: false,
             values: ContentValues::default(),
             drawings: CachedDrawings::new(),
         }
@@ -56,7 +51,7 @@ impl Settings {
     }
 
     /// Abre la ventana; si ya estaba abierta, no cambia la sección. Vuelve al
-    /// frente, así que recupera el foco.
+    /// frente, así que recupera el foco. El zoom se conserva mientras siga abierta.
     pub fn open(&mut self) {
         self.is_open = true;
         self.hovered = None;
@@ -68,13 +63,16 @@ impl Settings {
         self.values.reorder = None;
     }
 
-    /// Cierra la ventana: ocultar no borra la sección elegida ni el historial.
+    /// Cierra y limpia el estado de navegación: al volver a abrir empieza en
+    /// General, sin historial, búsqueda ni foco. Los ajustes guardados no se
+    /// tocan. Minimizar no limpia nada. Vuelve además al tamaño normal.
     pub fn close(&mut self) {
         self.is_open = false;
+        self.navigation.reset();
         self.hovered = None;
         self.nav_hovered = None;
         self.traffic_hovered = false;
-        self.search_focused = false;
+        self.zoomed = false;
         self.values.control = None;
         self.values.drag = None;
         self.values.reorder = None;
@@ -84,8 +82,38 @@ impl Settings {
         self.is_open
     }
 
+    /// `true` cuando el verde agrandó la ventana.
+    pub fn is_zoomed(&self) -> bool {
+        self.zoomed
+    }
+
+    /// Alterna el tamaño normal y el mayor.
+    pub fn toggle_zoom(&mut self) {
+        self.zoomed = !self.zoomed;
+    }
+
+    /// Ancho lógico actual: normal o mayor.
+    pub fn window_width(&self) -> f32 {
+        measures::window_size(self.zoomed).0
+    }
+
+    /// Alto lógico actual: normal o mayor.
+    pub fn window_height(&self) -> f32 {
+        measures::window_size(self.zoomed).1
+    }
+
+    /// Ancho del contenido para el tamaño actual.
+    pub fn content_width(&self) -> f32 {
+        measures::content_width_for(self.window_width())
+    }
+
+    /// Borde derecho de cabecera y contenido para el tamaño actual.
+    pub fn header_right(&self) -> f32 {
+        measures::header_right_for(self.window_width())
+    }
+
     pub fn selected(&self) -> usize {
-        self.selected
+        self.navigation.selected()
     }
 
     pub fn hovered(&self) -> Option<usize> {
@@ -99,12 +127,12 @@ impl Settings {
 
     /// Lo escrito en la casilla de búsqueda.
     pub fn query(&self) -> &str {
-        &self.query
+        self.navigation.query()
     }
 
     /// `true` cuando la casilla tiene el foco: el cursor se ve.
     pub fn search_focused(&self) -> bool {
-        self.search_focused
+        self.navigation.search_focused()
     }
 
     /// `true` cuando el cursor está sobre algún semáforo.
@@ -129,28 +157,23 @@ impl Settings {
 
     /// `true` si hay una sección anterior a la que volver.
     pub(crate) fn position(&self) -> usize {
-        self.position
+        self.navigation.position()
     }
 
     pub(crate) fn history_len(&self) -> usize {
-        self.history.len()
+        self.navigation.history_len()
     }
 
     pub(crate) fn push_history(&mut self, index: usize) {
-        self.history.truncate(self.position + 1);
-        self.history.push(index);
-        self.position = self.history.len() - 1;
-        self.selected = index;
+        self.navigation.push_history(index);
     }
 
     pub(crate) fn step_back(&mut self) {
-        self.position -= 1;
-        self.selected = self.history[self.position];
+        self.navigation.step_back();
     }
 
     pub(crate) fn step_forward(&mut self) {
-        self.position += 1;
-        self.selected = self.history[self.position];
+        self.navigation.step_forward();
     }
 
     /// Recuerda lo vigente antes de mostrar: el shell lo llama al abrir.
@@ -177,13 +200,14 @@ impl Settings {
     /// los valores, el orden arrastrado y el hover del contenido.
     pub fn painted(&self) -> PaintedSettings {
         PaintedSettings {
-            selected: self.selected,
+            selected: self.selected(),
             hovered: self.hovered,
             nav_hovered: self.nav_hovered,
             traffic_hovered: self.traffic_hovered,
             window_focused: self.window_focused,
-            query: self.query.clone(),
-            search_focused: self.search_focused,
+            zoomed: self.zoomed,
+            query: self.query().to_owned(),
+            search_focused: self.search_focused(),
             can_previous: self.can_previous(),
             can_next: self.can_next(),
             preferences: self.values.preferences,
@@ -245,11 +269,11 @@ impl Settings {
     }
 
     pub(crate) fn set_search_focused(&mut self, focused: bool) {
-        self.search_focused = focused;
+        self.navigation.set_search_focused(focused);
     }
 
     pub(crate) fn query_mut(&mut self) -> &mut String {
-        &mut self.query
+        self.navigation.query_mut()
     }
 
     /// Reenvío para no exponer el tráfico en el puntero.

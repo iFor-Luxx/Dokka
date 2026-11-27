@@ -11,8 +11,38 @@ pub(crate) const MAX_WINDOWS: usize = 6;
 /// Caracteres de título antes de recortar con "…"; el ancho del menú es fijo.
 pub(crate) const MAX_TITLE_CHARS: usize = 30;
 
+/// Menú de Preferencias: solo traer al frente y ocultar. Sin abrir otra
+/// instancia, sin fijar y sin salir: cerrar solo oculta la ventana.
+pub(crate) fn settings_menu(app: &DockApp) -> MenuData {
+    let mut rows = Vec::new();
+    let mut actions: Vec<Option<MenuAction>> = Vec::new();
+    let mut children: Vec<Option<SubmenuData>> = Vec::new();
+
+    push_windows(&mut rows, &mut actions, &mut children, &app.windows);
+    push_section(
+        &mut rows,
+        &mut actions,
+        &mut children,
+        [(
+            MenuRow::item("Cerrar ventana"),
+            Some(MenuAction::CloseFrontWindow(
+                app.windows.iter().map(|window| window.id).collect(),
+            )),
+            None,
+        )],
+    );
+    MenuData {
+        rows,
+        actions,
+        children,
+    }
+}
+
 /// Una fila por ventana (máximo 6), abrir, administrador, opciones, fijar, cerrar.
 pub(crate) fn app_menu(app: &DockApp) -> MenuData {
+    if super::settings_app::is_settings_app(app) {
+        return settings_menu(app);
+    }
     let mut rows = Vec::new();
     let mut actions: Vec<Option<MenuAction>> = Vec::new();
     let mut children: Vec<Option<SubmenuData>> = Vec::new();

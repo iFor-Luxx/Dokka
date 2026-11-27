@@ -7,7 +7,9 @@ pub enum SettingsAction {
     Close,
     /// Minimizar la ventana con el semáforo amarillo.
     Minimize,
-    /// Seguir igual: zoom verde, cabecera, casilla o fondo.
+    /// Alternar el tamaño con el semáforo verde.
+    Zoom,
+    /// Seguir igual: cabecera, casilla o fondo.
     Stay,
     /// Guardar y aplicar los valores nuevos.
     Changed(Preferences),

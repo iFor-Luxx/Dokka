@@ -5,6 +5,7 @@ mod events;
 mod logic;
 mod menubar_drag;
 mod motion;
+mod navigation;
 mod painted;
 mod pointer;
 mod reorder_pointer;

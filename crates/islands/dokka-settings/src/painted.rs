@@ -23,6 +23,7 @@ pub struct PaintedSettings {
     pub nav_hovered: Option<dokka_components::nav_pill::NavHalf>,
     pub traffic_hovered: bool,
     pub window_focused: bool,
+    pub zoomed: bool,
     pub query: String,
     pub search_focused: bool,
     pub can_previous: bool,

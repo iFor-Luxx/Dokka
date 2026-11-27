@@ -6,7 +6,7 @@ use dokka_components::search_field::{
 };
 use dokka_components::settings_list::{
     filtered_badges, filtered_empty, filtered_hover, filtered_icons, filtered_labels,
-    filtered_selection, search_bounds, sidebar_panel,
+    filtered_selection, search_bounds, sidebar_panel_for,
 };
 use dokka_components::window_controls::traffic_icons;
 use dokka_scene::{Divider, Scene, Text, TextAlign};
@@ -34,7 +34,9 @@ use crate::Settings;
 /// los planos se pintan antes y el texto nunca queda tapado. Cada semáforo
 /// es un solo icono con su círculo y, con el cursor encima, su símbolo; sin
 /// foco van en gris. El cursor de la casilla siempre está, de ancho cero
-/// cuando no hay foco.
+/// cuando no hay foco. Con el zoom verde la ventana crece y el contenido se
+/// ensancha: la barra lateral conserva su ancho y los controles, pegados al
+/// margen derecho, se adaptan solos porque cada medida sale del ancho actual.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let order = settings.filtered_order();
     let selected = settings.selected();
@@ -46,6 +48,9 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let traffic = settings.traffic_drawings(theme);
     let focused = settings.window_focused();
     let hovered = settings.traffic_hovered();
+    let window_width = settings.window_width();
+    let window_height = settings.window_height();
+    let header_right = settings.header_right();
     let mut badge_drawings = Vec::with_capacity(order.len());
     let mut glyphs = Vec::with_capacity(order.len());
     for index in &order {
@@ -103,7 +108,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             bounds: dokka_scene::Rect {
                 x: measures::HEADER_DIVIDER_LEFT,
                 y: measures::HEADER_DIVIDER_TOP,
-                width: measures::HEADER_DIVIDER_RIGHT - measures::HEADER_DIVIDER_LEFT,
+                width: header_right - measures::HEADER_DIVIDER_LEFT,
                 height: measures::HEADER_DIVIDER_HEIGHT,
             },
             color: theme.settings.divider,
@@ -122,8 +127,8 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             bounds: dokka_scene::Rect {
                 x: 0.0,
                 y: 0.0,
-                width: measures::WIDTH,
-                height: measures::HEIGHT,
+                width: window_width,
+                height: window_height,
             },
             corner_radius: measures::CORNER_RADIUS,
             border_width: measures::BORDER_WIDTH,
@@ -131,7 +136,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             border: theme.settings.window_border,
         },
         panels: vec![
-            sidebar_panel(theme),
+            sidebar_panel_for(theme, window_height),
             // Cada capa se inserta arriba: la píldora queda sobre el fondo.
             nav_pill_panel(theme, &pill),
         ],

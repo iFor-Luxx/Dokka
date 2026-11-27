@@ -17,10 +17,20 @@ pub(crate) fn run_app_menu_action(
 ) -> Result<bool, Box<dyn Error>> {
     match action {
         MenuAction::ActivateWindow(window) => {
-            session.control.activate(window)?;
+            // Preferencias se trae al frente con el shell, no con el control.
+            if session.is_settings_window(window, surface) {
+                crate::settings::open_or_focus_settings(session, surface)?;
+            } else {
+                session.control.activate(window)?;
+            }
         }
         MenuAction::OpenApp(info) => {
-            session.launcher.launch(&info)?;
+            // Preferencias no lanza otra instancia: solo se muestra.
+            if DockSession::is_settings_app(&info) {
+                crate::settings::open_or_focus_settings(session, surface)?;
+            } else {
+                session.launcher.launch(&info)?;
+            }
         }
         MenuAction::RunAsAdministrator(info) => {
             session.app_actions.run_as_administrator(&info)?;
@@ -29,14 +39,24 @@ pub(crate) fn run_app_menu_action(
             session.app_actions.show_in_folder(&info)?;
         }
         MenuAction::CloseFrontWindow(windows) => {
+            // "Cerrar" Preferencias solo la oculta; nunca termina Dokka.
             if let Some(front) = session.control.front_window(&windows) {
-                session.control.close(front)?;
+                if session.is_settings_window(front, surface) {
+                    crate::settings::close_settings(session, surface);
+                } else {
+                    session.control.close(front)?;
+                }
             }
         }
         MenuAction::QuitApp(windows) => {
             // Cierra como su X, una por una; nunca mata el proceso.
+            // Preferencias solo se oculta.
             for window in windows {
-                let _ = session.control.close(window);
+                if session.is_settings_window(window, surface) {
+                    crate::settings::close_settings(session, surface);
+                } else {
+                    let _ = session.control.close(window);
+                }
             }
         }
         MenuAction::OpenDownloads => {
