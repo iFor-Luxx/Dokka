@@ -30,6 +30,8 @@ pub(crate) struct SceneLayers {
     root: ContainerVisual,
     blur: BlurStage,
     panel: PanelLayer,
+    /// Estilo con el que se creó el fondo.
+    panel_style: PanelStyle,
     /// Sombra bajo el fondo, si se pidió (Preferencias). Falla sola.
     panel_shadow: Option<ShadowLayer>,
     /// Sombra pedida para el fondo, exista o no la capa.
