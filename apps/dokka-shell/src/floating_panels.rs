@@ -3,6 +3,7 @@
 //! Con las vistas previas apagadas en Preferencias no se abre ninguna.
 
 use dokka_dock::HoverKind;
+use dokka_model::DockPosition;
 use dokka_previews::{PreviewContent, PreviewRequest, PreviewWindow};
 use dokka_theme::popup;
 
@@ -30,12 +31,23 @@ pub(crate) fn preview_request(session: &DockSession, x: f32, y: f32) -> Option<P
             )
         }
     };
+    let size = session.dock.surface_size(apps);
+    let (edge, bar_side, limit_along) = match target.position {
+        DockPosition::Left => (target.icons_side + popup::GAP, target.bar_side, size.height),
+        DockPosition::Right => (target.icons_side - popup::GAP, target.bar_side, size.height),
+        _ => (0.0, 0.0, 0.0),
+    };
     Some(PreviewRequest {
         content,
         app,
+        position: target.position,
         center_x: target.center_x,
         bottom: target.icons_top - popup::GAP,
         floor: target.bar_top,
-        limit: session.dock.surface_size(apps).width,
+        limit: size.width,
+        center_y: target.center_y,
+        edge,
+        bar_side,
+        limit_along,
     })
 }

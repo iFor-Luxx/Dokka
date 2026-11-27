@@ -58,13 +58,35 @@ pub(crate) fn entry_at<'a>(
     y: f32,
     gap: f32,
 ) -> Option<Entry<'a>> {
-    let bottom = placement.bar.y + placement.bar.height;
     let reach = gap / 2.0;
+    let vertical = placement.bar.width < placement.bar.height;
+    if !vertical {
+        let bottom = placement.bar.y + placement.bar.height;
+        return placement
+            .slots
+            .iter()
+            .find(|(_, icon)| {
+                x >= icon.x - reach
+                    && x <= icon.x + icon.width + reach
+                    && y >= icon.y
+                    && y <= bottom
+            })
+            .map(|&(entry, _)| entry);
+    }
+    // Vertical: a lo largo es y, el borde decide el lado interior.
+    let edge_left = placement.bar.x < 1.0;
     placement
         .slots
         .iter()
         .find(|(_, icon)| {
-            x >= icon.x - reach && x <= icon.x + icon.width + reach && y >= icon.y && y <= bottom
+            let along = y >= icon.y - reach && y <= icon.y + icon.height + reach;
+            let cross = if edge_left {
+                x >= placement.bar.x && x <= icon.x + icon.width
+            } else {
+                let right = placement.bar.x + placement.bar.width;
+                x >= icon.x && x <= right
+            };
+            along && cross
         })
         .map(|&(entry, _)| entry)
 }

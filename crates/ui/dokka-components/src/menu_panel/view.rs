@@ -1,5 +1,5 @@
 use dokka_scene::TextAlign;
-use dokka_scene::{Divider, Overlay, Panel, Pointer, Rect, Size, Text};
+use dokka_scene::{Divider, Overlay, Panel, Pointer, PointerSide, Rect, Size, Text};
 use dokka_theme::{Theme, menu as measures, typography};
 
 use super::MenuRow;
@@ -32,6 +32,22 @@ pub fn menu_overlay(
     highlighted: Option<usize>,
 ) -> Overlay {
     let pointer = Some(menu_pointer(bounds, tip_x));
+    overlay_inner(theme, chevrons, checks, bounds, pointer, rows, highlighted)
+}
+
+/// Menú lateral con la punta hacia el dock.
+/// `tip` es la altura de la punta y si nace en el borde izquierdo (dock a la
+/// izquierda).
+pub fn menu_overlay_side(
+    theme: &Theme,
+    chevrons: &MenuChevrons,
+    checks: &MenuChecks,
+    bounds: Rect,
+    tip: (f32, bool),
+    rows: &[MenuRow],
+    highlighted: Option<usize>,
+) -> Overlay {
+    let pointer = Some(menu_pointer_side(bounds, tip.0, tip.1));
     overlay_inner(theme, chevrons, checks, bounds, pointer, rows, highlighted)
 }
 
@@ -211,6 +227,25 @@ fn menu_pointer(bounds: Rect, tip_x: f32) -> Pointer {
     let max = bounds.x + bounds.width - measures::CORNER_RADIUS - half;
     Pointer {
         center_x: tip_x.clamp(min, max),
+        center_y: 0.0,
         height: measures::POINTER_HEIGHT,
+        side: PointerSide::Bottom,
+    }
+}
+
+fn menu_pointer_side(bounds: Rect, tip_y: f32, on_left: bool) -> Pointer {
+    let half = measures::POINTER_HEIGHT;
+    let min = bounds.y + measures::CORNER_RADIUS + half;
+    let max = bounds.y + bounds.height - measures::CORNER_RADIUS - half;
+    let (center_x, side) = if on_left {
+        (bounds.x, PointerSide::Left)
+    } else {
+        (bounds.x + bounds.width, PointerSide::Right)
+    };
+    Pointer {
+        center_x,
+        center_y: tip_y.clamp(min, max),
+        height: measures::POINTER_HEIGHT,
+        side,
     }
 }

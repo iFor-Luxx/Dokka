@@ -68,14 +68,68 @@ impl LabelPointer {
             Y: container_height,
         })?;
         self.clip.SetCornerRadius(Vector2 { X: 0.0, Y: 0.0 })?;
+        self.place_square(
+            label,
+            center_x - height - border,
+            body_bottom - border,
+            center_x,
+            body_bottom,
+        )
+    }
 
+    /// Punta lateral: `edge` es el borde vertical de la píldora hacia el icono
+    /// y `middle_y` su centro vertical.
+    pub(crate) fn update_side(&mut self, label: &Label, edge: f32, middle_y: f32) -> Result<()> {
+        let height = label.pointer_height;
+        let border = label.border_width;
+        let container_width = height + border * 2.0;
+        let container_height = height * 2.0 + border * 2.0;
+        // A la derecha del icono (`After`) el contenedor cuelga a la izquierda
+        // de la píldora; si no, a la derecha.
+        let left = match label.side {
+            dokka_scene::LabelSide::After => edge - height - border,
+            dokka_scene::LabelSide::Before => edge - border,
+            dokka_scene::LabelSide::Below => edge - border,
+        };
+        self.container.SetOffset(Vector3 {
+            X: left,
+            Y: middle_y - height - border,
+            Z: 0.0,
+        })?;
+        self.container.SetSize(Vector2 {
+            X: container_width,
+            Y: container_height,
+        })?;
+        self.clip.SetSize(Vector2 {
+            X: container_width,
+            Y: container_height,
+        })?;
+        self.clip.SetCornerRadius(Vector2 { X: 0.0, Y: 0.0 })?;
+        let (square_x, square_y) = match label.side {
+            dokka_scene::LabelSide::After => (edge - height, middle_y),
+            dokka_scene::LabelSide::Before => (edge, middle_y),
+            dokka_scene::LabelSide::Below => (edge, middle_y),
+        };
+        self.place_square(label, left, middle_y - height - border, square_x, square_y)
+    }
+
+    fn place_square(
+        &mut self,
+        label: &Label,
+        container_x: f32,
+        container_y: f32,
+        edge_center_x: f32,
+        edge_center_y: f32,
+    ) -> Result<()> {
+        let height = label.pointer_height;
+        let border = label.border_width;
         // Cuadrado de lado `s`: al girarlo 45°, la diagonal mide 2 × altura.
         let side = height * SQRT_2;
         let square = Vector2 { X: side, Y: side };
-        // El centro del cuadrado queda sobre el borde inferior de la píldora.
+        // El centro del cuadrado queda sobre el borde de la píldora.
         let square_offset = Vector3 {
-            X: center_x - side / 2.0 - (center_x - height - border),
-            Y: body_bottom - side / 2.0 - (body_bottom - border),
+            X: edge_center_x - side / 2.0 - container_x,
+            Y: edge_center_y - side / 2.0 - container_y,
             Z: 0.0,
         };
         self.glass.SetSize(square)?;

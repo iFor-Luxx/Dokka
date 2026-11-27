@@ -10,8 +10,13 @@ impl Dock {
     /// `true` si el punto está sobre la línea separadora.
     pub fn is_on_divider(&self, x: f32, y: f32, apps: &[DockApp]) -> bool {
         let placement = place_dock(self, apps);
-        let line = placement.divider.x + placement.divider.width / 2.0;
         let bar = placement.bar;
-        (x - line).abs() <= REACH && y >= bar.y && y <= bar.y + bar.height
+        if bar.width < bar.height {
+            let line = placement.divider.y + placement.divider.height / 2.0;
+            (y - line).abs() <= REACH && x >= bar.x && x <= bar.x + bar.width
+        } else {
+            let line = placement.divider.x + placement.divider.width / 2.0;
+            (x - line).abs() <= REACH && y >= bar.y && y <= bar.y + bar.height
+        }
     }
 }

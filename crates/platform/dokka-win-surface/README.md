@@ -2,7 +2,11 @@
 
 **Hace:** crea las ventanas de Dokka (dock sin foco, Launchpad a pantalla completa
 que sí lo toma, Preferencias normal y activable con sitio en la barra de tareas,
-y superpuesta solo visual), cambia su tamaño y zona activa,
+y superpuesta solo visual), cambia su tamaño y zona activa y coloca el dock
+según su borde (`place_window.rs`: abajo centrado como hoy; en laterales
+centrado en vertical pegado a su borde con el mismo margen, bajo la reserva
+superior; con auto-ocultado se desplaza hacia fuera dejando la franja fina
+y vuelve al tocarla, también junto a la barra de tareas visible),
 que sí lo toma, vista grande a pantalla completa transparente al mouse, y superpuesta solo visual), cambia su tamaño y zona activa,
 entrega los eventos del mouse, las teclas escritas (`WM_CHAR` con `TranslateMessage`),
 el Retroceso, el Enter, las flechas izquierda/derecha y la rueda sobre el Launchpad, y sobre

@@ -7,7 +7,7 @@
 use dokka_model::{DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE};
 use dokka_theme::{dock as theme, menu, popup, tooltip};
 
-pub use theme::DOCK_BOTTOM_MARGIN;
+pub use theme::{DOCK_BOTTOM_MARGIN, DOCK_EDGE_MARGIN};
 
 use crate::Dock;
 
@@ -32,15 +32,15 @@ pub(crate) fn maximum_scale(dock: &Dock) -> f32 {
 }
 
 pub(crate) fn slot(dock: &Dock) -> f32 {
-    theme::SLOT * icon_scale(dock)
+    theme::SLOT * icon_scale(dock) * dock.fit()
 }
 
 pub(crate) fn gap(dock: &Dock) -> f32 {
-    theme::GAP * icon_scale(dock)
+    theme::GAP * icon_scale(dock) * dock.fit()
 }
 
 pub(crate) fn padding(dock: &Dock) -> f32 {
-    theme::PADDING * icon_scale(dock)
+    theme::PADDING * icon_scale(dock) * dock.fit()
 }
 
 pub(crate) fn height(dock: &Dock) -> f32 {
@@ -48,7 +48,7 @@ pub(crate) fn height(dock: &Dock) -> f32 {
 }
 
 pub(crate) fn divider_space(dock: &Dock) -> f32 {
-    theme::DIVIDER_SPACE * icon_scale(dock)
+    theme::DIVIDER_SPACE * icon_scale(dock) * dock.fit()
 }
 
 pub(crate) fn divider_inset(dock: &Dock) -> f32 {
@@ -64,7 +64,7 @@ pub(crate) fn placeholder_radius(dock: &Dock) -> f32 {
 }
 
 pub(crate) fn dot_diameter(dock: &Dock) -> f32 {
-    theme::DOT_DIAMETER * icon_scale(dock)
+    theme::DOT_DIAMETER * icon_scale(dock) * dock.fit()
 }
 
 pub(crate) fn dot_from_bottom(dock: &Dock) -> f32 {
@@ -91,9 +91,17 @@ pub(crate) fn rise_space(dock: &Dock) -> f32 {
         .ceil()
 }
 
-/// Todo el espacio sobre la barra, incluido el de los paneles flotantes.
+/// Todo el espacio hacia dentro, incluido el de los paneles flotantes.
+/// En vertical reserva además el ancho de la vista previa más ancha.
 pub(crate) fn headroom(dock: &Dock) -> f32 {
-    rise_space(dock) + popup::SPACE
+    if crate::logic::is_vertical(dock) {
+        let preview_width = popup::PREVIEW_SLOT_WIDTH * popup::PREVIEW_MAXIMUM_WINDOWS as f32
+            + popup::PREVIEW_PADDING * 2.0
+            + popup::GAP;
+        rise_space(dock) + preview_width.max(popup::SPACE)
+    } else {
+        rise_space(dock) + popup::SPACE
+    }
 }
 
 /// Espacio a cada lado por lo que puede ensancharse la barra con la lupa.

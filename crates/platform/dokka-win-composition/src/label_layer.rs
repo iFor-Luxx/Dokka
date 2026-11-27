@@ -1,4 +1,4 @@
-use dokka_scene::{Color, Label, Text, TextAlign};
+use dokka_scene::{Color, Label, LabelSide, Text, TextAlign};
 use windows::UI::Composition::{
     CompositionRoundedRectangleGeometry, CompositionSpriteShape, Compositor, ContainerVisual,
     ShapeVisual, SpriteVisual,
@@ -111,20 +111,28 @@ impl LabelLayer {
         let (text_width, text_height) = painter.measure_label(label)?;
         let width = (text_width + label.padding_x * 2.0).ceil();
         let body = (text_height + label.padding_y * 2.0).ceil();
-        let body_bottom = label.bottom - label.pointer_height;
-        let body_top = body_bottom - body;
-        // No dejar que se corte por el borde izquierdo.
-        let left = (label.center_x - width / 2.0).max(0.0);
-        let center_x = left + width / 2.0;
-        let middle_y = body_top + body / 2.0;
+        match label.side {
+            LabelSide::Below => self.update_below(compositor, painter, label, width, body),
+            LabelSide::After => self.update_after(compositor, painter, label, width, body),
+            LabelSide::Before => self.update_before(compositor, painter, label, width, body),
+        }
+    }
 
+    fn place_pill(
+        &mut self,
+        left: f32,
+        top: f32,
+        width: f32,
+        body: f32,
+        label: &Label,
+    ) -> Result<()> {
         // Píldora: radio igual a la mitad del alto.
         let radius = body / 2.0;
         let inset = label.border_width / 2.0;
         let size = Vector2 { X: width, Y: body };
         let offset = Vector3 {
             X: left,
-            Y: body_top,
+            Y: top,
             Z: 0.0,
         };
         self.glass.SetOffset(offset)?;
@@ -141,11 +149,64 @@ impl LabelLayer {
         self.tint_outline
             .SetOffset(Vector2 { X: inset, Y: inset })?;
         self.tint_outline
-            .SetCornerRadius(radius_pair(radius - inset))?;
+            .SetCornerRadius(radius_pair(radius - inset))
+    }
 
+    fn update_below(
+        &mut self,
+        compositor: &Compositor,
+        painter: &Painter,
+        label: &Label,
+        width: f32,
+        body: f32,
+    ) -> Result<()> {
+        let body_bottom = label.bottom - label.pointer_height;
+        let body_top = body_bottom - body;
+        // No dejar que se corte por el borde izquierdo.
+        let left = (label.center_x - width / 2.0).max(0.0);
+        let center_x = left + width / 2.0;
+        let middle_y = body_top + body / 2.0;
+        self.place_pill(left, body_top, width, body, label)?;
         self.pointer.update(label, center_x, body_bottom)?;
         self.update_chrome(compositor, label)?;
         self.update_text(compositor, painter, label, center_x, middle_y)
+    }
+
+    fn update_after(
+        &mut self,
+        compositor: &Compositor,
+        painter: &Painter,
+        label: &Label,
+        width: f32,
+        body: f32,
+    ) -> Result<()> {
+        let left = label.bottom + label.pointer_height;
+        let top = (label.center_y - body / 2.0).max(0.0);
+        let middle_y = top + body / 2.0;
+        let middle_x = left + width / 2.0;
+        self.place_pill(left, top, width, body, label)?;
+        self.pointer.update_side(label, left, middle_y)?;
+        self.update_chrome(compositor, label)?;
+        self.update_text(compositor, painter, label, middle_x, middle_y)
+    }
+
+    fn update_before(
+        &mut self,
+        compositor: &Compositor,
+        painter: &Painter,
+        label: &Label,
+        width: f32,
+        body: f32,
+    ) -> Result<()> {
+        let right = label.bottom - label.pointer_height;
+        let left = (right - width).max(0.0);
+        let top = (label.center_y - body / 2.0).max(0.0);
+        let middle_y = top + body / 2.0;
+        let middle_x = left + width / 2.0;
+        self.place_pill(left, top, width, body, label)?;
+        self.pointer.update_side(label, left + width, middle_y)?;
+        self.update_chrome(compositor, label)?;
+        self.update_text(compositor, painter, label, middle_x, middle_y)
     }
 
     fn update_chrome(&mut self, compositor: &Compositor, label: &Label) -> Result<()> {

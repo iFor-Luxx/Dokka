@@ -21,6 +21,16 @@ y se reutilizan. `set_preferences(DockPreferences)` aplica la escala de iconos
 desde `view/dock_style.rs`, sin medidas nuevas fuera del tema), apaga la lupa
 (`magnification`) y cuánto amplía (`magnification_strength`: efectiva
 1 + (MAX-1) * fuerza); con valores de fábrica el resultado es el de hoy.
+Respeta `position` (`Bottom` idéntico al de hoy; `Left`/`Right` verticales,
+centrados, con el mismo margen, que calculan en «a lo largo / hacia dentro»
+(`logic/orientation.rs` + `logic/place_dock.rs`) y convierten a x/y en un solo
+sitio: lupa, rebote hacia dentro, puntos en el lado del borde, separador
+horizontal, etiquetas al lado hacia dentro, menús y submenús al lado
+(`logic/menu_place.rs`, sin tocar sus filas), zonas activas y cursor.
+Respeta `auto_hide` (`motion/hide.rs`: espera con retardo y deslizamiento suave;
+escondido solo deja la franja fina del borde y vuelve al tocarla, sin sondeo
+en reposo). En vertical encoge (`fit`) para caber bajo la barra superior.
+Si algo no puede calcularse, abajo y visible.
 Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los
 en curso para que el icono vuelva a su sitio sin pedir fotogramas
 (el hueco sobre la barra se mantiene). Sin indicadores (`show_indicators`)
