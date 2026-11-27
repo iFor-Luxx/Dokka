@@ -22,7 +22,10 @@ impl Menubar {
             return;
         };
         let size = language_size(&self.languages);
-        self.show_tray(super::TrayKind::Language, tray_place(anchor, size, bar_width));
+        self.show_tray(
+            super::TrayKind::Language,
+            tray_place(anchor, size, bar_width),
+        );
         self.language_hovered = None;
     }
 

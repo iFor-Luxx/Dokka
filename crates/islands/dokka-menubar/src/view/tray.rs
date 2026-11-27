@@ -37,15 +37,9 @@ impl Menubar {
             }
         };
         vec![
-            place(
-                TrayKind::ControlCenter,
-                Arc::clone(&self.control_icons.bar),
-            ),
+            place(TrayKind::ControlCenter, Arc::clone(&self.control_icons.bar)),
             place(TrayKind::Search, Arc::clone(self.search_icons.bar())),
-            place(
-                TrayKind::Music,
-                Arc::clone(&self.tray_icons.music),
-            ),
+            place(TrayKind::Music, Arc::clone(&self.tray_icons.music)),
             place(
                 TrayKind::Network,
                 self.network_icons

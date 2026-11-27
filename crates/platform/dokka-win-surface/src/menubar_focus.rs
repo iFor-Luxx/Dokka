@@ -1,8 +1,8 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::SetFocus;
 use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, SetForegroundWindow};
 
-use crate::foreground::foreground_window;
 use crate::Surface;
+use crate::foreground::foreground_window;
 
 impl Surface {
     /// Toma el foco para saber cuándo cerrar y recibir el teclado: la pérdida

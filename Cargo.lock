@@ -82,6 +82,7 @@ version = "0.1.0"
 dependencies = [
  "dokka-components",
  "dokka-icons",
+ "dokka-model",
  "dokka-scene",
  "dokka-theme",
 ]
@@ -118,6 +119,7 @@ dependencies = [
 name = "dokka-shell"
 version = "0.1.0"
 dependencies = [
+ "dokka-components",
  "dokka-config",
  "dokka-contracts",
  "dokka-dock",

@@ -89,11 +89,7 @@ impl crate::Menubar {
 
     /// Abre el panel real del icono dado, cerrando menú y calendario.
     /// Cada panel mide lo suyo y se coloca bajo su icono.
-    pub(crate) fn open_tray(
-        &mut self,
-        kind: super::TrayKind,
-        bar_width: f32,
-    ) {
+    pub(crate) fn open_tray(&mut self, kind: super::TrayKind, bar_width: f32) {
         if tray_anchor(kind, bar_width).is_none() {
             return;
         }

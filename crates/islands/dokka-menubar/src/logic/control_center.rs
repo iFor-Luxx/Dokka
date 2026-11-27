@@ -37,7 +37,12 @@ impl Menubar {
             width: control_center_size().width,
             height: control_center_size().height,
         });
-        control_center_panel(&self.theme, &self.control_icons, bounds, &self.control_props())
+        control_center_panel(
+            &self.theme,
+            &self.control_icons,
+            bounds,
+            &self.control_props(),
+        )
     }
 
     /// Botón abajo en el deslizador: fija el nivel ya, como en volumen.

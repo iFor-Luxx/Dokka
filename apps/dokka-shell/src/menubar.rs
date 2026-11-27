@@ -96,7 +96,7 @@ fn refresh_panels(session: &mut DockSession) {
     crate::menubar_music::refresh_music(session);
     session.menubar.tick_search_cursor();
     session.menubar_ticks += 1;
-    if session.menubar_ticks % 3 == 0 {
+    if session.menubar_ticks.is_multiple_of(3) {
         crate::menubar_network::refresh_network(session);
         // Con la fila abierta el foco es de Dokka y el activo saldría mal.
         if !session.menubar.is_tray_open() {

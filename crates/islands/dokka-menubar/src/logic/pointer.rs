@@ -21,7 +21,7 @@ impl Menubar {
         }
     }
 
-    fn move_over_menu(&mut self, x: f32, y: f32, bar_width: f32) {
+    pub(super) fn move_over_menu(&mut self, x: f32, y: f32, bar_width: f32) {
         let Some(menu) = self.menu.as_mut() else {
             return;
         };
@@ -36,7 +36,7 @@ impl Menubar {
         self.tray_hovered = tray_kind_at(bar_width, x, y);
     }
 
-    fn move_over_calendar(&mut self, x: f32, y: f32, bar_width: f32) {
+    pub(super) fn move_over_calendar(&mut self, x: f32, y: f32, bar_width: f32) {
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
         self.tray_hovered = tray_kind_at(bar_width, x, y);
@@ -45,7 +45,7 @@ impl Menubar {
             .and_then(|bounds| calendar_hovered(bounds, x, y));
     }
 
-    fn move_over_tray(&mut self, x: f32, y: f32, bar_width: f32) {
+    pub(super) fn move_over_tray(&mut self, x: f32, y: f32, bar_width: f32) {
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
         self.tray_hovered = tray_kind_at(bar_width, x, y);
@@ -59,6 +59,6 @@ impl Menubar {
     }
 }
 
-fn hit(x: f32, y: f32, bounds: &dokka_scene::Rect) -> bool {
+pub(super) fn hit(x: f32, y: f32, bounds: &dokka_scene::Rect) -> bool {
     x >= bounds.x && x <= bounds.x + bounds.width && y >= bounds.y && y <= bounds.y + bounds.height
 }

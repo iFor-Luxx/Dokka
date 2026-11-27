@@ -1,5 +1,6 @@
 //! Qué significa un clic: icono, hora, fila, píldora o cerrar fuera.
 
+use super::pointer::hit;
 use dokka_components::calendar_panel::calendar_step;
 use dokka_components::menu_panel::menu_row_at;
 

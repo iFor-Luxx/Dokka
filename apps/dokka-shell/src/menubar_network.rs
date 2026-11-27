@@ -28,9 +28,8 @@ pub(crate) fn open_network_settings(
     use dokka_win_apps::system_place;
 
     surface.menubar_menu_dismissed();
-    session.launcher.launch(&system_place(
-        "Configuración de red",
-        "ms-settings:network",
-    ))?;
+    session
+        .launcher
+        .launch(&system_place("Configuración de red", "ms-settings:network"))?;
     Ok(())
 }

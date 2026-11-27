@@ -22,10 +22,7 @@ impl Menubar {
             return;
         };
         let size = volume_panel_size();
-        self.show_tray(
-            super::TrayKind::Volume,
-            tray_place(anchor, size, bar_width),
-        );
+        self.show_tray(super::TrayKind::Volume, tray_place(anchor, size, bar_width));
         self.volume_hovered = None;
     }
 
@@ -44,14 +41,17 @@ impl Menubar {
             width: volume_panel_size().width,
             height: volume_panel_size().height,
         });
-        volume_panel(&self.theme, &self.volume_icons, bounds, &self.volume_props())
+        volume_panel(
+            &self.theme,
+            &self.volume_icons,
+            bounds,
+            &self.volume_props(),
+        )
     }
 
     /// Botón abajo: el deslizador fija el nivel ya, lo demás espera al clic.
     pub(crate) fn volume_press(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
-        let Some(bounds) = self.tray_bounds() else {
-            return None;
-        };
+        let bounds = self.tray_bounds()?;
         match volume_panel_hit(bounds, x, y) {
             Some(VolumePanelHit::Slider(level)) => {
                 self.dragging_slider = true;

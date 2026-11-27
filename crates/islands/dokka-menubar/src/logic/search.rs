@@ -20,7 +20,10 @@ impl Menubar {
         self.search_highlighted = None;
         self.search_cursor = true;
         let size = search_panel_size(&self.search_props());
-        self.show_tray(super::TrayKind::Search, tray_place_centered(size, bar_width));
+        self.show_tray(
+            super::TrayKind::Search,
+            tray_place_centered(size, bar_width),
+        );
     }
 
     /// Resultados ya filtrados en su orden (el shell los calcula).
@@ -28,18 +31,22 @@ impl Menubar {
     /// centrado, que cambia de alto con el número de filas.
     pub fn set_search_results(&mut self, results: Vec<SearchPanelItem>, bar_width: f32) {
         self.search_results = results;
-        let visible = self.search_results.len().min(dokka_theme::search::MAX_RESULTS);
-        if self.search_highlighted.is_some_and(|index| index >= visible) {
+        let visible = self
+            .search_results
+            .len()
+            .min(dokka_theme::search::MAX_RESULTS);
+        if self
+            .search_highlighted
+            .is_some_and(|index| index >= visible)
+        {
             self.search_highlighted = None;
         }
         if self.tray_kind() == Some(super::TrayKind::Search) {
             let size = search_panel_size(&self.search_props());
-            self.tray = self
-                .tray
-                .map(|open| super::OpenTray {
-                    panel: tray_place_centered(size, bar_width),
-                    ..open
-                });
+            self.tray = self.tray.map(|open| super::OpenTray {
+                panel: tray_place_centered(size, bar_width),
+                ..open
+            });
         }
     }
 
@@ -67,7 +74,12 @@ impl Menubar {
             width: search_panel_size(&self.search_props()).width,
             height: search_panel_size(&self.search_props()).height,
         });
-        search_panel_panel(&self.theme, &self.search_icons, bounds, &self.search_props())
+        search_panel_panel(
+            &self.theme,
+            &self.search_icons,
+            bounds,
+            &self.search_props(),
+        )
     }
 
     /// Letra escrita: filtra desde el principio y parpadea el cursor.
@@ -145,10 +157,8 @@ impl Menubar {
 
     pub(crate) fn search_click(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
         let bounds = self.tray_bounds()?;
-        match search_panel_hit(bounds, x, y, &self.search_props()) {
-            Some(SearchHit::Result(index)) => Some(MenubarAction::SearchOpen(index)),
-            None => None,
-        }
+        search_panel_hit(bounds, x, y, &self.search_props())
+            .map(|SearchHit::Result(index)| MenubarAction::SearchOpen(index))
     }
 
     pub(crate) fn search_hover(&mut self, x: f32, y: f32) {

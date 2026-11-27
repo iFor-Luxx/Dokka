@@ -1,16 +1,16 @@
 use std::sync::Arc;
 
 use dokka_components::control_center_panel::ControlCenterIcons;
+use dokka_components::language_panel::LanguageHit;
 use dokka_components::language_panel::{LanguageEntry, LanguageIcons};
-use dokka_components::music_panel::{MusicPanelIcons, MusicTrack};
-use dokka_components::network_panel::NetworkIcons;
-use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
-use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
+use dokka_components::music_panel::{MusicPanelIcons, MusicTrack};
 use dokka_components::nav_pill::{NavHalf, NavPillIcons};
 use dokka_components::network_panel::NetworkHit;
-use dokka_components::language_panel::LanguageHit;
+use dokka_components::network_panel::NetworkIcons;
+use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
 use dokka_components::volume_panel::VolumePanelHit;
+use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{TrayIcons, menubar_icon};
 use dokka_model::{NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
 use dokka_scene::Drawing;

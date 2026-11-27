@@ -20,8 +20,8 @@ pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
 pub const SIDE_PADDING: f32 = 12.0;
 /// Separación entre el icono y el nombre de la app.
 pub const ICON_GAP: f32 = 10.0;
-/// Ancho reservado a la derecha para la fecha y la hora, centradas en él.
-pub const CLOCK_SLOT: f32 = 170.0;
+/// Ancho reservado a la derecha para la hora, centrada en él.
+pub const CLOCK_SLOT: f32 = 52.0;
 /// Separación entre la franja y el menú colgando.
 pub const MENU_GAP: f32 = 6.0;
 /// Borde izquierdo del menú, bajo el icono.

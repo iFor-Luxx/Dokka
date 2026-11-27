@@ -57,10 +57,7 @@ impl Menubar {
 
     pub(crate) fn network_click(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
         let bounds = self.tray_bounds()?;
-        match network_hit(bounds, x, y) {
-            Some(NetworkHit::Settings) => Some(MenubarAction::OpenNetworkSettings),
-            None => None,
-        }
+        network_hit(bounds, x, y).map(|NetworkHit::Settings| MenubarAction::OpenNetworkSettings)
     }
 
     pub(crate) fn network_hover(&mut self, x: f32, y: f32) {

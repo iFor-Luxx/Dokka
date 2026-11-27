@@ -16,5 +16,5 @@ pub(crate) use calendar::{OpenCalendar, calendar_panel_for};
 pub use clock::clock_text;
 pub(crate) use menu::{OpenMenu, menu_actions, menu_panel_for, menu_rows};
 pub(crate) use network::network_type;
+pub(crate) use tray::OpenTray;
 pub use tray::TrayKind;
-pub(crate) use tray::{OpenTray, tray_cells, tray_kind_at};
