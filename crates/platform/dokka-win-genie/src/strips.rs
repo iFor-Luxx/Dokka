@@ -27,12 +27,9 @@
 
 use dokka_animation::Genie;
 use dokka_win_thumbnail::{LiveCompositor, LiveImage};
-use windows::UI::Composition::{
-    CompositionPropertySet, Compositor, ContainerVisual, ExpressionAnimation, Visual,
-};
+use windows::UI::Composition::{CompositionPropertySet, Compositor, ExpressionAnimation, Visual};
 use windows::core::{HSTRING, Result, h};
 
-use crate::geometry::Turn;
 use crate::overlay::flight_duration;
 
 /// Compositor propio de los vuelos, capaz de mostrar imágenes vivas.
@@ -169,20 +166,5 @@ pub(crate) fn launch(
     };
     animate(h!("bend"), Genie::bend, 1.0)?;
     animate(h!("shift"), Genie::slide, travel)?;
-    Ok(())
-}
-
-/// Nada se dibuja bajo el hueco: las tiras desaparecen al entrar en él.
-pub(crate) fn clip_at_slot(
-    gfx: &GenieCompositor,
-    root: &ContainerVisual,
-    genie: &Genie,
-    turn: Turn,
-) -> Result<()> {
-    let below = turn.size().1 - genie.slot.bottom;
-    let clip = gfx
-        .compositor
-        .CreateInsetClipWithInsets(0.0, 0.0, 0.0, below.max(0.0))?;
-    root.SetClip(&clip)?;
     Ok(())
 }

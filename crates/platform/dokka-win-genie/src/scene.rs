@@ -29,7 +29,7 @@ use dokka_win_thumbnail::{LiveImage, LiveTarget, source_size};
 use windows::UI::Composition::{ContainerVisual, Visual};
 use windows::Win32::Foundation::HWND;
 use windows::core::{Error, Interface, Result};
-use windows_numerics::{Matrix4x4, Vector2};
+use windows_numerics::Matrix4x4;
 
 use crate::geometry::{PixelRect, Turn, to_local};
 use crate::overlay::{create_window, destroy};
@@ -61,12 +61,6 @@ impl Stage {
             _target: None,
             pieces: Vec::new(),
         };
-        // Tamaño fijo: este destino no tiene padre del que tomarlo y, sin él, el
-        // recorte del hueco puede taparlo todo.
-        stage.root.SetSize(Vector2 {
-            X: screen.width() as f32,
-            Y: screen.height() as f32,
-        })?;
         let host = overlay.0 as isize;
         let target = gfx.live.target_for(host)?;
         target.target().SetRoot(&stage.root)?;
@@ -105,6 +99,11 @@ impl Stage {
                 _image: image,
             });
         }
+        eprintln!(
+            "genio: imagen {source:?}, en pantalla {:?}, {} tiras",
+            placement.visible,
+            stage.pieces.len()
+        );
         Ok((stage, window))
     }
 }

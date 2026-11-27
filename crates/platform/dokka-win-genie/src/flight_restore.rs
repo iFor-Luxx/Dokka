@@ -33,7 +33,7 @@ use crate::geometry::{GenieEdge, PixelRect, Turn, to_local};
 use crate::overlay::show_no_activate;
 use crate::phase::Phase;
 use crate::scene::Stage;
-use crate::strips::{GenieCompositor, bind, clip_at_slot, launch};
+use crate::strips::{GenieCompositor, bind, launch};
 
 impl Flight {
     /// Vuelo de vuelta hasta donde estaba. La ventana real la restaura quien
@@ -59,7 +59,6 @@ impl Flight {
                 window,
                 slot: turn.edges(to_local(slot, screen)),
             };
-            clip_at_slot(gfx, &stage.root, &genie, turn)?;
             let drive = bind(gfx, &genie, &stage.pieces, true)?;
             launch(gfx, &genie, &drive, true, GENIE_SECONDS)?;
             gfx.live.commit()?;

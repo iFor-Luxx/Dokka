@@ -208,15 +208,7 @@ impl GenieDirector {
             eprintln!("genio: sin apuntar: no hay vuelo en curso");
             return;
         };
-        // Sin compositor no hay vuelo; no puede pasar, pero falla solo.
-        let Some(gfx) = self.gfx.as_ref() else {
-            eprintln!(
-                "genio: sin apuntar el vuelo {}: no hay compositor",
-                flight.hwnd
-            );
-            return;
-        };
-        flight.aim(gfx, PixelRect::from_win(rect_of(slot)));
+        flight.aim(PixelRect::from_win(rect_of(slot)));
     }
 
     /// Pide restaurar desde el dock: vuela al reves hasta donde estaba.
