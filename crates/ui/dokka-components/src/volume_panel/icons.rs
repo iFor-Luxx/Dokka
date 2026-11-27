@@ -1,8 +1,7 @@
 use std::sync::Arc;
 
 use dokka_icons::{
-    volume_high_icon, volume_low_icon, volume_muted_icon, volume_off_icon,
-    volume_settings_icon,
+    volume_high_icon, volume_low_icon, volume_muted_icon, volume_off_icon, volume_settings_icon,
 };
 use dokka_scene::Drawing;
 use dokka_theme::Theme;

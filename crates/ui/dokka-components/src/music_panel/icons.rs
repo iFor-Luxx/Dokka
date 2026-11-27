@@ -6,23 +6,33 @@ use dokka_theme::Theme;
 
 /// Botones ya construidos con los colores del tema. Se reutilizan entre
 /// fotogramas: la plataforma solo repinta cuando recibe otro dibujo.
-/// Reutiliza los glifos de música existentes, en el texto oscuro del panel.
+/// Blancos sobre el cristal ahumado; los atenuados (misma forma en blanco
+/// tenue) se muestran sin canción.
 #[derive(Debug)]
 pub struct MusicPanelIcons {
     pub(super) previous: Arc<Drawing>,
     pub(super) play: Arc<Drawing>,
     pub(super) pause: Arc<Drawing>,
     pub(super) next: Arc<Drawing>,
+    pub(super) previous_dim: Arc<Drawing>,
+    pub(super) play_dim: Arc<Drawing>,
+    pub(super) pause_dim: Arc<Drawing>,
+    pub(super) next_dim: Arc<Drawing>,
 }
 
 impl MusicPanelIcons {
     pub fn new(theme: &Theme) -> Self {
-        let color = theme.panel.text;
+        let bright = theme.tray.text;
+        let dim = theme.tray.secondary;
         Self {
-            previous: Arc::new(media_previous_icon(color)),
-            play: Arc::new(media_play_icon(color)),
-            pause: Arc::new(media_pause_icon(color)),
-            next: Arc::new(media_next_icon(color)),
+            previous: Arc::new(media_previous_icon(bright)),
+            play: Arc::new(media_play_icon(bright)),
+            pause: Arc::new(media_pause_icon(bright)),
+            next: Arc::new(media_next_icon(bright)),
+            previous_dim: Arc::new(media_previous_icon(dim)),
+            play_dim: Arc::new(media_play_icon(dim)),
+            pause_dim: Arc::new(media_pause_icon(dim)),
+            next_dim: Arc::new(media_next_icon(dim)),
         }
     }
 }

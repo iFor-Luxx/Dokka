@@ -46,7 +46,13 @@ pub fn volume_panel(
         panel: clear_panel(theme, bounds),
         tiles: vec![tile_panel(theme, sound), tile_panel(theme, settings)],
         pill: None,
-        highlight: Some(highlight_panel(theme, sound, settings, mute_area, props.hovered)),
+        highlight: Some(highlight_panel(
+            theme,
+            sound,
+            settings,
+            mute_area,
+            props.hovered,
+        )),
         flat_panels: vec![flats[0], flats[1]],
         dividers: Vec::new(),
         dots: Vec::new(),
@@ -213,9 +219,7 @@ fn highlight_panel(
             tint: theme.tray.hover,
             border: theme.tray.hover,
         },
-        _ => {
-            hidden
-        }
+        _ => hidden,
     }
 }
 

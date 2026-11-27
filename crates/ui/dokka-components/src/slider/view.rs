@@ -55,12 +55,7 @@ pub fn slider_track_panel(track: Rect, colors: &SliderColors) -> Panel {
 
 /// Relleno hasta el valor con el color recibido (principal o atenuado).
 /// Existe siempre (de ancho cero al mínimo) para no reconstruir capas.
-pub fn slider_fill_panel(
-    track: Rect,
-    value: f32,
-    active: bool,
-    colors: &SliderColors,
-) -> Panel {
+pub fn slider_fill_panel(track: Rect, value: f32, active: bool, colors: &SliderColors) -> Panel {
     let width = track.width * clamp01(value);
     let tint = if active { colors.fill } else { colors.muted };
     Panel {
