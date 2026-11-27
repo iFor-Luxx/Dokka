@@ -62,7 +62,7 @@ const BEND_END: f32 = 0.5;
 const SLIDE_START: f32 = 0.15;
 
 /// Duracion del vuelo en segundos, igual al minimizar que al restaurar.
-pub const GENIE_SECONDS: f32 = 0.45;
+pub const GENIE_SECONDS: f32 = 0.35;
 /// El ultimo fotograma se queda quieto para que la ventana real aparezca debajo.
 pub const GENIE_SETTLE_SECONDS: f32 = 0.12;
 /// La miniatura del dock aparece durante el tramo final del vuelo.
