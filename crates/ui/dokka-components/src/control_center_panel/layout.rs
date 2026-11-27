@@ -63,8 +63,8 @@ pub(crate) fn music_tile(bounds: Rect) -> Rect {
 
 /// Botón circular `index` (0 escritorio, 1 bloqueo, 2 tareas), repartidos.
 pub(crate) fn round_button(bounds: Rect, index: usize) -> Rect {
-    let step = (content_width(bounds) - measures::ROUND_DIAMETER)
-        / (measures::ROUND_COUNT as f32 - 1.0);
+    let step =
+        (content_width(bounds) - measures::ROUND_DIAMETER) / (measures::ROUND_COUNT as f32 - 1.0);
     Rect {
         x: content_x(bounds) + step * index as f32,
         y: circles_y(bounds),
@@ -113,7 +113,8 @@ pub(crate) fn music_art(card: Rect) -> Rect {
 pub(crate) fn music_button(card: Rect, index: usize) -> Rect {
     let total = measures::MUSIC_BUTTON_SIDE * 3.0 + measures::MUSIC_BUTTON_GAP * 2.0;
     Rect {
-        x: card.x + (card.width - total) / 2.0
+        x: card.x
+            + (card.width - total) / 2.0
             + (measures::MUSIC_BUTTON_SIDE + measures::MUSIC_BUTTON_GAP) * index as f32,
         y: card.y + card.height - glass::PADDING - measures::MUSIC_BUTTON_SIDE,
         width: measures::MUSIC_BUTTON_SIDE,

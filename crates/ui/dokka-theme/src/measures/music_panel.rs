@@ -1,39 +1,49 @@
-//! Medidas del panel de música de la barra superior.
+//! Medidas del panel de música de la barra superior, estilo Tahoe.
 //!
-//! Tarjeta clara como el calendario: título y artista arriba y barra de
-//! botones abajo. El radio interior es el exterior menos la separación,
-//! para que queden concéntricos.
+//! Una sola tarjeta de cristal ahumado: carátula cuadrada a la izquierda,
+//! título y artista a su derecha y tres controles grandes centrados abajo.
+//! Radios concéntricos: la carátula recorta el radio de la tarjeta
+//! (exterior menos separación).
 
 use dokka_scene::DRAWING_SIDE;
 
-/// Ancho fijo de la tarjeta.
-pub const WIDTH: f32 = 280.0;
-/// Alto fijo: cabecera de dos líneas más barra de botones.
-pub const HEIGHT: f32 = 124.0;
-/// Aire alrededor del contenido, como en los paneles flotantes.
-pub const PADDING: f32 = 12.0;
-/// Radio exterior, como el de los paneles flotantes.
-pub const CORNER_RADIUS: f32 = 16.0;
-pub const BORDER_WIDTH: f32 = 1.0;
+use super::tray_glass as glass;
 
-/// Centro vertical del título desde el borde superior.
-pub const TITLE_CENTER_OFFSET: f32 = 24.0;
-/// Centro vertical del artista desde el borde superior.
-pub const ARTIST_CENTER_OFFSET: f32 = 46.0;
+/// Ancho de la tarjeta, como los demás paneles de la barra.
+pub const WIDTH: f32 = glass::WIDTH;
+/// Alto: aire + carátula + hueco + controles + aire.
+pub const HEIGHT: f32 = glass::PADDING * 2.0 + ARTWORK_SIDE + glass::GAP + CONTROLS_HEIGHT;
+/// Aire dentro de la tarjeta.
+pub const PADDING: f32 = glass::PADDING;
+/// Hueco entre la fila de carátula y la de controles.
+pub const GAP: f32 = glass::GAP;
+/// Esquinas de la tarjeta.
+pub const TILE_RADIUS: f32 = glass::TILE_RADIUS;
+pub const TILE_BORDER_WIDTH: f32 = glass::TILE_BORDER_WIDTH;
+
+/// Lado de la carátula (marcador cuadrado redondeado).
+pub const ARTWORK_SIDE: f32 = 56.0;
+/// Radio de la carátula: exterior menos la separación, concéntrico.
+pub const ARTWORK_RADIUS: f32 = TILE_RADIUS - PADDING;
+/// Aire entre la carátula y los textos.
+pub const TEXT_GAP: f32 = 10.0;
+/// Título en negrita y artista debajo, blancos (el segundo atenuado).
+pub const TITLE_SIZE: f32 = glass::TITLE_SIZE;
+pub const SUBTITLE_SIZE: f32 = glass::SUBTITLE_SIZE;
 /// Títulos largos recortados con "…".
-pub const TITLE_CHARACTERS: usize = 30;
+pub const TITLE_CHARACTERS: usize = 24;
 /// Artistas largos recortados con "…".
-pub const ARTIST_CHARACTERS: usize = 34;
+pub const ARTIST_CHARACTERS: usize = 26;
 /// Texto cuando ninguna app informa de reproducción.
 pub const EMPTY_TEXT: &str = "Nada en reproducción";
 
-/// Alto de la barra de botones.
-pub const BUTTON_BAR_HEIGHT: f32 = 44.0;
-/// Radio de la barra: exterior menos la separación, concéntrico.
-pub const BUTTON_BAR_RADIUS: f32 = CORNER_RADIUS - PADDING;
-/// Lado del icono de cada botón, centrado en su tercio.
-pub const BUTTON_ICON_SIDE: f32 = 20.0;
-/// Tamaño del glifo Lucide: llena el lienzo de 100, fuente efectiva 20 a 20 de lado.
+/// Alto de la fila de controles.
+pub const CONTROLS_HEIGHT: f32 = 48.0;
+/// Ancho de cada botón (anterior, reproducir/pausa, siguiente).
+pub const BUTTON_WIDTH: f32 = 64.0;
+/// Lado del icono de cada botón, centrado en su botón.
+pub const BUTTON_ICON_SIDE: f32 = 28.0;
+/// Tamaño del glifo Lucide: llena el lienzo de 100, fuente efectiva 28 a 28 de lado.
 pub const BUTTON_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Tamaño del glifo de la nota musical de la barra, igual que los de la barra superior.
 pub const BAR_GLYPH_SIZE: f32 = DRAWING_SIDE;
