@@ -11,10 +11,13 @@ textos recortados con "…", mensaje de vacío centrado, resaltado y app bajo un
 panel nítido, lupa Lucide reutilizable siempre a la izquierda, texto escrito a la izquierda y
 marcador "Buscar" también a la izquierda (tenue junto al cursor si hay foco), cursor vertical como
 línea de ancho cero cuando está oculto para no reconstruir capas al parpadear, y si un punto cae dentro;
-con variantes `_at` de sitio fijo para la barra de Preferencias) y puntos de página
+con variantes `_at` de sitio fijo para la barra de Preferencias y variantes `settings_*` con
+búsqueda, foco y cursor para su filtrado, sin tocar el aspecto del Launchpad) y puntos de página
 (`page_dots`: punto actual en blanco con aro claro algo mayor). Los `Overlay` salen con escala 1; la isla les pone la animación.
-Semáforos de la ventana (`window_controls`: puntos rojo, amarillo y verde y botón bajo un punto)
+Semáforos de la ventana (`window_controls`: puntos rojo, amarillo y verde —grises sin
+foco— con sus símbolos Lucide oscuros al pasar el cursor y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
-con glifo blanco, nombres, selección azul, hover suave y fila bajo un punto).
+con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
+`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

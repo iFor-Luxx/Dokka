@@ -3,13 +3,13 @@ use std::time::Instant;
 use windows::Win32::Graphics::Dwm::DwmFlush;
 use windows::Win32::UI::WindowsAndMessaging::{
     DispatchMessageW, GetMessageW, KillTimer, MSG, PM_REMOVE, PeekMessageW, SW_SHOWNOACTIVATE,
-    SetTimer, ShowWindow, TranslateMessage, WM_QUIT, WM_TIMER,
+    SetTimer, ShowWindow, TranslateMessage, WA_INACTIVE, WM_QUIT, WM_TIMER,
 };
 
 use crate::menubar_loop::read_menubar;
 use crate::read_pointer::{read_pointer, read_settings_pointer};
 use crate::window_procedure::{
-    DISMISS_MESSAGE, MENUBAR_FULLSCREEN_MESSAGE, SETTINGS_DISMISS_MESSAGE,
+    DISMISS_MESSAGE, MENUBAR_FULLSCREEN_MESSAGE, SETTINGS_DISMISS_MESSAGE, SETTINGS_FOCUS_MESSAGE,
 };
 use crate::{Surface, SurfaceError, SurfaceEvent};
 
@@ -107,6 +107,7 @@ impl Surface {
             return None;
         }
         if message.message == WM_TIMER && message.wParam.0 == state.tick_timer {
+            self.refresh_menubar_fullscreen();
             return Some(SurfaceEvent::Tick);
         }
         if message.message == WM_TIMER && state.pending_timer == Some(message.wParam.0) {
@@ -125,8 +126,7 @@ impl Surface {
             return Some(SurfaceEvent::MenubarDismissed);
         }
         if message.hwnd == self.menubar_window() && message.message == MENUBAR_FULLSCREEN_MESSAGE {
-            // `lParam` distinto de cero al entrar en pantalla completa.
-            self.apply_fullscreen(message.lParam.0 != 0);
+            self.refresh_menubar_fullscreen();
             return None;
         }
         if message.hwnd == self.launchpad_window() && message.message == DISMISS_MESSAGE {
@@ -134,6 +134,13 @@ impl Surface {
         }
         if message.hwnd == self.settings_window() && message.message == SETTINGS_DISMISS_MESSAGE {
             return Some(SurfaceEvent::SettingsDismissed);
+        }
+        // El `wParam` original dice si sigue activa (`WA_INACTIVE` es 0).
+        if message.hwnd == self.settings_window() && message.message == SETTINGS_FOCUS_MESSAGE {
+            if message.wParam.0 & 0xFFFF == WA_INACTIVE as usize {
+                return Some(SurfaceEvent::SettingsBlurred);
+            }
+            return Some(SurfaceEvent::SettingsFocused);
         }
         if message.hwnd == self.window
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)

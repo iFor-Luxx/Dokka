@@ -37,9 +37,14 @@ pub(crate) fn handle_event(
         | SurfaceEvent::SettingsLeft
         | SurfaceEvent::SettingsPressed { .. }
         | SurfaceEvent::SettingsClicked { .. }
-        | SurfaceEvent::SettingsDismissed => {}
-        // Los de la barra ya se atendieron arriba.
-        SurfaceEvent::MenubarMoved { .. }
+        | SurfaceEvent::SettingsDismissed
+        | SurfaceEvent::SettingsFocused
+        | SurfaceEvent::SettingsBlurred
+        | SurfaceEvent::SettingsTyped { .. }
+        | SurfaceEvent::SettingsBackspace
+        | SurfaceEvent::SettingsEnter
+        | SurfaceEvent::SettingsEscape
+        | SurfaceEvent::MenubarMoved { .. }
         | SurfaceEvent::MenubarLeft
         | SurfaceEvent::MenubarClicked { .. }
         | SurfaceEvent::MenubarDismissed => {}

@@ -46,11 +46,8 @@ impl Surface {
         self.menubar_visible = true;
         // Si ya había una app a pantalla completa, no se recibe de nuevo el
         // aviso: se comprueba al mostrar para no taparla.
-        if is_fullscreen_covering(self.menubar, &monitor) {
-            self.apply_fullscreen(true);
-        } else {
-            self.menubar_fullscreen = false;
-        }
+        self.menubar_fullscreen = false;
+        self.refresh_menubar_fullscreen();
         Ok(())
     }
 
@@ -93,9 +90,22 @@ impl Surface {
         self.menubar
     }
 
+    /// Mira la ventana al frente y oculta o recupera la barra. El aviso de Windows
+    /// no basta: salta con el escritorio o con ventanas propias y no siempre
+    /// llega el de salida, así que se comprueba también cada segundo.
+    pub(crate) fn refresh_menubar_fullscreen(&mut self) {
+        let Ok(monitor) = primary_monitor_rect(self.menubar) else {
+            return;
+        };
+        let covering = is_fullscreen_covering(self.menubar, &monitor);
+        if covering != self.menubar_fullscreen {
+            self.apply_fullscreen(covering);
+        }
+    }
+
     /// Oculta ante pantalla completa sin liberar la reserva; al salir vuelve
     /// a mostrarse solo si seguía visible.
-    pub(crate) fn apply_fullscreen(&mut self, entering: bool) {
+    fn apply_fullscreen(&mut self, entering: bool) {
         self.menubar_fullscreen = entering;
         if self.menubar.is_invalid() || !self.menubar_visible {
             return;
@@ -181,13 +191,28 @@ fn appbar_data(window: HWND, monitor: &RECT, bar_px: i32) -> APPBARDATA {
     }
 }
 
-/// `true` si la ventana al frente cubre todo el monitor (pantalla completa).
+/// `true` si la ventana al frente es de otra app y cubre todo el monitor.
+/// El escritorio y las ventanas de Dokka (Launchpad, vista grande) no cuentan.
 fn is_fullscreen_covering(menubar: HWND, monitor: &RECT) -> bool {
-    use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowRect};
-    // SAFETY: consultas de solo lectura sobre ventanas del escritorio.
+    use windows::Win32::System::Threading::GetCurrentProcessId;
+    use windows::Win32::UI::WindowsAndMessaging::{
+        GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowThreadProcessId,
+    };
+    // SAFETY: consultas de solo lectura; los búferes y punteros viven durante cada llamada.
     unsafe {
         let foreground = GetForegroundWindow();
         if foreground.is_invalid() || foreground == menubar {
+            return false;
+        }
+        let mut owner = 0;
+        GetWindowThreadProcessId(foreground, Some(&mut owner));
+        if owner == GetCurrentProcessId() {
+            return false;
+        }
+        let mut name = [0_u16; 64];
+        let length = GetClassNameW(foreground, &mut name).max(0) as usize;
+        let class = String::from_utf16_lossy(&name[..length]);
+        if class == "Progman" || class == "WorkerW" {
             return false;
         }
         let mut area = RECT::default();

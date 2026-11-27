@@ -4,10 +4,14 @@ use dokka_theme::{Theme, settings as measures};
 use super::TrafficButton;
 
 /// Los tres círculos rojo, amarillo y verde de la esquina superior izquierda.
-pub fn traffic_dots(theme: &Theme) -> Vec<Dot> {
-    theme
-        .settings
-        .traffic
+/// Grises cuando la ventana no tiene el foco, como en macOS.
+pub fn traffic_dots(theme: &Theme, focused: bool) -> Vec<Dot> {
+    let colors = if focused {
+        theme.settings.traffic
+    } else {
+        [theme.settings.traffic_inactive; 3]
+    };
+    colors
         .into_iter()
         .enumerate()
         .map(|(index, color)| Dot {

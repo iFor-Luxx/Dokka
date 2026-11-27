@@ -25,7 +25,8 @@ pub use lucide::{
     menubar_icon, nav_next_icon, nav_previous_icon, preview_close_icon, preview_pin_icon,
     preview_pinned_icon, search_icon, settings_about_icon, settings_appearance_icon,
     settings_dock_icon, settings_general_icon, settings_launchpad_icon, settings_shortcuts_icon,
-    settings_taskbar_icon, submenu_chevron_icon,
+    settings_taskbar_icon, submenu_chevron_icon, traffic_close_icon, traffic_minimize_icon,
+    traffic_zoom_icon,
 };
 pub use trash::trash_icon;
 

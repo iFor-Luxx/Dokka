@@ -86,11 +86,21 @@ fn typed_character(message: &MSG) -> Option<SurfaceEvent> {
 
 /// Traduce los mensajes de la ventana de Preferencias. Como el dock, pero con
 /// aviso de botón abajo para arrastrar la ventana desde su franja superior;
-/// el botón derecho no hace nada. El clic no se filtra aquí: el shell decide
+/// el botón derecho no hace nada. Las teclas llegan como en el Launchpad
+/// (`WM_CHAR` con `TranslateMessage`), pero con eventos propios para no
+/// mezclarse con él. El clic no se filtra aquí: el shell decide
 /// si hubo botón abajo antes (el arrastre nativo se traga el botón al soltar
 /// y un estado a medias daría clics fantasmas).
 pub(crate) fn read_settings_pointer(message: &MSG, scale: f32) -> Option<SurfaceEvent> {
     match message.message {
+        WM_KEYDOWN if message.wParam.0 == VK_ESCAPE.0 as usize => {
+            Some(SurfaceEvent::SettingsEscape)
+        }
+        WM_KEYDOWN if message.wParam.0 == VK_RETURN.0 as usize => Some(SurfaceEvent::SettingsEnter),
+        WM_KEYDOWN if message.wParam.0 == VK_BACK.0 as usize => {
+            Some(SurfaceEvent::SettingsBackspace)
+        }
+        WM_CHAR => typed_settings_character(message),
         WM_MOUSEMOVE => {
             let (x, y) = pointer_position(message, scale);
             let mut request = TRACKMOUSEEVENT {
@@ -114,6 +124,15 @@ pub(crate) fn read_settings_pointer(message: &MSG, scale: f32) -> Option<Surface
         }
         _ => None,
     }
+}
+
+/// Letra de `WM_CHAR` para Preferencias; los controles se ignoran.
+fn typed_settings_character(message: &MSG) -> Option<SurfaceEvent> {
+    let character = char::from_u32(message.wParam.0 as u32)?;
+    if character.is_control() {
+        return None;
+    }
+    Some(SurfaceEvent::SettingsTyped { character })
 }
 
 /// Desplazamiento de la rueda, en unidades de Windows (120 por paso).

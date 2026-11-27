@@ -35,6 +35,11 @@ pub const TRAFFIC_LEFT: f32 = SIDEBAR_INSET + 17.0;
 pub const TRAFFIC_TOP: f32 = 24.0;
 /// Aire para pulsar cada semáforo alrededor de su círculo.
 pub const TRAFFIC_HIT_PADDING: f32 = 4.5;
+/// Lado del símbolo Lucide dentro de cada semáforo (círculo de 14).
+pub const TRAFFIC_GLYPH_SIDE: f32 = 10.0;
+/// Tamaño del glifo Lucide del semáforo: llena el lienzo de 100, así la
+/// fuente efectiva es 10 al mostrarse a 10 de lado.
+pub const TRAFFIC_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
 
 /// Borde superior de la casilla de búsqueda, bajo los semáforos.
 pub const SEARCH_TOP: f32 = 52.0;
@@ -51,6 +56,21 @@ pub const SEARCH_TEXT_INSET: f32 = SEARCH_ICON_INSET + SEARCH_ICON_SIDE + 8.0;
 pub const SEARCH_TEXT_SIZE: f32 = 13.0;
 /// Texto que muestra la casilla, sin ajustes reales todavía.
 pub const SEARCH_PLACEHOLDER: &str = "Buscar";
+/// Ancho aproximado de cada letra escrita en la casilla, para colocar el
+/// cursor tras el texto sin medir la fuente en cada redibujado.
+pub const SEARCH_CHAR_ADVANCE: f32 = 7.0;
+/// Aire entre la última letra y el cursor vertical.
+pub const SEARCH_CURSOR_GAP: f32 = 2.0;
+/// Ancho del cursor vertical de la casilla enfocada.
+pub const SEARCH_CURSOR_WIDTH: f32 = 1.5;
+/// Alto del cursor vertical de la casilla enfocada.
+pub const SEARCH_CURSOR_HEIGHT: f32 = 15.0;
+/// Cuántas letras guarda la búsqueda de Preferencias.
+pub const SEARCH_MAX_CHARACTERS: usize = 32;
+/// Mensaje en la barra lateral cuando el filtro no encuentra nada.
+pub const EMPTY_TEXT: &str = "Sin resultados";
+/// Tamaño del mensaje de búsqueda vacía.
+pub const EMPTY_TEXT_SIZE: f32 = 13.0;
 
 /// Borde superior de la primera fila, bajo la casilla.
 pub const ROWS_TOP: f32 = 96.0;
@@ -70,6 +90,10 @@ pub const ROW_TEXT_SIZE: f32 = 13.0;
 pub const ROW_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
 /// Lado del glifo blanco dentro del cuadrado.
 pub const ROW_ICON_SIDE: f32 = 18.0;
+/// Radio del cuadrado de color en el lienzo de 100, para pintarlo como
+/// imagen y que al filtrar cada capa repinte su color (el marcador de un
+/// icono no cambia al actualizarse).
+pub const BADGE_CANVAS_RADIUS: f32 = 25.0;
 /// Margen de la fila resaltada dentro de la barra.
 pub const ROW_HIGHLIGHT_MARGIN: f32 = 8.0;
 /// Alto de la fila resaltada (selección y hover).

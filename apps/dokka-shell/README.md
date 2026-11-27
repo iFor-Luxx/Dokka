@@ -11,6 +11,8 @@ medidas del tema y `draw_menubar`), redibujándola solo si cambia. Pide al dock 
 (con si la barra está oculta o en automático) y ejecuta su `MenuAction`; mientras el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Preferencias» abre la ventana de configuración (o la trae al frente);
+atiende su foco (semáforos grises sin foco), su búsqueda (filtrar, Retroceso, Enter y Esc)
+y su historial atrás/adelante, y solo la repinta si cambió lo dibujado;
 «Reiniciar Dokka» relanza el ejecutable actual. Las acciones de apps e iconos del sistema
 viven en `app_menu_actions.rs` (activar, abrir, administrador, carpeta, cerrar la del frente,
 salir sin matar, carpetas del explorador, papelera y Launchpad por el mismo camino que su icono);

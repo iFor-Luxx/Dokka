@@ -76,6 +76,20 @@ pub enum SurfaceEvent {
     },
     /// Preferencias se cerró con la X, Alt+F4 o la barra de tareas.
     SettingsDismissed,
+    /// Preferencias ganó el foco: los semáforos recuperan su color.
+    SettingsFocused,
+    /// Preferencias perdió el foco: los semáforos se ven grises.
+    SettingsBlurred,
+    /// Letra escrita sobre Preferencias, ya traducida de `WM_KEYDOWN`.
+    SettingsTyped {
+        character: char,
+    },
+    /// Retroceso sobre Preferencias.
+    SettingsBackspace,
+    /// Enter sobre Preferencias.
+    SettingsEnter,
+    /// Esc sobre Preferencias: limpia la búsqueda antes de quitar el foco.
+    SettingsEscape,
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.
