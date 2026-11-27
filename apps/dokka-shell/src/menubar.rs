@@ -1,9 +1,10 @@
-//! Barra superior: app activa, hora con calendario y menú del icono.
+//! Barra superior: app activa, hora con calendario, menú del icono y fila
+//! derecha con sus paneles provisionales.
 //!
 //! La isla decide y dibuja; aquí solo se conecta con la plataforma y con lo
-//! que ya hace `context_menu.rs`, sin duplicarlo. Abrir el menú o el
-//! calendario cierra el otro, el del dock y las vistas previas; abrir el del
-//! dock o un panel lo cierra a él.
+//! que ya hace `context_menu.rs`, sin duplicarlo. Abrir el menú, el
+//! calendario o la fila cierra los otros dos, el del dock y las vistas previas;
+//! abrir el del dock o un panel los cierra a ellos.
 
 use std::error::Error;
 
@@ -71,13 +72,16 @@ pub(crate) fn render_menubar(
     Ok(())
 }
 
-/// Cierra el menú o el calendario si hay alguno abierto, devolviendo el foco.
+/// Cierra el menú, el calendario o la fila si hay algo abierto, devolviendo el foco.
 pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) {
     if session.menubar.is_menu_open() {
         session.menubar.close_menu();
         surface.menubar_menu_closed();
     } else if session.menubar.is_calendar_open() {
         session.menubar.close_calendar();
+        surface.menubar_menu_closed();
+    } else if session.menubar.is_tray_open() {
+        session.menubar.close_tray();
         surface.menubar_menu_closed();
     }
 }
@@ -117,8 +121,9 @@ pub(crate) fn handle_menubar_event(
     Ok(true)
 }
 
-/// Clic en la barra: icono, hora, píldora o cerrar fuera. Abrir el menú o el
-/// calendario cierra el otro, el del dock y las previas; cerrar devuelve el foco.
+/// Clic en la barra: icono, hora, fila, píldora o cerrar fuera. Abrir el menú,
+/// el calendario o la fila cierra los otros dos, el del dock y las previas;
+/// cerrar devuelve el foco.
 fn click_menubar(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -128,24 +133,28 @@ fn click_menubar(
     let width = surface.menubar_width();
     let was_menu = session.menubar.is_menu_open();
     let was_calendar = session.menubar.is_calendar_open();
+    let was_tray = session.menubar.is_tray_open();
     let chosen = session.menubar.click(x, y, width);
     if let Some(action) = chosen {
         return run_menubar_action(session, surface, action);
     }
     let now_menu = session.menubar.is_menu_open();
     let now_calendar = session.menubar.is_calendar_open();
-    if !was_menu && !was_calendar && (now_menu || now_calendar) {
+    let now_tray = session.menubar.is_tray_open();
+    let was_open = was_menu || was_calendar || was_tray;
+    let now_open = now_menu || now_calendar || now_tray;
+    if !was_open && now_open {
         // Se acaba de abrir: fuera el menú del dock y las previas.
         session.dock.close_menu();
         surface.menu_closed();
         session.previews.close();
         surface.menubar_menu_opened();
-    } else if (was_menu && now_calendar) || (was_calendar && now_menu) {
-        // Cambio directo entre menú y calendario: ya tenía el foco.
+    } else if was_open && now_open && (was_menu != now_menu || was_calendar != now_calendar || was_tray != now_tray) {
+        // Cambio directo entre menú, calendario y fila: ya tenía el foco.
         session.dock.close_menu();
         surface.menu_closed();
         session.previews.close();
-    } else if (was_menu || was_calendar) && !now_menu && !now_calendar {
+    } else if was_open && !now_open {
         surface.menubar_menu_closed();
     }
     Ok(())

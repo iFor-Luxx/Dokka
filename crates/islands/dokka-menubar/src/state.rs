@@ -3,21 +3,23 @@ use std::sync::Arc;
 use dokka_components::calendar_panel::{calendar_month, calendar_weeks};
 use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
 use dokka_components::nav_pill::{NavHalf, NavPillIcons};
-use dokka_icons::menubar_icon;
+use dokka_icons::{TrayIcons, menubar_icon};
 use dokka_scene::{Drawing, Rect};
 use dokka_theme::{Theme, menubar as measures};
 
 use super::logic::{
-    OpenCalendar, OpenMenu, calendar_panel_for, menu_actions, menu_panel_for, menu_rows,
+    OpenCalendar, OpenMenu, OpenTray, TrayKind, calendar_panel_for, menu_actions, menu_panel_for,
+    menu_rows, tray_open_panel,
 };
 
-/// Huella de la barra ya dibujada: app, hora, hoy, aperturas, resaltados,
-/// mes y píldora. Vive aquí para no exponer los tipos del componente.
+/// Huella de la barra ya dibujada: app, hora, hoy, idioma, aperturas,
+/// resaltados, mes y píldora. Vive aquí para no exponer los tipos del componente.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MenubarPainted {
     pub app: String,
     pub clock: String,
     pub today: (u16, u16, u16),
+    pub language: String,
     pub menu_open: bool,
     pub icon_hovered: bool,
     pub highlighted: Option<usize>,
@@ -26,9 +28,12 @@ pub struct MenubarPainted {
     pub weeks_seen: u16,
     pub nav_hovered: Option<NavHalf>,
     pub clock_hovered: bool,
+    pub tray_open: Option<TrayKind>,
+    pub tray_hovered: Option<TrayKind>,
 }
 
-/// Lo que la barra recuerda entre eventos: nombre, hora, menú, calendario y resaltados.
+/// Lo que la barra recuerda entre eventos: nombre, hora, idioma, menú,
+/// calendario, fila derecha y resaltados.
 #[derive(Debug)]
 pub struct Menubar {
     pub(crate) theme: Arc<Theme>,
@@ -36,6 +41,7 @@ pub struct Menubar {
     pub(crate) chevrons: MenuChevrons,
     pub(crate) checks: MenuChecks,
     pub(crate) nav_pill: NavPillIcons,
+    pub(crate) tray_icons: TrayIcons,
     pub(crate) app_name: String,
     pub(crate) clock: String,
     pub(crate) icon_hovered: bool,
@@ -44,15 +50,20 @@ pub struct Menubar {
     pub(crate) menu: Option<OpenMenu>,
     pub(crate) calendar: Option<OpenCalendar>,
     pub(crate) today: (u16, u16, u16),
+    pub(crate) language_code: String,
+    pub(crate) tray: Option<OpenTray>,
+    pub(crate) tray_hovered: Option<TrayKind>,
 }
 
 impl Menubar {
     pub fn new(theme: Arc<Theme>) -> Self {
         let icon = Arc::new(menubar_icon(theme.menubar.text));
+        let tray_icons = TrayIcons::new(&theme);
         Self {
             chevrons: MenuChevrons::new(&theme),
             checks: MenuChecks::new(&theme),
             nav_pill: NavPillIcons::new(&theme),
+            tray_icons,
             theme,
             icon,
             app_name: String::new(),
@@ -63,6 +74,9 @@ impl Menubar {
             menu: None,
             calendar: None,
             today: (0, 1, 1),
+            language_code: "ES".to_owned(),
+            tray: None,
+            tray_hovered: None,
         }
     }
 
@@ -76,6 +90,12 @@ impl Menubar {
 
     pub fn set_today(&mut self, year: u16, month: u16, day: u16) {
         self.today = (year, month, day);
+    }
+
+    /// Código corto del idioma ("ES"): el shell lo rellena con
+    /// `KeyboardLanguage.code`; provisionalmente vale "ES".
+    pub fn set_language_code(&mut self, code: String) {
+        self.language_code = code;
     }
 
     pub fn app_name(&self) -> &str {
@@ -94,6 +114,14 @@ impl Menubar {
         self.calendar.is_some()
     }
 
+    pub fn is_tray_open(&self) -> bool {
+        self.tray.is_some()
+    }
+
+    pub fn tray_kind(&self) -> Option<TrayKind> {
+        self.tray.map(|open| open.kind)
+    }
+
     pub fn is_icon_hovered(&self) -> bool {
         self.icon_hovered
     }
@@ -110,13 +138,14 @@ impl Menubar {
         self.menu.as_ref().and_then(|menu| menu.highlighted)
     }
 
-    /// Huella de lo dibujado (app, hora, hoy, aperturas, resaltados, mes y
-    /// píldora): el shell solo repinta si cambia.
+    /// Huella de lo dibujado (app, hora, hoy, idioma, aperturas, resaltados,
+    /// mes y píldora): el shell solo repinta si cambia.
     pub fn painted(&self) -> MenubarPainted {
         MenubarPainted {
             app: self.app_name.clone(),
             clock: self.clock.clone(),
             today: self.today,
+            language: self.language_code.clone(),
             menu_open: self.menu.is_some(),
             icon_hovered: self.icon_hovered,
             highlighted: self.highlighted(),
@@ -125,6 +154,8 @@ impl Menubar {
             weeks_seen: self.calendar_weeks_seen(),
             nav_hovered: self.nav_hovered,
             clock_hovered: self.clock_hovered,
+            tray_open: self.tray_kind(),
+            tray_hovered: self.tray_hovered,
         }
     }
 
@@ -137,6 +168,11 @@ impl Menubar {
         self.calendar = None;
         self.nav_hovered = None;
         self.clock_hovered = false;
+    }
+
+    pub fn close_tray(&mut self) {
+        self.tray = None;
+        self.tray_hovered = None;
     }
 
     /// Caja del icono: franja izquierda de la barra.
@@ -198,6 +234,11 @@ impl Menubar {
             panel,
             highlighted: None,
         });
+        self.calendar = None;
+        self.nav_hovered = None;
+        self.clock_hovered = false;
+        self.tray = None;
+        self.tray_hovered = None;
         self.icon_hovered = true;
     }
 
@@ -206,7 +247,25 @@ impl Menubar {
             month_offset: 0,
             calendar_weeks: 0,
         });
+        self.menu = None;
+        self.icon_hovered = false;
+        self.tray = None;
+        self.tray_hovered = None;
         self.nav_hovered = None;
         self.clock_hovered = true;
+    }
+
+    /// Abre el panel provisional del icono dado, cerrando menú y calendario.
+    pub(crate) fn open_tray(&mut self, kind: TrayKind, bar_width: f32) {
+        let Some(panel) = tray_open_panel(kind, bar_width) else {
+            return;
+        };
+        self.tray = Some(OpenTray { kind, panel });
+        self.menu = None;
+        self.icon_hovered = false;
+        self.calendar = None;
+        self.nav_hovered = None;
+        self.clock_hovered = false;
+        self.tray_hovered = Some(kind);
     }
 }

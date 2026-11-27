@@ -3,16 +3,25 @@
 **Hace:** es el ejecutable; arranca Dokka y conecta las piezas. Pasa al compositor
 la fuente del sistema y los bytes de la fuente de iconos Lucide (en memoria,
 sin instalar). Muestra la barra superior (`menubar.rs`: icono, app al frente
-con `foreground_app` + `NameCache` y hora con `local_time` (y el hoy del calendario); su menú reutiliza
+con `foreground_app` + `NameCache` y hora con `local_time` (y el hoy del calendario);
+fila derecha a la izquierda de la fecha (de derecha a izquierda: centro de control,
+buscar, idioma como texto con `set_language_code` —provisional "ES"—, música, red y
+volumen, iconos Lucide provisionales) con un panel provisional por icono (tarjeta de
+340 × 420 con su título, alineada bajo su icono sin salirse); su menú reutiliza
 `context_menu.rs` para Preferencias, escritorio, administrador, reiniciar y
 salir, con `menubar_menu_dismissed` antes de Preferencias y administrador y
 `menubar_hide` al salir o reiniciar; su calendario comparte `calendar_panel`
 con el dock (misma tarjeta y píldora, a la derecha bajo el reloj) y se cierra
-al repetir la hora, al pulsar fuera, al perder el foco o al abrir el menú o un
-panel del dock (y al revés); mientras la barra está desplegada no se abren
-previas) en su ventana (`menubar_show` con las medidas del tema y
-`draw_menubar`), redibujándola solo si cambia (`MenubarPainted`: mes, hover y
-apertura incluidos). Pide al dock abrir el menú
+al repetir la hora, al pulsar fuera, al perder el foco o al abrir el menú, la fila o un
+panel del dock (y al revés; solo uno abierto a la vez, también entre iconos de la fila:
+repetir el mismo lo cierra); mientras la barra está desplegada no se abren
+previas) en su ventana (`menubar_show` con las medidas del tema, ventana de 460 para
+que quepa el provisional, y `draw_menubar`), redibujándola solo si cambia
+(`MenubarPainted`: mes, hover, idioma y apertura incluidos). Los paneles reales los
+enchufan otros agentes: un archivo por panel en `dokka-menubar/src/logic/` que usa su
+`<x>_size/<x>_panel/<x>_hit` de `dokka-components`, el shell les pasa
+`VolumeState`/`NetworkState`/`KeyboardLanguage`/`NowPlayingInfo` cada `Tick` y ejecuta
+su `MenubarAction` en `run_menubar_action` (ver el README de `dokka-menubar`). Pide al dock abrir el menú
 (con si la barra está oculta o en automático) y ejecuta su `MenuAction`; mientras el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Preferencias» abre la ventana de configuración (o la trae al frente);

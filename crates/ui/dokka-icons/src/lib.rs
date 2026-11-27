@@ -6,6 +6,7 @@ mod clock;
 mod explorer;
 mod launchpad;
 mod lucide;
+mod menubar_tray;
 mod shapes;
 mod tile_color;
 mod tile_frame;
@@ -29,6 +30,7 @@ pub use lucide::{
     traffic_close_icon, traffic_minimize_button, traffic_minimize_icon, traffic_zoom_button,
     traffic_zoom_icon,
 };
+pub use menubar_tray::{TRAY_GLYPH_SIDE, TrayIcons};
 pub use trash::trash_icon;
 
 pub use lucide_icons::LUCIDE_FONT_BYTES;

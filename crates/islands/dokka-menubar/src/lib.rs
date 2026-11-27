@@ -7,5 +7,5 @@ mod state;
 mod view;
 
 pub use events::MenubarAction;
-pub use logic::clock_text;
+pub use logic::{TrayKind, clock_text};
 pub use state::{Menubar, MenubarPainted};

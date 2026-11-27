@@ -1,4 +1,4 @@
-//! Escena de la franja con el menú o el calendario colgando como `overlay`.
+//! Escena de la franja con el menú, el calendario o la fila colgando.
 
 use dokka_components::calendar_panel::{calendar_month, calendar_panel, calendar_pill_props};
 use dokka_components::menu_panel::submenu_overlay;
@@ -8,8 +8,8 @@ use dokka_theme::{menubar as measures, typography};
 use crate::Menubar;
 
 impl Menubar {
-    /// Franja de lado a lado con icono, app y hora; el menú o el calendario
-    /// va en `overlay` (nunca los dos a la vez).
+    /// Franja de lado a lado con icono, app, fila derecha y hora; el menú,
+    /// el calendario o el panel provisional va en `overlay` (nunca dos).
     pub fn scene(&self, bar_width: f32) -> Scene {
         let bar = Rect {
             x: 0.0,
@@ -18,9 +18,11 @@ impl Menubar {
             height: measures::HEIGHT,
         };
         // Planos (sin cristal) y siempre presentes: así no se oscurecen ni se
-        // reconstruyen las capas al pasar el cursor.
-        let hover = self.highlight_panel();
-        let clock_hover = self.clock_highlight_panel(bar_width);
+        // reconstruyen las capas al pasar el cursor (2 fijos + 6 de la fila).
+        let mut flat_panels = vec![self.highlight_panel(), self.clock_highlight_panel(bar_width)];
+        flat_panels.extend(self.tray_hover_panels(bar_width));
+        let mut icons = vec![self.mark_icon()];
+        icons.extend(self.tray_bar_icons(bar_width));
         Scene {
             panel: Panel {
                 bounds: bar,
@@ -30,8 +32,8 @@ impl Menubar {
                 border: self.theme.menubar.border,
             },
             panels: Vec::new(),
-            flat_panels: vec![hover, clock_hover],
-            icons: vec![self.mark_icon()],
+            flat_panels,
+            icons,
             dots: Vec::new(),
             dividers: Vec::new(),
             thumbnails: Vec::new(),
@@ -40,7 +42,8 @@ impl Menubar {
             highlight: None,
             overlay: self
                 .menu_overlay()
-                .or_else(|| self.calendar_overlay(bar_width)),
+                .or_else(|| self.calendar_overlay(bar_width))
+                .or_else(|| self.tray_overlay()),
             submenu: None,
             opacity: 1.0,
             scale: 1.0,
@@ -48,7 +51,7 @@ impl Menubar {
         }
     }
 
-    /// Franja y, abierto, el menú o el calendario con su hueco.
+    /// Franja y, abierto, el menú, el calendario o la fila con su hueco.
     pub fn active_areas(&self, bar_width: f32) -> Vec<Rect> {
         let mut areas = vec![Rect {
             x: 0.0,
@@ -64,6 +67,13 @@ impl Menubar {
                 height: menu.panel.y - measures::HEIGHT + menu.panel.height,
             });
         } else if let Some(bounds) = self.calendar_bounds(bar_width) {
+            areas.push(Rect {
+                x: bounds.x,
+                y: measures::HEIGHT,
+                width: bounds.width,
+                height: bounds.y - measures::HEIGHT + bounds.height,
+            });
+        } else if let Some(bounds) = self.tray_bounds() {
             areas.push(Rect {
                 x: bounds.x,
                 y: measures::HEIGHT,
@@ -137,6 +147,9 @@ impl Menubar {
                 color: self.theme.menubar.text,
                 align: TextAlign::Left,
             });
+        }
+        if let Some(language) = self.tray_language_text(bar_width) {
+            texts.push(language);
         }
         if !self.clock.is_empty() {
             texts.push(Text {
