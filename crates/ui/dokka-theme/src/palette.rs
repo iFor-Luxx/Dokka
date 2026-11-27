@@ -141,7 +141,7 @@ pub(crate) const TRAY_PERCENT: Color = Color::rgba(30, 32, 36, 170);
 
 /// Relleno claro de la línea del dock oculto: se lee sobre fondos claros
 /// y oscuros; el borde oscuro la recorta sobre lo claro.
-pub(crate) const HOME_LINE_FILL: Color = Color::rgba(248, 248, 250, 230);
+pub(crate) const HOME_LINE_FILL: Color = Color::rgba(248, 248, 250, 140);
 /// Borde fino y oscuro de la línea: la separa del fondo claro.
 pub(crate) const HOME_LINE_BORDER: Color = Color::rgba(0, 0, 0, 90);
 /// Sombra negra suave bajo las piezas del buscador: se distingue sobre

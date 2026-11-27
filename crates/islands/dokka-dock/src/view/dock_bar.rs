@@ -167,8 +167,8 @@ impl Dock {
         Scene {
             panel: Panel {
                 bounds,
-                corner_radius: bounds.height / 2.0,
-                border_width: 1.0,
+                corner_radius: bounds.width.min(bounds.height) / 2.0,
+                border_width: 0.0,
                 tint: self.theme.dock.home_line,
                 border: self.theme.dock.home_line_border,
             },
