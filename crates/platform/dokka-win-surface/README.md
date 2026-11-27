@@ -24,7 +24,9 @@ teclado), avisa con `Dismissed` para el menú y `LaunchpadDismissed` al perder e
 Preferencias una vez con las medidas que pasa el shell, la muestra al frente sin dejarla
 siempre encima, la oculta sin destruirla (destruir una ventana sin dueña terminaría la
 app; `WM_CLOSE` solo la oculta y avisa con `SettingsDismissed`), la mueve con el arrastre
-nativo de Windows, permite minimizarla desde la barra de tareas, y da la
+nativo de Windows, permite minimizarla desde la barra de tareas, aplica un tamaño
+nuevo con `settings_apply_size` (zoom verde o vuelta a normal: limitado al área de
+trabajo y recentrado sin salirse) y da la
 hora local. El Launchpad queda siempre justo debajo del dock y los
 clics del dock no lo cierran. `cursor_over_dock` devuelve la posición
 lógica del cursor real si está sobre el dock (con DPI y zonas activas) y

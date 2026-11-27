@@ -7,20 +7,25 @@ use super::logic::{SliderTarget, card_heights, content_slider_track};
 use super::values::ContentValues;
 
 /// Pista del deslizador agarrado: la misma que pinta el contenido.
-pub(crate) fn drag_track(target: SliderTarget) -> Option<dokka_scene::Rect> {
+pub(crate) fn drag_track(target: SliderTarget, width: f32) -> Option<dokka_scene::Rect> {
     let tops = super::logic::card_tops(super::logic::SECTION_DOCK);
     let top = tops.first()?;
     let heights = card_heights(super::logic::SECTION_DOCK, 0);
     match target {
-        SliderTarget::DockScale => Some(content_slider_track(*top, &heights, 0)),
-        SliderTarget::DockStrength => Some(content_slider_track(*top, &heights, 2)),
+        SliderTarget::DockScale => Some(content_slider_track(*top, &heights, 0, width)),
+        SliderTarget::DockStrength => Some(content_slider_track(*top, &heights, 2, width)),
     }
 }
 
 /// Valor de 0 a 1 del deslizador agarrado bajo este `x`, aunque el cursor se
 /// pase de la barra: se queda en 0 o en 1.
-pub(crate) fn clamped_slider_value(target: SliderTarget, values: &ContentValues, x: f32) -> f32 {
-    let Some(track) = drag_track(target) else {
+pub(crate) fn clamped_slider_value(
+    target: SliderTarget,
+    values: &ContentValues,
+    width: f32,
+    x: f32,
+) -> f32 {
+    let Some(track) = drag_track(target, width) else {
         return values.drag_value;
     };
     let inside = x.clamp(track.x, track.x + track.width);

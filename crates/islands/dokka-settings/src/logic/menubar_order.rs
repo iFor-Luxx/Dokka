@@ -69,13 +69,18 @@ fn card_height_for_menubar() -> f32 {
 }
 
 /// Fila bajo el punto en este orden mostrado, si cae en la tarjeta.
-pub(crate) fn menubar_row_at(display: &[MenubarItem; 7], x: f32, y: f32) -> Option<usize> {
+pub(crate) fn menubar_row_at(
+    display: &[MenubarItem; 7],
+    width: f32,
+    x: f32,
+    y: f32,
+) -> Option<usize> {
     let top = menubar_top()?;
     let bottom = menubar_bottom(top);
     if !(top..bottom).contains(&y) {
         return None;
     }
-    if !(measures::CONTENT_LEFT..measures::CONTENT_LEFT + measures::CONTENT_WIDTH).contains(&x) {
+    if !(measures::CONTENT_LEFT..measures::CONTENT_LEFT + width).contains(&x) {
         return None;
     }
     let slot = ((y - top) / measures::CONTENT_ROW_HEIGHT).floor() as usize;

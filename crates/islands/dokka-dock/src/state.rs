@@ -40,7 +40,7 @@ impl Dock {
     pub fn new(explorer: AppId, theme: Arc<Theme>) -> Self {
         Self {
             explorer,
-            icons: SystemIcons::new(&theme.icons),
+            icons: SystemIcons::new(&theme),
             menu_chevrons: MenuChevrons::new(&theme),
             menu_checks: MenuChecks::new(&theme),
             theme,

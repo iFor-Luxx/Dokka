@@ -1,8 +1,12 @@
 # dokka-settings
 
 **Hace:** ventana de Preferencias estilo Ajustes del Sistema de macOS Tahoe, con
-ajustes reales: semáforos rojo (cierra solo la ventana), amarillo (minimiza) y
-verde (sin acción): al pasar el cursor muestran a la vez sus símbolos Lucide
+ajustes reales: semáforos rojo (cierra y limpia la navegación: al volver a abrir
+empieza en General, sin historial, búsqueda ni foco; los ajustes guardados no se
+tocan), amarillo (minimiza a nuestro dock, a la derecha del separador, como miniatura
+con el engranaje) y verde (alterna el tamaño normal 760 × 720 y uno mayor ≈ 920 × 820,
+limitado al área de trabajo, recentrado sin salirse; la barra lateral conserva su ancho
+y el contenido se ensancha solo; al cerrar vuelve al tamaño normal): al pasar el cursor muestran a la vez sus símbolos Lucide
 oscuros (×, −, +) y sin foco van en gris; barra lateral translúcida con casilla
 "Buscar" y ocho filas (General, Dock, Launchpad, Barra superior, Apariencia,
 Barra de tareas, Atajos y Acerca de) con icono blanco de Lucide sobre cuadrado
@@ -60,4 +64,8 @@ el historial vive en `selection.rs`.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Sin
 animaciones: la ventana aparece, cambia de sección y se arrastra sin
-transiciones. No mide la fuente.
+transiciones. No mide la fuente. La navegación (sección, historial, búsqueda)
+vive en `navigation.rs` para que `state.rs` no crezca; el zoom (`zoomed`) y el
+ancho actual (`content_width`, desde `dokka-theme`) adaptan cabecera, tarjetas,
+controles y golpes sin duplicar código: con el tamaño normal el resultado es
+idéntico al de hoy.

@@ -96,10 +96,17 @@ pub(crate) fn run_menu_action(
         MenuAction::Quit => quit(surface),
         MenuAction::OpenSettings => open_or_focus_settings(session, surface)?,
         MenuAction::Pin(info) => {
+            // Preferencias no se puede fijar al dock.
+            if DockSession::is_settings_app(&info) {
+                return Ok(());
+            }
             toggle_pin(session, info, false)?;
             session.resize(surface)?;
         }
         MenuAction::Unpin(info) => {
+            if DockSession::is_settings_app(&info) {
+                return Ok(());
+            }
             toggle_pin(session, info, true)?;
             session.resize(surface)?;
         }

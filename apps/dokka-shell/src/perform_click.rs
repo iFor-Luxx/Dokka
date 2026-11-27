@@ -33,7 +33,16 @@ pub(crate) fn perform_click(
     }
     match action {
         DockAction::App(app_id, action) => perform_app_action(session, app_id, action)?,
-        DockAction::Restore(window) => session.control.activate(window)?,
+        // La miniatura de Preferencias la restaura el shell mismo: la ventana
+        // es propia del mismo hilo y `ShowWindow` directo la trae al frente sin
+        // bloquearse con mensajes entre el mismo hilo.
+        DockAction::Restore(window) => {
+            if session.is_settings_window(window, surface) {
+                crate::settings::open_or_focus_settings(session, surface)?;
+            } else {
+                session.control.activate(window)?;
+            }
+        }
         DockAction::Launchpad => toggle_launchpad(session, surface)?,
         DockAction::Calendar => open_place(session, "Calendario", "outlookcal:")?,
         DockAction::Clock => open_place(session, "Reloj", "ms-clock:")?,
@@ -53,7 +62,11 @@ fn perform_app_action(
     action: ClickAction,
 ) -> Result<(), Box<dyn Error>> {
     match action {
-        ClickAction::Activate(window) => session.control.activate(window)?,
+        // Preferencias nunca tiene entrada de app a la izquierda, así que no
+        // llega aquí; si llegara, activar como ventana normal no bloquea.
+        ClickAction::Activate(window) => {
+            session.control.activate(window)?;
+        }
         ClickAction::Minimize(windows) => {
             for window in windows {
                 session.control.minimize(window)?;

@@ -11,5 +11,5 @@ pub use filtered::{
 pub use props::SettingsListProps;
 pub use view::{
     row_at, row_badges, row_hover, row_icons, row_labels, row_selection, search_bounds,
-    sidebar_panel,
+    sidebar_panel, sidebar_panel_for,
 };

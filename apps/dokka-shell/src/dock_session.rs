@@ -19,7 +19,7 @@ use dokka_win_apps::{
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::{SystemWindowControl, foreground_window};
 use dokka_win_media::MediaMonitor;
-use dokka_win_surface::local_time;
+use dokka_win_surface::{Surface, local_time};
 use dokka_win_tracking::SystemWindows;
 use dokka_win_tray::TrayHost;
 
@@ -69,6 +69,8 @@ pub(crate) struct DockSession {
     pub(crate) taskbar_hidden: bool,
     taskbar_auto: bool,
     windows: SystemWindows,
+    /// Valor bruto de la ventana propia de Preferencias, si ya se conoce.
+    settings_raw: Option<u64>,
     pub(crate) icons: IconCache,
     pub(crate) names: NameCache,
     pub(crate) renderer: SceneRenderer,
@@ -108,6 +110,7 @@ impl DockSession {
             taskbar_hidden: false,
             taskbar_auto: false,
             windows: SystemWindows,
+            settings_raw: None,
             icons: IconCache::new(),
             names: NameCache::default(),
             renderer,
@@ -174,6 +177,28 @@ impl DockSession {
 
     pub(crate) fn taskbar_auto(&self) -> bool {
         self.taskbar_auto
+    }
+
+    /// Recuerda la ventana propia de Preferencias para incluirla minimizada
+    /// en el dock. Solo ella va al dock del proceso propio.
+    pub(crate) fn remember_settings_window(&mut self, handle: dokka_win_surface::SurfaceHandle) {
+        self.settings_raw = Some(handle.raw().0 as u64);
+        self.windows.set_settings_window(handle.raw());
+    }
+
+    /// `true` si este identificador bruto es la ventana de Preferencias.
+    pub(crate) fn is_settings_window_id(&self, window: u64) -> bool {
+        self.settings_raw.is_some_and(|known| known == window)
+    }
+
+    /// `true` si esta ventana es la propia de Preferencias.
+    pub(crate) fn is_settings_window(&self, window: WindowId, surface: &Surface) -> bool {
+        window.value() == surface.settings_handle().raw().0 as u64
+    }
+
+    /// `true` si esta app es la ventana de Preferencias (no se fija ni se lanza).
+    pub(crate) fn is_settings_app(info: &dokka_model::AppInfo) -> bool {
+        info.id.as_str() == dokka_win_tracking::SETTINGS_APP_ID
     }
 
     /// Guarda si la barra se oculta sola al abrir Dokka.

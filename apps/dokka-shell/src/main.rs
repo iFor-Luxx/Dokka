@@ -74,6 +74,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     )?;
     let explorer = explorer_app();
     let mut session = DockSession::new(renderer, explorer.id.clone());
+    // El seguimiento incluye SOLO Preferencias del proceso propio, minimizada.
+    session.remember_settings_window(surface.settings_handle());
     let _watcher = ChangeWatcher::start();
 
     load_pinned(&mut session, explorer);

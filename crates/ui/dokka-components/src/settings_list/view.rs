@@ -9,12 +9,17 @@ use super::SettingsListProps;
 /// izquierda donde se ve el fondo de la ventana; esquinas concéntricas con la
 /// ventana y borde fino y luminoso. El borde derecho no se mueve.
 pub fn sidebar_panel(theme: &Theme) -> Panel {
+    sidebar_panel_for(theme, measures::HEIGHT)
+}
+
+/// Panel flotante para esta altura de ventana.
+pub fn sidebar_panel_for(theme: &Theme, window_height: f32) -> Panel {
     Panel {
         bounds: Rect {
             x: measures::SIDEBAR_INSET,
             y: measures::SIDEBAR_INSET,
             width: measures::sidebar_panel_width(),
-            height: measures::HEIGHT - measures::SIDEBAR_INSET * 2.0,
+            height: measures::sidebar_panel_height_for(window_height),
         },
         corner_radius: measures::SIDEBAR_RADIUS,
         border_width: measures::SIDEBAR_BORDER_WIDTH,

@@ -17,11 +17,12 @@ use super::content::{ContentScene, coming_soon, group_pieces, slider_pieces, swi
 
 /// Contenido del Dock en tres tarjetas compactas que caben en 720 de alto.
 pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
+    let width = settings.content_width();
     let shown = display_preferences(settings.values());
     let tops = card_tops(SECTION_DOCK);
     let cards = section_cards(SECTION_DOCK);
     let (Some(first_top), Some(first_labels)) = (tops.first().copied(), cards.first()) else {
-        return coming_soon(theme);
+        return coming_soon(theme, width);
     };
     let first_heights = card_heights(SECTION_DOCK, 0);
     let mut flats = Vec::new();
@@ -30,7 +31,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
     let strength_dim = !shown.dock.magnification;
     let dim = [false, false, strength_dim];
     let (panel, mut card_dividers, mut card_texts) =
-        group_pieces(theme, first_top, first_labels, &first_heights, &dim);
+        group_pieces(theme, first_top, first_labels, &first_heights, &dim, width);
     flats.push(panel);
     dividers.append(&mut card_dividers);
     texts.append(&mut card_texts);
@@ -39,9 +40,12 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         first_top,
         &first_heights,
         0,
-        icon_scale_to(shown.dock.icon_scale),
-        icon_scale_neutral(),
-        true,
+        &dokka_components::slider::SliderProps {
+            value: icon_scale_to(shown.dock.icon_scale),
+            neutral: icon_scale_neutral(),
+            active: true,
+        },
+        width,
     );
     flats.append(&mut panels);
     texts.append(&mut captions);
@@ -51,15 +55,19 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         &first_heights,
         1,
         shown.dock.magnification,
+        width,
     ));
     let (mut panels, mut captions) = slider_pieces(
         theme,
         first_top,
         &first_heights,
         2,
-        magnification_to(shown.dock.magnification_strength),
-        magnification_neutral(),
-        !strength_dim,
+        &dokka_components::slider::SliderProps {
+            value: magnification_to(shown.dock.magnification_strength),
+            neutral: magnification_neutral(),
+            active: !strength_dim,
+        },
+        width,
     );
     flats.append(&mut panels);
     texts.append(&mut captions);
@@ -78,11 +86,12 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         second_labels,
         &second_heights,
         &[false; 2],
+        width,
     );
     flats.push(panel);
     dividers.append(&mut card_dividers);
     texts.append(&mut card_texts);
-    let touch = content_segmented(second_top, &second_heights, 0);
+    let touch = content_segmented(second_top, &second_heights, 0, width);
     let props = SegmentedProps {
         options: position_options(),
         selected: position_to_index(shown.dock.position),
@@ -90,11 +99,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
     flats.extend(segmented_panels(theme, touch, &props));
     texts.extend(segmented_texts(theme, touch, &props));
     flats.append(&mut switch_pieces(
-        theme,
-        second_top,
-        &second_heights,
-        1,
-        shown.dock.auto_hide,
+        theme, second_top, &second_heights, 1, shown.dock.auto_hide, width,
     ));
     let (Some(third_top), Some(third_labels)) = (tops.get(2).copied(), cards.get(2)) else {
         return ContentScene {
@@ -106,7 +111,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
     };
     let third_heights = card_heights(SECTION_DOCK, 2);
     let (panel, mut card_dividers, mut card_texts) =
-        group_pieces(theme, third_top, third_labels, &third_heights, &[false; 3]);
+        group_pieces(theme, third_top, third_labels, &third_heights, &[false; 3], width);
     flats.push(panel);
     dividers.append(&mut card_dividers);
     texts.append(&mut card_texts);
@@ -116,6 +121,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         &third_heights,
         0,
         shown.dock.animate_launch,
+        width,
     ));
     flats.append(&mut switch_pieces(
         theme,
@@ -123,13 +129,10 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         &third_heights,
         1,
         shown.dock.show_indicators,
+        width,
     ));
     flats.append(&mut switch_pieces(
-        theme,
-        third_top,
-        &third_heights,
-        2,
-        shown.dock.previews,
+        theme, third_top, &third_heights, 2, shown.dock.previews, width,
     ));
     ContentScene {
         flats,

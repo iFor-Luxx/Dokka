@@ -9,7 +9,7 @@
 //! van de 0 a 1 en la barra y se convierten a los rangos de `dokka_model`.
 
 use dokka_components::segmented_control::segmented_touch;
-use dokka_components::settings_group::row_bounds;
+use dokka_components::settings_group::row_bounds_for;
 use dokka_components::slider::slider_track_bounds;
 use dokka_components::switch::switch_touch;
 use dokka_scene::Rect;
@@ -98,24 +98,24 @@ pub(crate) fn card_tops(section: usize) -> Vec<f32> {
 }
 
 /// Fila `index` de la tarjeta que empieza en `top` con estas alturas.
-pub(crate) fn content_row(top: f32, heights: &[f32], index: usize) -> Rect {
-    row_bounds(top, heights, index)
+pub(crate) fn content_row(top: f32, heights: &[f32], index: usize, width: f32) -> Rect {
+    row_bounds_for(top, heights, index, width)
 }
 
 /// Zona de toque del interruptor de esa fila.
-pub(crate) fn content_switch(top: f32, heights: &[f32], index: usize) -> Rect {
-    switch_touch(content_row(top, heights, index))
+pub(crate) fn content_switch(top: f32, heights: &[f32], index: usize, width: f32) -> Rect {
+    switch_touch(content_row(top, heights, index, width))
 }
 
 /// Zona del segmentado de esa fila, con la misma geometría del dibujo.
-pub(crate) fn content_segmented(top: f32, heights: &[f32], index: usize) -> Rect {
-    segmented_touch(content_row(top, heights, index))
+pub(crate) fn content_segmented(top: f32, heights: &[f32], index: usize, width: f32) -> Rect {
+    segmented_touch(content_row(top, heights, index, width))
 }
 
 /// Zona del deslizador de esa fila, a la derecha con el mismo aire que el
 /// texto a la izquierda. El área deja medio tirador a cada lado en la pista.
-pub(crate) fn content_slider_area(top: f32, heights: &[f32], index: usize) -> Rect {
-    let row = content_row(top, heights, index);
+pub(crate) fn content_slider_area(top: f32, heights: &[f32], index: usize, width: f32) -> Rect {
+    let row = content_row(top, heights, index, width);
     Rect {
         x: row.x + row.width - measures::CONTENT_PADDING - measures::SLIDER_WIDTH,
         y: row.y + measures::SLIDER_AREA_TOP,
@@ -125,8 +125,8 @@ pub(crate) fn content_slider_area(top: f32, heights: &[f32], index: usize) -> Re
 }
 
 /// Barra fina del deslizador dentro de su zona de toque.
-pub(crate) fn content_slider_track(top: f32, heights: &[f32], index: usize) -> Rect {
-    slider_track_bounds(content_slider_area(top, heights, index))
+pub(crate) fn content_slider_track(top: f32, heights: &[f32], index: usize, width: f32) -> Rect {
+    slider_track_bounds(content_slider_area(top, heights, index, width))
 }
 
 /// `true` si la sección trae tarjetas con ajustes reales.

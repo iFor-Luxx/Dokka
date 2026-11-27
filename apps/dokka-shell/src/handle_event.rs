@@ -251,13 +251,19 @@ fn click(
     }
     match session.previews.click(x, y) {
         Some(PreviewClick::Activate(window)) => {
-            session.control.activate(WindowId::new(window))?;
+            // La previa de Preferencias la restaura el shell mismo, sin pasar
+            // por el control genérico.
+            if session.is_settings_window(WindowId::new(window), surface) {
+                crate::settings::open_or_focus_settings(session, surface)?;
+            } else {
+                session.control.activate(WindowId::new(window))?;
+            }
         }
         Some(PreviewClick::Close(window)) => {
-            crate::preview_actions::close_preview_window(session, window);
+            crate::preview_actions::close_preview_window(session, surface, window);
         }
         Some(PreviewClick::TogglePin(window)) => {
-            crate::preview_actions::toggle_pin_preview_window(session, window);
+            crate::preview_actions::toggle_pin_preview_window(session, surface, window);
         }
         Some(PreviewClick::Media(command)) => send_media(session, command),
         Some(PreviewClick::Handled) => {}

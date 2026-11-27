@@ -7,6 +7,11 @@
 pub const WIDTH: f32 = 760.0;
 /// Alto lógico de la ventana.
 pub const HEIGHT: f32 = 720.0;
+/// Tamaño mayor del semáforo verde: algo más grande, limitado al área de
+/// trabajo por quien coloca la ventana.
+pub const ZOOMED_WIDTH: f32 = 920.0;
+/// Alto mayor del semáforo verde.
+pub const ZOOMED_HEIGHT: f32 = 820.0;
 /// Esquinas de la ventana, muy redondeadas.
 pub const CORNER_RADIUS: f32 = 26.0;
 pub const BORDER_WIDTH: f32 = 1.0;
@@ -243,6 +248,11 @@ pub fn sidebar_panel_width() -> f32 {
     SIDEBAR_WIDTH - SIDEBAR_INSET
 }
 
+/// Alto del panel flotante para esta altura de ventana.
+pub fn sidebar_panel_height_for(window_height: f32) -> f32 {
+    (window_height - SIDEBAR_INSET * 2.0).max(0.0)
+}
+
 /// Borde izquierdo de la fila resaltada (selección y hover): el mismo que la
 /// casilla de búsqueda para ocupar exactamente su columna.
 pub fn row_highlight_left() -> f32 {
@@ -278,4 +288,39 @@ pub fn header_middle() -> f32 {
 /// Límites de la tarjeta gris del contenido, alineados con la cabecera.
 pub fn card_bounds() -> (f32, f32, f32) {
     (CONTENT_LEFT, CONTENT_TOP, CONTENT_WIDTH)
+}
+
+/// Tamaño lógico de la ventana según el zoom verde.
+pub fn window_size(zoomed: bool) -> (f32, f32) {
+    if zoomed {
+        (ZOOMED_WIDTH, ZOOMED_HEIGHT)
+    } else {
+        (WIDTH, HEIGHT)
+    }
+}
+
+/// Margen derecho original: lo que queda entre el divisor y el borde.
+fn right_margin() -> f32 {
+    WIDTH - HEADER_DIVIDER_RIGHT
+}
+
+/// Borde derecho de cabecera, divisor y contenido para este ancho de ventana.
+/// La barra lateral no se mueve; solo crece la zona de la derecha.
+pub fn header_right_for(window_width: f32) -> f32 {
+    (window_width - right_margin()).max(HEADER_DIVIDER_RIGHT)
+}
+
+/// Ancho del contenido para este ancho de ventana.
+pub fn content_width_for(window_width: f32) -> f32 {
+    (header_right_for(window_width) - CONTENT_LEFT).max(CONTENT_WIDTH)
+}
+
+/// Límites de la tarjeta para este ancho de ventana.
+pub fn card_bounds_for(window_width: f32) -> (f32, f32, f32) {
+    (CONTENT_LEFT, CONTENT_TOP, content_width_for(window_width))
+}
+
+/// Alto de la ventana para este estado de zoom.
+pub fn window_height_for(zoomed: bool) -> f32 {
+    window_size(zoomed).1
 }

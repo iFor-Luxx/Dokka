@@ -25,14 +25,14 @@ fn nav_at(x: f32, y: f32) -> bool {
 /// `true` si desde el punto se puede arrastrar la ventana: la franja superior
 /// quitando los semáforos, la píldora, la casilla, las filas y los controles
 /// del contenido (deslizadores e interruptores nunca mueven la ventana).
-pub fn drag_zone(x: f32, y: f32, selected: usize) -> bool {
-    if content_control_at(selected, x, y) {
+pub fn drag_zone(x: f32, y: f32, selected: usize, width: f32) -> bool {
+    if content_control_at(selected, width, x, y) {
         return false;
     }
     // Los controles de las demás secciones no se ven, pero se comprueban
     // igual por si la sección cambia a mitad de un arrastre.
     for section in [SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR] {
-        if section != selected && content_control_at(section, x, y) {
+        if section != selected && content_control_at(section, width, x, y) {
             return false;
         }
     }

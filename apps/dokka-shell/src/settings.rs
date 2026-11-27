@@ -1,16 +1,15 @@
 //! Ventana de Preferencias: abrirla, traerla al frente, moverla y dibujarla.
 //!
 //! La isla decide la sección y qué hace cada clic; aquí solo se conecta con la
-//! ventana: el semáforo rojo oculta (Dokka sigue en marcha), el amarillo
-//! minimiza y la franja superior arrastra con el movimiento nativo de Windows.
-//! Los deslizadores se arrastran con el ratón capturado: la isla redibuja a
-//! cada movimiento y solo al soltar emite `Changed` o `TaskbarAuto`.
+//! ventana: el semáforo rojo cierra y limpia la navegación (volver a abrir
+//! empieza en General), el amarillo minimiza al dock propio y el verde alterna
+//! el tamaño. Los deslizadores se arrastran con el ratón capturado: la isla
+//! redibuja a cada movimiento y solo al soltar emite `Changed` o `TaskbarAuto`.
 
 use std::error::Error;
 use std::sync::Arc;
 
 use dokka_settings::{SettingsAction, drag_zone, settings_scene};
-use dokka_theme::settings as measures;
 use dokka_win_surface::{Surface, SurfaceEvent};
 
 use crate::dock_session::DockSession;
@@ -25,12 +24,22 @@ pub(crate) fn open_or_focus_settings(
         .settings
         .set_values(session.preferences, session.taskbar_auto());
     session.settings.open();
-    surface.settings_place(measures::WIDTH, measures::HEIGHT)?;
+    // Primera apertura: centra una vez; luego conserva su sitio al moverla.
+    // El zoom aplica su tamaño aparte mientras está abierta.
+    surface.settings_place(
+        session.settings.window_width(),
+        session.settings.window_height(),
+    )?;
     surface.settings_show()?;
+    // Restaurar quita la miniatura del dock: el observador ignora el proceso
+    // propio, así que se sincroniza aquí en vez de esperar un aviso externo.
+    let _ = session.sync();
     Ok(())
 }
 
-/// Oculta la ventana; Dokka sigue en marcha.
+/// Oculta la ventana; Dokka sigue en marcha. Cierra y limpia la navegación:
+/// al volver a abrir empieza en General, sin historial, búsqueda ni foco. Los
+/// ajustes guardados no se tocan. Vuelve además al tamaño normal.
 pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
     session.settings.close();
     session.settings_pressed = false;
@@ -38,6 +47,27 @@ pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
     // oculto por el cierre desde la X, Alt+F4 o la barra de tareas.
     session.settings_painted = None;
     surface.settings_hide();
+    // Vuelve al tamaño normal ya oculta, sin parpadeo.
+    let _ = surface.settings_apply_size(
+        dokka_theme::settings::WIDTH,
+        dokka_theme::settings::HEIGHT,
+    );
+    // Ocultar quita la miniatura del dock: el observador ignora el proceso
+    // propio, así que se sincroniza aquí.
+    let _ = session.sync();
+}
+
+/// Alterna el tamaño normal y el mayor, recentrado sin salirse de la pantalla.
+/// La barra lateral conserva su ancho; el contenido se ensancha solo.
+pub(crate) fn toggle_settings_zoom(
+    session: &mut DockSession,
+    surface: &mut Surface,
+) -> Result<(), Box<dyn Error>> {
+    session.settings.toggle_zoom();
+    let width = session.settings.window_width();
+    let height = session.settings.window_height();
+    surface.settings_apply_size(width, height)?;
+    Ok(())
 }
 
 /// Botón abajo: si agarra un deslizador, la isla lo sigue hasta soltar; si es
@@ -54,7 +84,12 @@ pub(crate) fn press_over_settings(
     if session.settings.press(x, y) {
         return;
     }
-    if drag_zone(x, y, session.settings.selected()) {
+    if drag_zone(
+        x,
+        y,
+        session.settings.selected(),
+        session.settings.content_width(),
+    ) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
     }
@@ -78,7 +113,7 @@ pub(crate) fn leave_settings(session: &mut DockSession) {
 }
 
 /// Suelta el botón: si había un deslizador agarrado, guarda una sola vez; si
-/// no, resuelve el clic (cerrar, minimizar, foco, píldora, sección o control).
+/// no, resuelve el clic (cerrar, minimizar, zoom, foco, píldora, sección o control).
 pub(crate) fn click_settings(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -87,7 +122,13 @@ pub(crate) fn click_settings(
 ) -> Result<(), Box<dyn Error>> {
     match session.settings.release(x, y) {
         SettingsAction::Close => close_settings(session, surface),
-        SettingsAction::Minimize => surface.settings_minimize(),
+        SettingsAction::Minimize => {
+            surface.settings_minimize();
+            // Minimizar crea la miniatura del dock: el observador ignora el
+            // proceso propio, así que se sincroniza aquí.
+            let _ = session.sync();
+        }
+        SettingsAction::Zoom => toggle_settings_zoom(session, surface)?,
         SettingsAction::Stay => {}
         SettingsAction::Changed(preferences) => {
             crate::apply_preferences::apply_preferences(session, surface, preferences);
@@ -170,7 +211,7 @@ pub(crate) fn handle_settings_event(
 /// cada evento (pasar el ratón, hacer clic, arrastrar) lo hacía parpadear.
 /// La isla reutiliza los mismos dibujos y las capas solo repintan lo que
 /// cambia, así que basta con dibujar al abrir, elegir, resaltar, enfocar,
-/// escribir, cambiar el foco o mover un deslizador.
+/// escribir, cambiar el foco, el zoom o mover un deslizador.
 pub(crate) fn render_settings(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -182,7 +223,12 @@ pub(crate) fn render_settings(
     if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());
     }
-    surface.settings_place(measures::WIDTH, measures::HEIGHT)?;
+    // El tamaño lo aplican abrir y el zoom; aquí solo se asegura la primera
+    // colocación. No se recentra al pasar el cursor: la ventana conserva su sitio.
+    surface.settings_place(
+        session.settings.window_width(),
+        session.settings.window_height(),
+    )?;
     let theme = Arc::clone(&session.theme);
     let scene = settings_scene(&theme, &mut session.settings);
     session.renderer.draw_settings(&scene)?;
