@@ -47,14 +47,14 @@ pub const MUSIC_BUTTON_SIDE: f32 = 32.0;
 /// Separación entre botones de música seguidos.
 pub const MUSIC_BUTTON_GAP: f32 = 4.0;
 /// Lado del glifo dentro de cada botón de música.
-pub const MUSIC_ICON_SIDE: f32 = 20.0;
+pub const MUSIC_ICON_SIDE: f32 = 16.0;
 
 /// Título del deslizador, centro vertical desde lo alto de su tarjeta.
 pub const SLIDER_TITLE_TOP: f32 = 22.0;
 /// Centro de la pista, distancia desde abajo: barra en la parte baja.
 pub const SLIDER_TRACK_BOTTOM: f32 = 20.0;
 /// Lado del icono pequeño de cada extremo del deslizador.
-pub const END_ICON_SIDE: f32 = 16.0;
+pub const END_ICON_SIDE: f32 = 14.0;
 /// Lado de la zona pulsable del silencio, alrededor de su icono.
 pub const MUTE_HIT_SIDE: f32 = 28.0;
 /// Aire vertical del deslizador para no exigir puntería fina.
@@ -63,7 +63,7 @@ pub const SLIDER_HIT_HALF: f32 = 14.0;
 /// Separación entre el círculo y el texto de la misma cápsula.
 pub const ICON_TEXT_GAP: f32 = 8.0;
 /// Lado del glifo Lucide dentro de cada círculo (≈ 22), centrado.
-pub const CIRCLE_ICON_SIDE: f32 = 22.0;
+pub const CIRCLE_ICON_SIDE: f32 = 19.0;
 
 /// Letras máximas antes de recortar un nombre o título con "…".
 pub const TEXT_CHARACTERS: usize = 16;
