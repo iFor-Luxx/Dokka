@@ -6,6 +6,7 @@ mod clock;
 mod explorer;
 mod launchpad;
 mod lucide;
+mod search;
 mod shapes;
 mod tile_color;
 mod tile_frame;
@@ -29,6 +30,7 @@ pub use lucide::{
     traffic_close_icon, traffic_minimize_button, traffic_minimize_icon, traffic_zoom_button,
     traffic_zoom_icon,
 };
+pub use search::{search_bar_icon, search_field_icon};
 pub use trash::trash_icon;
 
 pub use lucide_icons::LUCIDE_FONT_BYTES;

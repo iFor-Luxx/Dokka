@@ -21,6 +21,10 @@ círculo rojo, amarillo o verde —gris sin foco— y su símbolo Lucide oscuro 
 pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
-`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna).
+`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna)
+y buscador tipo Spotlight (`search_panel`: casilla grande con lupa Lucide oscura reutilizada
+de `search_field`, texto con cursor y hasta 7 resultados con icono de app opcional, fila
+resaltada en azul, "Sin resultados" centrado, `filter_search_order` puro sin mayúsculas
+ni tildes y fila bajo un punto; capas constantes para no reconstruir).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.
