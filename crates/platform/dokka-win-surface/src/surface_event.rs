@@ -23,12 +23,30 @@ pub enum SurfaceEvent {
         y: f32,
     },
     MenubarLeft,
+    /// Botón abajo sobre la barra: empieza un posible arrastre.
+    MenubarPressed {
+        x: f32,
+        y: f32,
+    },
     MenubarClicked {
         x: f32,
         y: f32,
     },
     /// La barra perdió el foco con el menú abierto.
     MenubarDismissed,
+    /// Letra escrita sobre la barra, ya traducida de `WM_KEYDOWN`.
+    /// Solo llega cuando la barra tiene el foco.
+    MenubarTyped {
+        character: char,
+    },
+    /// Retroceso sobre la barra. Solo con foco.
+    MenubarBackspace,
+    /// Enter sobre la barra. Solo con foco.
+    MenubarEnter,
+    /// Flecha arriba sobre la barra. Solo con foco.
+    MenubarUp,
+    /// Flecha abajo sobre la barra. Solo con foco.
+    MenubarDown,
     /// El cursor se mueve sobre el Launchpad.
     LaunchpadMoved {
         x: f32,
