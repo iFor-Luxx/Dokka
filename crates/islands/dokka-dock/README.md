@@ -34,8 +34,13 @@ horizontal, etiquetas al lado hacia dentro, menús y submenús al lado
 Respeta `auto_hide` (`motion/hide.rs` + `logic/home_line.rs`: solo con una
 app ocupando la pantalla principal se esconde con espera corta de 0,4 s y
 deslizamiento suave; escondido dibuja solo la línea al borde —cápsula de
-140 × 5 a 6 del borde— y vuelve al tocar su zona (180 × 28 pegada al borde),
-sin sondeo en reposo; con menú, vista previa o Launchpad no se esconde).
+220 × 7 a 10 del borde— y vuelve al tocar su zona (320 de largo, desde el
+borde hasta 24 hacia dentro, así el píxel 0 basta), sin sondeo en reposo;
+mientras vuelve la zona activa es la banda del borde a la barra para no
+perder el cursor a medio deslizamiento, y la ventana toca el borde
+(margen 0) hasta que nada ocupa la pantalla; cada deslizamiento la deja
+delante (TOPMOST) para que la app maximizada no la entierre; con menú,
+vista previa o Launchpad no se esconde).
 En vertical la línea es vertical y encoge (`fit`) para caber.
 Si algo no puede calcularse, abajo y visible.
 Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los

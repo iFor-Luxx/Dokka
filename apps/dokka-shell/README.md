@@ -63,7 +63,10 @@ al arrancar antes de dibujar; sin previas no se abre ninguna y se cierra la abie
 un error al leer o guardar se registra y se sigue). `preview_safety` recupera la salida del panel con el
 cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
 cierra el panel si otro primer plano llega por `Refresh` sin el cursor
-encima, sin quitarlo de debajo del cursor.
+encima, sin quitarlo de debajo del cursor. `dock_fit.rs` pega la ventana
+al borde (margen 0) mientras una app ocupa la pantalla con auto-ocultado,
+para que el píxel 0 siga dentro de la ventana al volver; sin oclusión usa
+el margen habitual.
 
 **No hace:** no contiene lógica. Se cierra con Ctrl+C.
 
