@@ -17,12 +17,7 @@ pub(crate) fn run_app_menu_action(
 ) -> Result<bool, Box<dyn Error>> {
     match action {
         MenuAction::ActivateWindow(window) => {
-            // Preferencias se trae al frente con el shell, no con el control.
-            if session.is_settings_window(window, surface) {
-                crate::settings::open_or_focus_settings(session, surface)?;
-            } else {
-                session.control.activate(window)?;
-            }
+            crate::window_activation::activate_window(session, surface, window)?;
         }
         MenuAction::OpenApp(info) => {
             // Preferencias no lanza otra instancia: solo se muestra.

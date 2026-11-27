@@ -2,7 +2,6 @@
 
 use std::error::Error;
 
-use dokka_contracts::WindowControl;
 use dokka_model::WindowId;
 use dokka_previews::PreviewClick;
 use dokka_win_surface::{Surface, SurfaceEvent};
@@ -243,13 +242,7 @@ fn click(
     }
     match session.previews.click(x, y) {
         Some(PreviewClick::Activate(window)) => {
-            // La previa de Preferencias la restaura el shell mismo, sin pasar
-            // por el control genérico.
-            if session.is_settings_window(WindowId::new(window), surface) {
-                crate::settings::open_or_focus_settings(session, surface)?;
-            } else {
-                session.control.activate(WindowId::new(window))?;
-            }
+            crate::window_activation::activate_window(session, surface, WindowId::new(window))?;
         }
         Some(PreviewClick::Close(window)) => {
             crate::preview_actions::close_preview_window(session, surface, window);
