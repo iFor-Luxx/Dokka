@@ -2,7 +2,7 @@ use dokka_contracts::{ContractError, KeyboardLanguages};
 use dokka_model::KeyboardLanguage;
 use windows::Win32::Foundation::{LPARAM, WPARAM};
 use windows::Win32::Globalization::{
-    GetLocaleInfoW, LOCALE_SENGLISHDISPLAYNAME, LOCALE_SISO3166CTRYNAME, LOCALE_SISO639LANGNAME,
+    GetLocaleInfoW, LOCALE_SENGLISHDISPLAYNAME, LOCALE_SISO639LANGNAME, LOCALE_SISO3166CTRYNAME,
     LOCALE_SLOCALIZEDDISPLAYNAME,
 };
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetKeyboardLayout, GetKeyboardLayoutList, HKL};
