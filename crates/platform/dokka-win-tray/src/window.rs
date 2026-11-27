@@ -1,7 +1,7 @@
 //! Hilo propio con la ventana oculta que recibe la bandeja.
 //!
-//! La ventana se llama `Shell_TrayWnd` y se mantiene por delante de la
-//! barra real para que Windows le envíe primero los iconos. Al crearla se
+//! La ventana se llama `Shell_TrayWnd` y se mantiene como primera de su
+//! clase para que Windows le envíe primero los iconos. Al crearla se
 //! avisa con `TaskbarCreated` para que las apps vuelvan a registrarse.
 //! Todo lo dirigido a la barra se reenvía a la real; registrar en Dokka
 //! nunca impide ese reenvío.
@@ -15,12 +15,12 @@ use windows::Win32::Foundation::{
 };
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::UI::WindowsAndMessaging::{
-    CREATESTRUCTW, CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, GWLP_USERDATA,
-    GetMessageW, GetWindowLongPtrW, HWND_BROADCAST, HWND_TOPMOST, IsWindow, KillTimer, MSG,
-    PostQuitMessage, RegisterClassW, RegisterWindowMessageW, SWP_NOACTIVATE, SWP_NOMOVE,
-    SWP_NOSIZE, SendNotifyMessageW, SetTimer, SetWindowLongPtrW, SetWindowPos, TranslateMessage,
-    WM_ACTIVATEAPP, WM_CLOSE, WM_COMMAND, WM_COPYDATA, WM_DESTROY, WM_NCCREATE, WM_TIMER, WM_USER,
-    WNDCLASSW, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_POPUP,
+    CREATESTRUCTW, CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, FindWindowW,
+    GWLP_USERDATA, GetMessageW, GetWindowLongPtrW, HWND_BROADCAST, HWND_TOPMOST, IsWindow,
+    KillTimer, MSG, PostQuitMessage, RegisterClassW, RegisterWindowMessageW, SWP_NOACTIVATE,
+    SWP_NOMOVE, SWP_NOSIZE, SendNotifyMessageW, SetTimer, SetWindowLongPtrW, SetWindowPos,
+    TranslateMessage, WM_ACTIVATEAPP, WM_CLOSE, WM_COMMAND, WM_COPYDATA, WM_DESTROY, WM_NCCREATE,
+    WM_TIMER, WM_USER, WNDCLASSW, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_POPUP,
 };
 use windows::core::w;
 
@@ -28,9 +28,9 @@ use crate::forward;
 use crate::intake;
 use crate::state::Shared;
 
-/// Temporizador que mantiene la ventana delante y poda iconos muertos.
+/// Temporizador que mantiene la ventana primera y poda iconos muertos.
 const TIMER_ID: usize = 1;
-/// Cada cuánto se reordena y se revisan las ventanas, en milisegundos.
+/// Cada cuánto se revisan las ventanas y, solo si hace falta, se reordena, en milisegundos.
 const TIMER_MS: u32 = 200;
 
 /// Arranca el hilo y devuelve su espera junto con la ventana creada.
@@ -210,19 +210,23 @@ pub(crate) unsafe extern "system" fn wndproc(
     }
 }
 
-/// Mantiene la ventana delante sin activar y poda los iconos muertos.
+/// Mantiene la ventana como primera de su clase sin activar y poda los iconos muertos.
+/// Solo reordena si hay otra delante: reordenar siempre devuelve la flecha
+/// que Windows esconde al escribir.
 fn on_timer(window: HWND, shared: &Arc<Mutex<Shared>>) {
-    // SAFETY: ventana propia; no se mueve ni se activa.
-    unsafe {
-        let _ = SetWindowPos(
-            window,
-            Some(HWND_TOPMOST),
-            0,
-            0,
-            0,
-            0,
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE,
-        );
+    if !is_first_shell_tray(window) {
+        // SAFETY: ventana propia; no se mueve ni se activa.
+        unsafe {
+            let _ = SetWindowPos(
+                window,
+                Some(HWND_TOPMOST),
+                0,
+                0,
+                0,
+                0,
+                SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE,
+            );
+        }
     }
     let watched = shared.lock().ok().map(|state| state.snapshot_hwnds());
     let Some(watched) = watched else {
@@ -243,4 +247,12 @@ fn on_timer(window: HWND, shared: &Arc<Mutex<Shared>>) {
     if let Ok(mut state) = shared.lock() {
         state.remove_dead(&dead);
     }
+}
+
+/// Si la ventana propia ya es la primera `Shell_TrayWnd`, la que Windows
+/// devuelve y a la que las apps mandan sus iconos.
+fn is_first_shell_tray(window: HWND) -> bool {
+    // SAFETY: buscar por clase no cambia ventanas; `None` si no hay ninguna.
+    let first = unsafe { FindWindowW(w!("Shell_TrayWnd"), None).ok() };
+    first.is_some_and(|found| found.0 == window.0)
 }
