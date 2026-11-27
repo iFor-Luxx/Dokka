@@ -1,65 +1,57 @@
-//! Medidas del panel del Centro de control estilo Tahoe.
+//! Medidas del Centro de control estilo Tahoe.
 //!
-//! Panel de cristal de 320 × 338 con tres tarjetas planas (red, volumen con
-//! su deslizador mínimo y música) y una fila de cuatro botones redondos
-//! (Preferencias, escritorio, bloqueo y tareas). Las tarjetas son
-//! concéntricas con el panel (radio interior = exterior - separación).
+//! Rejilla de dos columnas sobre 320 de ancho: a la izquierda dos cápsulas
+//! de 156 × 60 (Red y Preferencias), a la derecha música cuadrada de
+//! 130 × 130; debajo tres círculos de 60 repartidos a todo lo ancho y la
+//! tarjeta de Sonido de 296 × 84. Los huecos (10) y el aire exterior (12)
+//! salen de `tray_glass`; aquí solo van los tamaños propios. El alto total
+//! es 318 = 12 + 130 + 10 + 60 + 10 + 84 + 12.
 
 use dokka_scene::DRAWING_SIDE;
 
-/// Ancho fijo del panel.
+/// Ancho fijo del panel, como el resto de la barra.
 pub const WIDTH: f32 = 320.0;
-/// Alto fijo del panel.
-pub const HEIGHT: f32 = 338.0;
-/// Aire alrededor de las tarjetas y los botones, dentro del panel.
-pub const PADDING: f32 = 12.0;
-/// Separación vertical entre tarjetas y la fila de botones.
-pub const GAP: f32 = 10.0;
-/// Esquinas del panel, como el resto de paneles flotantes.
+/// Alto fijo: exterior + música + hueco + círculos + hueco + sonido + exterior.
+pub const HEIGHT: f32 = 318.0;
+/// Esquinas del fondo invisible, como los demás paneles flotantes.
 pub const CORNER_RADIUS: f32 = 16.0;
-pub const BORDER_WIDTH: f32 = 1.0;
-/// Esquinas de cada tarjeta, concéntricas con las del panel.
-pub const CARD_RADIUS: f32 = 12.0;
-pub const CARD_BORDER_WIDTH: f32 = 1.0;
 
-/// Alto de la tarjeta de red.
-pub const NETWORK_HEIGHT: f32 = 64.0;
-/// Alto de la tarjeta de volumen (texto arriba, deslizador abajo).
-pub const VOLUME_HEIGHT: f32 = 76.0;
-/// Alto de la tarjeta de música (título, artista y botones).
-pub const MUSIC_HEIGHT: f32 = 96.0;
+/// Ancho de cada cápsula izquierda (296 − 10 − 130).
+pub const LEFT_WIDTH: f32 = 156.0;
+/// Lado de la tarjeta cuadrada de música (dos cápsulas + hueco).
+pub const MUSIC_WIDTH: f32 = 130.0;
 
-/// Diámetro de cada botón redondo de la fila inferior.
-pub const BUTTON_DIAMETER: f32 = 48.0;
-
-/// Lado de los iconos oscuros dentro de las tarjetas claras.
-pub const ICON_SIDE: f32 = 20.0;
-/// Tamaño del glifo Lucide: llena el lienzo de 100, fuente efectiva 20 a 20 de lado.
-pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
-/// Aire entre el borde de la tarjeta y su icono o texto.
-pub const TEXT_INSET: f32 = 14.0;
-/// Separación entre el icono y el texto de la misma fila.
-pub const ICON_TEXT_GAP: f32 = 8.0;
-
-/// Alto de la pista del deslizador de volumen.
-pub const TRACK_HEIGHT: f32 = 6.0;
-/// Distancia del centro de la pista al borde inferior de su tarjeta.
-pub const TRACK_BOTTOM: f32 = 22.0;
-/// Esquinas de la pista y su relleno: la mitad del alto.
-pub const TRACK_RADIUS: f32 = TRACK_HEIGHT / 2.0;
-/// Diámetro del pulgar del deslizador.
-pub const THUMB_DIAMETER: f32 = 14.0;
-/// Lado de la zona pulsable del silencio, alrededor de su icono de 20.
-pub const MUTE_HIT_SIDE: f32 = 28.0;
-/// Aire vertical del deslizador para pulsarlo sin puntería fina.
-pub const SLIDER_HIT_HALF: f32 = 14.0;
-
-/// Ancho de cada botón de música (anterior, pausa, siguiente).
-pub const MUSIC_BUTTON_WIDTH: f32 = 48.0;
-/// Alto de cada botón de música.
-pub const MUSIC_BUTTON_HEIGHT: f32 = 32.0;
+/// Lado de la carátula marcadora dentro de la música.
+pub const MUSIC_ART_SIDE: f32 = 36.0;
+/// Esquinas de la carátula, menores que su mitad.
+pub const ART_RADIUS: f32 = 10.0;
+/// Lado de cada botón de música (anterior, pausa, siguiente).
+pub const MUSIC_BUTTON_SIDE: f32 = 32.0;
 /// Separación entre botones de música seguidos.
 pub const MUSIC_BUTTON_GAP: f32 = 4.0;
+/// Lado del glifo dentro de cada botón de música.
+pub const MUSIC_ICON_SIDE: f32 = 20.0;
+
+/// Botones circulares bajo la rejilla (Escritorio, Bloqueo, Tareas).
+pub const ROUND_COUNT: usize = 3;
+/// Diámetro de cada círculo, igual que la cápsula.
+pub const ROUND_DIAMETER: f32 = 60.0;
+
+/// Alto de la tarjeta de Sonido a todo lo ancho.
+pub const SOUND_HEIGHT: f32 = 84.0;
+/// Del borde superior de la tarjeta al centro de su pista.
+pub const TRACK_CENTER_TOP: f32 = 56.0;
+/// Lado del icono pequeño de cada extremo del deslizador.
+pub const END_ICON_SIDE: f32 = 16.0;
+/// Lado de la zona pulsable del silencio, alrededor de su icono.
+pub const MUTE_HIT_SIDE: f32 = 28.0;
+/// Aire vertical del deslizador para no exigir puntería fina.
+pub const SLIDER_HIT_HALF: f32 = 14.0;
+
+/// Separación entre el círculo y el texto de la misma cápsula.
+pub const ICON_TEXT_GAP: f32 = 8.0;
 
 /// Letras máximas antes de recortar un nombre o título con "…".
-pub const TEXT_CHARACTERS: usize = 32;
+pub const TEXT_CHARACTERS: usize = 24;
+/// Tamaño del glifo Lucide: llena el lienzo de 100.
+pub const GLYPH_SIZE: f32 = DRAWING_SIDE;

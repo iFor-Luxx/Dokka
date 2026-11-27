@@ -2,14 +2,14 @@ use dokka_scene::Rect;
 
 use super::ControlCenterHit;
 use super::layout::{
-    music_button, music_card, mute_area, network_card, round_button, slider_area, slider_track,
-    slider_value, volume_card,
+    music_button, music_tile, network_capsule, prefs_capsule, round_button, slider_area,
+    slider_track, slider_value, sound_card, sound_mute_box,
 };
 use super::props::ControlCenterProps;
 
-/// Zona pulsable bajo el punto: primero los botones redondos y los de
+/// Zona pulsable bajo el punto: primero los círculos y los botones de
 /// música, luego el silencio y el deslizador (con su valor 0 a 1) y al
-/// final la tarjeta de red.
+/// final las cápsulas de red y Preferencias. Devuelve lo mismo que antes.
 pub fn control_center_hit(
     bounds: Rect,
     x: f32,
@@ -17,7 +17,6 @@ pub fn control_center_hit(
     _props: &ControlCenterProps,
 ) -> Option<ControlCenterHit> {
     for (index, hit) in [
-        ControlCenterHit::Preferences,
         ControlCenterHit::Desktop,
         ControlCenterHit::Lock,
         ControlCenterHit::TaskManager,
@@ -29,7 +28,7 @@ pub fn control_center_hit(
             return Some(*hit);
         }
     }
-    let music = music_card(bounds);
+    let music = music_tile(bounds);
     for (index, hit) in [
         ControlCenterHit::Previous,
         ControlCenterHit::Toggle,
@@ -42,16 +41,19 @@ pub fn control_center_hit(
             return Some(*hit);
         }
     }
-    let volume = volume_card(bounds);
-    if contains(mute_area(volume), x, y) {
+    let sound = sound_card(bounds);
+    if contains(sound_mute_box(sound), x, y) {
         return Some(ControlCenterHit::Mute);
     }
-    let track = slider_track(volume);
-    if contains(slider_area(volume), x, y) {
+    let track = slider_track(sound);
+    if contains(slider_area(sound), x, y) {
         return Some(ControlCenterHit::Slider(slider_value(track, x)));
     }
-    if contains(network_card(bounds), x, y) {
+    if contains(network_capsule(bounds), x, y) {
         return Some(ControlCenterHit::Network);
+    }
+    if contains(prefs_capsule(bounds), x, y) {
+        return Some(ControlCenterHit::Preferences);
     }
     None
 }

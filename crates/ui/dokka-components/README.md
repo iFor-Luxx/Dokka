@@ -30,8 +30,10 @@ panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
 botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
 tarjeta de estado con nombre, tipo e internet y fila de ajustes), lista de
 idiomas (`language_panel`: marca del activo, resaltado de fila y ajustes),
-centro de control (`control_center_panel`: tarjetas de red, volumen con
-deslizador y música más botones redondos, sin resaltar) y buscador
+centro de control (`control_center_panel`: rejilla Tahoe de dos columnas con
+cápsulas de red y Preferencias, música cuadrada, círculos de escritorio,
+bloqueo y tareas y tarjeta de Sonido con deslizador sin bolita, sobre fondo
+invisible y texto blanco) y buscador
 (`search_panel`: casilla grande con lupa y texto, hasta siete resultados con
 icono y resaltado, "Sin resultados" y `filter_search_order` con tildes
 ignoradas; con `search_field` para la casilla).
