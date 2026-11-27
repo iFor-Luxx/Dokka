@@ -26,15 +26,15 @@ pub const SIDEBAR_BORDER_WIDTH: f32 = 1.0;
 pub const SIDEBAR_WIDTH: f32 = 260.0;
 
 /// Diámetro de cada semáforo (cerrar, minimizar, zoom).
-pub const TRAFFIC_DIAMETER: f32 = 12.0;
+pub const TRAFFIC_DIAMETER: f32 = 14.0;
 /// Distancia entre bordes izquierdos de semáforos seguidos.
-pub const TRAFFIC_PITCH: f32 = 20.0;
+pub const TRAFFIC_PITCH: f32 = 23.0;
 /// Borde izquierdo del primer semáforo: con aire (~18) al borde del panel.
-pub const TRAFFIC_LEFT: f32 = SIDEBAR_INSET + 18.0;
+pub const TRAFFIC_LEFT: f32 = SIDEBAR_INSET + 17.0;
 /// Borde superior de los semáforos: centrados entre el panel y la casilla.
-pub const TRAFFIC_TOP: f32 = 25.0;
+pub const TRAFFIC_TOP: f32 = 24.0;
 /// Aire para pulsar cada semáforo alrededor de su círculo.
-pub const TRAFFIC_HIT_PADDING: f32 = 6.0;
+pub const TRAFFIC_HIT_PADDING: f32 = 4.5;
 
 /// Borde superior de la casilla de búsqueda, bajo los semáforos.
 pub const SEARCH_TOP: f32 = 52.0;
