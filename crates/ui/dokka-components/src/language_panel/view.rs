@@ -187,7 +187,10 @@ fn title_tile(bounds: Rect) -> Rect {
 fn row_tile(bounds: Rect, index: usize) -> Rect {
     Rect {
         x: bounds.x + measures::GAP,
-        y: bounds.y + measures::GAP * 2.0 + measures::TITLE_HEIGHT + index as f32 * (measures::ROW_HEIGHT + measures::GAP),
+        y: bounds.y
+            + measures::GAP * 2.0
+            + measures::TITLE_HEIGHT
+            + index as f32 * (measures::ROW_HEIGHT + measures::GAP),
         width: bounds.width - measures::GAP * 2.0,
         height: measures::ROW_HEIGHT,
     }
