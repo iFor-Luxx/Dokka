@@ -10,5 +10,7 @@ pub mod popup_panel;
 pub mod preview_card;
 pub mod search_field;
 pub mod settings_list;
+pub mod slider;
 pub mod tooltip;
+pub mod volume_panel;
 pub mod window_controls;

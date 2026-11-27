@@ -7,7 +7,7 @@ mod themes;
 pub mod typography;
 
 pub use measures::{
-    dock, launchpad, menu, menubar, music_panel, nav_pill, popup, settings, tooltip,
+    dock, launchpad, menu, menubar, music_panel, nav_pill, popup, settings, tooltip, volume,
 };
 pub use theme::{
     DockColors, IconColors, LaunchpadColors, MediaColors, MenuColors, MenubarColors, NavPillColors,

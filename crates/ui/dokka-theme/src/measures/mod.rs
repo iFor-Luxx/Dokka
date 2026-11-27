@@ -9,3 +9,4 @@ pub mod nav_pill;
 pub mod popup;
 pub mod settings;
 pub mod tooltip;
+pub mod volume;
