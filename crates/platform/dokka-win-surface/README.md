@@ -1,9 +1,10 @@
 # dokka-win-surface
 
 **Hace:** crea las ventanas de Dokka (dock sin foco, Launchpad a pantalla completa
-que sí lo toma, Preferencias normal y activable con sitio en la barra de tareas, y con
-sombra suave del sistema (DWM, esquinas redondeadas; si no se puede activar
-se ve sin ella, sin cambiar su tamaño ni sus golpes),
+que sí lo toma, Preferencias normal y activable con sitio en la barra de tareas y con
+sombra del compositor (una sola ventana exterior: el contenido más un aire
+transparente donde cabe la sombra dibujada por `dokka-win-composition`; sin
+ella se ve igual; la región no la recorta),
 y superpuesta solo visual), cambia su tamaño y zona activa y coloca el dock
 según su borde (`place_window.rs`: abajo centrado como hoy; en laterales
 centrado en vertical pegado a su borde con el mismo margen, bajo la reserva
@@ -25,12 +26,14 @@ el ritmo de las animaciones, toma y devuelve el foco al abrir el menú o el Laun
 (con `AttachThreadInput` para que Windows conceda el primer plano y `SetFocus` para el
 teclado), avisa con `Dismissed` para el menú y `LaunchpadDismissed` al perder el foco, y con
 `LaunchpadEscape` al pulsar Esc (para limpiar la búsqueda antes de cerrar), centra
-Preferencias una vez con las medidas que pasa el shell, la muestra al frente sin dejarla
+Preferencias una vez con las medidas de contenido y el aire que pasa el shell,
+la muestra al frente sin dejarla
 siempre encima, la oculta sin destruirla (destruir una ventana sin dueña terminaría la
 app; `WM_CLOSE` solo la oculta y avisa con `SettingsDismissed`), la mueve con el arrastre
 nativo de Windows, permite minimizarla desde la barra de tareas, aplica un tamaño
-nuevo con `settings_apply_size` (zoom verde o vuelta a normal: limitado al área de
-trabajo y recentrado sin salirse) y da la
+nuevo de contenido con `settings_apply_size` (zoom verde o vuelta a normal:
+limitado al área de trabajo contando el contenido, no el margen, y recentrado
+con el aire alrededor) y da la
 hora local. El Launchpad queda siempre justo debajo del dock y los
 clics del dock no lo cierran. `cursor_over_dock` devuelve la posición
 lógica del cursor real si está sobre el dock (con DPI y zonas activas) y

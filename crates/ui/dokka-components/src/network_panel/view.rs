@@ -34,6 +34,7 @@ pub fn network_panel(
     Overlay {
         panel: glass(theme, bounds),
         tiles: Vec::new(),
+        panel_shadow: None,
         tile_shadow: None,
         pill: None,
         highlight: Some(settings_highlight(theme, settings, highlighted)),

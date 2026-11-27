@@ -25,6 +25,7 @@ mod panel_layer;
 mod pointer_layer;
 mod scene_layers;
 mod scene_renderer;
+mod shadow_layer;
 mod solid_brush;
 mod text_layer;
 mod tile_brushes;

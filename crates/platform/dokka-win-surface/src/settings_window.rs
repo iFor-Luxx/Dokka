@@ -1,8 +1,4 @@
 use windows::Win32::Foundation::{HWND, WPARAM};
-use windows::Win32::Graphics::Dwm::{
-    DWM_WINDOW_CORNER_PREFERENCE, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND,
-    DwmSetWindowAttribute,
-};
 use windows::Win32::UI::Input::KeyboardAndMouse::ReleaseCapture;
 use windows::Win32::UI::WindowsAndMessaging::{
     HTCAPTION, HWND_NOTOPMOST, HWND_TOPMOST, SW_HIDE, SW_MINIMIZE, SW_SHOWNORMAL, SWP_NOMOVE,
@@ -10,7 +6,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::foreground::foreground_window;
-use crate::place_window::{place_centered, place_centered_clamped};
+use crate::place_window::place_outer_centered;
 use crate::{Surface, SurfaceError, SurfaceHandle};
 
 impl Surface {
@@ -18,21 +14,36 @@ impl Surface {
         SurfaceHandle::new(self.settings)
     }
 
-    /// Centra la ventana una sola vez; el shell pasa las medidas del tema.
-    pub fn settings_place(&mut self, width: f32, height: f32) -> Result<(), SurfaceError> {
+    /// Centra el contenido una vez con el aire de la sombra alrededor; la
+    /// ventana exterior es el contenido más ese margen por cada lado. Luego
+    /// conserva su sitio al moverla.
+    pub fn settings_place(
+        &mut self,
+        content_width: f32,
+        content_height: f32,
+        margin: f32,
+    ) -> Result<(), SurfaceError> {
         if self.settings_placed {
             return Ok(());
         }
-        self.settings_scale = place_centered(self.settings, width, height)?;
+        self.settings_scale =
+            place_outer_centered(self.settings, content_width, content_height, margin)?;
         self.settings_placed = true;
         Ok(())
     }
 
-    /// Aplica un tamaño nuevo a Preferencias (zoom verde o vuelta a normal):
-    /// lo limita al área de trabajo y lo recentra sin salirse de la pantalla.
+    /// Aplica un tamaño nuevo de contenido (zoom verde o vuelta a normal):
+    /// lo limita al área de trabajo contando el contenido, no el margen, y lo
+    /// recentra con el aire alrededor sin salirse el contenido.
     /// La barra lateral no se mueve; solo crece la zona de la derecha.
-    pub fn settings_apply_size(&mut self, width: f32, height: f32) -> Result<(), SurfaceError> {
-        self.settings_scale = place_centered_clamped(self.settings, width, height)?;
+    pub fn settings_apply_size(
+        &mut self,
+        content_width: f32,
+        content_height: f32,
+        margin: f32,
+    ) -> Result<(), SurfaceError> {
+        self.settings_scale =
+            place_outer_centered(self.settings, content_width, content_height, margin)?;
         self.settings_placed = true;
         Ok(())
     }
@@ -67,7 +78,6 @@ impl Surface {
         // El dock no activa a Dokka, así que el primer plano puede ser negado.
         foreground_window(self.settings);
         self.settings_visible = true;
-        enable_settings_shadow(self.settings);
         Ok(())
     }
 
@@ -115,21 +125,5 @@ impl Surface {
 
     pub(crate) fn settings_window(&self) -> HWND {
         self.settings
-    }
-}
-
-/// Sombra de la ventana de Preferencias con el sistema (DWM): esquinas
-/// redondeadas con sombra suave, sin cambiar su tamaño ni sus golpes.
-/// Falla sola: si no se puede activar, la ventana se ve sin ella.
-fn enable_settings_shadow(window: HWND) {
-    // SAFETY: la ventana es propia; la preferencia es válida y se pasa su tamaño.
-    unsafe {
-        let preference = DWMWCP_ROUND;
-        let _ = DwmSetWindowAttribute(
-            window,
-            DWMWA_WINDOW_CORNER_PREFERENCE,
-            (&raw const preference).cast(),
-            size_of::<DWM_WINDOW_CORNER_PREFERENCE>() as u32,
-        );
     }
 }

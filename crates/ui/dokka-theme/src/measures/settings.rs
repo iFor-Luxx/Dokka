@@ -16,6 +16,15 @@ pub const ZOOMED_HEIGHT: f32 = 820.0;
 pub const CORNER_RADIUS: f32 = 26.0;
 pub const BORDER_WIDTH: f32 = 1.0;
 
+/// Margen transparente alrededor del contenido donde cabe la sombra del
+/// compositor (≈40): la ventana es el contenido más este aire por cada lado
+/// y el contenido se dibuja desplazado por él.
+pub const SHADOW_MARGIN: f32 = 40.0;
+/// Desenfoque de la sombra de la ventana, como el del buscador.
+pub const SHADOW_BLUR: f32 = 30.0;
+/// La sombra cae unos 8 hacia abajo, como en Tahoe.
+pub const SHADOW_OFFSET_Y: f32 = 8.0;
+
 /// Panel flotante dentro de la ventana: margen parejo arriba, abajo y a la
 /// izquierda donde se ve el fondo claro de la ventana. El borde derecho sigue
 /// en `SIDEBAR_WIDTH` para no mover la cabecera ni la tarjeta.
@@ -215,6 +224,11 @@ pub fn window_size(zoomed: bool) -> (f32, f32) {
     } else {
         (WIDTH, HEIGHT)
     }
+}
+
+/// Origen del contenido dentro de la ventana exterior: el aire de la sombra.
+pub fn content_origin() -> (f32, f32) {
+    (SHADOW_MARGIN, SHADOW_MARGIN)
 }
 
 /// Margen derecho original: lo que queda entre el divisor y el borde.

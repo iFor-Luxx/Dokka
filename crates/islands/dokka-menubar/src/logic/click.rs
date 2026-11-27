@@ -245,6 +245,9 @@ impl Menubar {
             }
             return MenubarClick::TrayKept;
         }
+        if self.search_margin_contains(x, y) {
+            return MenubarClick::TrayKept;
+        }
         // Repetir el mismo icono lo cierra; otro cambia de panel.
         if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             if self.tray_kind() == Some(kind) {

@@ -112,6 +112,7 @@ pub fn launchpad_scene(
         highlight: Some(highlight),
         overlay: None,
         submenu: None,
+        panel_shadow: None,
         opacity: launchpad.zoom.opacity(),
         scale: launchpad.zoom.scale(),
         blur: launchpad.zoom.blur(),

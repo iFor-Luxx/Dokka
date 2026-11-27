@@ -9,6 +9,8 @@ use crate::icon_layer::IconLayer;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
 use crate::pointer_layer::{PointerLayer, pointer_style_of};
+use crate::shadow_layer::ShadowLayer;
+use crate::shadow_layer::others_of;
 use crate::text_layer::TextLayer;
 
 /// Elementos visuales de un panel flotante.
@@ -20,7 +22,11 @@ use crate::text_layer::TextLayer;
 pub(crate) struct OverlayLayers {
     container: ContainerVisual,
     panel: Option<PanelLayer>,
+    panel_shadow: Option<ShadowLayer>,
+    panel_shadow_spec: Option<Shadow>,
     tiles: Vec<PanelLayer>,
+    /// Sombras bajo cada pieza (`None` si no se pidió o falló).
+    tile_shadows: Vec<Option<ShadowLayer>>,
     /// Estilo con el que se creó cada pieza.
     tile_styles: Vec<Panel>,
     /// Sombra pedida bajo las piezas, si hay.
@@ -57,19 +63,22 @@ impl OverlayLayers {
         container.SetOpacity(overlay.opacity)?;
         apply_scale(&container, overlay)?;
         let panel = panel_layer(compositor, &container, &overlay.panel)?;
+        // La sombra del fondo excluye las piezas; las de cada pieza excluyen a
+        // las demás para no oscurecerlas. Si fallan, se ve sin ellas.
+        let panel_shadow_spec = overlay.panel_shadow;
+        let panel_shadow = panel_shadow_spec
+            .and_then(|shadow| ShadowLayer::add(compositor, &container, &overlay.panel, &shadow, &overlay.tiles).ok());
         // Las piezas llevan filo de luz y brillo alto (Liquid Glass).
         let tiles = overlay
             .tiles
             .iter()
             .map(|tile| PanelLayer::add_tile(compositor, &container, tile))
             .collect::<Result<Vec<_>>>()?;
-        // La sombra va debajo del cristal y se mueve con él: se crea una vez
-        // y `update` no la toca. Si no se puede crear, las piezas se ven sin ella.
-        if let Some(shadow) = &overlay.tile_shadow {
-            for layer in &tiles {
-                let _ = layer.attach_shadow(compositor, shadow);
-            }
-        }
+        let tile_shadows = overlay.tiles.iter().enumerate().map(|(index, tile)| {
+            overlay.tile_shadow.and_then(|shadow| {
+                ShadowLayer::add(compositor, &container, tile, &shadow, &others_of(&overlay.tiles, index)).ok()
+            })
+        }).collect();
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;
         if let Some(pill_panel) = &overlay.pill {
@@ -125,7 +134,10 @@ impl OverlayLayers {
         Ok(Self {
             container,
             panel,
+            panel_shadow,
+            panel_shadow_spec,
             tiles,
+            tile_shadows,
             tile_styles: overlay.tiles.clone(),
             tile_shadow: overlay.tile_shadow,
             style: overlay.panel,
@@ -151,6 +163,7 @@ impl OverlayLayers {
     /// se decide por el alfa del tinte y del borde, como al crearse.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
         self.panel.is_some() == has_glass(&overlay.panel)
+            && self.panel_shadow_spec == overlay.panel_shadow
             && self.style.tint == overlay.panel.tint
             && self.tile_shadow == overlay.tile_shadow
             && self.pill.is_some() == overlay.pill.is_some()
@@ -194,8 +207,16 @@ impl OverlayLayers {
         if let Some(layer) = &self.panel {
             layer.update(&overlay.panel)?;
         }
+        if let (Some(layer), Some(shadow)) = (&mut self.panel_shadow, &overlay.panel_shadow) {
+            let _ = layer.update(compositor, &overlay.panel, shadow, &overlay.tiles);
+        }
         for (layer, tile) in self.tiles.iter().zip(&overlay.tiles) {
             layer.update(tile)?;
+        }
+        for (index, (shadow, tile)) in self.tile_shadows.iter_mut().zip(&overlay.tiles).enumerate() {
+            if let (Some(layer), Some(shadow)) = (shadow, &overlay.tile_shadow) {
+                let _ = layer.update(compositor, tile, shadow, &others_of(&overlay.tiles, index));
+            }
         }
         if let (Some(layer), Some(pill)) = (&self.pill, &overlay.pill) {
             layer.update(pill)?;

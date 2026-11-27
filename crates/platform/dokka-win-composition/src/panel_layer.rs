@@ -1,7 +1,6 @@
-use dokka_scene::{Panel, Shadow};
+use dokka_scene::Panel;
 use windows::UI::Composition::{
-    CompositionDropShadowSourcePolicy, CompositionRoundedRectangleGeometry, Compositor,
-    ContainerVisual, ShapeVisual, SpriteVisual,
+    CompositionRoundedRectangleGeometry, Compositor, ContainerVisual, ShapeVisual, SpriteVisual,
 };
 use windows::core::Result;
 use windows_numerics::{Vector2, Vector3};
@@ -85,29 +84,6 @@ impl PanelLayer {
             tint,
             tint_outline,
         })
-    }
-
-    /// Sombra suave bajo el cristal, con su forma redondeada.
-    /// Se engancha al visual del cristal (opaco por el fondo): el interior
-    /// queda tapado y solo se ve el filo difuso de fuera, sin oscurecer el
-    /// tinte ni crear rectángulos fantasma. Falla sola: si no se puede crear,
-    /// el panel se ve sin ella.
-    pub(crate) fn attach_shadow(&self, compositor: &Compositor, shadow: &Shadow) -> Result<()> {
-        let Some(glass) = self.glass.as_ref() else {
-            return Ok(());
-        };
-        let drop = compositor.CreateDropShadow()?;
-        drop.SetColor(windows_color(shadow.color))?;
-        drop.SetBlurRadius(shadow.blur)?;
-        drop.SetOffset(Vector3 {
-            X: shadow.offset.0,
-            Y: shadow.offset.1,
-            Z: 0.0,
-        })?;
-        drop.SetOpacity(1.0)?;
-        drop.SetSourcePolicy(CompositionDropShadowSourcePolicy::InheritFromVisualContent)?;
-        glass.SetShadow(&drop)?;
-        Ok(())
     }
 
     pub(crate) fn update(&self, panel: &Panel) -> Result<()> {

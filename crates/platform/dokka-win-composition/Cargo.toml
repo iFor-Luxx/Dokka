@@ -12,6 +12,7 @@ windows-collections.workspace = true
 windows-core.workspace = true
 windows = { workspace = true, features = [
     "Foundation",
+    "Graphics",
     "Graphics_DirectX",
     "Graphics_Effects",
     "System",

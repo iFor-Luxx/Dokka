@@ -28,8 +28,9 @@ por identidad, canción y
 carátula, texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre
 del deslizador y devuelve `MenubarAction`. Da su `Scene` (con el menú, el
 calendario o el panel real como `overlay`) y sus zonas activas (la franja y,
-abierto, lo desplegado con su hueco; el buscador solo la casilla y la tarjeta,
-sin los huecos vacíos). Expone `MenubarPainted` para repintar
+abierto, lo desplegado con su hueco; el buscador la casilla y la tarjeta con el
+aire de la sombra para no recortarla, sin los huecos vacíos; el clic en ese
+aire no hace nada y no cierra). Expone `MenubarPainted` para repintar
 solo si cambia (datos de los paneles incluidos) y `TrayKind` para saber qué
 panel está abierto.
 

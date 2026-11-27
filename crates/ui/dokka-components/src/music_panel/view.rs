@@ -37,6 +37,7 @@ pub fn music_panel_panel(
             border: theme.tray.panel_border,
         },
         tiles: Vec::new(),
+        panel_shadow: None,
         tile_shadow: None,
         pill: None,
         highlight: None,
