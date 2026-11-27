@@ -78,6 +78,8 @@ pub struct Surface {
     pub(crate) menubar_previous: Option<HWND>,
     /// `true` mientras una app a pantalla completa oculta la barra.
     pub(crate) menubar_fullscreen: bool,
+    /// Temporizador de vigilancia del cursor, solo con panel abierto o pendiente.
+    pub(crate) watch_timer: Option<usize>,
 }
 
 impl Surface {
@@ -114,6 +116,7 @@ impl Surface {
             menubar_active: Vec::new(),
             menubar_previous: None,
             menubar_fullscreen: false,
+            watch_timer: None,
         })
     }
 

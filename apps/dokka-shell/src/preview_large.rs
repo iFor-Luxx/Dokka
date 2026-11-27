@@ -7,10 +7,10 @@ use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
 
-/// Muestra la ventana bajo el cursor en su sitio real, sin activarla.
+/// Muestra la ventana que esperó su segundo sobre la mini, sin activarla.
 /// Sin imagen válida o sin rectángulo no muestra vista grande.
 pub(crate) fn update_large_preview(session: &mut DockSession, surface: &mut Surface) {
-    let Some(hovered) = session.previews.hovered_window() else {
+    let Some(hovered) = session.previews.large_preview_window() else {
         hide_large(session, surface);
         return;
     };

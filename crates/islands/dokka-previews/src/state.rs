@@ -27,6 +27,10 @@ pub struct Previews {
     pub(crate) pinned: Vec<u64>,
     /// Ventana bajo el cursor, si está sobre una mini.
     pub(crate) hovered: Option<u64>,
+    /// Ventana con vista grande visible, tras esperar su segundo.
+    pub(crate) large: Option<u64>,
+    /// Ventana esperando su segundo para mostrarse grande, y cuánto lleva.
+    pub(crate) large_wait: Option<(u64, f32)>,
     /// Meses de diferencia con el actual en el calendario.
     pub(crate) month_offset: i32,
     /// Mayor número de semanas mostrado mientras el calendario está abierto:
@@ -51,6 +55,8 @@ impl Previews {
             media: None,
             pinned: Vec::new(),
             hovered: None,
+            large: None,
+            large_wait: None,
             nav_hovered: None,
             month_offset: 0,
             calendar_weeks: 0,

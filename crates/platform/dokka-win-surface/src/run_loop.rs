@@ -115,6 +115,9 @@ impl Surface {
             state.pending_timer = None;
             return Some(SurfaceEvent::Refresh);
         }
+        if message.message == WM_TIMER && let Some(event) = self.watch_event(message.wParam.0) {
+            return Some(event);
+        }
         if message.hwnd == self.window && message.message == DISMISS_MESSAGE {
             return Some(SurfaceEvent::Dismissed);
         }

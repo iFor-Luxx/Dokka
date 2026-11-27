@@ -17,6 +17,7 @@ use crate::launchpad::{
 };
 use crate::media::send_media;
 use crate::perform_click::perform_click;
+use crate::preview_safety;
 use crate::settings::handle_settings_event;
 
 pub(crate) fn handle_event(
@@ -25,10 +26,10 @@ pub(crate) fn handle_event(
     event: SurfaceEvent,
 ) -> Result<(), Box<dyn Error>> {
     if handle_settings_event(session, surface, event)? {
-        return crate::session_render::render(session, surface);
+        return preview_safety::render_and_watch(session, surface);
     }
     if crate::menubar::handle_menubar_event(session, surface, event)? {
-        return crate::session_render::render(session, surface);
+        return preview_safety::render_and_watch(session, surface);
     }
     match event {
         // Los eventos de Preferencias ya se atendieron arriba.
@@ -131,16 +132,28 @@ pub(crate) fn handle_event(
                 }
             }
             if !session.launchpad.is_open() {
+                // Si el aviso de salida se perdió, el cursor real manda.
+                preview_safety::check_preview_cursor(session, surface);
                 session.previews.advance(seconds);
             }
         }
+        SurfaceEvent::CursorCheck => {
+            if !session.launchpad.is_open() {
+                preview_safety::check_preview_cursor(session, surface);
+            }
+        }
         SurfaceEvent::Refresh => {
-            if !session.sync()? {
+            let changed = session.sync()?;
+            // Otra ventana al frente también avisa, aunque la lista siga igual.
+            let foreground_changed = session.poll_foreground_changed();
+            if !changed && !foreground_changed {
                 return Ok(());
             }
-            // Un panel podría estar mostrando una ventana que ya no existe.
             if !session.launchpad.is_open() {
-                session.previews.close();
+                preview_safety::close_if_cursor_away(session, surface);
+            }
+            if !changed {
+                return preview_safety::render_and_watch(session, surface);
             }
             if session.dock.is_menu_open() {
                 session.dock.close_menu();
@@ -150,6 +163,7 @@ pub(crate) fn handle_event(
         }
         SurfaceEvent::Tick => {
             session.update_clock_and_trash();
+            preview_safety::check_preview_cursor(session, surface);
             if session.launchpad.is_open() {
                 session.launchpad.tick();
             }
@@ -173,7 +187,7 @@ pub(crate) fn handle_event(
             }
         }
     }
-    crate::session_render::render(session, surface)
+    preview_safety::render_and_watch(session, surface)
 }
 
 /// Los paneles están por encima: tienen prioridad sobre el dock.
