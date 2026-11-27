@@ -80,11 +80,13 @@ pub(crate) fn submenu_panel(
 }
 
 /// `true` si el punto va en diagonal o recto de la madre a su submenú.
+/// El lado madre empieza `PADDING` hacia dentro porque `menu_row_at` no
+/// cuenta esa franja como fila: así el margen también es puente.
 pub(crate) fn in_bridge(main: Rect, mother_top: f32, sub: Rect, x: f32, y: f32) -> bool {
     let main_edge = if sub.x >= main.x + main.width {
-        main.x + main.width
+        main.x + main.width - measures::PADDING
     } else {
-        main.x
+        main.x + measures::PADDING
     };
     let sub_edge = if sub.x >= main.x + main.width {
         sub.x
