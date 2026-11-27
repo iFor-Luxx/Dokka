@@ -31,19 +31,19 @@ use dokka_animation::GENIE_SECONDS;
 use dokka_model::DockPosition;
 use windows::Win32::Foundation::HWND;
 
+use crate::departure::Departure;
 use crate::director_support::{dock_handle, ensure_compositor, rect_of};
 use crate::flight::Flight;
 use crate::fullscreen::{covers, is_fullscreen};
 use crate::geometry::{GenieEdge, PixelRect};
 use crate::origin::is_iconic_now;
-use crate::snapshot::Snapshot;
 use crate::strips::GenieCompositor;
 use crate::transitions::{
     animations_enabled, calm_window, restore_all_transitions, restore_window,
 };
 
-/// Fotos guardadas para restaurar con genio.
-pub(crate) const MAX_SNAPSHOTS: usize = 4;
+/// Ventanas minimizadas que se recuerdan para restaurar con genio.
+pub(crate) const MAX_DEPARTURES: usize = 4;
 
 /// Un vuelo y lo necesario para el siguiente. Solo un vuelo a la vez.
 pub struct GenieDirector {
@@ -51,7 +51,7 @@ pub struct GenieDirector {
     pub(crate) gfx: Option<GenieCompositor>,
     pub(crate) gfx_failed: bool,
     pub(crate) flight: Option<Flight>,
-    pub(crate) snapshots: Vec<(isize, Snapshot)>,
+    pub(crate) departures: Vec<(isize, Departure)>,
     pub(crate) calmed: Vec<isize>,
     pub(crate) started: bool,
     pub(crate) dock_window: Option<HWND>,
@@ -65,7 +65,7 @@ impl GenieDirector {
             gfx: None,
             gfx_failed: false,
             flight: None,
-            snapshots: Vec::new(),
+            departures: Vec::new(),
             calmed: Vec::new(),
             started: false,
             dock_window: None,
@@ -77,7 +77,7 @@ impl GenieDirector {
         self.dock_window = Some(dock_handle(raw));
     }
 
-    /// Enciende o apaga el efecto. Al apagar devuelve transiciones y olvida fotos.
+    /// Enciende o apaga el efecto. Al apagar devuelve transiciones y olvida salidas.
     pub fn set_enabled(&mut self, enabled: bool) {
         if self.enabled == enabled {
             return;
@@ -89,7 +89,7 @@ impl GenieDirector {
         }
         if !enabled {
             self.flight = None;
-            self.snapshots.clear();
+            self.departures.clear();
             self.restore_calmed();
         }
     }
@@ -107,7 +107,7 @@ impl GenieDirector {
     /// Apaga la animacion propia de estas ventanas para sustituirla.
     /// Solo con el efecto encendido y animaciones del sistema activas.
     pub fn calm_windows(&mut self, windows: &[isize]) {
-        if !self.enabled || !animations_enabled() {
+        if !self.enabled || self.gfx_failed || !animations_enabled() {
             return;
         }
         // A pantalla completa no hay genio: conservan (o recuperan) lo suyo.
@@ -137,7 +137,7 @@ impl GenieDirector {
         self.calmed.clear();
     }
 
-    /// Empieza a minimizar: foto fija donde estaba. El hueco llega con `aim`.
+    /// Empieza a minimizar: la imagen viva donde estaba. El hueco llega con `aim`.
     /// `from` es la ventana entera y `frame` lo que se veía; `false` si esta
     /// apagado, ya vuela algo o falla Windows: minimizar normal.
     pub fn begin_minimize(
@@ -177,7 +177,6 @@ impl GenieDirector {
             return false;
         };
         let edge = GenieEdge::from_position(position);
-        let preparing = std::time::Instant::now();
         let flight = Flight::start(
             gfx,
             hwnd,
@@ -192,10 +191,6 @@ impl GenieDirector {
         );
         match flight {
             Some(flight) => {
-                eprintln!(
-                    "genio: tiempos {hwnd}: preparar ventanas {} ms",
-                    preparing.elapsed().as_millis()
-                );
                 eprintln!(
                     "genio: vuelo {hwnd} empieza desde [{}, {}, {}, {}]",
                     from[0], from[1], from[2], from[3]
@@ -224,8 +219,8 @@ impl GenieDirector {
         flight.aim(gfx, PixelRect::from_win(rect_of(slot)));
     }
 
-    /// Pide restaurar desde el dock: vuela al reves desde su foto.
-    /// `false` si no hay foto o falla: restaurar normal.
+    /// Pide restaurar desde el dock: vuela al reves hasta donde estaba.
+    /// `false` si no se recuerda o falla: restaurar normal.
     pub fn begin_restore(
         &mut self,
         hwnd: isize,
@@ -251,9 +246,9 @@ impl GenieDirector {
             eprintln!("genio: sin vuelta para {hwnd}: ya no esta minimizada");
             return false;
         }
-        let index = self.snapshots.iter().position(|(id, _)| *id == hwnd);
+        let index = self.departures.iter().position(|(id, _)| *id == hwnd);
         let Some(index) = index else {
-            eprintln!("genio: sin vuelta para {hwnd}: no hay foto guardada");
+            eprintln!("genio: sin vuelta para {hwnd}: no se recuerda su salida");
             return false;
         };
         ensure_compositor(&mut self.gfx, &mut self.gfx_failed, hwnd);
@@ -264,7 +259,7 @@ impl GenieDirector {
         let flight = Flight::restore(
             gfx,
             hwnd,
-            &self.snapshots[index].1,
+            self.departures[index].1,
             PixelRect::from_win(rect_of(slot)),
             PixelRect::from_win(rect_of(screen)),
             edge,
@@ -273,7 +268,7 @@ impl GenieDirector {
         match flight {
             Some(flight) => {
                 eprintln!("genio: vuelo {hwnd} de vuelta despega");
-                self.snapshots.remove(index);
+                self.departures.remove(index);
                 self.flight = Some(flight);
                 true
             }

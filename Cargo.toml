@@ -40,6 +40,7 @@ dokka-win-genie = { path = "crates/platform/dokka-win-genie" }
 dokka-win-media = { path = "crates/platform/dokka-win-media" }
 dokka-win-surface = { path = "crates/platform/dokka-win-surface" }
 dokka-win-text = { path = "crates/platform/dokka-win-text" }
+dokka-win-thumbnail = { path = "crates/platform/dokka-win-thumbnail" }
 dokka-win-tracking = { path = "crates/platform/dokka-win-tracking" }
 dokka-win-tray = { path = "crates/platform/dokka-win-tray" }
 lucide-icons = { version = "1.81", default-features = false }
@@ -66,9 +67,6 @@ strip = true
 
 # El `watch` compila en dev: estos crates hacen trabajo por píxel o por
 # fotograma y en dev se notan; solo se acelera su código, sin cambiar nada.
-# El genio copia, gira y reduce una foto de pantalla antes de volar.
-[profile.dev.package.dokka-win-genie]
-opt-level = 3
 [profile.dev.package.dokka-animation]
 opt-level = 3
 [profile.dev.package.dokka-icons]
