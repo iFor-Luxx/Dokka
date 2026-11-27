@@ -31,9 +31,9 @@ pub(crate) struct DockSession {
     /// botones sueltos sin pulsación previa (el arrastre nativo se traga el
     /// suyo y el cursor puede salir y volver a entrar).
     pub(crate) settings_pressed: bool,
-    /// Última escena de Preferencias ya dibujada (sección, fila bajo el
-    /// cursor): si no cambió, no se repinta para no hacer parpadear el cristal.
-    pub(crate) settings_painted: Option<(usize, Option<usize>)>,
+    /// Última escena de Preferencias ya dibujada: si no cambió, no se repinta
+    /// para no hacer parpadear el cristal.
+    pub(crate) settings_painted: Option<dokka_settings::PaintedSettings>,
     pub(crate) catalog: DesktopCatalog,
     pub(crate) theme: Arc<Theme>,
     pub(crate) explorer: AppId,

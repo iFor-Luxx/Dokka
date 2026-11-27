@@ -87,5 +87,13 @@ pub(crate) const SETTINGS_HOVER: Color = Color::rgba(0, 0, 0, 22);
 pub(crate) const SETTINGS_CARD: Color = Color::rgba(0, 0, 0, 12);
 /// Línea bajo la cabecera del contenido.
 pub(crate) const SETTINGS_DIVIDER: Color = Color::rgba(0, 0, 0, 28);
+/// Semáforos apagados cuando Preferencias no es la ventana activa.
+pub(crate) const SETTINGS_TRAFFIC_INACTIVE: Color = Color::rgba(206, 206, 210, 255);
+/// Símbolo oscuro sobre el semáforo rojo al pasar el cursor.
+pub(crate) const TRAFFIC_CLOSE_SYMBOL: Color = Color::rgba(143, 29, 29, 255);
+/// Símbolo oscuro sobre el semáforo amarillo al pasar el cursor.
+pub(crate) const TRAFFIC_MINIMIZE_SYMBOL: Color = Color::rgba(155, 98, 10, 255);
+/// Símbolo oscuro sobre el semáforo verde al pasar el cursor.
+pub(crate) const TRAFFIC_ZOOM_SYMBOL: Color = Color::rgba(23, 125, 43, 255);
 /// Puntos de las demás páginas.
 pub(crate) const LAUNCHPAD_DOT_INACTIVE: Color = Color::rgba(255, 255, 255, 110);

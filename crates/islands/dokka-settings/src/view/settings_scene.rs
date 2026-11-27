@@ -1,50 +1,48 @@
-use dokka_components::nav_pill::{NavPillProps, nav_pill_divider, nav_pill_icons, nav_pill_panel};
-use dokka_components::search_field::{search_label_at, search_magnifier_at, search_panel_at};
-use dokka_components::settings_list::{
-    SettingsListProps, row_badges, row_hover, row_icons, row_labels, row_selection, search_bounds,
-    sidebar_panel,
+use dokka_components::nav_pill::{nav_pill_divider, nav_pill_highlight, nav_pill_icons, nav_pill_panel};
+use dokka_components::search_field::{
+    search_magnifier_at, search_panel_at, settings_search_cursor, settings_search_text,
 };
-use dokka_components::window_controls::traffic_dots;
+use dokka_components::settings_list::{
+    filtered_badges, filtered_empty, filtered_hover, filtered_icons, filtered_labels,
+    filtered_selection, search_bounds, sidebar_panel,
+};
+use dokka_components::window_controls::{traffic_dots, traffic_glyph_icons};
 use dokka_scene::{Divider, Panel, Rect, Scene, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::section_names;
 use crate::Settings;
 
-/// Escena fija de la ventana: fondo, barra lateral, filas, cabecera y tarjeta.
-/// Cada capa visual se crea arriba, en orden de pintado: fondo, paneles,
-/// planos, resaltado, líneas, iconos, puntos y textos. Nada cambia de forma al elegir
-/// sección: solo se mueven la selección y los textos.
+/// Escena fija de la ventana: fondo, barra lateral, filas visibles, cabecera
+/// y tarjeta. Cada capa visual se crea arriba, en orden de pintado: fondo,
+/// paneles, planos, resaltado, líneas, iconos, puntos y textos. Cambiar de
+/// sección, filtrar o mover el cursor no cambia la forma: las capas de sobra
+/// se ocultan sin reconstruir y la reserva cubre las vueltas.
 /// La barra es un panel flotante de cristal; el buscador, la selección y el
 /// hover son planos sobre ella para que el cristal no los oscurezca. La
 /// tarjeta es un plano sobre el fondo claro de la ventana: como cristal
-/// muestrearía el fondo de pantalla y saldría azul oscuro.
+/// muestrearía el fondo de pantalla y saldría azul oscuro. El resaltado de la
+/// píldora usa el `highlight` de la escena, siempre con el mismo estilo.
+/// Los semáforos son puntos (grises sin foco) con sus símbolos Lucide encima,
+/// siempre tres para no reconstruir al pasar el cursor. El cursor de la
+/// casilla siempre está, de ancho cero cuando no hay foco.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
-    let props = SettingsListProps {
-        selected: settings.selected(),
-        hovered: settings.hovered(),
-    };
+    let order = settings.filtered_order();
+    let selected = settings.selected();
+    let pill = settings.pill_props();
     let search = search_bounds();
     let search_drawing = settings.search_drawing(theme);
     let nav = settings.nav_drawings(theme);
-    // Píldora de navegación: hoy sin lados disponibles, solo adorna.
-    let pill = NavPillProps {
-        bounds: Rect {
-            x: measures::NAV_LEFT,
-            y: measures::NAV_TOP,
-            width: measures::NAV_PILL_WIDTH,
-            height: measures::NAV_PILL_HEIGHT,
-        },
-        can_previous: false,
-        can_next: false,
-        hovered: None,
-    };
-    let mut glyphs = Vec::with_capacity(measures::SECTIONS);
-    for index in 0..measures::SECTIONS {
-        glyphs.push(settings.row_drawing(theme, index));
+    let traffic = settings.traffic_drawings(theme);
+    let symbols_visible = settings.traffic_hovered() && settings.window_focused();
+    let mut badge_drawings = Vec::with_capacity(order.len());
+    let mut glyphs = Vec::with_capacity(order.len());
+    for index in &order {
+        badge_drawings.push(settings.badge_drawing(theme, *index));
+        glyphs.push(settings.row_drawing(theme, *index));
     }
-    let mut icons = row_badges(theme);
-    icons.extend(row_icons(theme, &glyphs));
+    let mut icons = filtered_badges(theme, &order, &badge_drawings);
+    icons.extend(filtered_icons(theme, &order, &glyphs));
     icons.push(search_magnifier_at(
         theme.settings.search_icon,
         search.x + measures::SEARCH_ICON_INSET,
@@ -53,20 +51,22 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         &search_drawing,
     ));
     icons.extend(nav_pill_icons(theme, &nav, &pill));
+    icons.extend(traffic_glyph_icons(theme, symbols_visible, &traffic));
     let (card_x, card_top, card_width) = measures::card_bounds();
     let names = section_names();
-    let mut texts = row_labels(theme, &props, &names);
-    texts.push(search_label_at(
+    let mut texts = filtered_labels(theme, selected, &order, &names);
+    texts.push(settings_search_text(
         theme.settings.search_text,
-        search.x + measures::SEARCH_TEXT_INSET,
-        search.y + search.height / 2.0,
-        measures::SEARCH_PLACEHOLDER,
-        measures::SEARCH_TEXT_SIZE,
+        search,
+        settings.query(),
     ));
+    if order.is_empty() {
+        texts.push(filtered_empty(theme));
+    }
     texts.push(Text {
         x: measures::title_left(),
         center_y: measures::header_middle(),
-        content: names[settings.selected()].clone(),
+        content: names[selected].clone(),
         size: measures::TITLE_SIZE,
         is_bold: true,
         color: theme.settings.title,
@@ -109,8 +109,8 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
                 measures::SEARCH_RADIUS,
                 measures::SEARCH_BORDER_WIDTH,
             ),
-            row_selection(theme, &props),
-            row_hover(theme, &props),
+            filtered_selection(theme, selected, &order),
+            filtered_hover(theme, selected, settings.hovered(), &order),
             Panel {
                 bounds: Rect {
                     x: card_x,
@@ -124,7 +124,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
                 border: theme.settings.card_border,
             },
         ],
-        highlight: None,
+        highlight: Some(nav_pill_highlight(theme, &pill)),
         dividers: vec![
             Divider {
                 bounds: Rect {
@@ -136,9 +136,15 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
                 color: theme.settings.divider,
             },
             nav_pill_divider(theme, &pill),
+            settings_search_cursor(
+                theme.settings.search_text,
+                search,
+                settings.query(),
+                settings.search_focused(),
+            ),
         ],
         icons,
-        dots: traffic_dots(theme),
+        dots: traffic_dots(theme, settings.window_focused()),
         texts,
         thumbnails: Vec::new(),
         labels: Vec::new(),

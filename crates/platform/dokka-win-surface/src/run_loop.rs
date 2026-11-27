@@ -3,11 +3,11 @@ use std::time::Instant;
 use windows::Win32::Graphics::Dwm::DwmFlush;
 use windows::Win32::UI::WindowsAndMessaging::{
     DispatchMessageW, GetMessageW, KillTimer, MSG, PM_REMOVE, PeekMessageW, SW_SHOWNOACTIVATE,
-    SetTimer, ShowWindow, TranslateMessage, WM_QUIT, WM_TIMER,
+    SetTimer, ShowWindow, TranslateMessage, WA_INACTIVE, WM_QUIT, WM_TIMER,
 };
 
 use crate::read_pointer::{read_pointer, read_settings_pointer};
-use crate::window_procedure::{DISMISS_MESSAGE, SETTINGS_DISMISS_MESSAGE};
+use crate::window_procedure::{DISMISS_MESSAGE, SETTINGS_DISMISS_MESSAGE, SETTINGS_FOCUS_MESSAGE};
 use crate::{Surface, SurfaceError, SurfaceEvent};
 
 /// Espera para agrupar ráfagas de avisos en una sola actualización.
@@ -115,6 +115,13 @@ impl Surface {
         }
         if message.hwnd == self.settings_window() && message.message == SETTINGS_DISMISS_MESSAGE {
             return Some(SurfaceEvent::SettingsDismissed);
+        }
+        // El `wParam` original dice si sigue activa (`WA_INACTIVE` es 0).
+        if message.hwnd == self.settings_window() && message.message == SETTINGS_FOCUS_MESSAGE {
+            if message.wParam.0 & 0xFFFF == WA_INACTIVE as usize {
+                return Some(SurfaceEvent::SettingsBlurred);
+            }
+            return Some(SurfaceEvent::SettingsFocused);
         }
         if message.hwnd == self.window
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)

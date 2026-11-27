@@ -111,6 +111,10 @@ pub struct SettingsColors {
     pub badge: [Color; 7],
     /// Semáforos rojo, amarillo y verde, en ese orden.
     pub traffic: [Color; 3],
+    /// Símbolos oscuros sobre cada semáforo al pasar el cursor, en su orden.
+    pub traffic_symbol: [Color; 3],
+    /// Gris de los tres semáforos cuando la ventana no tiene el foco.
+    pub traffic_inactive: Color,
 }
 
 #[derive(Debug, Clone, Copy)]

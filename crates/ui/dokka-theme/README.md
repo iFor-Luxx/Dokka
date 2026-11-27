@@ -9,10 +9,11 @@
   (`theme.nav_pill`: cápsula, borde, chevrones, divisor y hover de la píldora de
   navegación) y `SettingsColors`
   (`theme.settings`: ventana, barra, casilla, selección y hover de filas, título, tarjeta,
-  cuadrados de color y semáforos).
+  cuadrados de color, semáforos con sus símbolos oscuros de hover y su gris sin foco).
 - `themes/`: un archivo por tema (hoy solo `light`).
-- `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos,
-  filas, cabecera con su píldora de 72 × 34 y tarjeta), con funciones para filas, título y tarjeta.
+- `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
+  glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
+  72 × 34 y tarjeta), con funciones para filas, título y tarjeta.
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
   a 20; `tooltip.rs` para la

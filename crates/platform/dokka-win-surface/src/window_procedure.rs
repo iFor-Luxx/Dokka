@@ -14,6 +14,11 @@ pub(crate) const DISMISS_MESSAGE: u32 = 0x8001;
 /// tareas. `WM_CLOSE` tampoco pasa por la cola, así que se reenvía igual.
 pub(crate) const SETTINGS_DISMISS_MESSAGE: u32 = 0x8002;
 
+/// Aviso propio de que Preferencias ganó o perdió el foco. `WM_ACTIVATE`
+/// llega directo al procedimiento y no pasa por la cola de `run_loop`, así
+/// que se reenvía como mensaje publicado con el `wParam` original.
+pub(crate) const SETTINGS_FOCUS_MESSAGE: u32 = 0x8003;
+
 pub(crate) unsafe extern "system" fn window_procedure(
     window: HWND,
     message: u32,
@@ -30,9 +35,19 @@ pub(crate) unsafe extern "system" fn window_procedure(
         // La ventana superpuesta es solo visual: el mouse llega a su dueña.
         // La vista grande también deja pasar el mouse hacia la ventana real.
         WM_NCHITTEST if is_owned() || has_transparent(window) => LRESULT(HTTRANSPARENT as isize),
-        WM_ACTIVATE if !is_owned() && wparam.0 & 0xFFFF == WA_INACTIVE as usize => {
-            // SAFETY: reenvía el aviso a la cola del hilo para que lo lea `run_loop`.
-            let _ = unsafe { PostMessageW(Some(window), DISMISS_MESSAGE, WPARAM(0), LPARAM(0)) };
+        // El foco ganado o perdido se reenvía a la cola para que lo lea
+        // `run_loop`; el aviso de pérdida sigue llegando como `DISMISS_MESSAGE`.
+        WM_ACTIVATE if !is_owned() => {
+            // SAFETY: reenvía los avisos a la cola del hilo para que los lea `run_loop`.
+            let _ = unsafe {
+                PostMessageW(Some(window), SETTINGS_FOCUS_MESSAGE, wparam, LPARAM(0))
+            };
+            if wparam.0 & 0xFFFF == WA_INACTIVE as usize {
+                // SAFETY: reenvía el aviso a la cola del hilo para que lo lea `run_loop`.
+                let _ = unsafe {
+                    PostMessageW(Some(window), DISMISS_MESSAGE, WPARAM(0), LPARAM(0))
+                };
+            }
             // SAFETY: Windows entrega argumentos válidos para el mensaje que se está atendiendo.
             unsafe { DefWindowProcW(window, message, wparam, lparam) }
         }
