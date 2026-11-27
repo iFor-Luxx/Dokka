@@ -4,5 +4,5 @@ mod traffic_glyphs;
 mod view;
 
 pub use props::TrafficButton;
-pub use traffic_glyphs::{TrafficGlyphs, traffic_glyph_icons};
-pub use view::{traffic_at, traffic_dots};
+pub use traffic_glyphs::{TrafficButtons, traffic_icons};
+pub use view::traffic_at;

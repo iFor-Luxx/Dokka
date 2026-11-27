@@ -17,11 +17,11 @@ bajo el cursor, el hover de los semáforos y los dibujos creados una vez;
 decide qué hace cada clic (`SettingsAction`) y qué puntos arrastran la
 ventana (`drag_zone`), y resume lo dibujado (`PaintedSettings`) para que el
 shell solo repinte si cambió algo. Da su `Scene` de 760 × 720 con forma fija:
-fondo, barra flotante y píldora como paneles; tarjeta, buscador, selección y
-hover como planos (la tarjeta va plana sobre el fondo claro); resaltado de la
-píldora como `highlight`; semáforos como puntos; insignias (como imagen para
-que al filtrar repinten su color), glifos, lupa, chevrones y símbolos de los
-semáforos como iconos; y nombres, búsqueda, título, tarjeta y vacío como
+fondo, barra flotante y píldora como paneles; tarjeta, buscador, selección,
+hover de filas y resaltado de la píldora como planos (la tarjeta va plana
+sobre el fondo claro y el resaltado como en el calendario, sin cristal);
+sin `highlight` en la escena; semáforos como iconos; insignias (como imagen para
+que al filtrar repinten su color), glifos, lupa y chevrones como iconos; y nombres, búsqueda, título, tarjeta y vacío como
 textos. Nada cambia de forma al filtrar: las capas de sobra se ocultan sin
 reconstruir.
 

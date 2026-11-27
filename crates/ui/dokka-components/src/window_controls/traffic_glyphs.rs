@@ -1,62 +1,82 @@
 use std::sync::Arc;
 
-use dokka_icons::{traffic_close_icon, traffic_minimize_icon, traffic_zoom_icon};
-use dokka_scene::{Color, Drawing, Icon, IconImage};
+use dokka_icons::{
+    traffic_circle, traffic_close_button, traffic_minimize_button, traffic_zoom_button,
+};
+use dokka_scene::{Drawing, Icon, IconImage};
 use dokka_theme::{Theme, settings as measures};
 
-/// Función que dibuja el símbolo de un semáforo en un color.
-type TrafficIcon = fn(Color) -> Drawing;
-
-const GLYPHS: [TrafficIcon; 3] = [traffic_close_icon, traffic_minimize_icon, traffic_zoom_icon];
-
-/// Símbolos de los semáforos ya construidos con los colores del tema.
-/// Se reutilizan entre fotogramas: la plataforma solo repinta cuando recibe
-/// otro dibujo. Sin tema en caliente, basta con crearlos una vez. Ocultos
-/// comparten un dibujo vacío que pinta transparente.
+/// Botones completos de los semáforos: cada uno es un solo dibujo con su
+/// círculo de color y, con el cursor encima, su símbolo oscuro. Sin foco, los
+/// tres comparten el mismo gris. Se crean una vez por estado y se reutiliza
+/// el mismo `Arc`: la plataforma solo repinta cuando cambia el dibujo, sin
+/// reconstruir nada al pasar el cursor ni al perder el foco.
 #[derive(Debug, Clone)]
-pub struct TrafficGlyphs {
-    shown: [Arc<Drawing>; 3],
-    hidden: Arc<Drawing>,
+pub struct TrafficButtons {
+    normal: [Arc<Drawing>; 3],
+    hovered: [Arc<Drawing>; 3],
+    inactive: Arc<Drawing>,
 }
 
-impl TrafficGlyphs {
+impl TrafficButtons {
     pub fn new(theme: &Theme) -> Self {
+        let [red, yellow, green] = theme.settings.traffic;
         let [close, minimize, zoom] = theme.settings.traffic_symbol;
-        let colors = [close, minimize, zoom];
         Self {
-            shown: [
-                Arc::new(GLYPHS[0](colors[0])),
-                Arc::new(GLYPHS[1](colors[1])),
-                Arc::new(GLYPHS[2](colors[2])),
+            normal: [
+                Arc::new(traffic_circle(red)),
+                Arc::new(traffic_circle(yellow)),
+                Arc::new(traffic_circle(green)),
             ],
-            hidden: Arc::new(Drawing { shapes: Vec::new() }),
+            hovered: [
+                Arc::new(traffic_close_button(red, close)),
+                Arc::new(traffic_minimize_button(yellow, minimize)),
+                Arc::new(traffic_zoom_button(green, zoom)),
+            ],
+            inactive: Arc::new(traffic_circle(theme.settings.traffic_inactive)),
+        }
+    }
+
+    fn drawing(&self, index: usize, focused: bool, hovered: bool) -> &Arc<Drawing> {
+        if !focused {
+            &self.inactive
+        } else if hovered {
+            match self.hovered.get(index) {
+                Some(drawing) => drawing,
+                None => &self.inactive,
+            }
+        } else {
+            match self.normal.get(index) {
+                Some(drawing) => drawing,
+                None => &self.inactive,
+            }
         }
     }
 }
 
-/// Los tres símbolos centrados en sus círculos. Siempre hay tres, con el
-/// mismo estilo: ocultos pintan vacío para no reconstruir capas al pasar el
-/// cursor, como el cursor de la casilla de búsqueda.
-pub fn traffic_glyph_icons(theme: &Theme, visible: bool, glyphs: &TrafficGlyphs) -> Vec<Icon> {
-    let inset = (measures::TRAFFIC_DIAMETER - measures::TRAFFIC_GLYPH_SIDE) / 2.0;
-    glyphs
-        .shown
-        .iter()
-        .enumerate()
-        .map(|(index, drawing)| {
-            let image = if visible {
-                Arc::clone(drawing)
+/// Los tres botones a su diámetro y posición reales. Siempre hay tres, con
+/// imagen propia: al pasar el cursor solo cambia el dibujo, como el cursor
+/// de la casilla de búsqueda.
+pub fn traffic_icons(
+    theme: &Theme,
+    drawings: &TrafficButtons,
+    focused: bool,
+    hovered: bool,
+) -> Vec<Icon> {
+    (0..3)
+        .map(|index| Icon {
+            x: measures::TRAFFIC_LEFT + index as f32 * measures::TRAFFIC_PITCH,
+            y: measures::TRAFFIC_TOP,
+            side: measures::TRAFFIC_DIAMETER,
+            image: Some(IconImage::Drawing(Arc::clone(
+                drawings.drawing(index, focused, hovered),
+            ))),
+            placeholder: if focused {
+                theme.settings.traffic[index]
             } else {
-                Arc::clone(&glyphs.hidden)
-            };
-            Icon {
-                x: measures::TRAFFIC_LEFT + index as f32 * measures::TRAFFIC_PITCH + inset,
-                y: measures::TRAFFIC_TOP + inset,
-                side: measures::TRAFFIC_GLYPH_SIDE,
-                image: Some(IconImage::Drawing(image)),
-                placeholder: theme.settings.traffic[index],
-                placeholder_radius: 0.0,
-            }
+                theme.settings.traffic_inactive
+            },
+            placeholder_radius: 0.0,
         })
         .collect()
 }

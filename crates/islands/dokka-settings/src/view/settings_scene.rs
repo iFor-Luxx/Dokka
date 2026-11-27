@@ -8,7 +8,7 @@ use dokka_components::settings_list::{
     filtered_badges, filtered_empty, filtered_hover, filtered_icons, filtered_labels,
     filtered_selection, search_bounds, sidebar_panel,
 };
-use dokka_components::window_controls::{traffic_dots, traffic_glyph_icons};
+use dokka_components::window_controls::traffic_icons;
 use dokka_scene::{Divider, Panel, Rect, Scene, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
@@ -20,14 +20,15 @@ use crate::Settings;
 /// paneles, planos, resaltado, líneas, iconos, puntos y textos. Cambiar de
 /// sección, filtrar o mover el cursor no cambia la forma: las capas de sobra
 /// se ocultan sin reconstruir y la reserva cubre las vueltas.
-/// La barra es un panel flotante de cristal; el buscador, la selección y el
-/// hover son planos sobre ella para que el cristal no los oscurezca. La
-/// tarjeta es un plano sobre el fondo claro de la ventana: como cristal
-/// muestrearía el fondo de pantalla y saldría azul oscuro. El resaltado de la
-/// píldora usa el `highlight` de la escena, siempre con el mismo estilo.
-/// Los semáforos son puntos (grises sin foco) con sus símbolos Lucide encima,
-/// siempre tres para no reconstruir al pasar el cursor. El cursor de la
-/// casilla siempre está, de ancho cero cuando no hay foco.
+/// La barra es un panel flotante de cristal; el buscador, la selección, los
+/// hovers y la tarjeta van como planos sobre ella para que el cristal no los
+/// oscurezca. La tarjeta es un plano sobre el fondo claro de la ventana: como
+/// cristal muestrearía el fondo de pantalla y saldría azul oscuro. El
+/// resaltado de la píldora va como plano, igual que en el calendario: como
+/// cristal muestrearía el fondo y taparía su sombra suave. Cada semáforo es
+/// un solo icono con su círculo y, con el cursor encima, su símbolo; sin foco
+/// van en gris. El cursor de la casilla siempre está, de ancho cero cuando no
+/// hay foco.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let order = settings.filtered_order();
     let selected = settings.selected();
@@ -36,7 +37,8 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let search_drawing = settings.search_drawing(theme);
     let nav = settings.nav_drawings(theme);
     let traffic = settings.traffic_drawings(theme);
-    let symbols_visible = settings.traffic_hovered() && settings.window_focused();
+    let focused = settings.window_focused();
+    let hovered = settings.traffic_hovered();
     let mut badge_drawings = Vec::with_capacity(order.len());
     let mut glyphs = Vec::with_capacity(order.len());
     for index in &order {
@@ -53,7 +55,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         &search_drawing,
     ));
     icons.extend(nav_pill_icons(theme, &nav, &pill));
-    icons.extend(traffic_glyph_icons(theme, symbols_visible, &traffic));
+    icons.extend(traffic_icons(theme, &traffic, focused, hovered));
     let (card_x, card_top, card_width) = measures::card_bounds();
     let names = section_names();
     let mut texts = filtered_labels(theme, selected, &order, &names);
@@ -102,7 +104,8 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             nav_pill_panel(theme, &pill),
         ],
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
-        // y taparía su tinte. Siempre son cuatro para no reconstruir capas.
+        // y taparía su tinte. Siempre son cinco para no reconstruir capas: el
+        // resaltado de la píldora existe siempre, de tamaño cero sin hover.
         flat_panels: vec![
             search_panel_at(
                 theme.settings.search_background,
@@ -125,8 +128,9 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
                 tint: theme.settings.card,
                 border: theme.settings.card_border,
             },
+            nav_pill_highlight(theme, &pill),
         ],
-        highlight: Some(nav_pill_highlight(theme, &pill)),
+        highlight: None,
         dividers: vec![
             Divider {
                 bounds: Rect {
@@ -146,7 +150,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             ),
         ],
         icons,
-        dots: traffic_dots(theme, settings.window_focused()),
+        dots: Vec::new(),
         texts,
         thumbnails: Vec::new(),
         labels: Vec::new(),
