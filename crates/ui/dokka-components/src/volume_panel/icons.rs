@@ -1,15 +1,14 @@
 use std::sync::Arc;
 
 use dokka_icons::{
-    volume_high_icon, volume_low_icon, volume_mute_icon, volume_muted_icon, volume_off_icon,
-    volume_settings_icon,
+    volume_high_icon, volume_low_icon, volume_muted_icon, volume_off_icon, volume_settings_icon,
 };
 use dokka_scene::Drawing;
 use dokka_theme::Theme;
 
-/// Altavoz del panel y de la barra ya construidos con los colores del tema.
-/// Se reutilizan entre fotogramas: la plataforma solo repinta
-/// cuando recibe otro dibujo.
+/// Altavoz del panel y de la barra ya construidos con los colores del tema,
+/// en blanco Tahoe. Se reutilizan entre fotogramas: la plataforma solo
+/// repinta cuando recibe otro dibujo.
 #[derive(Debug, Clone)]
 pub struct VolumePanelIcons {
     muted: Arc<Drawing>,
@@ -20,27 +19,28 @@ pub struct VolumePanelIcons {
     bar_off: Arc<Drawing>,
     bar_low: Arc<Drawing>,
     bar_high: Arc<Drawing>,
-    mute: Arc<Drawing>,
     chevron: Arc<Drawing>,
 }
 
 impl VolumePanelIcons {
     pub fn new(theme: &Theme) -> Self {
+        let panel = theme.tray.text;
+        let bar = theme.menubar.text;
         Self {
-            muted: Arc::new(volume_muted_icon(theme.panel.text)),
-            off: Arc::new(volume_off_icon(theme.panel.text)),
-            low: Arc::new(volume_low_icon(theme.panel.text)),
-            high: Arc::new(volume_high_icon(theme.panel.text)),
-            bar_muted: Arc::new(volume_muted_icon(theme.menubar.text)),
-            bar_off: Arc::new(volume_off_icon(theme.menubar.text)),
-            bar_low: Arc::new(volume_low_icon(theme.menubar.text)),
-            bar_high: Arc::new(volume_high_icon(theme.menubar.text)),
-            mute: Arc::new(volume_mute_icon(theme.panel.text)),
-            chevron: Arc::new(volume_settings_icon(theme.panel.text)),
+            muted: Arc::new(volume_muted_icon(panel)),
+            off: Arc::new(volume_off_icon(panel)),
+            low: Arc::new(volume_low_icon(panel)),
+            high: Arc::new(volume_high_icon(panel)),
+            bar_muted: Arc::new(volume_muted_icon(bar)),
+            bar_off: Arc::new(volume_off_icon(bar)),
+            bar_low: Arc::new(volume_low_icon(bar)),
+            bar_high: Arc::new(volume_high_icon(bar)),
+            chevron: Arc::new(volume_settings_icon(panel)),
         }
     }
 
-    /// Altavoz oscuro junto a la barra, según nivel y silencio.
+    /// Altavoz blanco junto a la barra, según nivel y silencio.
+    /// Es el botón que silencia.
     pub fn speaker(&self, level: f32, is_muted: bool) -> &Arc<Drawing> {
         match level_kind(level, is_muted) {
             LevelKind::Muted => &self.muted,
@@ -60,12 +60,12 @@ impl VolumePanelIcons {
         }
     }
 
-    /// Icono oscuro del botón de silencio.
-    pub fn mute(&self) -> &Arc<Drawing> {
-        &self.mute
+    /// Altavoz con ondas de la derecha: adorno del deslizador Tahoe.
+    pub fn waves(&self) -> &Arc<Drawing> {
+        &self.high
     }
 
-    /// Chevrón oscuro de la fila de ajustes.
+    /// Chevrón blanco de la fila de ajustes.
     pub fn chevron(&self) -> &Arc<Drawing> {
         &self.chevron
     }
