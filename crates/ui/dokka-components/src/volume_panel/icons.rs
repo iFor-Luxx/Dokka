@@ -8,7 +8,8 @@ use dokka_theme::Theme;
 
 /// Altavoz del panel y de la barra ya construidos con los colores del tema,
 /// en blanco Tahoe. Se reutilizan entre fotogramas: la plataforma solo
-/// repinta cuando recibe otro dibujo.
+/// repinta cuando recibe otro dibujo. Los laterales del deslizador tienen su
+/// versión atenuada para el silencio, como los botones de música.
 #[derive(Debug, Clone)]
 pub struct VolumePanelIcons {
     muted: Arc<Drawing>,
@@ -19,12 +20,17 @@ pub struct VolumePanelIcons {
     bar_off: Arc<Drawing>,
     bar_low: Arc<Drawing>,
     bar_high: Arc<Drawing>,
+    slider_low: Arc<Drawing>,
+    slider_low_dim: Arc<Drawing>,
+    slider_high: Arc<Drawing>,
+    slider_high_dim: Arc<Drawing>,
     chevron: Arc<Drawing>,
 }
 
 impl VolumePanelIcons {
     pub fn new(theme: &Theme) -> Self {
         let panel = theme.tray.text;
+        let dim = theme.tray.secondary;
         let bar = theme.menubar.text;
         Self {
             muted: Arc::new(volume_muted_icon(panel)),
@@ -35,6 +41,10 @@ impl VolumePanelIcons {
             bar_off: Arc::new(volume_off_icon(bar)),
             bar_low: Arc::new(volume_low_icon(bar)),
             bar_high: Arc::new(volume_high_icon(bar)),
+            slider_low: Arc::new(volume_low_icon(panel)),
+            slider_low_dim: Arc::new(volume_low_icon(dim)),
+            slider_high: Arc::new(volume_high_icon(panel)),
+            slider_high_dim: Arc::new(volume_high_icon(dim)),
             chevron: Arc::new(volume_settings_icon(panel)),
         }
     }
@@ -60,9 +70,22 @@ impl VolumePanelIcons {
         }
     }
 
-    /// Altavoz con ondas de la derecha: adorno del deslizador Tahoe.
-    pub fn waves(&self) -> &Arc<Drawing> {
-        &self.high
+    /// Altavoz bajo a la izquierda del deslizador, atenuado con silencio.
+    pub(crate) fn slider_left(&self, is_muted: bool) -> &Arc<Drawing> {
+        if is_muted {
+            &self.slider_low_dim
+        } else {
+            &self.slider_low
+        }
+    }
+
+    /// Altavoz con ondas a la derecha del deslizador, atenuado con silencio.
+    pub(crate) fn slider_right(&self, is_muted: bool) -> &Arc<Drawing> {
+        if is_muted {
+            &self.slider_high_dim
+        } else {
+            &self.slider_high
+        }
     }
 
     /// Chevrón blanco de la fila de ajustes.

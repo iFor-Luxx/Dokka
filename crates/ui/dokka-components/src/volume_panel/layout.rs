@@ -1,12 +1,15 @@
-//! Posiciones del panel de volumen, compartidas por el dibujo y el hit.
+//! Posiciones del panel de volumen, compartidas por el dibujo, el golpe y
+//! el arrastre.
 //!
-//! Una columna: título, zona de toque del deslizador, dos líneas finas y
-//! dos filas compactas (silenciar y ajustes).
+//! Una columna: título con porcentaje, fila del deslizador (altavoz bajo,
+//! barra fina y altavoz con ondas), dos líneas finas y dos filas compactas
+//! (silenciar y ajustes). El valor siempre sale de la barra, más corta que
+//! la zona de toque por los iconos de sus extremos.
 
 use dokka_scene::Rect;
 use dokka_theme::volume as measures;
 
-/// Fila del título en negrita arriba a la izquierda.
+/// Fila del título con el porcentaje, arriba a la izquierda y a la derecha.
 pub(crate) fn title_row(bounds: Rect) -> Rect {
     Rect {
         x: bounds.x,
@@ -16,7 +19,7 @@ pub(crate) fn title_row(bounds: Rect) -> Rect {
     }
 }
 
-/// Zona de toque del deslizador, más alta que la cápsula.
+/// Fila del deslizador, más alta que la barra para pulsar con comodidad.
 pub(crate) fn slider_touch(bounds: Rect) -> Rect {
     let title = title_row(bounds);
     Rect {
@@ -24,6 +27,84 @@ pub(crate) fn slider_touch(bounds: Rect) -> Rect {
         y: title.y + title.height + measures::TITLE_GAP,
         width: bounds.width - measures::PADDING * 2.0,
         height: measures::SLIDER_ROW_HEIGHT,
+    }
+}
+
+/// Altavoz bajo a la izquierda de la barra, centrado en la fila.
+pub(crate) fn slider_left_icon(touch: Rect) -> Rect {
+    Rect {
+        x: touch.x,
+        y: touch.y + (touch.height - measures::SLIDER_ICON_SIDE) / 2.0,
+        width: measures::SLIDER_ICON_SIDE,
+        height: measures::SLIDER_ICON_SIDE,
+    }
+}
+
+/// Altavoz con ondas a la derecha de la barra, centrado en la fila.
+pub(crate) fn slider_right_icon(touch: Rect) -> Rect {
+    Rect {
+        x: touch.x + touch.width - measures::SLIDER_ICON_SIDE,
+        y: touch.y + (touch.height - measures::SLIDER_ICON_SIDE) / 2.0,
+        width: measures::SLIDER_ICON_SIDE,
+        height: measures::SLIDER_ICON_SIDE,
+    }
+}
+
+/// Barra fina entre los dos altavoces, centrada en vertical.
+/// Es la geometría que usan el dibujo, el golpe y el arrastre.
+pub(crate) fn slider_bar(touch: Rect) -> Rect {
+    let left = slider_left_icon(touch);
+    let right = slider_right_icon(touch);
+    let x = left.x + left.width + measures::SLIDER_ICON_GAP;
+    let end = right.x - measures::SLIDER_ICON_GAP;
+    Rect {
+        x,
+        y: touch.y + (touch.height - measures::TRACK_HEIGHT) / 2.0,
+        width: (end - x).max(0.0),
+        height: measures::TRACK_HEIGHT,
+    }
+}
+
+/// Recorrido del centro del tirador: medio diámetro dentro de cada extremo
+/// para que no se salga de la barra ni en 0% ni en 100%.
+fn knob_travel(bar: Rect) -> (f32, f32) {
+    let radius = measures::THUMB_DIAMETER / 2.0;
+    if bar.width <= measures::THUMB_DIAMETER {
+        let middle = bar.x + bar.width / 2.0;
+        return (middle, middle);
+    }
+    (bar.x + radius, bar.x + bar.width - radius)
+}
+
+/// Centro del tirador para el nivel, dentro de la barra.
+/// El relleno llega hasta aquí para que ambos coincidan.
+pub(crate) fn knob_center(bar: Rect, level: f32) -> f32 {
+    let (start, end) = knob_travel(bar);
+    start + level01(level) * (end - start)
+}
+
+/// Nivel que corresponde a `x` sobre la barra: se queda en 0 o en 1 aunque
+/// el cursor se pase. Fuera de la barra no hay recorrido que repartir.
+pub(crate) fn slider_value_at(bar: Rect, x: f32) -> f32 {
+    let (start, end) = knob_travel(bar);
+    if end <= start {
+        return if x < bar.x + bar.width / 2.0 {
+            0.0
+        } else {
+            1.0
+        };
+    }
+    level01((x - start) / (end - start))
+}
+
+/// Recorta el nivel a 0-1: el silencio (`NaN`) queda en 0.
+pub(crate) fn level01(value: f32) -> f32 {
+    if value.is_nan() || value < 0.0 {
+        0.0
+    } else if value > 1.0 {
+        1.0
+    } else {
+        value
     }
 }
 
