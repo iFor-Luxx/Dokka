@@ -30,9 +30,9 @@ con "…", controles grandes de anterior, pausa/reproducir y siguiente con los g
 en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
 canción entrega los mismos textos e iconos),
 panel de volumen (`volume_panel`: título con porcentaje a la derecha en texto
-secundario, barra fina con tirador redondo entre dos altavoces —atenuados
-con silencio—, sección "Salida" con las salidas activas si hay, botón de
-silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+secundario, barra fina del componente `slider` con tirador en cápsula entre
+dos altavoces —atenuados con silencio—, sección "Salida" con las salidas
+activas si hay, botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
 con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
 idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),
@@ -44,7 +44,8 @@ justo encima solo con brillo DDC): Red con dos círculos blancos,
 música de dos por dos, Preferencias con dos círculos, Pantalla si hay,
 Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal
 translúcido
-por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`) y buscador Spotlight
+por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`; el Sonido
+y la Pantalla usan el componente `slider`, no dibujan el suyo) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado redondeado concéntrico,
 "Sin resultados" y `filter_search_order` con tildes ignoradas) y segundo plano
@@ -58,10 +59,11 @@ filas de alto variable separadas por líneas finas con aire a ambos lados,
 etiqueta a la izquierda y control a la derecha, sin saber qué ajusta cada
 fila; da la tarjeta, las líneas, las etiquetas y la geometría de cada fila
 para que la isla coloque sus interruptores, deslizadores y segmentado) y deslizador
-(`slider`: pista fina de 4 con relleno desde la fábrica hasta el valor, marca
-de fábrica y tirador blanco en cápsula alargada de 22 × 15 con borde fino
-—cuatro planos siempre—, que solo usa Preferencias; el volumen y el centro
-de control tienen su propio dibujo) y segmentado (`segmented_control`:
+(`slider`: el único deslizador de Dokka —pista fina de 4 con tirador blanco
+en cápsula alargada de 22 × 15 con borde fino, cuatro planos siempre—;
+lo usan Preferencias (relleno desde la fábrica hasta el valor, con marca),
+el volumen y el Sonido y la Pantalla del centro (relleno desde la izquierda,
+sin marca); los paneles no dibujan el suyo) y segmentado (`segmented_control`:
 cápsula gris de 204 × 28 con la opción elegida en pastilla blanca de radios
 concéntricos y texto centrado por tercio, sin saber qué ajusta: la isla
 traduce índices).

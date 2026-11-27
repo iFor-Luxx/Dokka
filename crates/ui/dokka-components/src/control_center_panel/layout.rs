@@ -204,33 +204,19 @@ pub(crate) fn sound_mute_icon(card: Rect) -> Rect {
     }
 }
 
-/// Pista fina del deslizador, entre los dos iconos visibles para que la barra
-/// quede simétrica. Vale para Sonido y Pantalla: misma geometría.
-pub(crate) fn slider_track(card: Rect) -> Rect {
+/// Zona del deslizador entre los dos iconos visibles, con el mismo aire a
+/// cada lado para que la barra quede centrada y simétrica. Es la zona que
+/// recibe el componente `slider` (Sonido y Pantalla comparten geometría).
+/// La altura da aire vertical para no exigir puntería fina.
+pub(crate) fn slider_area(card: Rect) -> Rect {
     let left = sound_left_icon(card);
     let right = sound_mute_icon(card);
     let x = left.x + left.width + measures::ICON_TEXT_GAP;
     let end = right.x - measures::ICON_TEXT_GAP;
     Rect {
         x,
-        y: track_center_y(card) - dokka_theme::tray_glass::TRACK_HEIGHT / 2.0,
+        y: track_center_y(card) - measures::SLIDER_HIT_HALF,
         width: (end - x).max(0.0),
-        height: dokka_theme::tray_glass::TRACK_HEIGHT,
-    }
-}
-
-/// Zona pulsable del deslizador, con aire vertical para no exigir puntería.
-pub(crate) fn slider_area(card: Rect) -> Rect {
-    let track = slider_track(card);
-    Rect {
-        x: track.x - 4.0,
-        y: track.y + track.height / 2.0 - measures::SLIDER_HIT_HALF,
-        width: track.width + 8.0,
         height: measures::SLIDER_HIT_HALF * 2.0,
     }
-}
-
-/// Valor del deslizador (0 a 1) para un punto `x` sobre la pista.
-pub(crate) fn slider_value(track: Rect, x: f32) -> f32 {
-    ((x - track.x) / track.width).clamp(0.0, 1.0)
 }

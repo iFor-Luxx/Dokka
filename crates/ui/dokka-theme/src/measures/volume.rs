@@ -1,11 +1,10 @@
 //! Medidas del panel de volumen estilo Tahoe: un solo cristal oscuro con
-//! título y porcentaje, barra fina con tirador redondo entre dos altavoces,
-//! silenciar y ajustes separados por líneas finas.
+//! título y porcentaje, barra fina del componente `slider` con tirador en
+//! cápsula entre dos altavoces, silenciar y ajustes separados por líneas finas.
 //!
-//! El deslizador usa su propia geometría fina: no reutiliza el componente
-//! `slider` ni las medidas globales de `tray_glass` (las usan el centro de
-//! control y Preferencias). Radios concéntricos: el resaltado recorta el
-//! radio del panel.
+//! El deslizador es el componente `slider` con su pista fina de 4 y su
+//! tirador alargado; aquí solo quedan la fila, los iconos y sus aires.
+//! Radios concéntricos: el resaltado recorta el radio del panel.
 
 use dokka_scene::DRAWING_SIDE;
 
@@ -25,12 +24,8 @@ pub const TITLE_HEIGHT: f32 = tray_glass::TITLE_HEIGHT;
 pub const TITLE_GAP: f32 = 6.0;
 
 /// Alto de la fila del deslizador: cómoda al pulsar, con aire para que el
-/// tirador (mayor que la barra) quede centrado sin salirse de ella.
+/// tirador en cápsula quede centrado sin salirse de ella.
 pub const SLIDER_ROW_HEIGHT: f32 = 28.0;
-/// Grosor de la barra fina, de extremos totalmente redondos.
-pub const TRACK_HEIGHT: f32 = 6.0;
-/// Diámetro del tirador redondo, claramente mayor que la barra.
-pub const THUMB_DIAMETER: f32 = 16.0;
 /// Lado de cada altavoz a los extremos de la barra.
 pub const SLIDER_ICON_SIDE: f32 = 16.0;
 /// Aire entre cada altavoz y la barra.

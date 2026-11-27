@@ -42,7 +42,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         0,
         &dokka_components::slider::SliderProps {
             value: icon_scale_to(shown.dock.icon_scale),
-            neutral: icon_scale_neutral(),
+            neutral: Some(icon_scale_neutral()),
             active: true,
         },
         width,
@@ -64,7 +64,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         2,
         &dokka_components::slider::SliderProps {
             value: magnification_to(shown.dock.magnification_strength),
-            neutral: magnification_neutral(),
+            neutral: Some(magnification_neutral()),
             active: !strength_dim,
         },
         width,

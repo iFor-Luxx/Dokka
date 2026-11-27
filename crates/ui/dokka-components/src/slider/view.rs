@@ -40,17 +40,18 @@ pub fn slider_track_panel(track: Rect, colors: &SliderColors) -> Panel {
 }
 
 /// Relleno desde la fábrica (`neutral`) hasta el valor con el color recibido
-/// (principal o atenuado). En fábrica el ancho es cero: no hay relleno.
-/// Existe siempre y su radio no depende del ancho: así el estilo no cambia
-/// al arrastrar y no se reconstruyen capas.
+/// (principal o atenuado). Con fábrica en el valor el ancho es cero: no hay
+/// relleno. Sin fábrica (`None`) el relleno va desde la izquierda hasta el
+/// valor. Existe siempre y su radio no depende del ancho: así el estilo no
+/// cambia al arrastrar y no se reconstruyen capas.
 pub fn slider_fill_panel(
     track: Rect,
     value: f32,
-    neutral: f32,
+    neutral: Option<f32>,
     active: bool,
     colors: &SliderColors,
 ) -> Panel {
-    let from = clamp01(neutral);
+    let from = neutral.map_or(0.0, clamp01);
     let to = clamp01(value);
     let low = from.min(to);
     let span = (from - to).abs();
@@ -70,7 +71,17 @@ pub fn slider_fill_panel(
 }
 
 /// Marca vertical donde está la fábrica, algo más alta que la pista.
-pub fn slider_tick_bounds(track: Rect, neutral: f32) -> Rect {
+/// Sin fábrica no hay marca: existe igual de tamaño cero para no cambiar la
+/// cantidad de planos al arrastrar.
+pub fn slider_tick_bounds(track: Rect, neutral: Option<f32>) -> Rect {
+    let Some(neutral) = neutral else {
+        return Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 0.0,
+            height: 0.0,
+        };
+    };
     let center = track.x + track.width * clamp01(neutral);
     Rect {
         x: center - measures::SLIDER_TICK_WIDTH / 2.0,
@@ -81,9 +92,18 @@ pub fn slider_tick_bounds(track: Rect, neutral: f32) -> Rect {
 }
 
 /// Marca con el color de fábrica del tema, siempre presente para no cambiar
-/// la cantidad de planos al arrastrar.
-pub fn slider_tick_panel(track: Rect, neutral: f32, colors: &SliderColors) -> Panel {
+/// la cantidad de planos al arrastrar. Sin fábrica mide cero y no se ve.
+pub fn slider_tick_panel(track: Rect, neutral: Option<f32>, colors: &SliderColors) -> Panel {
     let bounds = slider_tick_bounds(track, neutral);
+    if bounds.width <= 0.0 || bounds.height <= 0.0 {
+        return Panel {
+            bounds,
+            corner_radius: 0.0,
+            border_width: 0.0,
+            tint: colors.tick,
+            border: colors.tick,
+        };
+    }
     Panel {
         bounds,
         corner_radius: bounds.width / 2.0,

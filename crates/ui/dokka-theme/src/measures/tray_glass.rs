@@ -32,12 +32,6 @@ pub const CAPSULE_HEIGHT: f32 = 60.0;
 pub const CIRCLE: f32 = 26.0;
 /// Lado del icono dentro del círculo.
 pub const CIRCLE_ICON: f32 = 16.0;
-/// Alto de la cápsula ancha del deslizador de volumen.
-pub const SLIDER_HEIGHT: f32 = 18.0;
-/// Grosor de la barra del deslizador: la cápsula ancha.
-pub const TRACK_HEIGHT: f32 = SLIDER_HEIGHT;
-/// Diámetro del tirador redondo blanco del deslizador.
-pub const THUMB_DIAMETER: f32 = 14.0;
 /// Tamaño de título y de subtítulo.
 pub const TITLE_SIZE: f32 = 13.0;
 pub const SUBTITLE_SIZE: f32 = 12.0;
