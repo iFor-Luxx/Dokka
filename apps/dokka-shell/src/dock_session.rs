@@ -141,6 +141,17 @@ impl DockSession {
         true
     }
 
+    /// Relee si una app ocupa la pantalla principal y lo guarda en el dock.
+    /// Si no se puede saber, queda visible (falla sola). Dice si cambió.
+    pub(crate) fn refresh_occlusion(&mut self) -> bool {
+        let occluded = dokka_win_tracking::foreground_occludes_primary();
+        if occluded == self.dock.is_occluded() {
+            return false;
+        }
+        self.dock.set_occluded(occluded);
+        true
+    }
+
     pub(crate) fn update_clock_and_trash(&mut self) {
         let now = local_time();
         self.dock.set_time(DockTime {

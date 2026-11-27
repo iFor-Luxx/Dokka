@@ -1,14 +1,16 @@
-//! Auto-ocultado: se desliza fuera al perder el cursor y vuelve al tocar el borde.
+//! Ocultado con apps a pantalla completa: visible siempre salvo que la
+//! app al frente ocupe la pantalla; entonces baja y queda la línea.
 
 use dokka_theme::dock as measures;
 
-/// Espera y deslizamiento del auto-ocultado.
+/// Espera y deslizamiento del ocultado con línea.
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct Hide {
     enabled: bool,
-    /// 0 visible, 1 escondido.
+    occluded: bool,
+    /// 0 visible, 1 escondido con línea.
     progress: f32,
-    /// Tiempo desde que se perdió el cursor sin nada abierto.
+    /// Tiempo desde que se salió del dock sin nada abierto.
     away: Option<f32>,
     cursor_inside: bool,
     busy: bool,
@@ -18,6 +20,7 @@ impl Hide {
     pub(crate) fn new() -> Self {
         Self {
             enabled: false,
+            occluded: false,
             progress: 0.0,
             away: None,
             cursor_inside: false,
@@ -33,6 +36,23 @@ impl Hide {
         }
     }
 
+    pub(crate) fn set_occluded(&mut self, occluded: bool) {
+        if self.occluded != occluded {
+            self.occluded = occluded;
+            // Al liberarse la pantalla se vuelve; al ocuparse espera al
+            // temporizador si el cursor ya está fuera.
+            if !occluded {
+                self.away = None;
+            } else if !self.cursor_inside && !self.busy {
+                self.away = Some(0.0);
+            }
+        }
+    }
+
+    pub(crate) fn is_occluded(&self) -> bool {
+        self.occluded
+    }
+
     pub(crate) fn set_cursor_inside(&mut self, inside: bool) {
         self.cursor_inside = inside;
         if inside {
@@ -46,7 +66,7 @@ impl Hide {
         if busy {
             self.away = None;
         } else if was_busy && !self.cursor_inside {
-            // Acaba de cerrarse algo con el cursor fuera: empieza la espera.
+            // Acaba de cerrarse algo con el cursor fuera: espera corta.
             self.away = Some(0.0);
         }
     }
@@ -61,7 +81,7 @@ impl Hide {
     }
 
     pub(crate) fn is_hidden(&self) -> bool {
-        self.enabled && self.progress >= 0.999
+        self.enabled && self.occluded && self.progress >= 0.999
     }
 
     pub(crate) fn is_animating(&self) -> bool {
@@ -76,7 +96,7 @@ impl Hide {
     }
 
     fn target(&self) -> f32 {
-        if !self.enabled {
+        if !self.enabled || !self.occluded {
             return 0.0;
         }
         if self.cursor_inside || self.busy {
@@ -93,7 +113,7 @@ impl Hide {
         }
         let target = self.target();
         if target > 0.5 && self.progress < 0.5 {
-            // Fuera del dock y sin nada abierto: espera con retardo.
+            // Fuera del dock con una app ocupando: espera corta.
             let waited = match self.away {
                 Some(waited) => waited + seconds,
                 None => 0.0,
@@ -128,7 +148,7 @@ impl Hide {
         self.is_animating()
     }
 
-    /// Desplazamiento suavizado de 0 (visible) a 1 (escondido).
+    /// Desplazamiento suavizado de 0 (visible) a 1 (línea).
     pub(crate) fn eased(&self) -> f32 {
         let progress = self.progress().clamp(0.0, 1.0);
         progress * progress * (3.0 - 2.0 * progress)

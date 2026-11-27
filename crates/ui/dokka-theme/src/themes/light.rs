@@ -15,6 +15,8 @@ pub fn light() -> Theme {
             placeholder: palette::white(80),
             divider: palette::white(110),
             running_dot: palette::white(220),
+            home_line: palette::HOME_LINE_FILL,
+            home_line_border: palette::HOME_LINE_BORDER,
         },
         menubar: MenubarColors {
             background: palette::MENUBAR_VEIL,
