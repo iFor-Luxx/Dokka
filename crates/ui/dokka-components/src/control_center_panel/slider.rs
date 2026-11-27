@@ -7,7 +7,7 @@ use dokka_theme::{Theme, control_center as measures, tray_glass as glass};
 
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
-use super::layout::{slider_track, sound_card, sound_left_icon, sound_mute_box};
+use super::layout::{slider_track, sound_card, sound_left_icon, sound_mute_icon};
 use super::paint::{Pieces, flat, picture, tile, title};
 
 /// Suma el Sonido: cristal, pista y relleno, título y los dos iconos.
@@ -50,7 +50,7 @@ pub(crate) fn add_slider(
     pieces.icons.push(picture(
         theme,
         icons.volume(props.volume.is_muted),
-        sound_mute_box(card),
+        sound_mute_icon(card),
         measures::END_ICON_SIDE,
     ));
 }

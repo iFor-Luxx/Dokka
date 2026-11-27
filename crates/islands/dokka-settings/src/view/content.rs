@@ -9,12 +9,12 @@ use dokka_components::settings_group::{
     SettingsGroupProps, group_dividers, group_labels, group_panel,
 };
 use dokka_components::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
-use dokka_components::switch::{SwitchProps, switch_dot, switch_panels, switch_touch};
+use dokka_components::switch::{SwitchProps, switch_dot, switch_panels};
 use dokka_scene::{Divider, Dot, Panel, Rect, Text};
 use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::{
-    SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR, card_tops, content_row, content_slider_area,
+    SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR, card_tops, content_slider_area, content_switch,
     has_content, icon_scale_to, magnification_to, section_cards,
 };
 use super::super::pointer::display_preferences;
@@ -121,10 +121,11 @@ fn slider_pieces(
     (panels.into_iter().collect(), knob)
 }
 
-/// Planos y punto de un interruptor en su fila.
+/// Planos y punto de un interruptor en su fila, con el mismo aire a la
+/// derecha que la etiqueta a la izquierda (ver `content_switch`: dibujo y
+/// golpe comparten rectángulo).
 fn switch_pieces(theme: &Theme, top: f32, index: usize, on: bool) -> (Vec<Panel>, Dot) {
-    let row = content_row(top, index);
-    let touch = switch_touch(row);
+    let touch = content_switch(top, index);
     let props = SwitchProps { on };
     let panels = switch_panels(theme, touch, &props);
     let knob = switch_dot(theme, touch, &props);

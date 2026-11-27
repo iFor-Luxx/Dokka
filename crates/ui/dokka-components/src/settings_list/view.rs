@@ -97,15 +97,16 @@ pub fn row_labels(theme: &Theme, props: &SettingsListProps, names: &[String]) ->
 }
 
 /// Fondo azul de la fila elegida. Plano sobre la barra: siempre tiene el mismo estilo.
+/// Ocupa exactamente la columna de la casilla de búsqueda.
 pub fn row_selection(theme: &Theme, props: &SettingsListProps) -> Panel {
     Panel {
         bounds: Rect {
-            x: measures::SIDEBAR_INSET + measures::ROW_HIGHLIGHT_MARGIN,
+            x: measures::row_highlight_left(),
             y: measures::row_middle(props.selected) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0,
-            width: measures::sidebar_panel_width() - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
+            width: measures::row_highlight_width(),
             height: measures::ROW_HIGHLIGHT_HEIGHT,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.selection,
         border: theme.settings.selection,
@@ -113,7 +114,7 @@ pub fn row_selection(theme: &Theme, props: &SettingsListProps) -> Panel {
 }
 
 /// Fondo suave de la fila bajo el cursor. Plano sobre la barra. Sin fila es de tamaño cero y no se
-/// ve; sobre la elegida se esconde para no tapar el azul.
+/// ve; sobre la elegida se esconde para no tapar el azul. Misma columna que la casilla.
 pub fn row_hover(theme: &Theme, props: &SettingsListProps) -> Panel {
     let hidden = Panel {
         bounds: Rect {
@@ -122,7 +123,7 @@ pub fn row_hover(theme: &Theme, props: &SettingsListProps) -> Panel {
             width: 0.0,
             height: 0.0,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.hover,
         border: theme.settings.hover,
@@ -135,23 +136,25 @@ pub fn row_hover(theme: &Theme, props: &SettingsListProps) -> Panel {
     }
     Panel {
         bounds: Rect {
-            x: measures::SIDEBAR_INSET + measures::ROW_HIGHLIGHT_MARGIN,
+            x: measures::row_highlight_left(),
             y: measures::row_middle(hovered) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0,
-            width: measures::sidebar_panel_width() - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
+            width: measures::row_highlight_width(),
             height: measures::ROW_HIGHLIGHT_HEIGHT,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.hover,
         border: theme.settings.hover,
     }
 }
 
-/// Fila que hay en el punto, si cae en su resaltado dentro del panel.
+/// Fila que hay en el punto, si cae en su resaltado dentro del panel: la misma
+/// columna dibujada.
 pub fn row_at(x: f32, y: f32) -> Option<usize> {
     (0..measures::SECTIONS).find(|&index| {
         let top = measures::row_middle(index) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0;
-        (measures::row_highlight_left()..measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN)
+        (measures::row_highlight_left()
+            ..measures::row_highlight_left() + measures::row_highlight_width())
             .contains(&x)
             && (top..top + measures::ROW_HIGHLIGHT_HEIGHT).contains(&y)
     })

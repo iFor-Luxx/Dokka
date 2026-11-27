@@ -4,7 +4,7 @@ mod search_filter;
 mod sections;
 
 pub(crate) use content::{
-    SliderTarget, card_tops, content_row, content_slider_area, content_slider_track,
+    SliderTarget, card_tops, content_slider_area, content_slider_track, content_switch,
     dock_slider_at, dock_switch_at, has_content, icon_scale_from, icon_scale_to,
     magnification_from, magnification_to, menubar_switch_at, section_cards, taskbar_switch_at,
 };
