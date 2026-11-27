@@ -1,8 +1,7 @@
 //! Posiciones del Centro de control, compartidas por el dibujo y el hit.
 //!
-//! Rejilla de dos columnas sobre el rectángulo total: a la izquierda dos
-//! cápsulas (Red y Preferencias), a la derecha la música cuadrada; debajo
-//! tres círculos repartidos a todo lo ancho y la tarjeta de Sonido. Los
+//! Rejilla de cuatro columnas: la cápsula ancha ocupa dos columnas más un
+//! hueco y el círculo una; la música ocupa dos columnas por dos filas. Los
 //! huecos usan `tray_glass::GAP` y el aire exterior `tray_glass::PADDING`.
 
 use dokka_scene::Rect;
@@ -21,63 +20,78 @@ fn top_y(bounds: Rect) -> f32 {
     bounds.y + glass::PADDING
 }
 
-/// Alto de la fila superior: dos cápsulas + hueco, igual que la música.
-fn top_height() -> f32 {
-    measures::MUSIC_WIDTH
+/// Ancho de una columna: cuatro columnas y tres huecos en lo útil.
+fn column_width(bounds: Rect) -> f32 {
+    (content_width(bounds) - glass::GAP * 3.0) / 4.0
 }
 
-fn circles_y(bounds: Rect) -> f32 {
-    top_y(bounds) + top_height() + glass::GAP
+/// Ancho de una pieza doble: dos columnas más el hueco entre ellas.
+fn span_width(bounds: Rect) -> f32 {
+    column_width(bounds) * 2.0 + glass::GAP
 }
 
-/// Cápsula de red: primera de la columna izquierda.
+/// Alto del bloque superior: cápsula + hueco + círculo, igual que la música.
+fn top_height(bounds: Rect) -> f32 {
+    glass::CAPSULE_HEIGHT + glass::GAP + column_width(bounds)
+}
+
+fn music_bottom(bounds: Rect) -> f32 {
+    top_y(bounds) + top_height(bounds)
+}
+
+/// Cápsula de red: fila 1, dos columnas de la izquierda.
 pub(crate) fn network_capsule(bounds: Rect) -> Rect {
     Rect {
         x: content_x(bounds),
         y: top_y(bounds),
-        width: measures::LEFT_WIDTH,
+        width: span_width(bounds),
         height: glass::CAPSULE_HEIGHT,
     }
 }
 
-/// Cápsula de Preferencias, bajo la de red.
-pub(crate) fn prefs_capsule(bounds: Rect) -> Rect {
-    let above = network_capsule(bounds);
-    Rect {
-        x: above.x,
-        y: above.y + above.height + glass::GAP,
-        width: above.width,
-        height: glass::CAPSULE_HEIGHT,
-    }
+/// Círculo `index`: 0 y 1 bajo la red (fila 2), 2 junto a Preferencias.
+pub(crate) fn circle_slot(bounds: Rect, index: usize) -> Rect {
+    let side = column_width(bounds);
+    let (x, y) = match index {
+        0 => (content_x(bounds), top_y(bounds) + glass::CAPSULE_HEIGHT + glass::GAP),
+        1 => (
+            content_x(bounds) + side + glass::GAP,
+            top_y(bounds) + glass::CAPSULE_HEIGHT + glass::GAP,
+        ),
+        _ => (
+            content_x(bounds) + span_width(bounds) + glass::GAP,
+            music_bottom(bounds) + glass::GAP,
+        ),
+    };
+    Rect { x, y, width: side, height: side }
 }
 
-/// Tarjeta cuadrada de música, a la derecha de las cápsulas.
+/// Tarjeta de música: dos columnas por dos filas, a la derecha.
 pub(crate) fn music_tile(bounds: Rect) -> Rect {
     Rect {
-        x: content_x(bounds) + measures::LEFT_WIDTH + glass::GAP,
+        x: content_x(bounds) + span_width(bounds) + glass::GAP,
         y: top_y(bounds),
-        width: measures::MUSIC_WIDTH,
-        height: top_height(),
+        width: span_width(bounds),
+        height: top_height(bounds),
     }
 }
 
-/// Botón circular `index` (0 escritorio, 1 bloqueo, 2 tareas), repartidos.
-pub(crate) fn round_button(bounds: Rect, index: usize) -> Rect {
-    let step =
-        (content_width(bounds) - measures::ROUND_DIAMETER) / (measures::ROUND_COUNT as f32 - 1.0);
-    Rect {
-        x: content_x(bounds) + step * index as f32,
-        y: circles_y(bounds),
-        width: measures::ROUND_DIAMETER,
-        height: measures::ROUND_DIAMETER,
-    }
-}
-
-/// Tarjeta de Sonido a todo lo ancho, bajo los círculos.
-pub(crate) fn sound_card(bounds: Rect) -> Rect {
+/// Cápsula de Preferencias: fila 3, dos columnas de la izquierda.
+pub(crate) fn prefs_capsule(bounds: Rect) -> Rect {
     Rect {
         x: content_x(bounds),
-        y: circles_y(bounds) + measures::ROUND_DIAMETER + glass::GAP,
+        y: music_bottom(bounds) + glass::GAP,
+        width: span_width(bounds),
+        height: glass::CAPSULE_HEIGHT,
+    }
+}
+
+/// Tarjeta de Sonido a todo lo ancho, bajo la fila 3.
+pub(crate) fn sound_card(bounds: Rect) -> Rect {
+    let prefs = prefs_capsule(bounds);
+    Rect {
+        x: content_x(bounds),
+        y: prefs.y + prefs.height + glass::GAP,
         width: content_width(bounds),
         height: measures::SOUND_HEIGHT,
     }

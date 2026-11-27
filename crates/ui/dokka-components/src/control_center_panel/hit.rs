@@ -2,13 +2,13 @@ use dokka_scene::Rect;
 
 use super::ControlCenterHit;
 use super::layout::{
-    music_button, music_tile, network_capsule, prefs_capsule, round_button, slider_area,
+    circle_slot, music_button, music_tile, network_capsule, prefs_capsule, slider_area,
     slider_track, slider_value, sound_card, sound_mute_box,
 };
 use super::props::ControlCenterProps;
 
-/// Zona pulsable bajo el punto: primero los círculos y los botones de
-/// música, luego el silencio y el deslizador (con su valor 0 a 1) y al
+/// Zona pulsable bajo el punto: primero los círculos blancos y los botones
+/// de música, luego el silencio y el deslizador (con su valor 0 a 1) y al
 /// final las cápsulas de red y Preferencias. Devuelve lo mismo que antes.
 pub fn control_center_hit(
     bounds: Rect,
@@ -24,7 +24,7 @@ pub fn control_center_hit(
     .iter()
     .enumerate()
     {
-        if contains(round_button(bounds, index), x, y) {
+        if contains(circle_slot(bounds, index), x, y) {
             return Some(*hit);
         }
     }

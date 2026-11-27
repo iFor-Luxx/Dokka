@@ -1,25 +1,20 @@
 //! Medidas del Centro de control estilo Tahoe.
 //!
-//! Rejilla de dos columnas sobre 320 de ancho: a la izquierda dos cápsulas
-//! de 156 × 60 (Red y Preferencias), a la derecha música cuadrada de
-//! 130 × 130; debajo tres círculos de 60 repartidos a todo lo ancho y la
-//! tarjeta de Sonido de 296 × 84. Los huecos (10) y el aire exterior (12)
-//! salen de `tray_glass`; aquí solo van los tamaños propios. El alto total
-//! es 318 = 12 + 130 + 10 + 60 + 10 + 84 + 12.
+//! Rejilla de cuatro columnas sobre 320 de ancho: filas 1-2 con la cápsula
+//! de red y dos círculos a la izquierda y la música a la derecha (dos
+//! columnas por dos filas); fila 3 con la cápsula de Preferencias y un
+//! círculo; tarjeta de Sonido a todo lo ancho. La columna sale de
+//! `(296 − 30) / 4 = 66.5`; la cápsula ancha son dos columnas más un hueco.
+//! El alto total es 324.5 = 12 + 136.5 + 10 + 60 + 10 + 84 + 12.
 
 use dokka_scene::DRAWING_SIDE;
 
 /// Ancho fijo del panel, como el resto de la barra.
 pub const WIDTH: f32 = 320.0;
-/// Alto fijo: exterior + música + hueco + círculos + hueco + sonido + exterior.
-pub const HEIGHT: f32 = 318.0;
+/// Alto fijo: exterior + bloque superior + hueco + fila 3 + hueco + sonido.
+pub const HEIGHT: f32 = 324.5;
 /// Esquinas del fondo invisible, como los demás paneles flotantes.
 pub const CORNER_RADIUS: f32 = 16.0;
-
-/// Ancho de cada cápsula izquierda (296 − 10 − 130).
-pub const LEFT_WIDTH: f32 = 156.0;
-/// Lado de la tarjeta cuadrada de música (dos cápsulas + hueco).
-pub const MUSIC_WIDTH: f32 = 130.0;
 
 /// Lado de la carátula marcadora dentro de la música.
 pub const MUSIC_ART_SIDE: f32 = 36.0;
@@ -31,11 +26,6 @@ pub const MUSIC_BUTTON_SIDE: f32 = 32.0;
 pub const MUSIC_BUTTON_GAP: f32 = 4.0;
 /// Lado del glifo dentro de cada botón de música.
 pub const MUSIC_ICON_SIDE: f32 = 20.0;
-
-/// Botones circulares bajo la rejilla (Escritorio, Bloqueo, Tareas).
-pub const ROUND_COUNT: usize = 3;
-/// Diámetro de cada círculo, igual que la cápsula.
-pub const ROUND_DIAMETER: f32 = 60.0;
 
 /// Alto de la tarjeta de Sonido a todo lo ancho.
 pub const SOUND_HEIGHT: f32 = 84.0;
@@ -52,6 +42,6 @@ pub const SLIDER_HIT_HALF: f32 = 14.0;
 pub const ICON_TEXT_GAP: f32 = 8.0;
 
 /// Letras máximas antes de recortar un nombre o título con "…".
-pub const TEXT_CHARACTERS: usize = 24;
+pub const TEXT_CHARACTERS: usize = 16;
 /// Tamaño del glifo Lucide: llena el lienzo de 100.
 pub const GLYPH_SIZE: f32 = DRAWING_SIDE;

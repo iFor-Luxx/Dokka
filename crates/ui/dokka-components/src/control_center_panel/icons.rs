@@ -34,9 +34,9 @@ pub struct ControlCenterIcons {
     pub(crate) pause: Arc<Drawing>,
     pub(crate) next: Arc<Drawing>,
     pub(crate) preferences: Arc<Drawing>,
-    pub(crate) desktop: Arc<Drawing>,
-    pub(crate) lock: Arc<Drawing>,
-    pub(crate) task_manager: Arc<Drawing>,
+    pub(crate) desktop_active: Arc<Drawing>,
+    pub(crate) lock_active: Arc<Drawing>,
+    pub(crate) task_manager_active: Arc<Drawing>,
 }
 
 impl ControlCenterIcons {
@@ -59,9 +59,9 @@ impl ControlCenterIcons {
             pause: Arc::new(control_center_pause_icon(ink)),
             next: Arc::new(control_center_next_icon(ink)),
             preferences: Arc::new(control_center_preferences_icon(ink)),
-            desktop: Arc::new(control_center_desktop_icon(ink)),
-            lock: Arc::new(control_center_lock_icon(ink)),
-            task_manager: Arc::new(control_center_task_manager_icon(ink)),
+            desktop_active: Arc::new(control_center_desktop_icon(active)),
+            lock_active: Arc::new(control_center_lock_icon(active)),
+            task_manager_active: Arc::new(control_center_task_manager_icon(active)),
         }
     }
 

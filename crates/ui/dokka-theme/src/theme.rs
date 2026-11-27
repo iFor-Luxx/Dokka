@@ -105,6 +105,8 @@ pub struct TrayColors {
     pub clear: Color,
     pub tile: Color,
     pub tile_border: Color,
+    /// Tinte propio del Centro de control, mucho más claro que `tile`.
+    pub tile_translucent: Color,
     pub text: Color,
     pub secondary: Color,
     pub track: Color,
