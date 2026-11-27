@@ -1,7 +1,7 @@
-use dokka_scene::{Dot, Panel, Rect, Size};
-use dokka_theme::{Theme, volume as measures};
+use dokka_scene::{Panel, Rect, Size};
+use dokka_theme::tray_glass as measures;
 
-use super::SliderProps;
+use super::{SliderColors, SliderProps};
 
 /// Recorta un valor al rango del deslizador, de 0 a 1.
 /// Sin `clamp`: el silencio (`NaN`) queda en 0 en vez de propagarse.
@@ -15,16 +15,24 @@ fn clamp01(value: f32) -> f32 {
     }
 }
 
-/// Tamaño del deslizador para una barra de este ancho: la barra más
-/// el tirador, que sobresale por arriba y por abajo.
+/// Radio recortado para no superar la mitad del lado menor.
+/// Con ancho o alto a cero, el radio es cero.
+fn capped_radius(maximum: f32, width: f32, height: f32) -> f32 {
+    if width <= 0.0 || height <= 0.0 {
+        return 0.0;
+    }
+    maximum.min(width / 2.0).min(height / 2.0).max(0.0)
+}
+
+/// Tamaño de la barra para este ancho: barra fina sin tirador.
 pub fn slider_size(track_width: f32) -> Size {
     Size {
-        width: track_width,
-        height: measures::KNOB_DIAMETER.max(measures::TRACK_HEIGHT),
+        width: track_width.max(0.0),
+        height: measures::TRACK_HEIGHT,
     }
 }
 
-/// Barra centrada en vertical dentro de su zona de toque.
+/// Barra centrada en vertical dentro de su zona de toque (más alta que ella).
 pub fn slider_track_bounds(area: Rect) -> Rect {
     Rect {
         x: area.x,
@@ -34,56 +42,41 @@ pub fn slider_track_bounds(area: Rect) -> Rect {
     }
 }
 
-/// Barra de fondo, gris tenue.
-pub fn slider_track_panel(theme: &Theme, track: Rect) -> Panel {
+/// Barra de fondo con el color recibido, extremos totalmente redondos.
+pub fn slider_track_panel(track: Rect, colors: &SliderColors) -> Panel {
     Panel {
         bounds: track,
-        corner_radius: measures::TRACK_RADIUS,
+        corner_radius: capped_radius(track.height / 2.0, track.width, track.height),
         border_width: 0.0,
-        tint: theme.settings.search_background,
-        border: theme.settings.search_background,
+        tint: colors.track,
+        border: colors.track,
     }
 }
 
-/// Relleno hasta el valor: azul si responde, gris si está atenuado.
+/// Relleno hasta el valor con el color recibido (principal o atenuado).
 /// Existe siempre (de ancho cero al mínimo) para no reconstruir capas.
-pub fn slider_fill_panel(theme: &Theme, track: Rect, value: f32, active: bool) -> Panel {
-    let (tint, border) = if active {
-        (theme.menu.highlight, theme.menu.highlight)
-    } else {
-        (theme.menu.separator, theme.menu.separator)
-    };
+pub fn slider_fill_panel(track: Rect, value: f32, active: bool, colors: &SliderColors) -> Panel {
+    let width = track.width * clamp01(value);
+    let tint = if active { colors.fill } else { colors.muted };
     Panel {
         bounds: Rect {
             x: track.x,
             y: track.y,
-            width: track.width * clamp01(value),
+            width,
             height: track.height,
         },
-        corner_radius: measures::TRACK_RADIUS,
+        corner_radius: capped_radius(track.height / 2.0, width, track.height),
         border_width: 0.0,
         tint,
-        border,
-    }
-}
-
-/// Tirador blanco centrado sobre el valor.
-pub fn slider_knob(theme: &Theme, track: Rect, value: f32) -> Dot {
-    let center_x = track.x + track.width * clamp01(value);
-    let center_y = track.y + track.height / 2.0;
-    Dot {
-        x: center_x - measures::KNOB_DIAMETER / 2.0,
-        y: center_y - measures::KNOB_DIAMETER / 2.0,
-        diameter: measures::KNOB_DIAMETER,
-        color: theme.panel.highlight,
+        border: tint,
     }
 }
 
 /// Barra y relleno, en ese orden.
-pub fn slider_panels(theme: &Theme, track: Rect, props: &SliderProps) -> [Panel; 2] {
+pub fn slider_panels(track: Rect, props: &SliderProps, colors: &SliderColors) -> [Panel; 2] {
     [
-        slider_track_panel(theme, track),
-        slider_fill_panel(theme, track, props.value, props.active),
+        slider_track_panel(track, colors),
+        slider_fill_panel(track, props.value, props.active, colors),
     ]
 }
 
