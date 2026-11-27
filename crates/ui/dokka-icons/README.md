@@ -12,7 +12,9 @@ globo y marca del idioma activo). Y uniforma los iconos de apps para el Launchpa
 —aunque traigan margen transparente— ocupan toda la baldosa con las esquinas recortadas; si son
 silueta se centran sobre un degradado claro sacado de los colores del propio icono (color medio
 de la mitad superior y de la inferior, mezclados con la baldosa clara del tema); el marco blanco
-o fino se quita).
+o fino se quita). Más iconos del Centro de control (`control_center`: deslizadores blancos
+para la barra y wifi, cable, globo, volumen, música, ajustes, escritorio, bloqueo y actividad
+oscuros para sus tarjetas claras).
 
 **No hace:** no pinta, no lee la hora ni la papelera: recibe esos datos. Los de color son diseños
 propios, no copias de Apple; los de interfaz son Lucide.

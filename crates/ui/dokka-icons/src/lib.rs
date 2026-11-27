@@ -3,6 +3,7 @@
 mod app_tile;
 mod calendar;
 mod clock;
+mod control_center;
 mod explorer;
 mod launchpad;
 mod lucide;
@@ -22,6 +23,14 @@ pub use app_tile::app_tile;
 
 pub use calendar::calendar_icon;
 pub use clock::clock_icon;
+pub use control_center::{
+    control_center_bar_icon, control_center_desktop_icon, control_center_ethernet_icon,
+    control_center_globe_icon, control_center_lock_icon, control_center_muted_icon,
+    control_center_next_icon, control_center_pause_icon, control_center_play_icon,
+    control_center_preferences_icon, control_center_previous_icon,
+    control_center_task_manager_icon, control_center_volume_icon, control_center_wifi_icon,
+    control_center_wifi_off_icon,
+};
 pub use explorer::explorer_icon;
 pub use launchpad::launchpad_icon;
 pub use lucide::{

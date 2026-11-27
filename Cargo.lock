@@ -11,6 +11,7 @@ name = "dokka-components"
 version = "0.1.0"
 dependencies = [
  "dokka-icons",
+ "dokka-model",
  "dokka-scene",
  "dokka-theme",
 ]

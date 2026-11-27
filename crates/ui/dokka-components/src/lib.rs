@@ -2,6 +2,7 @@
 
 pub mod app_grid;
 pub mod calendar_panel;
+pub mod control_center_panel;
 pub mod language_panel;
 pub mod menu_panel;
 pub mod music_panel;
