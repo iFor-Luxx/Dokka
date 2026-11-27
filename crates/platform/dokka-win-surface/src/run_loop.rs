@@ -107,6 +107,7 @@ impl Surface {
             return None;
         }
         if message.message == WM_TIMER && message.wParam.0 == state.tick_timer {
+            self.refresh_menubar_fullscreen();
             return Some(SurfaceEvent::Tick);
         }
         if message.message == WM_TIMER && state.pending_timer == Some(message.wParam.0) {
@@ -122,8 +123,7 @@ impl Surface {
             return Some(SurfaceEvent::MenubarDismissed);
         }
         if message.hwnd == self.menubar_window() && message.message == MENUBAR_FULLSCREEN_MESSAGE {
-            // `lParam` distinto de cero al entrar en pantalla completa.
-            self.apply_fullscreen(message.lParam.0 != 0);
+            self.refresh_menubar_fullscreen();
             return None;
         }
         if message.hwnd == self.launchpad_window() && message.message == DISMISS_MESSAGE {
