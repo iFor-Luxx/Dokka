@@ -149,8 +149,20 @@ pub struct SettingsColors {
     pub card: Color,
     pub card_border: Color,
     pub card_text: Color,
+    /// Pista encendida del interruptor.
+    pub switch_on: Color,
+    /// Pista apagada del interruptor.
+    pub switch_off: Color,
+    /// Tirador del interruptor.
+    pub switch_knob: Color,
+    /// Barra del deslizador.
+    pub slider_track: Color,
+    /// Relleno del deslizador cuando responde.
+    pub slider_fill: Color,
+    /// Relleno del deslizador cuando está atenuado.
+    pub slider_muted: Color,
     /// Cuadrado de color de cada sección, en su orden.
-    pub badge: [Color; 7],
+    pub badge: [Color; 8],
     /// Semáforos rojo, amarillo y verde, en ese orden.
     pub traffic: [Color; 3],
     /// Símbolos oscuros sobre cada semáforo al pasar el cursor, en su orden.
