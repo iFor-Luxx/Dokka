@@ -135,8 +135,41 @@ pub const CARD_TEXT_SIZE: f32 = 14.0;
 /// Texto de la tarjeta, único contenido por ahora.
 pub const CARD_TEXT: &str = "Próximamente";
 
+/// Contenido real estilo Tahoe: tarjetas claras con filas separadas por
+/// líneas finas, etiqueta a la izquierda y control a la derecha. La tarjeta
+/// usa el mismo radio y borde que `CARD_*` para no reconstruir capas al
+/// cambiar de sección. Radios concéntricos: interior = exterior − separación.
+/// Borde izquierdo del contenido, tras la barra lateral.
+pub const CONTENT_LEFT: f32 = SIDEBAR_WIDTH + CARD_MARGIN;
+/// Ancho del contenido, con el mismo margen a la derecha.
+pub const CONTENT_WIDTH: f32 = WIDTH - CONTENT_LEFT - CARD_MARGIN;
+/// Borde superior del contenido, como la tarjeta antigua.
+pub const CONTENT_TOP: f32 = CARD_TOP;
+/// Alto de cada fila de ajustes dentro de su tarjeta.
+pub const CONTENT_ROW_HEIGHT: f32 = 48.0;
+/// Aire interior de la tarjeta de contenido a izquierda y derecha.
+pub const CONTENT_PADDING: f32 = 16.0;
+/// Tamaño del texto de cada fila de ajustes.
+pub const CONTENT_LABEL_SIZE: f32 = 13.0;
+/// Tamaño del texto atenuado (fila con el control apagado).
+pub const CONTENT_DIM_SIZE: f32 = 13.0;
+/// Ancho del interruptor Tahoe.
+pub const SWITCH_WIDTH: f32 = 46.0;
+/// Alto del interruptor Tahoe.
+pub const SWITCH_HEIGHT: f32 = 26.0;
+/// Diámetro del tirador redondo del interruptor.
+pub const SWITCH_KNOB: f32 = 22.0;
+/// Aire del tirador al borde de la pista.
+pub const SWITCH_INSET: f32 = 2.0;
+/// Ancho del deslizador de Preferencias, a la derecha de su fila.
+pub const SLIDER_WIDTH: f32 = 168.0;
+/// Alto de la zona de toque del deslizador, más alta que la barra.
+pub const SLIDER_TOUCH_HEIGHT: f32 = 28.0;
+/// Separación entre tarjetas de contenido apiladas.
+pub const GROUP_GAP: f32 = 16.0;
+
 /// Secciones en orden, como las ve la barra lateral.
-pub const SECTIONS: usize = 7;
+pub const SECTIONS: usize = 8;
 
 /// Borde superior de la fila `index`.
 pub fn row_top(index: usize) -> f32 {

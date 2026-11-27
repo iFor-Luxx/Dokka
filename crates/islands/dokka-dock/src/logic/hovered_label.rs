@@ -16,7 +16,7 @@ pub(crate) fn hovered_label(
     if !dock.is_hovered || dock.is_menu_open() {
         return None;
     }
-    let reach = style::GAP / 2.0;
+    let reach = style::gap(dock) / 2.0;
     let &(entry, slot) = placement.slots.iter().find(|(_, slot)| {
         dock.cursor_x >= slot.x - reach && dock.cursor_x <= slot.x + slot.width + reach
     })?;

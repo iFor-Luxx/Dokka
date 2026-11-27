@@ -30,7 +30,7 @@ pub struct HoverTarget {
 impl Dock {
     pub fn hover_target(&self, x: f32, y: f32, apps: &[DockApp]) -> Option<HoverTarget> {
         let placement = place_dock(self, apps);
-        let entry = entry_at(&placement, x, y)?;
+        let entry = entry_at(&placement, x, y, style::gap(self))?;
         let kind = match entry {
             Entry::Calendar => HoverKind::Calendar,
             Entry::App(app) | Entry::Explorer(app) if app.is_running() => HoverKind::Windows {
@@ -52,14 +52,16 @@ impl Dock {
             },
             _ => return None,
         };
-        let (_, slot) = placement.slots.iter().find(|(_, slot)| {
-            x >= slot.x - style::GAP / 2.0 && x <= slot.x + slot.width + style::GAP / 2.0
-        })?;
-        let baseline = style::headroom() + (style::HEIGHT + style::SLOT) / 2.0;
+        let gap = style::gap(self);
+        let (_, slot) = placement
+            .slots
+            .iter()
+            .find(|(_, slot)| x >= slot.x - gap / 2.0 && x <= slot.x + slot.width + gap / 2.0)?;
+        let baseline = style::headroom(self) + (style::height(self) + style::slot(self)) / 2.0;
         Some(HoverTarget {
             kind,
             center_x: slot.x + slot.width / 2.0,
-            icons_top: baseline - style::SLOT * style::MAXIMUM_SCALE,
+            icons_top: baseline - style::slot(self) * style::maximum_scale(self),
             bar_top: placement.bar.y,
         })
     }

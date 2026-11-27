@@ -1,5 +1,6 @@
 //! Medidas visuales, en unidades lógicas.
 
+pub mod background;
 pub mod control_center;
 pub mod dock;
 pub mod launchpad;

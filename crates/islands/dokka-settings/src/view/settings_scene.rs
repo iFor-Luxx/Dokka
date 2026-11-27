@@ -9,26 +9,30 @@ use dokka_components::settings_list::{
     filtered_selection, search_bounds, sidebar_panel,
 };
 use dokka_components::window_controls::traffic_icons;
-use dokka_scene::{Divider, Panel, Rect, Scene, Text, TextAlign};
+use dokka_scene::{Divider, Scene, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::section_names;
+use super::content::content_scene;
 use crate::Settings;
 
 /// Escena fija de la ventana: fondo, barra lateral, filas visibles, cabecera
-/// y tarjeta. Cada capa visual se crea arriba, en orden de pintado: fondo,
+/// y contenido. Cada capa visual se crea arriba, en orden de pintado: fondo,
 /// paneles, planos, resaltado, líneas, iconos, puntos y textos. Cambiar de
-/// sección, filtrar o mover el cursor no cambia la forma: las capas de sobra
-/// se ocultan sin reconstruir y la reserva cubre las vueltas.
+/// sección, filtrar o mover el cursor no cambia la forma salvo el contenido:
+/// las tarjetas traen planos, líneas, puntos y textos de más o de menos según
+/// la sección y `SceneLayers` reconstruye entonces (si el estilo cambia o
+/// crece la cantidad); los textos e iconos sobrantes se ocultan sin
+/// reconstruir y la reserva cubre las vueltas.
 /// La barra es un panel flotante de cristal; el buscador, la selección, los
-/// hovers y la tarjeta van como planos sobre ella para que el cristal no los
-/// oscurezca. La tarjeta es un plano sobre el fondo claro de la ventana: como
-/// cristal muestrearía el fondo de pantalla y saldría azul oscuro. El
-/// resaltado de la píldora va como plano, igual que en el calendario: como
-/// cristal muestrearía el fondo y taparía su sombra suave. Cada semáforo es
-/// un solo icono con su círculo y, con el cursor encima, su símbolo; sin foco
-/// van en gris. El cursor de la casilla siempre está, de ancho cero cuando no
-/// hay foco.
+/// hovers y el contenido van como planos sobre ella para que el cristal no
+/// los oscurezca. Las tarjetas del contenido son planos claros sobre el fondo
+/// de la ventana: como cristal muestrearían el fondo de pantalla y saldrían
+/// azul oscuro. El resaltado de la píldora va como plano, igual que en el
+/// calendario: como cristal muestrearía el fondo y taparía su sombra suave.
+/// Cada semáforo es un solo icono con su círculo y, con el cursor encima, su
+/// símbolo; sin foco van en gris. El cursor de la casilla siempre está, de
+/// ancho cero cuando no hay foco.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let order = settings.filtered_order();
     let selected = settings.selected();
@@ -45,6 +49,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         badge_drawings.push(settings.badge_drawing(theme, *index));
         glyphs.push(settings.row_drawing(theme, *index));
     }
+    let content = content_scene(theme, settings);
     let mut icons = filtered_badges(theme, &order, &badge_drawings);
     icons.extend(filtered_icons(theme, &order, &glyphs));
     icons.push(search_magnifier_at(
@@ -56,7 +61,6 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     ));
     icons.extend(nav_pill_icons(theme, &nav, &pill));
     icons.extend(traffic_icons(theme, &traffic, focused, hovered));
-    let (card_x, card_top, card_width) = measures::card_bounds();
     let names = section_names();
     let mut texts = filtered_labels(theme, selected, &order, &names);
     texts.push(settings_search_text(
@@ -76,18 +80,42 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         color: theme.settings.title,
         align: TextAlign::Left,
     });
-    texts.push(Text {
-        x: card_x + card_width / 2.0,
-        center_y: card_top + measures::CARD_HEIGHT / 2.0,
-        content: measures::CARD_TEXT.to_owned(),
-        size: measures::CARD_TEXT_SIZE,
-        is_bold: false,
-        color: theme.settings.card_text,
-        align: TextAlign::Center,
-    });
+    texts.extend(content.texts);
+    let mut flats = vec![
+        search_panel_at(
+            theme.settings.search_background,
+            theme.settings.search_border,
+            search,
+            measures::SEARCH_RADIUS,
+            measures::SEARCH_BORDER_WIDTH,
+        ),
+        filtered_selection(theme, selected, &order),
+        filtered_hover(theme, selected, settings.hovered(), &order),
+        nav_pill_highlight(theme, &pill),
+    ];
+    flats.extend(content.flats);
+    let mut dividers: Vec<Divider> = vec![
+        Divider {
+            bounds: dokka_scene::Rect {
+                x: measures::HEADER_DIVIDER_LEFT,
+                y: measures::HEADER_DIVIDER_TOP,
+                width: measures::HEADER_DIVIDER_RIGHT - measures::HEADER_DIVIDER_LEFT,
+                height: measures::HEADER_DIVIDER_HEIGHT,
+            },
+            color: theme.settings.divider,
+        },
+        nav_pill_divider(theme, &pill),
+        settings_search_cursor(
+            theme.settings.search_text,
+            search,
+            settings.query(),
+            settings.search_focused(),
+        ),
+    ];
+    dividers.extend(content.dividers);
     Scene {
-        panel: Panel {
-            bounds: Rect {
+        panel: dokka_scene::Panel {
+            bounds: dokka_scene::Rect {
                 x: 0.0,
                 y: 0.0,
                 width: measures::WIDTH,
@@ -104,53 +132,14 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             nav_pill_panel(theme, &pill),
         ],
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
-        // y taparía su tinte. Siempre son cinco para no reconstruir capas: el
-        // resaltado de la píldora existe siempre, de tamaño cero sin hover.
-        flat_panels: vec![
-            search_panel_at(
-                theme.settings.search_background,
-                theme.settings.search_border,
-                search,
-                measures::SEARCH_RADIUS,
-                measures::SEARCH_BORDER_WIDTH,
-            ),
-            filtered_selection(theme, selected, &order),
-            filtered_hover(theme, selected, settings.hovered(), &order),
-            Panel {
-                bounds: Rect {
-                    x: card_x,
-                    y: card_top,
-                    width: card_width,
-                    height: measures::CARD_HEIGHT,
-                },
-                corner_radius: measures::CARD_RADIUS,
-                border_width: measures::CARD_BORDER_WIDTH,
-                tint: theme.settings.card,
-                border: theme.settings.card_border,
-            },
-            nav_pill_highlight(theme, &pill),
-        ],
+        // y taparía su tinte. La tarjeta, los deslizadores, los interruptores
+        // y el resaltado de la píldora van aquí. El contenido cambia de tamaño
+        // entre secciones: `SceneLayers` reconstruye si crece o cambia el estilo.
+        flat_panels: flats,
         highlight: None,
-        dividers: vec![
-            Divider {
-                bounds: Rect {
-                    x: measures::HEADER_DIVIDER_LEFT,
-                    y: measures::HEADER_DIVIDER_TOP,
-                    width: measures::HEADER_DIVIDER_RIGHT - measures::HEADER_DIVIDER_LEFT,
-                    height: measures::HEADER_DIVIDER_HEIGHT,
-                },
-                color: theme.settings.divider,
-            },
-            nav_pill_divider(theme, &pill),
-            settings_search_cursor(
-                theme.settings.search_text,
-                search,
-                settings.query(),
-                settings.search_focused(),
-            ),
-        ],
+        dividers,
         icons,
-        dots: Vec::new(),
+        dots: content.dots,
         texts,
         thumbnails: Vec::new(),
         labels: Vec::new(),

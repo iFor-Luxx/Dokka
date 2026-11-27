@@ -190,7 +190,12 @@ impl Dock {
             return Some(dock_menu(taskbar_hidden, taskbar_auto));
         }
         let placement = super::place_dock(self, apps);
-        match super::decide_click::entry_at(&placement, x, y)? {
+        match super::decide_click::entry_at(
+            &placement,
+            x,
+            y,
+            super::super::view::dock_style::gap(self),
+        )? {
             super::Entry::App(app) | super::Entry::Minimized(app, _) => {
                 Some(super::app_menu::app_menu(app))
             }

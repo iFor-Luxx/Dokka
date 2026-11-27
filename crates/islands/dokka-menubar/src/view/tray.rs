@@ -1,4 +1,5 @@
 //! Fila derecha en la escena: iconos según los datos y su panel real.
+//! Solo los encendidos en Preferencias se dibujan, sin huecos.
 
 use std::sync::Arc;
 
@@ -9,9 +10,9 @@ use super::super::logic::TrayKind;
 use crate::Menubar;
 
 impl Menubar {
-    /// Iconos de la fila: el altavoz sigue al nivel y al silencio, la red a
-    /// su tipo, la lupa y los deslizadores a sus dibujos; el idioma es texto.
-    /// Siempre 5 iconos + texto: no se reconstruyen las capas al pasar.
+    /// Iconos visibles de la fila: el altavoz sigue al nivel y al silencio,
+    /// la red a su tipo, la lupa y los deslizadores a sus dibujos.
+    /// Solo los encendidos; el idioma va como texto aparte.
     pub(crate) fn tray_bar_icons(&self, bar_width: f32) -> Vec<Icon> {
         let cells = self.tray_cells(bar_width);
         let at = |kind: TrayKind| {
@@ -20,42 +21,58 @@ impl Menubar {
                 .find(|(cell, _)| *cell == kind)
                 .map(|(_, area)| *area)
         };
-        let place = |kind: TrayKind, drawing: Arc<dokka_scene::Drawing>| {
-            let area = at(kind).unwrap_or(Rect {
-                x: 0.0,
-                y: 0.0,
-                width: 0.0,
-                height: 0.0,
-            });
-            Icon {
+        let mut icons = Vec::new();
+        let mut place = |kind: TrayKind, drawing: Arc<dokka_scene::Drawing>| {
+            let Some(area) = at(kind) else {
+                return;
+            };
+            icons.push(Icon {
                 x: area.x + (area.width - measures::ICON_SIDE) / 2.0,
                 y: (bar_measures::HEIGHT - measures::ICON_SIDE) / 2.0,
                 side: measures::ICON_SIDE,
                 image: Some(IconImage::Drawing(drawing)),
                 placeholder: self.theme.menubar.background,
                 placeholder_radius: 0.0,
-            }
+            });
         };
-        vec![
-            place(TrayKind::ControlCenter, Arc::clone(&self.control_icons.bar)),
-            place(TrayKind::Search, Arc::clone(self.search_icons.bar())),
-            place(TrayKind::Music, Arc::clone(&self.tray_icons.music)),
-            place(
-                TrayKind::Network,
-                self.network_icons
-                    .for_bar(super::super::logic::network_type(self.network.kind)),
-            ),
-            place(
-                TrayKind::Volume,
-                Arc::clone(
-                    self.volume_icons
-                        .bar(self.volume.level, self.volume.is_muted),
-                ),
-            ),
-        ]
+        // De derecha a izquierda en la barra, solo los visibles.
+        for kind in self.visible_kinds() {
+            match kind {
+                TrayKind::ControlCenter => {
+                    place(kind, Arc::clone(&self.control_icons.bar));
+                }
+                TrayKind::Search => {
+                    place(kind, Arc::clone(self.search_icons.bar()));
+                }
+                TrayKind::Music => {
+                    place(kind, Arc::clone(&self.tray_icons.music));
+                }
+                TrayKind::Network => {
+                    place(
+                        kind,
+                        self.network_icons
+                            .for_bar(super::super::logic::network_type(self.network.kind)),
+                    );
+                }
+                TrayKind::Volume => {
+                    place(
+                        kind,
+                        Arc::clone(
+                            self.volume_icons
+                                .bar(self.volume.level, self.volume.is_muted),
+                        ),
+                    );
+                }
+                TrayKind::Background => {
+                    place(kind, Arc::clone(&self.tray_icons.background));
+                }
+                TrayKind::Language => {}
+            }
+        }
+        icons
     }
 
-    /// Hovers en cápsula de la fila, uno por icono. Siempre 6 (cero si no se ve).
+    /// Hovers en cápsula de la fila, uno por icono visible (cero si no se ve).
     pub(crate) fn tray_hover_panels(&self, bar_width: f32) -> Vec<Panel> {
         self.tray_cells(bar_width)
             .into_iter()
@@ -84,7 +101,7 @@ impl Menubar {
     }
 
     /// Recuadro claro tras el código del idioma, como una tecla. Siempre
-    /// existe: de tamaño cero sin idioma.
+    /// existe: de tamaño cero sin idioma o con el idioma apagado.
     pub(crate) fn tray_language_box(&self, bar_width: f32) -> Panel {
         let area = self
             .tray_cells(bar_width)
@@ -116,6 +133,7 @@ impl Menubar {
     }
 
     /// Código del idioma centrado en su hueco (como "ES").
+    /// Sin hueco visible no hay texto.
     pub(crate) fn tray_language_text(&self, bar_width: f32) -> Option<Text> {
         if self.language_code.is_empty() {
             return None;
@@ -142,6 +160,7 @@ impl Menubar {
             TrayKind::Volume => self.volume_overlay(),
             TrayKind::Network => self.network_overlay(),
             TrayKind::Music => self.music_overlay(),
+            TrayKind::Background => self.background_overlay(),
             TrayKind::Language => self.language_overlay(),
             TrayKind::Search => self.search_overlay(),
             TrayKind::ControlCenter => self.control_overlay(),

@@ -2,6 +2,8 @@
 //!
 //! Cada panel real mide lo suyo con su `<x>_size`; aquí solo se centra bajo
 //! su icono sin salirse del ancho. El buscador, más ancho, va centrado.
+//! Solo los iconos encendidos en Preferencias tienen caja: los apagados no
+//! se dibujan ni reciben clics y los demás se recolocan sin huecos.
 
 use dokka_scene::{Rect, Size};
 use dokka_theme::{menubar, menubar_tray as measures};
@@ -12,6 +14,7 @@ pub enum TrayKind {
     ControlCenter,
     Search,
     Language,
+    Background,
     Music,
     Network,
     Volume,
@@ -19,11 +22,12 @@ pub enum TrayKind {
 
 impl TrayKind {
     /// De izquierda a derecha en la barra (al revés del enunciado).
-    pub(crate) fn order() -> [Self; 6] {
+    pub(crate) fn order() -> [Self; 7] {
         [
             Self::Volume,
             Self::Network,
             Self::Music,
+            Self::Background,
             Self::Language,
             Self::Search,
             Self::ControlCenter,
@@ -44,36 +48,6 @@ impl TrayKind {
 pub(crate) struct OpenTray {
     pub(crate) kind: TrayKind,
     pub(crate) panel: Rect,
-}
-
-/// Cajas pulsables de la fila, a la izquierda del hueco de la fecha.
-pub(crate) fn tray_cells(bar_width: f32) -> Vec<(TrayKind, Rect)> {
-    let mut right = bar_width - menubar::SIDE_PADDING - menubar::CLOCK_SLOT - measures::CLOCK_GAP;
-    let mut cells = Vec::with_capacity(6);
-    for kind in TrayKind::order().into_iter().rev() {
-        let width = kind.cell_width();
-        let left = right - width;
-        cells.push((
-            kind,
-            Rect {
-                x: left,
-                y: 0.0,
-                width,
-                height: menubar::HEIGHT,
-            },
-        ));
-        right = left;
-    }
-    cells.reverse();
-    cells
-}
-
-/// Icono que hay en el punto, si es de la fila.
-pub(crate) fn tray_kind_at(bar_width: f32, x: f32, y: f32) -> Option<TrayKind> {
-    tray_cells(bar_width)
-        .into_iter()
-        .find(|(_, area)| contains(*area, x, y))
-        .map(|(kind, _)| kind)
 }
 
 /// Panel de este tamaño bajo su icono, sin salirse del ancho.
@@ -100,27 +74,67 @@ pub(crate) fn tray_place_centered(size: Size, bar_width: f32) -> Rect {
     }
 }
 
-/// Caja del icono dado, para colocar su panel al abrirlo.
-pub(crate) fn tray_anchor(kind: TrayKind, bar_width: f32) -> Option<Rect> {
-    tray_cells(bar_width)
-        .into_iter()
-        .find(|(cell, _)| *cell == kind)
-        .map(|(_, area)| area)
-}
-
 fn contains(area: Rect, x: f32, y: f32) -> bool {
     x >= area.x && x <= area.x + area.width && y >= area.y && y <= area.y + area.height
 }
 
 impl crate::Menubar {
+    /// Iconos visibles según Preferencias, de izquierda a derecha.
+    pub(crate) fn visible_kinds(&self) -> Vec<TrayKind> {
+        TrayKind::order()
+            .into_iter()
+            .filter(|kind| self.is_shown(*kind))
+            .collect()
+    }
+
     /// Cajas pulsables de la fila, a la izquierda de la fecha.
+    /// Solo las visibles, sin huecos: se colocan desde la fecha hacia la izquierda.
     pub(crate) fn tray_cells(&self, bar_width: f32) -> Vec<(TrayKind, Rect)> {
-        tray_cells(bar_width)
+        let mut right =
+            bar_width - menubar::SIDE_PADDING - menubar::CLOCK_SLOT - measures::CLOCK_GAP;
+        let mut cells = Vec::new();
+        for kind in self.visible_kinds().into_iter().rev() {
+            let width = kind.cell_width();
+            let left = right - width;
+            cells.push((
+                kind,
+                Rect {
+                    x: left,
+                    y: 0.0,
+                    width,
+                    height: menubar::HEIGHT,
+                },
+            ));
+            right = left;
+        }
+        cells.reverse();
+        cells
+    }
+
+    /// Icono visible que hay en el punto, si es de la fila.
+    pub(crate) fn tray_kind_at(&self, bar_width: f32, x: f32, y: f32) -> Option<TrayKind> {
+        self.tray_cells(bar_width)
+            .into_iter()
+            .find(|(_, area)| contains(*area, x, y))
+            .map(|(kind, _)| kind)
+    }
+
+    /// Caja del icono dado, para colocar su panel al abrirlo.
+    /// Los apagados no tienen caja.
+    pub(crate) fn tray_anchor(&self, kind: TrayKind, bar_width: f32) -> Option<Rect> {
+        if !self.is_shown(kind) {
+            return None;
+        }
+        self.tray_cells(bar_width)
+            .into_iter()
+            .find(|(cell, _)| *cell == kind)
+            .map(|(_, area)| area)
     }
 
     /// Fondo suave del icono de la fila, al pasar o con su panel abierto.
     pub(crate) fn tray_hover_bounds(&self, kind: TrayKind, bar_width: f32) -> Rect {
-        let Some((_, area)) = tray_cells(bar_width)
+        let Some((_, area)) = self
+            .tray_cells(bar_width)
             .into_iter()
             .find(|(cell, _)| *cell == kind)
         else {

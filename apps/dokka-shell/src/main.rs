@@ -10,6 +10,7 @@ mod launchpad;
 mod media;
 mod menubar;
 mod menubar_actions;
+mod menubar_background;
 mod menubar_language;
 mod menubar_music;
 mod menubar_network;
@@ -77,6 +78,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // En automático la barra ya empieza oculta.
         set_taskbar_visible(false);
     }
+    crate::apply_preferences::load_preferences(&mut session);
     session.sync()?;
     session.update_clock_and_trash();
     crate::menubar::refresh_foreground(&mut session);

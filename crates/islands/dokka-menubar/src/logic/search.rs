@@ -16,6 +16,9 @@ impl Menubar {
     /// Abre centrado en lo alto con la consulta vacía y el cursor visible.
     /// El shell rellena los resultados justo después con `set_search_results`.
     pub fn open_search(&mut self, bar_width: f32) {
+        if !self.is_shown(super::TrayKind::Search) {
+            return;
+        }
         self.search_query.clear();
         self.search_highlighted = None;
         self.search_cursor = true;

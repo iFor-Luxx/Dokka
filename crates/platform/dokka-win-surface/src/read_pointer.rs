@@ -1,5 +1,6 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::{
-    TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent, VK_BACK, VK_ESCAPE, VK_LEFT, VK_RETURN, VK_RIGHT,
+    ReleaseCapture, SetCapture, TME_LEAVE, TRACKMOUSEEVENT, TrackMouseEvent, VK_BACK, VK_ESCAPE,
+    VK_LEFT, VK_RETURN, VK_RIGHT,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
     MSG, WM_CHAR, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_MOUSEWHEEL,
@@ -88,10 +89,15 @@ fn typed_character(message: &MSG) -> Option<SurfaceEvent> {
 /// aviso de botón abajo para arrastrar la ventana desde su franja superior;
 /// el botón derecho no hace nada. Las teclas llegan como en el Launchpad
 /// (`WM_CHAR` con `TranslateMessage`), pero con eventos propios para no
-/// mezclarse con él. El clic no se filtra aquí: el shell decide
-/// si hubo botón abajo antes (el arrastre nativo se traga el botón al soltar
-/// y un estado a medias daría clics fantasmas).
-pub(crate) fn read_settings_pointer(message: &MSG, scale: f32) -> Option<SurfaceEvent> {
+/// mezclarse con él.
+/// Mientras el botón está abajo usa `SetCapture` para que el movimiento y la
+/// suelta lleguen aunque el cursor salga (como la barra): así arrastrar un
+/// deslizador sigue funcionando fuera y soltar fuera no dispara otra cosa.
+pub(crate) fn read_settings_pointer(
+    message: &MSG,
+    scale: f32,
+    is_pressed: &mut bool,
+) -> Option<SurfaceEvent> {
     match message.message {
         WM_KEYDOWN if message.wParam.0 == VK_ESCAPE.0 as usize => {
             Some(SurfaceEvent::SettingsEscape)
@@ -113,12 +119,32 @@ pub(crate) fn read_settings_pointer(message: &MSG, scale: f32) -> Option<Surface
             let _ = unsafe { TrackMouseEvent(&mut request) };
             Some(SurfaceEvent::SettingsMoved { x, y })
         }
-        MOUSE_LEFT => Some(SurfaceEvent::SettingsLeft),
+        MOUSE_LEFT => {
+            if *is_pressed {
+                // Con captura el movimiento sigue llegando fuera; no se pierde
+                // el arrastre ni se apaga el hover a medias.
+                return None;
+            }
+            Some(SurfaceEvent::SettingsLeft)
+        }
         WM_LBUTTONDOWN => {
+            *is_pressed = true;
+            // SAFETY: la ventana recibe el mensaje y sigue viva; captura el ratón.
+            unsafe {
+                SetCapture(message.hwnd);
+            }
             let (x, y) = pointer_position(message, scale);
             Some(SurfaceEvent::SettingsPressed { x, y })
         }
         WM_LBUTTONUP => {
+            let was_pressed = std::mem::take(is_pressed);
+            // SAFETY: libera la captura tomada al pulsar; sin captura es inofensivo.
+            unsafe {
+                let _ = ReleaseCapture();
+            }
+            if !was_pressed {
+                return None;
+            }
             let (x, y) = pointer_position(message, scale);
             Some(SurfaceEvent::SettingsClicked { x, y })
         }

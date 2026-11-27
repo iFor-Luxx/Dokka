@@ -140,6 +140,7 @@ dependencies = [
  "dokka-win-media",
  "dokka-win-surface",
  "dokka-win-tracking",
+ "dokka-win-tray",
 ]
 
 [[package]]
@@ -229,6 +230,8 @@ dependencies = [
  "dokka-contracts",
  "dokka-model",
  "dokka-scene",
+ "dokka-win-apps",
+ "windows",
 ]
 
 [[package]]

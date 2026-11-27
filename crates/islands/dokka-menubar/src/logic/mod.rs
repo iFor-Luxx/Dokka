@@ -1,3 +1,4 @@
+mod background;
 mod calendar;
 mod click;
 mod clock;
@@ -9,6 +10,7 @@ mod network;
 mod open;
 mod pointer;
 mod search;
+mod shown;
 mod tray;
 mod volume;
 

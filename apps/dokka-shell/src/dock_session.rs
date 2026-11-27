@@ -21,6 +21,7 @@ use dokka_win_control::{SystemWindowControl, foreground_window};
 use dokka_win_media::MediaMonitor;
 use dokka_win_surface::{Surface, SurfaceOptions, local_time};
 use dokka_win_tracking::SystemWindows;
+use dokka_win_tray::TrayHost;
 
 pub(crate) struct DockSession {
     pub(crate) state: DockState,
@@ -33,6 +34,12 @@ pub(crate) struct DockSession {
     pub(crate) menubar_ticks: u64,
     /// Fuente de la sesión multimedia actual, para enviarle las órdenes.
     pub(crate) menubar_music_source: Option<String>,
+    /// Bandeja de segundo plano, si arrancó; `None` con ella apagada.
+    pub(crate) background_host: Option<TrayHost>,
+    /// Última revisión pasada a la isla; solo se pasa si cambia.
+    pub(crate) background_revision: u64,
+    /// El error de arranque ya se avisó una vez.
+    pub(crate) background_error_logged: bool,
     pub(crate) previews: Previews,
     /// Ventana al frente en el último `Refresh`: otro primer plano también
     /// pide cerrar el panel, aunque la lista siga igual.
@@ -76,6 +83,9 @@ impl DockSession {
             menubar_painted: None,
             menubar_ticks: 0,
             menubar_music_source: None,
+            background_host: None,
+            background_revision: 0,
+            background_error_logged: false,
             previews: Previews::new(Arc::clone(&theme)),
             foreground: None,
             launchpad: Launchpad::new(),

@@ -3,7 +3,6 @@
 use dokka_scene::Rect;
 use dokka_theme::menubar as measures;
 
-use super::tray::tray_anchor;
 use super::{OpenCalendar, OpenMenu, menu_actions, menu_panel_for, menu_rows};
 
 impl crate::Menubar {
@@ -89,14 +88,16 @@ impl crate::Menubar {
 
     /// Abre el panel real del icono dado, cerrando menú y calendario.
     /// Cada panel mide lo suyo y se coloca bajo su icono.
+    /// Los apagados en Preferencias no se abren.
     pub(crate) fn open_tray(&mut self, kind: super::TrayKind, bar_width: f32) {
-        if tray_anchor(kind, bar_width).is_none() {
+        if !self.is_shown(kind) || self.tray_anchor(kind, bar_width).is_none() {
             return;
         }
         match kind {
             super::TrayKind::Volume => self.open_volume(bar_width),
             super::TrayKind::Network => self.open_network(bar_width),
             super::TrayKind::Music => self.open_music(bar_width),
+            super::TrayKind::Background => self.open_background(bar_width),
             super::TrayKind::Language => self.open_language(bar_width),
             super::TrayKind::Search => self.open_search(bar_width),
             super::TrayKind::ControlCenter => self.open_control_center(bar_width),

@@ -22,7 +22,13 @@ Los paneles viven un archivo por panel en el shell (`menubar_volume.rs`,
 `menubar_network.rs`, `menubar_language.rs`, `menubar_music.rs`,
 `menubar_search.rs`: el shell les pasa `VolumeState`/`NetworkState`/
 `Vec<LanguageEntry>`/`NowPlayingInfo` y ejecuta su `MenubarAction` en
-`run_menubar_action`; el centro de control delega en esas mismas variantes).
+`run_menubar_action`; el centro de control delega en esas mismas variantes). El segundo plano (`background_panel`:
+cristal único Tahoe con título, una fila por app con círculo suave, icono real y nombre
+recortado, hasta diez filas según la ventana, "Sin apps en segundo plano" si no hay,
+capas constantes y golpe por fila) lo rellena `menubar_background.rs` cada `Tick` con la
+revisión del `TrayHost` (`apply_background_apps` al arrancar según Preferencias, error
+una vez y parte apagada; `TrayActivate`/`TrayMenu` cierran con `menubar_menu_dismissed`
+para no devolver el foco; clic derecho con `MenubarRightClicked`).
 Volumen cada `Tick`; red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El buscador filtra el catálogo del
@@ -42,7 +48,12 @@ guarda `SystemAppActions` y `SystemRecycleBin` en la sesión. Un error de una ac
 sin cerrar Dokka. Es dueño de si la barra está
 oculta y del modo manual/automático (lo guarda en disco; en automático la oculta ya y en cada
 arranque, con `resize`) y siempre la devuelve al salir, al reiniciar y al terminar `run`,
-incluso con error. `preview_safety` recupera la salida del panel con el
+incluso con error. Lo ajustado en Preferencias se guarda con `PreferencesFile`
+(`PreferencesStore`) y se aplica en el acto (`apply_preferences.rs`: sesión, dock,
+previas y barra, con `resize`; `set_taskbar_auto` guarda el modo y oculta o muestra
+la barra de Windows ya reutilizando `taskbar_mode.rs`; `load_preferences` lo recupera
+al arrancar antes de dibujar; sin previas no se abre ninguna y se cierra la abierta;
+un error al leer o guardar se registra y se sigue). `preview_safety` recupera la salida del panel con el
 cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
 cierra el panel si otro primer plano llega por `Refresh` sin el cursor
 encima, sin quitarlo de debajo del cursor.

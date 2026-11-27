@@ -42,6 +42,15 @@ círculos; fondo invisible sin cristal y piezas en cristal translúcido
 por zonas: `capsules`, `music`, `circles`, `slider`) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado en cápsula translúcida,
-"Sin resultados" y `filter_search_order` con tildes ignoradas).
+"Sin resultados" y `filter_search_order` con tildes ignoradas) y segundo plano
+(`background_panel`: cristal único Tahoe con título, hasta diez filas con círculo
+suave, icono real en píxeles y nombre recortado, "Sin apps en segundo plano",
+capas constantes y golpe por fila),
+interruptor (`switch`: pista redondeada con tirador blanco, encendido o
+apagado según el tema, sin saber qué ajusta) y grupo de filas de ajustes
+(`settings_group`: tarjeta clara con filas separadas por líneas finas,
+etiqueta a la izquierda y control a la derecha, sin saber qué ajusta cada
+fila; da la tarjeta, las líneas, las etiquetas y la geometría de cada fila
+para que la isla coloque sus interruptores y deslizadores).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

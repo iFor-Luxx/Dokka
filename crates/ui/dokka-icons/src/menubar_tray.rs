@@ -27,6 +27,7 @@ pub struct TrayIcons {
     pub music: Arc<Drawing>,
     pub network: Arc<Drawing>,
     pub volume: Arc<Drawing>,
+    pub background: Arc<Drawing>,
 }
 
 impl TrayIcons {
@@ -38,6 +39,7 @@ impl TrayIcons {
             music: Arc::new(glyph(lucide_icons::Icon::Music, color)),
             network: Arc::new(glyph(lucide_icons::Icon::Wifi, color)),
             volume: Arc::new(glyph(lucide_icons::Icon::Volume2, color)),
+            background: Arc::new(glyph(lucide_icons::Icon::ChevronDown, color)),
         }
     }
 }

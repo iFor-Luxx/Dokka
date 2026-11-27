@@ -8,7 +8,7 @@ use dokka_components::music_panel::{
 use dokka_model::NowPlayingInfo;
 use dokka_scene::{Bitmap, Overlay};
 
-use super::tray::{tray_anchor, tray_place};
+use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
@@ -49,7 +49,7 @@ impl Menubar {
 
     /// Mide con su tamaño real y lo coloca bajo su icono.
     pub fn open_music(&mut self, bar_width: f32) {
-        let Some(anchor) = tray_anchor(super::TrayKind::Music, bar_width) else {
+        let Some(anchor) = self.tray_anchor(super::TrayKind::Music, bar_width) else {
             return;
         };
         let size = music_panel_size(self.track.as_ref());

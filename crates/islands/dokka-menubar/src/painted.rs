@@ -7,12 +7,13 @@
 
 use std::sync::Arc;
 
+use dokka_components::background_panel::BackgroundHit;
 use dokka_components::language_panel::LanguageEntry;
 use dokka_components::language_panel::LanguageHit;
 use dokka_components::music_panel::MusicTrack;
 use dokka_components::network_panel::NetworkHit;
 use dokka_components::volume_panel::VolumePanelHit;
-use dokka_model::NetworkKind;
+use dokka_model::{MenubarPreferences, NetworkKind, TrayItemId};
 use dokka_scene::Bitmap;
 
 use super::logic::TrayKind;
@@ -26,6 +27,7 @@ pub struct MenubarPainted {
     pub clock: String,
     pub today: (u16, u16, u16),
     pub language: String,
+    pub shown: MenubarPreferences,
     pub menu_open: bool,
     pub icon_hovered: bool,
     pub highlighted: Option<usize>,
@@ -47,6 +49,10 @@ pub struct MenubarPainted {
     pub language_hovered: Option<LanguageHit>,
     pub track: Option<MusicTrack>,
     pub artwork: Option<Arc<Bitmap>>,
+    pub background_ids: Vec<TrayItemId>,
+    pub background_names: Vec<String>,
+    pub background_icons: Vec<Option<Arc<Bitmap>>>,
+    pub background_hovered: Option<BackgroundHit>,
     pub search_query: String,
     pub search_results: Vec<String>,
     pub search_highlighted: Option<usize>,
@@ -59,6 +65,7 @@ impl PartialEq for MenubarPainted {
             && self.clock == other.clock
             && self.today == other.today
             && self.language == other.language
+            && self.shown == other.shown
             && self.menu_open == other.menu_open
             && self.icon_hovered == other.icon_hovered
             && self.highlighted == other.highlighted
@@ -80,6 +87,10 @@ impl PartialEq for MenubarPainted {
             && self.language_hovered == other.language_hovered
             && self.track == other.track
             && same_artwork(&self.artwork, &other.artwork)
+            && self.background_ids == other.background_ids
+            && self.background_names == other.background_names
+            && same_icons(&self.background_icons, &other.background_icons)
+            && self.background_hovered == other.background_hovered
             && self.search_query == other.search_query
             && self.search_results == other.search_results
             && self.search_highlighted == other.search_highlighted
@@ -95,4 +106,15 @@ fn same_artwork(first: &Option<Arc<Bitmap>>, second: &Option<Arc<Bitmap>>) -> bo
         (None, None) => true,
         _ => false,
     }
+}
+
+/// `true` si son los mismos iconos: mismo objeto por fila, sin comparar píxeles.
+fn same_icons(first: &[Option<Arc<Bitmap>>], second: &[Option<Arc<Bitmap>>]) -> bool {
+    if first.len() != second.len() {
+        return false;
+    }
+    first
+        .iter()
+        .zip(second.iter())
+        .all(|(a, b)| same_artwork(a, b))
 }

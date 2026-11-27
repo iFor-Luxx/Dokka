@@ -26,6 +26,7 @@ struct LoopState {
     is_pressed: bool,
     is_launchpad_pressed: bool,
     is_menubar_pressed: bool,
+    is_settings_pressed: bool,
 }
 
 impl Surface {
@@ -161,7 +162,11 @@ impl Surface {
             return Some(launchpad_event(event));
         }
         if message.hwnd == self.settings_window()
-            && let Some(event) = read_settings_pointer(message, self.settings_scale())
+            && let Some(event) = read_settings_pointer(
+                message,
+                self.settings_scale(),
+                &mut state.is_settings_pressed,
+            )
         {
             return Some(event);
         }

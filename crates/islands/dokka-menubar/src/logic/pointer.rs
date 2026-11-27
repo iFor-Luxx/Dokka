@@ -3,7 +3,6 @@
 use dokka_components::calendar_panel::calendar_hovered;
 use dokka_components::menu_panel::menu_row_at;
 
-use super::tray::tray_kind_at;
 use crate::Menubar;
 
 impl Menubar {
@@ -15,6 +14,7 @@ impl Menubar {
         self.volume_hovered = None;
         self.network_hovered = None;
         self.language_hovered = None;
+        self.background_hovered = None;
         if let Some(menu) = self.menu.as_mut() {
             menu.highlighted = None;
         }
@@ -32,13 +32,13 @@ impl Menubar {
         menu.highlighted = None;
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
-        self.tray_hovered = tray_kind_at(bar_width, x, y);
+        self.tray_hovered = self.tray_kind_at(bar_width, x, y);
     }
 
     pub(super) fn move_over_calendar(&mut self, x: f32, y: f32, bar_width: f32) {
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
-        self.tray_hovered = tray_kind_at(bar_width, x, y);
+        self.tray_hovered = self.tray_kind_at(bar_width, x, y);
         self.nav_hovered = self
             .calendar_bounds(bar_width)
             .and_then(|bounds| calendar_hovered(bounds, x, y));
@@ -47,11 +47,12 @@ impl Menubar {
     pub(super) fn move_over_tray(&mut self, x: f32, y: f32, bar_width: f32) {
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
-        self.tray_hovered = tray_kind_at(bar_width, x, y);
+        self.tray_hovered = self.tray_kind_at(bar_width, x, y);
         match self.tray_kind() {
             Some(super::TrayKind::Volume) => self.volume_hover(x, y),
             Some(super::TrayKind::Network) => self.network_hover(x, y),
             Some(super::TrayKind::Language) => self.language_hover(x, y),
+            Some(super::TrayKind::Background) => self.background_hover(x, y),
             Some(super::TrayKind::Search) => self.search_hover(x, y),
             Some(super::TrayKind::Music) | Some(super::TrayKind::ControlCenter) | None => {}
         }
