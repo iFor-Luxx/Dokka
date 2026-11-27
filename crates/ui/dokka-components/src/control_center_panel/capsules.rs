@@ -8,7 +8,7 @@ use dokka_theme::{Theme, control_center as measures};
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
 use super::layout::{capsule_circle, capsule_text_x, network_capsule, prefs_capsule};
-use super::paint::{Pieces, flat, picture, shorten, subtitle, tile, title};
+use super::paint::{Pieces, flat, picture, shorten_to, subtitle_sized, tile, title_sized};
 
 /// Suma las dos cápsulas: cristal, círculo interior, textos e iconos.
 pub(crate) fn add_capsules(
@@ -37,29 +37,33 @@ pub(crate) fn add_capsules(
     ));
     let network_middle = network.y + network.height / 2.0;
     let prefs_middle = prefs.y + prefs.height / 2.0;
-    pieces.texts.push(title(
+    pieces.texts.push(title_sized(
         theme,
         capsule_text_x(network),
         network_middle - measures::CAPSULE_TEXT_HALF,
-        network_name(props),
+        shorten_to(&network_name(props), measures::CAPSULE_TEXT_CHARACTERS),
+        measures::CAPSULE_TITLE_SIZE,
     ));
-    pieces.texts.push(subtitle(
+    pieces.texts.push(subtitle_sized(
         theme,
         capsule_text_x(network),
         network_middle + measures::CAPSULE_TEXT_HALF,
-        network_status(props),
+        shorten_to(&network_status(props), measures::CAPSULE_TEXT_CHARACTERS),
+        measures::CAPSULE_SUBTITLE_SIZE,
     ));
-    pieces.texts.push(title(
+    pieces.texts.push(title_sized(
         theme,
         capsule_text_x(prefs),
         prefs_middle - measures::CAPSULE_TEXT_HALF,
-        String::from("Preferencias"),
+        shorten_to("Preferencias", measures::CAPSULE_TEXT_CHARACTERS),
+        measures::CAPSULE_TITLE_SIZE,
     ));
-    pieces.texts.push(subtitle(
+    pieces.texts.push(subtitle_sized(
         theme,
         capsule_text_x(prefs),
         prefs_middle + measures::CAPSULE_TEXT_HALF,
-        String::from("Dokka"),
+        shorten_to("Dokka", measures::CAPSULE_TEXT_CHARACTERS),
+        measures::CAPSULE_SUBTITLE_SIZE,
     ));
     pieces.icons.push(picture(
         theme,
@@ -92,7 +96,7 @@ fn network_name(props: &ControlCenterProps) -> String {
     if props.network.name.is_empty() {
         String::from("Sin conexión")
     } else {
-        shorten(&props.network.name)
+        props.network.name.clone()
     }
 }
 

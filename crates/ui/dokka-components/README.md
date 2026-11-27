@@ -42,7 +42,8 @@ columnas de 66 con hueco de 12 (círculo 66, cápsula 144 × 66, música
 144 × 144 con la carátula real en píxeles cuando hay —marcador si no—,
 igual que `music_panel`, Sonido a todo lo ancho de 68 y Pantalla igual
 justo encima solo con brillo DDC): Red con dos círculos blancos,
-música de dos por dos, Preferencias con dos círculos, Pantalla si hay,
+música de dos por dos con textos recortados a 16, Preferencias con dos círculos
+y textos de cápsula en 12/11 recortados a 12 con "…", Pantalla si hay,
 Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal
 translúcido con sombra suave bajo cada pieza, por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`; el Sonido
 y la Pantalla usan el componente `slider`, no dibujan el suyo) y buscador Spotlight

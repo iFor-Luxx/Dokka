@@ -46,6 +46,10 @@ pub const CAPSULE_CIRCLE_SIDE: f32 = CELL - 24.0;
 pub const CAPSULE_MARGIN: f32 = (CELL - CAPSULE_CIRCLE_SIDE) / 2.0;
 /// Título 10 puntos por encima del centro y subtítulo 10 por debajo.
 pub const CAPSULE_TEXT_HALF: f32 = 10.0;
+/// Título y subtítulo dentro de las cápsulas: un punto menos que la música
+/// para que quepan tras el círculo.
+pub const CAPSULE_TITLE_SIZE: f32 = 12.0;
+pub const CAPSULE_SUBTITLE_SIZE: f32 = 11.0;
 
 /// Lado de la carátula marcadora dentro de la música.
 pub const MUSIC_ART_SIDE: f32 = 36.0;
@@ -82,6 +86,9 @@ pub const CIRCLE_ICON_SIDE: f32 = 19.0;
 
 /// Letras máximas antes de recortar un nombre o título con "…".
 pub const TEXT_CHARACTERS: usize = 16;
+/// Letras máximas en las cápsulas antes de recortar con "…": "Preferencias",
+/// "Desconectada", "Sin internet" y "Sin conexión" tienen 12 y salen enteras.
+pub const CAPSULE_TEXT_CHARACTERS: usize = 12;
 /// Tamaño del glifo Lucide: llena el lienzo de 100.
 pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Cuánto se desplazan las copias que engrosan cada glifo, en el lienzo de 100.
