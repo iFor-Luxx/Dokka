@@ -77,8 +77,6 @@ pub const SHADOW_OFFSET_Y: f32 = 8.0;
 /// Aire bajo el panel para que la sombra no la recorte la ventana.
 pub const SHADOW_MARGIN: f32 = 40.0;
 
-/// Lado del icono de la barra superior.
-pub const BAR_ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo Lucide de la barra: llena el lienzo de 100.
 pub const BAR_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Tamaño del glifo Lucide dentro de la cápsula: llena el lienzo de 100.

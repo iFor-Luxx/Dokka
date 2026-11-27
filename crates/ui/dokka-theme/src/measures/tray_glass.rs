@@ -26,8 +26,6 @@ pub const HIGHLIGHT_RADIUS: f32 = 10.0;
 pub const ROW_MARGIN: f32 = 6.0;
 /// Aire dentro del resaltado antes del contenido, igual a izquierda y derecha.
 pub const ROW_INSET: f32 = 10.0;
-/// Alto de una cápsula (icono, título y subtítulo, compatibilidad).
-pub const CAPSULE_HEIGHT: f32 = 60.0;
 /// Lado de los círculos de icono en filas de dispositivo.
 pub const CIRCLE: f32 = 26.0;
 /// Lado del icono dentro del círculo.

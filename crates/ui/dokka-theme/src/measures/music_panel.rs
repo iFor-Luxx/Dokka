@@ -43,7 +43,5 @@ pub const CONTROLS_HEIGHT: f32 = 48.0;
 pub const BUTTON_WIDTH: f32 = 64.0;
 /// Lado del icono de cada botón, centrado en su botón.
 pub const BUTTON_ICON_SIDE: f32 = 28.0;
-/// Tamaño del glifo Lucide: llena el lienzo de 100, fuente efectiva 28 a 28 de lado.
-pub const BUTTON_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Tamaño del glifo de la nota musical de la barra, igual que los de la barra superior.
 pub const BAR_GLYPH_SIZE: f32 = DRAWING_SIDE;

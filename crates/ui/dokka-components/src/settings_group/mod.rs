@@ -9,9 +9,6 @@ mod layout;
 mod props;
 mod view;
 
-pub use layout::{
-    divider_rect, divider_rect_for, group_height, group_panel_bounds, group_panel_bounds_for,
-    row_bounds, row_bounds_for,
-};
+pub use layout::{divider_rect_for, group_height, group_panel_bounds_for, row_bounds_for};
 pub use props::SettingsGroupProps;
 pub use view::{group_dividers, group_labels, group_panel};

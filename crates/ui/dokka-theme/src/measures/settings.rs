@@ -53,9 +53,6 @@ pub const TRAFFIC_HIT_PADDING: f32 = 4.5;
 pub const TRAFFIC_GLYPH_SIDE: f32 = 13.0;
 /// Desplazamiento de las copias que engrosan el trazo del símbolo.
 pub const TRAFFIC_GLYPH_SPREAD: f32 = 0.4;
-/// Tamaño del glifo Lucide del semáforo: llena el lienzo de 100, así la
-/// fuente efectiva es 10 al mostrarse a 10 de lado.
-pub const TRAFFIC_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
 
 /// Borde superior de la casilla de búsqueda, bajo los semáforos.
 pub const SEARCH_TOP: f32 = 52.0;
@@ -119,10 +116,6 @@ pub const BADGE_CANVAS_RADIUS: f32 = 25.0;
 pub const ROW_HIGHLIGHT_MARGIN: f32 = SIDEBAR_MARGIN;
 /// Alto de la fila resaltada (selección y hover).
 pub const ROW_HIGHLIGHT_HEIGHT: f32 = 36.0;
-/// Esquinas de la fila resaltada, concéntricas con el panel:
-/// radio interior = radio exterior − separación (nunca negativo, recortado
-/// en `row_highlight_radius`).
-pub const ROW_HIGHLIGHT_RADIUS: f32 = SIDEBAR_RADIUS - SIDEBAR_MARGIN;
 
 /// Alto de la zona arrastrable superior (mover la ventana).
 pub const DRAG_HEIGHT: f32 = 64.0;
@@ -145,8 +138,6 @@ pub const HEADER_DIVIDER_RIGHT: f32 = 744.0;
 pub const HEADER_DIVIDER_TOP: f32 = 64.0;
 pub const HEADER_DIVIDER_HEIGHT: f32 = 1.0;
 
-/// Tarjeta gris del contenido, todavía sin ajustes.
-pub const CARD_MARGIN: f32 = 24.0;
 pub const CARD_TOP: f32 = 88.0;
 pub const CARD_HEIGHT: f32 = 120.0;
 pub const CARD_RADIUS: f32 = 16.0;
@@ -212,11 +203,6 @@ pub fn header_middle() -> f32 {
     NAV_TOP + NAV_PILL_HEIGHT / 2.0
 }
 
-/// Límites de la tarjeta gris del contenido, alineados con la cabecera.
-pub fn card_bounds() -> (f32, f32, f32) {
-    (CONTENT_LEFT, CONTENT_TOP, CONTENT_WIDTH)
-}
-
 /// Tamaño lógico de la ventana según el zoom verde.
 pub fn window_size(zoomed: bool) -> (f32, f32) {
     if zoomed {
@@ -245,14 +231,4 @@ pub fn header_right_for(window_width: f32) -> f32 {
 /// Ancho del contenido para este ancho de ventana.
 pub fn content_width_for(window_width: f32) -> f32 {
     (header_right_for(window_width) - CONTENT_LEFT).max(CONTENT_WIDTH)
-}
-
-/// Límites de la tarjeta para este ancho de ventana.
-pub fn card_bounds_for(window_width: f32) -> (f32, f32, f32) {
-    (CONTENT_LEFT, CONTENT_TOP, content_width_for(window_width))
-}
-
-/// Alto de la ventana para este estado de zoom.
-pub fn window_height_for(zoomed: bool) -> f32 {
-    window_size(zoomed).1
 }

@@ -11,11 +11,6 @@ fn row_top(top: f32, heights: &[f32], index: usize) -> f32 {
     top + heights.iter().take(index).sum::<f32>()
 }
 
-/// Límites de la tarjeta que empieza en `top` con esta altura total.
-pub fn group_panel_bounds(top: f32, total: f32) -> Rect {
-    group_panel_bounds_for(top, total, measures::CONTENT_WIDTH)
-}
-
 /// Límites de la tarjeta para este ancho de contenido.
 pub fn group_panel_bounds_for(top: f32, total: f32, width: f32) -> Rect {
     Rect {
@@ -24,11 +19,6 @@ pub fn group_panel_bounds_for(top: f32, total: f32, width: f32) -> Rect {
         width,
         height: total,
     }
-}
-
-/// Fila `index` dentro de la tarjeta que empieza en `top`.
-pub fn row_bounds(top: f32, heights: &[f32], index: usize) -> Rect {
-    row_bounds_for(top, heights, index, measures::CONTENT_WIDTH)
 }
 
 /// Fila para este ancho de contenido: los controles, pegados al margen
@@ -41,12 +31,6 @@ pub fn row_bounds_for(top: f32, heights: &[f32], index: usize, width: f32) -> Re
         width,
         height,
     }
-}
-
-/// Línea fina entre la fila `index` y la siguiente: empieza en la columna
-/// del texto y acaba en el margen derecho, nunca de borde a borde.
-pub fn divider_rect(top: f32, heights: &[f32], index: usize) -> Rect {
-    divider_rect_for(top, heights, index, measures::CONTENT_WIDTH)
 }
 
 /// Línea para este ancho de contenido.

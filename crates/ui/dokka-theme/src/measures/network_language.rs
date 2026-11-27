@@ -68,11 +68,7 @@ pub const TYPE_WIFI: &str = "Wi-Fi";
 pub const TYPE_ETHERNET: &str = "Cable";
 pub const TYPE_OTHER: &str = "Red";
 pub const TYPE_OFFLINE: &str = "Sin conexión";
-/// Estado de internet en la línea de detalle.
-pub const WITH_INTERNET: &str = "Con internet";
 pub const WITHOUT_INTERNET: &str = "Sin internet";
-/// Subtítulo de la fila del idioma en uso.
-pub const ACTIVE_SUBTITLE: &str = "Activa";
 
 /// Alto del panel de red: título, estado, línea y ajustes.
 pub fn network_height() -> f32 {

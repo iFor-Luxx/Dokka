@@ -58,15 +58,6 @@ pub fn volume_high_icon(color: Color) -> Drawing {
     )
 }
 
-/// Botón de silencio del panel.
-pub fn volume_mute_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::VolumeX,
-        measures::MUTE_GLYPH_SIZE,
-        color,
-    )
-}
-
 /// Chevrón de la fila de ajustes.
 pub fn volume_settings_icon(color: Color) -> Drawing {
     glyph(

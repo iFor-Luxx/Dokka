@@ -95,10 +95,4 @@ impl Previews {
             None => Vec::new(),
         }
     }
-
-    /// Ventana bajo el cursor, si sigue en el panel abierto.
-    pub fn hovered_window(&self) -> Option<u64> {
-        let hovered = self.hovered?;
-        self.open_windows().contains(&hovered).then_some(hovered)
-    }
 }

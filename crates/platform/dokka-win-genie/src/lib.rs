@@ -28,7 +28,7 @@ pub use capture::GenieImage;
 pub use director::GenieDirector;
 pub use flight::Flight;
 pub use geometry::{dock_slot_to_screen, monitor_rect_for_window, primary_screen_rect};
-pub use origin::{is_iconic_now, is_maximized_now, rect_before_minimize};
+pub use origin::{is_iconic_now, rect_before_minimize};
 pub use snapshot::Snapshot;
 pub(crate) use strips::GenieCompositor;
 pub use transitions::{animations_enabled, ensure_clean_startup, restore_all_transitions};

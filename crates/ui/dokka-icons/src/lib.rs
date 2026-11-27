@@ -8,7 +8,6 @@ mod explorer;
 mod launchpad;
 mod lucide;
 mod menubar_tray;
-mod music;
 mod network_language;
 mod search;
 mod shapes;
@@ -42,20 +41,17 @@ pub use lucide::{
     preview_pinned_icon, search_icon, settings_about_icon, settings_appearance_icon,
     settings_dock_icon, settings_general_icon, settings_grip_icon, settings_launchpad_icon,
     settings_menubar_icon, settings_shortcuts_icon, settings_taskbar_icon, submenu_chevron_icon,
-    traffic_circle, traffic_close_button, traffic_close_icon, traffic_minimize_button,
-    traffic_minimize_icon, traffic_zoom_button, traffic_zoom_icon,
+    traffic_circle, traffic_close_button, traffic_minimize_button, traffic_zoom_button,
 };
-pub use menubar_tray::{TRAY_GLYPH_SIDE, TrayIcons};
-pub use music::music_bar_icon;
+pub use menubar_tray::TrayIcons;
 pub use network_language::{
-    language_check_icon, language_row_icon, network_ethernet_icon, network_offline_icon,
-    network_other_icon, network_wifi_icon, tray_chevron_icon, tray_settings_icon,
+    language_check_icon, network_ethernet_icon, network_offline_icon, network_other_icon,
+    network_wifi_icon, tray_chevron_icon, tray_settings_icon,
 };
 pub use search::{search_bar_icon, search_field_icon};
 pub use trash::trash_icon;
 pub use volume::{
-    volume_high_icon, volume_low_icon, volume_mute_icon, volume_muted_icon, volume_off_icon,
-    volume_settings_icon,
+    volume_high_icon, volume_low_icon, volume_muted_icon, volume_off_icon, volume_settings_icon,
 };
 
 pub use lucide_icons::LUCIDE_FONT_BYTES;

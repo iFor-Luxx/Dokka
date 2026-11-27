@@ -1,10 +1,7 @@
 use dokka_scene::{Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::{
-    SegmentedProps,
-    layout::{segment_bounds, segmented_touch},
-};
+use super::{SegmentedProps, layout::segment_bounds};
 
 /// Cápsula gris de fondo con el color del tema, extremos redondos.
 fn segment_track_panel(theme: &Theme, touch: Rect) -> Panel {
@@ -88,9 +85,4 @@ pub fn segmented_at(touch: Rect, count: usize, x: f32, y: f32) -> Option<usize> 
     let ratio = (x - touch.x) / touch.width;
     let index = (ratio * count as f32).floor() as usize;
     Some(index.min(count - 1))
-}
-
-/// Segmento bajo el punto en esta fila, si hay alguno.
-pub fn segmented_hit(row: Rect, props: &SegmentedProps, x: f32, y: f32) -> Option<usize> {
-    segmented_at(segmented_touch(row), props.options.len(), x, y)
 }

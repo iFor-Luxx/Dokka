@@ -46,11 +46,6 @@ pub fn language_check_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Check, color)
 }
 
-/// Teclado de cada fila de idioma dentro de su círculo.
-pub fn language_row_icon(color: Color) -> Drawing {
-    glyph(lucide_icons::Icon::Keyboard, color)
-}
-
 /// Engranaje de la zona de ajustes dentro de su círculo.
 pub fn tray_settings_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Settings, color)

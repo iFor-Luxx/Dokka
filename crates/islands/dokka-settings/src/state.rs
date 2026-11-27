@@ -82,11 +82,6 @@ impl Settings {
         self.is_open
     }
 
-    /// `true` cuando el verde agrandó la ventana.
-    pub fn is_zoomed(&self) -> bool {
-        self.zoomed
-    }
-
     /// Alterna el tamaño normal y el mayor.
     pub fn toggle_zoom(&mut self) {
         self.zoomed = !self.zoomed;

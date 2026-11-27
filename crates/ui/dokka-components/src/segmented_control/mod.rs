@@ -13,4 +13,4 @@ mod view;
 
 pub use layout::{segment_bounds, segmented_touch};
 pub use props::SegmentedProps;
-pub use view::{segmented_at, segmented_hit, segmented_panels, segmented_texts};
+pub use view::{segmented_at, segmented_panels, segmented_texts};
