@@ -140,6 +140,7 @@ dependencies = [
  "dokka-win-media",
  "dokka-win-surface",
  "dokka-win-tracking",
+ "dokka-win-tray",
 ]
 
 [[package]]

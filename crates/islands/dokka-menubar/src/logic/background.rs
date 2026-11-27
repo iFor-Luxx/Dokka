@@ -10,7 +10,7 @@ use dokka_components::background_panel::{
 use dokka_scene::Overlay;
 use dokka_theme::background as measures;
 
-use super::tray::{tray_anchor, tray_place};
+use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
@@ -44,7 +44,7 @@ impl Menubar {
 
     /// Mide con su tamaño real y lo coloca bajo su icono.
     pub fn open_background(&mut self, bar_width: f32) {
-        let Some(anchor) = tray_anchor(super::TrayKind::Background, bar_width) else {
+        let Some(anchor) = self.tray_anchor(super::TrayKind::Background, bar_width) else {
             return;
         };
         let size = background_size(self.background_apps.len());
@@ -73,19 +73,15 @@ impl Menubar {
     /// Clic izquierdo en una fila: activar esa app.
     pub(crate) fn background_click(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
         let bounds = self.tray_bounds()?;
-        match background_hit(bounds, x, y, &self.background_apps) {
-            Some(BackgroundHit::Row(id)) => Some(MenubarAction::TrayActivate(id)),
-            None => None,
-        }
+        background_hit(bounds, x, y, &self.background_apps)
+            .map(|BackgroundHit::Row(id)| MenubarAction::TrayActivate(id))
     }
 
     /// Clic derecho en una fila: el menú propio de esa app.
     pub(crate) fn background_right_click(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
         let bounds = self.tray_bounds()?;
-        match background_hit(bounds, x, y, &self.background_apps) {
-            Some(BackgroundHit::Row(id)) => Some(MenubarAction::TrayMenu(id)),
-            None => None,
-        }
+        background_hit(bounds, x, y, &self.background_apps)
+            .map(|BackgroundHit::Row(id)| MenubarAction::TrayMenu(id))
     }
 
     /// Clic derecho en la fila: en una app pide su menú; en el botón,
@@ -99,7 +95,7 @@ impl Menubar {
         if self.tray_kind() == Some(super::TrayKind::Background) && self.tray_contains(x, y) {
             return self.background_right_click(x, y);
         }
-        if super::tray::tray_kind_at(bar_width, x, y) == Some(super::TrayKind::Background) {
+        if self.tray_kind_at(bar_width, x, y) == Some(super::TrayKind::Background) {
             self.open_background(bar_width);
         }
         None

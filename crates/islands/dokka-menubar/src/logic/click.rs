@@ -4,7 +4,6 @@ use super::pointer::hit;
 use dokka_components::calendar_panel::calendar_step;
 use dokka_components::menu_panel::menu_row_at;
 
-use super::tray::tray_kind_at;
 use crate::{Menubar, MenubarAction};
 
 /// Resultado interno del clic.
@@ -79,7 +78,7 @@ impl Menubar {
         }
         self.icon_hovered = hit(x, y, &self.icon_hit());
         self.clock_hovered = hit(x, y, &self.clock_hit(bar_width));
-        self.tray_hovered = tray_kind_at(bar_width, x, y);
+        self.tray_hovered = self.tray_kind_at(bar_width, x, y);
         None
     }
 
@@ -101,7 +100,7 @@ impl Menubar {
             self.open_calendar();
             return MenubarClick::CalendarOpened;
         }
-        if let Some(kind) = tray_kind_at(bar_width, x, y) {
+        if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             self.open_tray(kind, bar_width);
             return MenubarClick::TrayOpened;
         }
@@ -127,7 +126,7 @@ impl Menubar {
             self.open_calendar();
             return MenubarClick::CalendarOpened;
         }
-        if let Some(kind) = tray_kind_at(bar_width, x, y) {
+        if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             self.menu = None;
             self.open_tray(kind, bar_width);
             return MenubarClick::TrayOpened;
@@ -173,7 +172,7 @@ impl Menubar {
             self.open_at(bar_width);
             return MenubarClick::MenuOpened;
         }
-        if let Some(kind) = tray_kind_at(bar_width, x, y) {
+        if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             self.calendar = None;
             self.nav_hovered = None;
             self.open_tray(kind, bar_width);
@@ -216,7 +215,7 @@ impl Menubar {
             return MenubarClick::TrayKept;
         }
         // Repetir el mismo icono lo cierra; otro cambia de panel.
-        if let Some(kind) = tray_kind_at(bar_width, x, y) {
+        if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             if self.tray_kind() == Some(kind) {
                 self.close_tray();
                 self.tray_hovered = Some(kind);

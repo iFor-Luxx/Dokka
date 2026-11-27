@@ -14,8 +14,8 @@ use dokka_scene::{Divider, Dot, Panel, Rect, Text};
 use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::{
-    SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR, card_tops, content_row,
-    content_slider_area, has_content, icon_scale_to, magnification_to, section_cards,
+    SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR, card_tops, content_row, content_slider_area,
+    has_content, icon_scale_to, magnification_to, section_cards,
 };
 use super::super::pointer::display_preferences;
 use super::super::state::Settings;
@@ -47,7 +47,7 @@ pub(crate) fn content_scene(theme: &Theme, settings: &Settings) -> ContentScene 
 
 /// Tarjeta gris centrada de las secciones todavía sin ajustes.
 fn coming_soon(theme: &Theme) -> ContentScene {
-    use dokka_scene::{TextAlign as Align};
+    use dokka_scene::TextAlign as Align;
     let (card_x, card_top, card_width) = measures::card_bounds();
     let panel = Panel {
         bounds: Rect {
@@ -139,10 +139,7 @@ fn group_pieces(
     dim: &[bool],
 ) -> (Panel, Vec<Divider>, Vec<Text>) {
     let owned: Vec<String> = labels.iter().map(|label| label.to_string()).collect();
-    let props = SettingsGroupProps {
-        top,
-        rows: owned,
-    };
+    let props = SettingsGroupProps { top, rows: owned };
     let panel = group_panel(theme, &props);
     let dividers = group_dividers(theme, &props);
     let texts = group_labels(theme, &props, dim);
@@ -160,26 +157,24 @@ fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
     let mut texts = Vec::new();
     let strength_dim = !shown.dock.magnification;
     for (card, (top, labels)) in tops.iter().zip(cards.iter()).enumerate() {
-        let dim = if card == 2 { vec![strength_dim] } else { vec![false] };
+        let dim = if card == 2 {
+            vec![strength_dim]
+        } else {
+            vec![false]
+        };
         let (panel, mut card_dividers, mut card_texts) = group_pieces(theme, *top, labels, &dim);
         flats.push(panel);
         dividers.append(&mut card_dividers);
         texts.append(&mut card_texts);
         match card {
             0 => {
-                let (mut panels, knob) = slider_pieces(
-                    theme,
-                    *top,
-                    0,
-                    icon_scale_to(shown.dock.icon_scale),
-                    true,
-                );
+                let (mut panels, knob) =
+                    slider_pieces(theme, *top, 0, icon_scale_to(shown.dock.icon_scale), true);
                 flats.append(&mut panels);
                 dots.push(knob);
             }
             1 => {
-                let (mut panels, knob) =
-                    switch_pieces(theme, *top, 0, shown.dock.magnification);
+                let (mut panels, knob) = switch_pieces(theme, *top, 0, shown.dock.magnification);
                 flats.append(&mut panels);
                 dots.push(knob);
             }

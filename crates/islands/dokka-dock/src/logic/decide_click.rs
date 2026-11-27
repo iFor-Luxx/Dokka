@@ -34,7 +34,7 @@ impl Dock {
         new_instance: bool,
     ) -> Option<DockAction> {
         let placement = place_dock(self, apps);
-        Some(match entry_at(&placement, x, y)? {
+        Some(match entry_at(&placement, x, y, style::gap(self))? {
             Entry::App(app) | Entry::Explorer(app) => {
                 let action = if new_instance {
                     ClickAction::Launch
@@ -52,9 +52,14 @@ impl Dock {
     }
 }
 
-pub(crate) fn entry_at<'a>(placement: &Placement<'a>, x: f32, y: f32) -> Option<Entry<'a>> {
+pub(crate) fn entry_at<'a>(
+    placement: &Placement<'a>,
+    x: f32,
+    y: f32,
+    gap: f32,
+) -> Option<Entry<'a>> {
     let bottom = placement.bar.y + placement.bar.height;
-    let reach = style::GAP / 2.0;
+    let reach = gap / 2.0;
     placement
         .slots
         .iter()

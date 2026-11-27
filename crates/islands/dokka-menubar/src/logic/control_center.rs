@@ -6,14 +6,14 @@ use dokka_components::control_center_panel::{
 };
 use dokka_scene::Overlay;
 
-use super::tray::{tray_anchor, tray_place};
+use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
     /// Mide con su tamaño fijo y lo coloca bajo su icono.
     /// Reutiliza los datos de volumen, red y música ya guardados.
     pub fn open_control_center(&mut self, bar_width: f32) {
-        let Some(anchor) = tray_anchor(super::TrayKind::ControlCenter, bar_width) else {
+        let Some(anchor) = self.tray_anchor(super::TrayKind::ControlCenter, bar_width) else {
             return;
         };
         self.show_tray(

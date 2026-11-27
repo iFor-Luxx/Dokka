@@ -7,11 +7,14 @@ centro de control, buscar, idioma como texto de código, segundo plano, música,
 y la hora a la derecha. El clic en el icono abre debajo el mismo menú
 de cristal del dock (`menu_panel` sin punta); el clic en la hora abre
 debajo el calendario de la barra (`calendar_panel` con su píldora de
-flechas), alineado a la derecha bajo el reloj; cada icono de la fila abre
+flechas), alineado a la derecha bajo el reloj; cada icono visible de la fila abre
 debajo su panel real (`volume_panel`, `network_panel`, `language_panel`,
 `music_panel`, `search_panel`, `control_center_panel`, `background_panel`), medido con su
 `<x>_size` y colocado bajo su icono sin salirse del ancho (el buscador va
-centrado en lo alto). Navega meses con las flechas, con hover, sin encogerse
+centrado en lo alto). `set_shown(MenubarPreferences)` elige qué iconos se ven:
+los apagados no se dibujan ni reciben clics, los demás se recolocan sin huecos
+y si estaba abierto su panel se cierra; el filtrado vive en `logic/tray.rs`
+(`is_shown`: añadir un `TrayKind` nuevo es una línea) y la huella lo nota. Navega meses con las flechas, con hover, sin encogerse
 al navegar; la hora y la fila se resaltan suave (plano, como el icono) al
 pasar o con su panel abierto. Solo uno de los nueve a la vez: abrir uno cierra
 los demás. Guarda el nombre, la hora, el hoy, el código de idioma, si el menú,

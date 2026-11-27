@@ -164,11 +164,7 @@ fn highlight_panel(
     let Some(BackgroundHit::Row(id)) = highlighted else {
         return hidden;
     };
-    let Some(index) = apps
-        .iter()
-        .take(visible)
-        .position(|app| app.id == id)
-    else {
+    let Some(index) = apps.iter().take(visible).position(|app| app.id == id) else {
         return hidden;
     };
     let row = row_rect(bounds, index);

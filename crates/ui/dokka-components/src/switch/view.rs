@@ -46,6 +46,5 @@ pub fn switch_dot(theme: &Theme, touch: Rect, props: &SwitchProps) -> Dot {
 
 /// `true` si el punto cae en la zona de toque del interruptor.
 pub fn switch_hit(touch: Rect, x: f32, y: f32) -> bool {
-    (touch.x..touch.x + touch.width).contains(&x)
-        && (touch.y..touch.y + touch.height).contains(&y)
+    (touch.x..touch.x + touch.width).contains(&x) && (touch.y..touch.y + touch.height).contains(&y)
 }

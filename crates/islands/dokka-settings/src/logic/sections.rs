@@ -14,9 +14,9 @@ pub const SECTION_NAMES: [&str; 8] = [
 ];
 
 /// Índice de cada sección con contenido real.
-pub const SECTION_DOCK: usize = 1;
-pub const SECTION_MENUBAR: usize = 3;
-pub const SECTION_TASKBAR: usize = 5;
+pub(crate) const SECTION_DOCK: usize = 1;
+pub(crate) const SECTION_MENUBAR: usize = 3;
+pub(crate) const SECTION_TASKBAR: usize = 5;
 
 type SectionIcon = fn(Color) -> Drawing;
 

@@ -7,7 +7,7 @@ use dokka_components::volume_panel::{
 use dokka_scene::Overlay;
 use dokka_theme::menubar as bar_measures;
 
-use super::tray::{tray_anchor, tray_place};
+use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
@@ -19,7 +19,7 @@ impl Menubar {
 
     /// Mide con su tamaño real y lo coloca bajo su icono.
     pub fn open_volume(&mut self, bar_width: f32) {
-        let Some(anchor) = tray_anchor(super::TrayKind::Volume, bar_width) else {
+        let Some(anchor) = self.tray_anchor(super::TrayKind::Volume, bar_width) else {
             return;
         };
         let size = volume_panel_size();

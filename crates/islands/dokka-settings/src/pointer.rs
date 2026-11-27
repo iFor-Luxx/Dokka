@@ -51,11 +51,7 @@ pub(crate) fn control_at(selected: usize, x: f32, y: f32) -> Option<PaintedContr
 
 /// Valor de 0 a 1 del deslizador agarrado bajo este `x`, aunque el cursor se
 /// pase de la barra: se queda en 0 o en 1.
-pub(crate) fn clamped_slider_value(
-    target: SliderTarget,
-    values: &ContentValues,
-    x: f32,
-) -> f32 {
+pub(crate) fn clamped_slider_value(target: SliderTarget, values: &ContentValues, x: f32) -> f32 {
     let track = match target {
         SliderTarget::DockScale => {
             let tops = super::logic::card_tops(super::logic::SECTION_DOCK);
@@ -73,11 +69,7 @@ pub(crate) fn clamped_slider_value(
     slider_value_at_x_for(track, inside, values.drag_value)
 }
 
-pub(crate) fn slider_value_at_x_for(
-    track: dokka_scene::Rect,
-    x: f32,
-    fallback: f32,
-) -> f32 {
+pub(crate) fn slider_value_at_x_for(track: dokka_scene::Rect, x: f32, fallback: f32) -> f32 {
     use dokka_components::slider::slider_value_at;
     if track.width <= 0.0 {
         return fallback;
@@ -134,9 +126,7 @@ impl Settings {
             return false;
         };
         // La cantidad atenuada no responde: pulsar no la agarra.
-        if target == SliderTarget::DockStrength
-            && !self.values().preferences.dock.magnification
-        {
+        if target == SliderTarget::DockStrength && !self.values().preferences.dock.magnification {
             return false;
         }
         let start = match target {

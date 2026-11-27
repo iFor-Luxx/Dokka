@@ -74,8 +74,7 @@ impl Settings {
         }
         // Clic en un deslizador sin arrastrar: salta hasta el punto y emite.
         if let Some(target) = dock_slider_at(selected, x, y) {
-            if target == SliderTarget::DockStrength
-                && !self.values().preferences.dock.magnification
+            if target == SliderTarget::DockStrength && !self.values().preferences.dock.magnification
             {
                 return SettingsAction::Stay;
             }

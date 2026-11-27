@@ -158,9 +158,7 @@ pub(crate) fn menubar_switch_at(section: usize, x: f32, y: f32) -> Option<usize>
         return None;
     }
     let tops = card_tops(section);
-    let Some(top) = tops.into_iter().next() else {
-        return None;
-    };
+    let top = tops.into_iter().next()?;
     (0..7).find(|index| {
         let touch = content_switch(top, *index);
         (touch.x..touch.x + touch.width).contains(&x)
@@ -174,9 +172,7 @@ pub(crate) fn taskbar_switch_at(section: usize, x: f32, y: f32) -> Option<usize>
         return None;
     }
     let tops = card_tops(section);
-    let Some(top) = tops.into_iter().next() else {
-        return None;
-    };
+    let top = tops.into_iter().next()?;
     let touch = content_switch(top, 0);
     if (touch.x..touch.x + touch.width).contains(&x)
         && (touch.y..touch.y + touch.height).contains(&y)

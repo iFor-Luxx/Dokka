@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use dokka_components::control_center_panel::ControlCenterIcons;
 use dokka_components::background_panel::{BackgroundApp, BackgroundHit};
+use dokka_components::control_center_panel::ControlCenterIcons;
 use dokka_components::language_panel::LanguageHit;
 use dokka_components::language_panel::{LanguageEntry, LanguageIcons};
 use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
@@ -13,7 +13,7 @@ use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
 use dokka_components::volume_panel::VolumePanelHit;
 use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{TrayIcons, menubar_icon};
-use dokka_model::{NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
+use dokka_model::{MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
 use dokka_scene::{Bitmap, Drawing};
 use dokka_theme::Theme;
 
@@ -63,6 +63,7 @@ pub struct Menubar {
     pub(crate) search_highlighted: Option<usize>,
     pub(crate) search_cursor: bool,
     pub(crate) dragging_slider: bool,
+    pub(crate) shown: MenubarPreferences,
 }
 
 impl Menubar {
@@ -119,6 +120,7 @@ impl Menubar {
             search_highlighted: None,
             search_cursor: false,
             dragging_slider: false,
+            shown: MenubarPreferences::default(),
         }
     }
 
@@ -187,6 +189,7 @@ impl Menubar {
             clock: self.clock.clone(),
             today: self.today,
             language: self.language_code.clone(),
+            shown: self.shown,
             menu_open: self.menu.is_some(),
             icon_hovered: self.icon_hovered,
             highlighted: self.highlighted(),

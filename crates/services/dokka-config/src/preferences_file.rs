@@ -132,7 +132,10 @@ fn parse_bool(value: &str) -> Option<bool> {
 }
 
 fn parse_float(value: &str) -> Option<f32> {
-    value.parse::<f32>().ok().filter(|parsed| parsed.is_finite())
+    value
+        .parse::<f32>()
+        .ok()
+        .filter(|parsed| parsed.is_finite())
 }
 
 fn clamp(value: f32, range: (f32, f32)) -> f32 {
@@ -142,27 +145,51 @@ fn clamp(value: f32, range: (f32, f32)) -> f32 {
 /// Escribe las claves conocidas, una por línea.
 fn render(preferences: &Preferences) -> String {
     let mut text = String::new();
-    push(&mut text, "dock.icon_scale", &format_float(preferences.dock.icon_scale));
-    push(&mut text, "dock.magnification", &format_bool(preferences.dock.magnification));
+    push(
+        &mut text,
+        "dock.icon_scale",
+        &format_float(preferences.dock.icon_scale),
+    );
+    push(
+        &mut text,
+        "dock.magnification",
+        &format_bool(preferences.dock.magnification),
+    );
     push(
         &mut text,
         "dock.magnification_strength",
         &format_float(preferences.dock.magnification_strength),
     );
-    push(&mut text, "dock.previews", &format_bool(preferences.dock.previews));
-    push(&mut text, "menubar.volume", &format_bool(preferences.menubar.volume));
+    push(
+        &mut text,
+        "dock.previews",
+        &format_bool(preferences.dock.previews),
+    );
+    push(
+        &mut text,
+        "menubar.volume",
+        &format_bool(preferences.menubar.volume),
+    );
     push(
         &mut text,
         "menubar.network",
         &format_bool(preferences.menubar.network),
     );
-    push(&mut text, "menubar.music", &format_bool(preferences.menubar.music));
+    push(
+        &mut text,
+        "menubar.music",
+        &format_bool(preferences.menubar.music),
+    );
     push(
         &mut text,
         "menubar.language",
         &format_bool(preferences.menubar.language),
     );
-    push(&mut text, "menubar.search", &format_bool(preferences.menubar.search));
+    push(
+        &mut text,
+        "menubar.search",
+        &format_bool(preferences.menubar.search),
+    );
     push(
         &mut text,
         "menubar.control_center",
@@ -184,7 +211,11 @@ fn push(text: &mut String, key: &str, value: &str) {
 }
 
 fn format_bool(value: bool) -> String {
-    if value { "true".to_owned() } else { "false".to_owned() }
+    if value {
+        "true".to_owned()
+    } else {
+        "false".to_owned()
+    }
 }
 
 fn format_float(value: f32) -> String {

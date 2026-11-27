@@ -1,8 +1,8 @@
 use dokka_scene::{Divider, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::layout::{divider_rect, group_panel_bounds, row_bounds};
 use super::SettingsGroupProps;
+use super::layout::{divider_rect, group_panel_bounds, row_bounds};
 
 /// Radio recortado para no superar la mitad del lado menor.
 fn capped(maximum: f32, width: f32, height: f32) -> f32 {
@@ -18,11 +18,7 @@ pub fn group_panel(theme: &Theme, props: &SettingsGroupProps) -> Panel {
     let bounds = group_panel_bounds(props.top, props.rows.len());
     Panel {
         bounds,
-        corner_radius: capped(
-            measures::CARD_RADIUS,
-            bounds.width,
-            bounds.height,
-        ),
+        corner_radius: capped(measures::CARD_RADIUS, bounds.width, bounds.height),
         border_width: measures::CARD_BORDER_WIDTH,
         tint: theme.settings.card,
         border: theme.settings.card_border,
@@ -41,11 +37,7 @@ pub fn group_dividers(theme: &Theme, props: &SettingsGroupProps) -> Vec<Divider>
 
 /// Etiquetas a la izquierda de cada fila. Las atenuadas (`dim`) van en el
 /// gris de la tarjeta, como el texto "Próximamente".
-pub fn group_labels(
-    theme: &Theme,
-    props: &SettingsGroupProps,
-    dim: &[bool],
-) -> Vec<Text> {
+pub fn group_labels(theme: &Theme, props: &SettingsGroupProps, dim: &[bool]) -> Vec<Text> {
     props
         .rows
         .iter()

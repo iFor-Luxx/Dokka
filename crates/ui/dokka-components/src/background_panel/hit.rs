@@ -15,8 +15,7 @@ pub fn background_hit(
         return None;
     }
     let visible = measures::visible_rows(apps.len());
-    apps
-        .iter()
+    apps.iter()
         .take(visible)
         .enumerate()
         .find(|(index, _)| {

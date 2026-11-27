@@ -45,40 +45,13 @@ impl PartialEq for OrderedF32 {
     }
 }
 
-impl PaintedSettings {
-    /// Foto de lo dibujado, con la API pública de la isla.
-    pub(crate) fn of(
-        selected: usize,
-        hovered: Option<usize>,
-        nav_hovered: Option<dokka_components::nav_pill::NavHalf>,
-        traffic_hovered: bool,
-        window_focused: bool,
-        query: &str,
-        search_focused: bool,
-        can_previous: bool,
-        can_next: bool,
-        values: &ContentValues,
-    ) -> Self {
-        Self {
-            selected,
-            hovered,
-            nav_hovered,
-            traffic_hovered,
-            window_focused,
-            query: query.to_owned(),
-            search_focused,
-            can_previous,
-            can_next,
-            preferences: values.preferences,
-            taskbar_auto: values.taskbar_auto,
-            control: values.control,
-            drag: values.drag.map(|target| {
-                let kind = match target {
-                    SliderTarget::DockScale => 0,
-                    SliderTarget::DockStrength => 1,
-                };
-                (kind, OrderedF32(values.drag_value))
-            }),
-        }
-    }
+/// Deslizador a medias en la forma que guarda la huella.
+pub(crate) fn painted_drag(values: &ContentValues) -> Option<(u8, OrderedF32)> {
+    values.drag.map(|target| {
+        let kind = match target {
+            SliderTarget::DockScale => 0,
+            SliderTarget::DockStrength => 1,
+        };
+        (kind, OrderedF32(values.drag_value))
+    })
 }

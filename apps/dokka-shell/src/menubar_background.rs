@@ -51,20 +51,13 @@ pub(crate) fn refresh_background_apps(session: &mut DockSession) {
     let mut apps = Vec::new();
     for item in host.items() {
         let icon = host.icon(item.id);
-        apps.push(BackgroundApp::new(
-            item.id,
-            display_name(&item.title),
-            icon,
-        ));
+        apps.push(BackgroundApp::new(item.id, display_name(&item.title), icon));
     }
     session.menubar.set_background_apps(apps);
 }
 
 /// Activa la app de la bandeja por delante, sin devolver el foco antes.
-pub(crate) fn activate_background_app(
-    session: &mut DockSession,
-    id: dokka_model::TrayItemId,
-) {
+pub(crate) fn activate_background_app(session: &mut DockSession, id: dokka_model::TrayItemId) {
     let Some(host) = session.background_host.as_ref() else {
         return;
     };

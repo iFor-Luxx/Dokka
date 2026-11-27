@@ -9,7 +9,7 @@ use dokka_theme::{Theme, settings as measures};
 
 use super::drawings::CachedDrawings;
 use super::logic::filter_sections;
-use super::painted::PaintedSettings;
+use super::painted::{PaintedSettings, painted_drag};
 use super::values::ContentValues;
 
 /// Ventana abierta o cerrada, historial de secciones, búsqueda y focos, con
@@ -164,24 +164,21 @@ impl Settings {
     /// Lo ya dibujado, para que el shell solo repinte si cambió algo: incluye
     /// los valores y el hover del contenido.
     pub fn painted(&self) -> PaintedSettings {
-        PaintedSettings::of(
-            self.selected,
-            self.hovered,
-            self.nav_hovered,
-            self.traffic_hovered,
-            self.window_focused,
-            &self.query,
-            self.search_focused,
-            self.can_previous(),
-            self.can_next(),
-            &self.values,
-        )
-    }
-
-    /// Valores con el arrastre a medias aplicado, para dibujar mientras se
-    /// arrastra sin guardar todavía.
-    pub(crate) fn display_preferences(&self) -> Preferences {
-        super::pointer::display_preferences(&self.values)
+        PaintedSettings {
+            selected: self.selected,
+            hovered: self.hovered,
+            nav_hovered: self.nav_hovered,
+            traffic_hovered: self.traffic_hovered,
+            window_focused: self.window_focused,
+            query: self.query.clone(),
+            search_focused: self.search_focused,
+            can_previous: self.can_previous(),
+            can_next: self.can_next(),
+            preferences: self.values.preferences,
+            taskbar_auto: self.values.taskbar_auto,
+            control: self.values.control,
+            drag: painted_drag(&self.values),
+        }
     }
 
     /// Cuadrado de color de la fila como imagen, creado una vez y reutilizado.

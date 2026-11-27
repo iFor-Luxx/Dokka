@@ -7,13 +7,13 @@
 
 use std::sync::Arc;
 
+use dokka_components::background_panel::BackgroundHit;
 use dokka_components::language_panel::LanguageEntry;
 use dokka_components::language_panel::LanguageHit;
-use dokka_components::background_panel::BackgroundHit;
 use dokka_components::music_panel::MusicTrack;
 use dokka_components::network_panel::NetworkHit;
 use dokka_components::volume_panel::VolumePanelHit;
-use dokka_model::{NetworkKind, TrayItemId};
+use dokka_model::{MenubarPreferences, NetworkKind, TrayItemId};
 use dokka_scene::Bitmap;
 
 use super::logic::TrayKind;
@@ -27,6 +27,7 @@ pub struct MenubarPainted {
     pub clock: String,
     pub today: (u16, u16, u16),
     pub language: String,
+    pub shown: MenubarPreferences,
     pub menu_open: bool,
     pub icon_hovered: bool,
     pub highlighted: Option<usize>,
@@ -64,6 +65,7 @@ impl PartialEq for MenubarPainted {
             && self.clock == other.clock
             && self.today == other.today
             && self.language == other.language
+            && self.shown == other.shown
             && self.menu_open == other.menu_open
             && self.icon_hovered == other.icon_hovered
             && self.highlighted == other.highlighted
@@ -111,5 +113,8 @@ fn same_icons(first: &[Option<Arc<Bitmap>>], second: &[Option<Arc<Bitmap>>]) -> 
     if first.len() != second.len() {
         return false;
     }
-    first.iter().zip(second.iter()).all(|(a, b)| same_artwork(a, b))
+    first
+        .iter()
+        .zip(second.iter())
+        .all(|(a, b)| same_artwork(a, b))
 }

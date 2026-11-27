@@ -2,7 +2,6 @@
 
 use std::error::Error;
 
-use dokka_config::{TaskbarMode, TaskbarModeFile};
 use dokka_contracts::AppLauncher;
 use dokka_dock::MenuAction;
 use dokka_win_apps::system_place;
@@ -12,6 +11,7 @@ use dokka_win_surface::Surface;
 use crate::dock_session::DockSession;
 use crate::pinned_apps::toggle_pin;
 use crate::settings::open_or_focus_settings;
+use crate::taskbar_mode::{hide_taskbar_now, persist_taskbar_mode, show_taskbar_now};
 
 /// Abre el menú de ese punto. Otro clic derecho lo mueve al nuevo sitio.
 pub(crate) fn open_context_menu(
@@ -71,25 +71,19 @@ pub(crate) fn run_menu_action(
     match action {
         MenuAction::AddApp => session.picker.open(),
         MenuAction::ShowTaskbar => {
-            set_taskbar_visible(true);
-            session.set_taskbar_hidden(false);
-            session.resize(surface)?;
+            show_taskbar_now(session, surface)?;
         }
         MenuAction::HideTaskbar => {
-            set_taskbar_visible(false);
-            session.set_taskbar_hidden(true);
-            session.resize(surface)?;
+            hide_taskbar_now(session, surface)?;
         }
         MenuAction::TaskbarManual => {
-            TaskbarModeFile::in_user_folder()?.save(TaskbarMode::Manual)?;
+            persist_taskbar_mode(false)?;
             session.set_taskbar_auto(false);
         }
         MenuAction::TaskbarAuto => {
-            TaskbarModeFile::in_user_folder()?.save(TaskbarMode::Automatic)?;
+            persist_taskbar_mode(true)?;
             session.set_taskbar_auto(true);
-            set_taskbar_visible(false);
-            session.set_taskbar_hidden(true);
-            session.resize(surface)?;
+            hide_taskbar_now(session, surface)?;
         }
         MenuAction::ShowDesktop => show_desktop(),
         MenuAction::TaskManager => session

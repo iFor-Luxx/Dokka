@@ -72,16 +72,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let explorer = explorer_app();
     let mut session = DockSession::new(renderer, explorer.id.clone());
     let _watcher = ChangeWatcher::start();
-    crate::menubar_background::apply_background_apps(
-        &mut session,
-        session.preferences.menubar.background_apps,
-    );
 
     load_pinned(&mut session, explorer);
     if load_taskbar_mode(&mut session) {
         // En automático la barra ya empieza oculta.
         set_taskbar_visible(false);
     }
+    crate::apply_preferences::load_preferences(&mut session);
     session.sync()?;
     session.update_clock_and_trash();
     crate::menubar::refresh_foreground(&mut session);
