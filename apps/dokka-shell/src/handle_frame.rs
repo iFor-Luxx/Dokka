@@ -8,11 +8,19 @@ use dokka_win_surface::Surface;
 use crate::dock_session::DockSession;
 
 /// Avanza un fotograma y restaura las ventanas que el genio ya llevó a su sitio.
+/// `true` si no cambió nada visible y no hace falta redibujar: las tiras del
+/// genio las mueve el compositor solo.
 pub(crate) fn handle_frame(
     session: &mut DockSession,
     surface: &mut Surface,
     seconds: f32,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<bool, Box<dyn Error>> {
+    let only_flight = session.genie.is_flying()
+        && !session.dock.is_animating()
+        && !session.previews.is_waiting()
+        && !session.previews.has_panel()
+        && !session.launchpad.is_open();
+    let shown = session.genie.landing();
     session.dock.advance(seconds);
     // El genio avanza en su propio reloj y pide restaurar al llegar.
     for window in session.genie.on_frame(std::time::Instant::now()) {
@@ -48,5 +56,6 @@ pub(crate) fn handle_frame(
         crate::preview_safety::check_preview_cursor(session, surface);
         session.previews.advance(seconds);
     }
-    Ok(())
+    // La miniatura solo cambia al aterrizar; el resto del vuelo no se redibuja.
+    Ok(only_flight && session.genie.is_flying() && session.genie.landing() == shown)
 }

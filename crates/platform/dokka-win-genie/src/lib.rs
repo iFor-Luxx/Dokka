@@ -12,6 +12,7 @@ mod director_advance;
 mod director_support;
 mod flight;
 mod flight_restore;
+mod fullscreen;
 mod geometry;
 mod origin;
 mod overlay;

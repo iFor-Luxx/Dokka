@@ -64,6 +64,7 @@ pub(crate) fn on_minimize_started(
         return Ok(());
     };
     // Ahora que la foto tapa el hueco, sincronizar y recolocar.
+    let arranging = std::time::Instant::now();
     if let Err(error) = session.sync() {
         eprintln!("genio: vuelo {hwnd} sin apuntar: no se sincronizo ({error})");
         return Ok(());
@@ -77,6 +78,10 @@ pub(crate) fn on_minimize_started(
     let aspect = (frame[2] - frame[0]) as f32 / (frame[3] - frame[1]).max(1) as f32;
     let (genie, dock, state) = (&mut session.genie, &session.dock, &session.state);
     genie.aim_with_aspect(dock, state.apps(), surface, hwnd, aspect);
+    eprintln!(
+        "genio: tiempos {hwnd}: releer y recolocar {} ms",
+        arranging.elapsed().as_millis()
+    );
     Ok(())
 }
 

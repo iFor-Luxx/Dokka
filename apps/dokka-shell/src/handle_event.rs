@@ -140,7 +140,9 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::Frame { seconds } => {
-            crate::handle_frame::handle_frame(session, surface, seconds)?;
+            if crate::handle_frame::handle_frame(session, surface, seconds)? {
+                return Ok(());
+            }
         }
         SurfaceEvent::MinimizeStarted { window } => {
             // Vía de Muelle (MIT): la ventana concreta de inmediato.
