@@ -23,24 +23,20 @@
 
 //! Ventana transparente que cubre la pantalla solo durante el vuelo.
 //!
-//! No recibe clics y esta por encima de todo sin activarse. La foto fija va
-//! en una ventana propia debajo de las tiras para que DWM la componga aparte.
+//! No recibe clics y esta por encima de todo sin activarse.
 
 use std::sync::OnceLock;
 
 use windows::Foundation::TimeSpan;
-use windows::UI::Composition::Compositor;
-use windows::UI::Composition::{ContainerVisual, Desktop::DesktopWindowTarget};
 use windows::Win32::Foundation::HWND;
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
-use windows::Win32::System::WinRT::Composition::ICompositorDesktopInterop;
 use windows::Win32::UI::WindowsAndMessaging::{
     CreateWindowExW, DefWindowProcW, DestroyWindow, RegisterClassW, SW_SHOWNOACTIVATE,
     SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SetWindowPos, ShowWindow, WNDCLASSW, WS_EX_LAYERED,
     WS_EX_NOACTIVATE, WS_EX_NOREDIRECTIONBITMAP, WS_EX_TOOLWINDOW, WS_EX_TOPMOST,
     WS_EX_TRANSPARENT, WS_POPUP,
 };
-use windows::core::{Interface, Result, w};
+use windows::core::w;
 
 use crate::geometry::PixelRect;
 
@@ -59,7 +55,7 @@ pub(crate) fn create_window(screen: PixelRect) -> Option<HWND> {
     static CLASS: OnceLock<bool> = OnceLock::new();
     let class = w!("DokkaGenie");
     // SAFETY: registro y creacion estandar en el hilo de interfaz; si falla la
-    // ventana propia se destruye aqui, o la libera `Flight::drop`.
+    // ventana la libera `Stage::drop`.
     unsafe {
         let instance = GetModuleHandleW(None).ok()?;
         CLASS.get_or_init(|| {
@@ -93,34 +89,6 @@ pub(crate) fn create_window(screen: PixelRect) -> Option<HWND> {
     }
 }
 
-/// Arbol visual del overlay ya enlazado a su ventana.
-pub(crate) fn create_overlay(
-    compositor: &Compositor,
-    screen: PixelRect,
-) -> Option<(HWND, DesktopWindowTarget, ContainerVisual)> {
-    let overlay = create_window(screen)?;
-    // SAFETY: `overlay` es la ventana viva creada arriba; si falla se destruye
-    // aqui, o la libera `Flight::drop`.
-    unsafe {
-        let tree = || -> Result<(DesktopWindowTarget, ContainerVisual)> {
-            let target = compositor
-                .cast::<ICompositorDesktopInterop>()?
-                .CreateDesktopWindowTarget(overlay, true)?;
-            let root = compositor.CreateContainerVisual()?;
-            root.SetRelativeSizeAdjustment(windows_numerics::Vector2 { X: 1.0, Y: 1.0 })?;
-            target.SetRoot(&root)?;
-            Ok((target, root))
-        };
-        match tree() {
-            Ok((target, root)) => Some((overlay, target, root)),
-            Err(_) => {
-                let _ = DestroyWindow(overlay);
-                None
-            }
-        }
-    }
-}
-
 /// Muestra una ventana propia sin activarla.
 pub(crate) fn show_no_activate(window: HWND) {
     // SAFETY: ventana propia y viva.
@@ -130,14 +98,11 @@ pub(crate) fn show_no_activate(window: HWND) {
 }
 
 /// Pone el vuelo justo debajo del dock para que pase tras su cristal.
-pub(crate) fn tuck_under(overlay: HWND, stand: Option<HWND>, dock: HWND) {
+pub(crate) fn tuck_under(overlay: HWND, dock: HWND) {
     let flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE;
     // SAFETY: solo reordena ventanas propias y vivas.
     unsafe {
         let _ = SetWindowPos(overlay, Some(dock), 0, 0, 0, 0, flags);
-        if let Some(stand) = stand {
-            let _ = SetWindowPos(stand, Some(overlay), 0, 0, 0, 0, flags);
-        }
     }
 }
 
