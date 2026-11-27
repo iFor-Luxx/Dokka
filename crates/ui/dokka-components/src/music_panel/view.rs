@@ -47,9 +47,7 @@ pub fn music_panel_hit(
     y: f32,
     track: Option<&MusicTrack>,
 ) -> Option<MusicPanelHit> {
-    if track.is_none() {
-        return None;
-    }
+    track?;
     let buttons = music_buttons(bounds);
     if contains(&buttons[0], x, y) {
         Some(MusicPanelHit::Previous)
@@ -172,10 +170,7 @@ fn music_icons(
 }
 
 fn contains(bounds: &Rect, x: f32, y: f32) -> bool {
-    x >= bounds.x
-        && x < bounds.x + bounds.width
-        && y >= bounds.y
-        && y < bounds.y + bounds.height
+    x >= bounds.x && x < bounds.x + bounds.width && y >= bounds.y && y < bounds.y + bounds.height
 }
 
 fn shorten(value: &str, limit: usize) -> String {
