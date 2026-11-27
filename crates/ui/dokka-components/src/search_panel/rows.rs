@@ -5,17 +5,18 @@ use super::SearchPanelProps;
 
 /// Fila visible que hay en el punto, siguiendo lo mostrado.
 pub(super) fn row_at(bounds: Rect, x: f32, y: f32, visible: usize) -> Option<usize> {
+    let results = measures::results_box(bounds);
     (0..visible).find(|&index| {
         let top = measures::row_top(bounds, index);
-        let inside_x = (bounds.x + measures::ROW_MARGIN
-            ..bounds.x + bounds.width - measures::ROW_MARGIN)
+        let inside_x = (results.x + measures::ROW_MARGIN
+            ..results.x + results.width - measures::ROW_MARGIN)
             .contains(&x);
         let inside_y = (top..top + measures::ROW_HEIGHT).contains(&y);
         inside_x && inside_y
     })
 }
 
-/// Fondo azul de la fila resaltada; de tamaño cero sin fila válida.
+/// Cápsula translúcida de la fila resaltada; de tamaño cero sin fila válida.
 pub(super) fn result_highlight(
     theme: &Theme,
     bounds: Rect,
@@ -31,8 +32,8 @@ pub(super) fn result_highlight(
         },
         corner_radius: measures::ROW_RADIUS,
         border_width: 0.0,
-        tint: theme.menu.highlight,
-        border: theme.menu.highlight,
+        tint: theme.tray.hover,
+        border: theme.tray.hover,
     };
     let Some(index) = props.highlighted else {
         return hidden;
@@ -42,15 +43,15 @@ pub(super) fn result_highlight(
     }
     Panel {
         bounds: Rect {
-            x: bounds.x + measures::ROW_MARGIN,
+            x: measures::results_box(bounds).x + measures::ROW_MARGIN,
             y: measures::row_top(bounds, index),
-            width: bounds.width - measures::ROW_MARGIN * 2.0,
+            width: measures::results_box(bounds).width - measures::ROW_MARGIN * 2.0,
             height: measures::ROW_HEIGHT,
         },
-        corner_radius: measures::ROW_RADIUS,
+        corner_radius: measures::ROW_RADIUS.min(measures::ROW_HEIGHT / 2.0),
         border_width: 0.0,
-        tint: theme.menu.highlight,
-        border: theme.menu.highlight,
+        tint: theme.tray.hover,
+        border: theme.tray.hover,
     }
 }
 
@@ -64,7 +65,7 @@ pub(super) fn field_cursor(theme: &Theme, search: &Rect, props: &SearchPanelProp
                 width: 0.0,
                 height: 0.0,
             },
-            color: theme.panel.text,
+            color: theme.tray.text,
         };
     }
     Divider {
@@ -74,21 +75,7 @@ pub(super) fn field_cursor(theme: &Theme, search: &Rect, props: &SearchPanelProp
             width: measures::SEARCH_CURSOR_WIDTH,
             height: measures::SEARCH_CURSOR_HEIGHT,
         },
-        color: theme.panel.text,
-    }
-}
-
-/// Línea bajo la casilla, siempre visible para no reconstruir capas.
-pub(super) fn row_separator(theme: &Theme, bounds: Rect) -> Divider {
-    let search = measures::search_box(bounds);
-    Divider {
-        bounds: Rect {
-            x: bounds.x + measures::SEARCH_MARGIN,
-            y: search.y + search.height + measures::GAP / 2.0 - measures::SEPARATOR_HEIGHT / 2.0,
-            width: bounds.width - measures::SEARCH_MARGIN * 2.0,
-            height: measures::SEPARATOR_HEIGHT,
-        },
-        color: theme.menu.separator,
+        color: theme.tray.text,
     }
 }
 

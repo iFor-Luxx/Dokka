@@ -1,30 +1,28 @@
-//! Medidas del panel buscador tipo Spotlight.
+//! Panel buscador estilo Spotlight de Tahoe.
 //!
-//! Cristal claro como `menu_panel` y `calendar_panel`, con la casilla grande
-//! arriba y hasta siete filas debajo. Los radios son concéntricos con el
-//! panel (interior = exterior - separación), como en Preferencias.
+//! Dos piezas de cristal separadas con un hueco: cápsula grande de búsqueda
+//! con lupa arriba y tarjeta de resultados debajo (hasta siete filas con
+//! icono de app y nombre, o "Sin resultados"). La fila resaltada es una
+//! cápsula translúcida. Radios concéntricos con cada pieza.
 
 use dokka_scene::{DRAWING_SIDE, Rect};
 
-/// Ancho fijo del panel.
-pub const WIDTH: f32 = 560.0;
-/// Esquinas del cristal, como los paneles flotantes.
-pub const CORNER_RADIUS: f32 = 16.0;
-pub const BORDER_WIDTH: f32 = 1.0;
-/// Aire inferior bajo la última fila.
-pub const PADDING: f32 = 12.0;
+use super::tray_glass as glass;
 
-/// Separación entre el borde del panel y la casilla o las filas:
-/// el radio interior queda en 10, concéntrico con el exterior de 16.
-pub const SEARCH_MARGIN: f32 = 6.0;
-/// Alto de la casilla grande, mayor que la del Launchpad.
+/// Ancho del buscador, mayor que los demás paneles de la barra.
+pub const WIDTH: f32 = 560.0;
+/// Hueco entre la cápsula de búsqueda y la tarjeta de resultados.
+pub const GAP: f32 = glass::GAP;
+/// Aire dentro de la tarjeta de resultados, arriba y abajo.
+pub const PADDING: f32 = glass::PADDING;
+
+/// Alto de la cápsula grande de búsqueda.
 pub const SEARCH_HEIGHT: f32 = 52.0;
-/// Radio de la casilla: exterior menos su separación.
-pub const SEARCH_RADIUS: f32 = CORNER_RADIUS - SEARCH_MARGIN;
-pub const SEARCH_BORDER_WIDTH: f32 = 1.0;
-/// Lado de la lupa dentro de la casilla.
+/// Radio de la cápsula: la mitad del alto.
+pub const SEARCH_RADIUS: f32 = SEARCH_HEIGHT / 2.0;
+/// Lado de la lupa dentro de la cápsula.
 pub const SEARCH_ICON_SIDE: f32 = 20.0;
-/// Aire entre el borde de la casilla y la lupa.
+/// Aire entre el borde de la cápsula y la lupa.
 pub const SEARCH_ICON_INSET: f32 = 14.0;
 /// Aire entre la lupa y el texto.
 pub const SEARCH_MAGNIFIER_GAP: f32 = 10.0;
@@ -38,21 +36,20 @@ pub const SEARCH_CHAR_ADVANCE: f32 = 9.0;
 pub const SEARCH_CURSOR_GAP: f32 = 2.0;
 /// Ancho del cursor vertical.
 pub const SEARCH_CURSOR_WIDTH: f32 = 2.0;
-/// Alto del cursor vertical, acorde a la casilla grande.
+/// Alto del cursor vertical, acorde a la cápsula grande.
 pub const SEARCH_CURSOR_HEIGHT: f32 = 22.0;
 /// Texto que se muestra con la consulta vacía.
 pub const SEARCH_PLACEHOLDER: &str = "Buscar";
 
-/// Separación entre la casilla y la primera fila.
-pub const GAP: f32 = 8.0;
-/// Borde superior de la primera fila, medido desde el borde del panel.
-pub const ROWS_TOP: f32 = SEARCH_MARGIN + SEARCH_HEIGHT + GAP;
+/// Esquinas de la tarjeta de resultados.
+pub const RESULTS_RADIUS: f32 = glass::TILE_RADIUS;
+pub const RESULTS_BORDER_WIDTH: f32 = glass::TILE_BORDER_WIDTH;
 /// Alto de cada fila de resultado.
 pub const ROW_HEIGHT: f32 = 44.0;
-/// Margen lateral del resaltado dentro del panel.
+/// Margen lateral del resaltado dentro de la tarjeta.
 pub const ROW_MARGIN: f32 = 6.0;
-/// Radio del resaltado, concéntrico con el panel.
-pub const ROW_RADIUS: f32 = CORNER_RADIUS - ROW_MARGIN;
+/// Radio del resaltado: cápsula (mitad del alto de la fila).
+pub const ROW_RADIUS: f32 = ROW_HEIGHT / 2.0;
 /// Lado del icono de app en cada fila.
 pub const ROW_ICON_SIDE: f32 = 28.0;
 /// Radio del hueco del icono cuando no hay imagen.
@@ -69,14 +66,12 @@ pub const MAX_NAME_CHARACTERS: usize = 32;
 pub const EMPTY_TEXT: &str = "Sin resultados";
 /// Tamaño del mensaje de vacío.
 pub const EMPTY_TEXT_SIZE: f32 = 14.0;
-/// Grosor de la línea bajo la casilla.
-pub const SEPARATOR_HEIGHT: f32 = 1.0;
 
 /// Lado del icono de la barra superior.
 pub const BAR_ICON_SIDE: f32 = 20.0;
 /// Tamaño del glifo Lucide de la barra: llena el lienzo de 100.
 pub const BAR_GLYPH_SIZE: f32 = DRAWING_SIDE;
-/// Tamaño del glifo Lucide dentro del panel: llena el lienzo de 100.
+/// Tamaño del glifo Lucide dentro de la cápsula: llena el lienzo de 100.
 pub const FIELD_GLYPH_SIZE: f32 = DRAWING_SIDE;
 
 /// Resultados que se muestran de `total`.
@@ -87,20 +82,31 @@ pub fn visible_results(total: usize) -> usize {
 /// Alto del panel para `visible` filas; con cero se reserva una para el vacío.
 pub fn panel_height(visible: usize) -> f32 {
     let rows = visible.max(1) as f32;
-    ROWS_TOP + rows * ROW_HEIGHT + PADDING
+    SEARCH_HEIGHT + GAP + PADDING * 2.0 + rows * ROW_HEIGHT
 }
 
-/// Casilla de búsqueda dentro del panel.
+/// Cápsula de búsqueda en lo alto del panel.
 pub fn search_box(bounds: Rect) -> Rect {
     Rect {
-        x: bounds.x + SEARCH_MARGIN,
-        y: bounds.y + SEARCH_MARGIN,
-        width: bounds.width - SEARCH_MARGIN * 2.0,
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width,
         height: SEARCH_HEIGHT,
+    }
+}
+
+/// Tarjeta de resultados bajo la cápsula.
+pub fn results_box(bounds: Rect) -> Rect {
+    let top = bounds.y + SEARCH_HEIGHT + GAP;
+    Rect {
+        x: bounds.x,
+        y: top,
+        width: bounds.width,
+        height: bounds.height - (top - bounds.y),
     }
 }
 
 /// Borde superior de la fila `index` dentro del panel.
 pub fn row_top(bounds: Rect, index: usize) -> f32 {
-    bounds.y + ROWS_TOP + index as f32 * ROW_HEIGHT
+    results_box(bounds).y + PADDING + index as f32 * ROW_HEIGHT
 }
