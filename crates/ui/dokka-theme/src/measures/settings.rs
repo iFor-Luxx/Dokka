@@ -36,7 +36,9 @@ pub const TRAFFIC_TOP: f32 = 24.0;
 /// Aire para pulsar cada semáforo alrededor de su círculo.
 pub const TRAFFIC_HIT_PADDING: f32 = 4.5;
 /// Lado del símbolo Lucide dentro de cada semáforo (círculo de 14).
-pub const TRAFFIC_GLYPH_SIDE: f32 = 10.0;
+pub const TRAFFIC_GLYPH_SIDE: f32 = 11.5;
+/// Desplazamiento de las copias que engrosan el trazo del símbolo.
+pub const TRAFFIC_GLYPH_SPREAD: f32 = 0.35;
 /// Tamaño del glifo Lucide del semáforo: llena el lienzo de 100, así la
 /// fuente efectiva es 10 al mostrarse a 10 de lado.
 pub const TRAFFIC_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
