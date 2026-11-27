@@ -64,6 +64,34 @@ pub struct MenubarPreferences {
     pub control_center: bool,
     /// Iconos de las apps en segundo plano; apagado, Dokka no toca la bandeja.
     pub background_apps: bool,
+    /// Orden de izquierda a derecha en la barra; cada icono aparece una vez.
+    /// La hora no se ordena: va siempre al final.
+    pub order: [MenubarItem; 7],
+}
+
+/// Un icono ordenable de la parte derecha de la barra.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MenubarItem {
+    Volume,
+    Network,
+    Music,
+    BackgroundApps,
+    Language,
+    Search,
+    ControlCenter,
+}
+
+impl MenubarItem {
+    /// Orden de fábrica, de izquierda a derecha.
+    pub const FACTORY_ORDER: [Self; 7] = [
+        Self::Volume,
+        Self::Network,
+        Self::Music,
+        Self::BackgroundApps,
+        Self::Language,
+        Self::Search,
+        Self::ControlCenter,
+    ];
 }
 
 impl Default for MenubarPreferences {
@@ -76,6 +104,7 @@ impl Default for MenubarPreferences {
             search: true,
             control_center: true,
             background_apps: true,
+            order: MenubarItem::FACTORY_ORDER,
         }
     }
 }
