@@ -23,11 +23,7 @@ fn glyph(icon: lucide_icons::Icon, size: f32, color: Color) -> Drawing {
 
 /// Lupa blanca de la barra superior para abrir el buscador.
 pub fn search_bar_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::Search,
-        measures::BAR_GLYPH_SIZE,
-        color,
-    )
+    glyph(lucide_icons::Icon::Search, measures::BAR_GLYPH_SIZE, color)
 }
 
 /// Lupa oscura de la casilla grande dentro del panel claro.

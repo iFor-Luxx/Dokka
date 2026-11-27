@@ -87,16 +87,13 @@ pub(super) fn panel_icons(
         drawings.field(),
     ));
     for slot in 0..measures::MAX_RESULTS {
-        if slot < visible {
+        if let Some(result) = props.results.get(slot).filter(|_| slot < visible) {
             icons.push(Icon {
                 x: bounds.x + measures::ROW_MARGIN + measures::SEARCH_ICON_INSET,
                 y: measures::row_top(bounds, slot)
                     + (measures::ROW_HEIGHT - measures::ROW_ICON_SIDE) / 2.0,
                 side: measures::ROW_ICON_SIDE,
-                image: props.results[slot]
-                    .image
-                    .clone()
-                    .map(IconImage::Pixels),
+                image: result.image.clone().map(IconImage::Pixels),
                 placeholder: theme.panel.highlight,
                 placeholder_radius: measures::ROW_ICON_RADIUS,
             });

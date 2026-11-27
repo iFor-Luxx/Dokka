@@ -1,9 +1,9 @@
 use dokka_scene::{Overlay, Rect, Size};
 use dokka_theme::{Theme, search as measures};
 
-use super::{SearchHit, SearchPanelIcons, SearchPanelProps};
 use super::content::{panel_icons, panel_texts};
 use super::rows::{field_cursor, result_highlight, row_at, row_separator};
+use super::{SearchHit, SearchPanelIcons, SearchPanelProps};
 use crate::popup_panel::popup_panel;
 use crate::search_field::search_panel_at;
 
@@ -38,7 +38,10 @@ pub fn search_panel_panel(
             measures::SEARCH_RADIUS,
             measures::SEARCH_BORDER_WIDTH,
         )],
-        dividers: vec![field_cursor(theme, &search, props), row_separator(theme, bounds)],
+        dividers: vec![
+            field_cursor(theme, &search, props),
+            row_separator(theme, bounds),
+        ],
         dots: Vec::new(),
         pointer: None,
         texts: panel_texts(theme, bounds, &search, props, visible),
@@ -52,7 +55,12 @@ pub fn search_panel_panel(
 }
 
 /// Fila bajo el punto, si es visible.
-pub fn search_panel_hit(bounds: Rect, x: f32, y: f32, props: &SearchPanelProps) -> Option<SearchHit> {
+pub fn search_panel_hit(
+    bounds: Rect,
+    x: f32,
+    y: f32,
+    props: &SearchPanelProps,
+) -> Option<SearchHit> {
     let visible = measures::visible_results(props.results.len());
     row_at(bounds, x, y, visible).map(SearchHit::Result)
 }

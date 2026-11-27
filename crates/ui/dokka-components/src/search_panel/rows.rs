@@ -5,13 +5,13 @@ use super::SearchPanelProps;
 
 /// Fila visible que hay en el punto, siguiendo lo mostrado.
 pub(super) fn row_at(bounds: Rect, x: f32, y: f32, visible: usize) -> Option<usize> {
-    (0..visible).find_map(|index| {
+    (0..visible).find(|&index| {
         let top = measures::row_top(bounds, index);
         let inside_x = (bounds.x + measures::ROW_MARGIN
             ..bounds.x + bounds.width - measures::ROW_MARGIN)
             .contains(&x);
         let inside_y = (top..top + measures::ROW_HEIGHT).contains(&y);
-        (inside_x && inside_y).then_some(index)
+        inside_x && inside_y
     })
 }
 

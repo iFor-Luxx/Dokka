@@ -26,8 +26,7 @@ pub fn filter_search_order(names: &[String], query: &str) -> Vec<usize> {
             .cmp(&left_starts)
             .then_with(|| left.1.cmp(&right.1))
     });
-    kept
-        .into_iter()
+    kept.into_iter()
         .map(|(index, _)| index)
         .take(measures::MAX_RESULTS)
         .collect()
