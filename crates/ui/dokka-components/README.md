@@ -25,6 +25,15 @@ con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y va
 y tarjeta de música (`music_panel`: tamaño fijo, título y artista recortados con "…",
 barra plana con anterior, pausa/reproducir y siguiente con los glifos de música
 existentes, "Nada en reproducción" sin canción y golpe por tercios; con y sin
-canción entrega los mismos textos, iconos y planos —ocultos con tamaño cero—).
+canción entrega los mismos textos, iconos y planos —ocultos con tamaño cero—),
+panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
+botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
+tarjeta de estado con nombre, tipo e internet y fila de ajustes), lista de
+idiomas (`language_panel`: marca del activo, resaltado de fila y ajustes),
+centro de control (`control_center_panel`: tarjetas de red, volumen con
+deslizador y música más botones redondos, sin resaltar) y buscador
+(`search_panel`: casilla grande con lupa y texto, hasta siete resultados con
+icono y resaltado, "Sin resultados" y `filter_search_order` con tildes
+ignoradas; con `search_field` para la casilla).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

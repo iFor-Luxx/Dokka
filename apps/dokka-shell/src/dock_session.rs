@@ -29,6 +29,10 @@ pub(crate) struct DockSession {
     /// Última barra ya dibujada: si no cambia, no se repinta para no hacer
     /// parpadear (la huella incluye mes, hover y apertura).
     pub(crate) menubar_painted: Option<dokka_menubar::MenubarPainted>,
+    /// `Tick` vistos por la barra: red e idioma se releen cada pocos.
+    pub(crate) menubar_ticks: u64,
+    /// Fuente de la sesión multimedia actual, para enviarle las órdenes.
+    pub(crate) menubar_music_source: Option<String>,
     pub(crate) previews: Previews,
     /// Ventana al frente en el último `Refresh`: otro primer plano también
     /// pide cerrar el panel, aunque la lista siga igual.
@@ -68,6 +72,8 @@ impl DockSession {
             dock: Dock::new(explorer.clone(), Arc::clone(&theme)),
             menubar: Menubar::new(Arc::clone(&theme)),
             menubar_painted: None,
+            menubar_ticks: 0,
+            menubar_music_source: None,
             previews: Previews::new(Arc::clone(&theme)),
             foreground: None,
             launchpad: Launchpad::new(),
