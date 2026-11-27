@@ -1,5 +1,7 @@
-use dokka_scene::{Divider, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, network_language as measures, typography};
+use std::sync::Arc;
+
+use dokka_scene::{Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_theme::{Theme, network_language as measures};
 
 use super::{NetworkHit, NetworkIcons, NetworkType};
 
@@ -11,7 +13,8 @@ pub fn network_size() -> Size {
     }
 }
 
-/// Panel con tarjeta de estado y fila de ajustes.
+/// Menú Tahoe: título, cápsula con círculo e internet, y ajustes aparte.
+/// El `panel` es invisible; cada pieza va en `tiles` con cristal ahumado.
 pub fn network_panel(
     theme: &Theme,
     icons: &NetworkIcons,
@@ -21,76 +24,114 @@ pub fn network_panel(
     has_internet: bool,
     highlighted: Option<NetworkHit>,
 ) -> Overlay {
-    let card = header_card(bounds);
-    let settings = settings_row(bounds);
-    let settings_color = if highlighted == Some(NetworkHit::Settings) {
-        theme.menu.highlighted_text
-    } else {
-        theme.menu.text
-    };
-    let icon_x = card.x + measures::PADDING + measures::TEXT_INSET;
-    let text_x = icon_x + measures::HEADER_ICON_SIDE + measures::HEADER_GAP;
+    let title = title_tile(bounds);
+    let status = status_tile(bounds);
+    let settings = settings_tile(bounds);
+    let is_active = kind != NetworkType::Offline;
+    let status_circle = circle_in(status);
+    let settings_circle = circle_in(settings);
+    let text_x = status_circle.x + status_circle.width + measures::ICON_GAP;
+    let chevron_side = measures::CHEVRON_SIDE;
     Overlay {
         panel: Panel {
             bounds,
-            corner_radius: measures::CORNER_RADIUS,
-            border_width: measures::BORDER_WIDTH,
-            tint: theme.menu.background,
-            border: theme.menu.border,
+            corner_radius: measures::TILE_RADIUS,
+            border_width: 0.0,
+            tint: theme.tray.clear,
+            border: theme.tray.clear,
         },
-        tiles: Vec::new(),
+        tiles: vec![
+            glass(theme, title, measures::TILE_RADIUS),
+            glass(theme, status, status.height / 2.0),
+            glass(theme, settings, measures::TILE_RADIUS),
+        ],
         pill: None,
         highlight: Some(settings_highlight(theme, settings, highlighted)),
-        flat_panels: vec![Panel {
-            bounds: card,
-            corner_radius: measures::CARD_RADIUS,
-            border_width: 0.0,
-            tint: theme.panel.highlight,
-            border: theme.panel.highlight,
-        }],
-        dividers: vec![Divider {
-            bounds: separator(bounds),
-            color: theme.menu.separator,
-        }],
-        dots: Vec::new(),
+        flat_panels: Vec::new(),
+        dividers: Vec::new(),
+        dots: vec![
+            Dot {
+                x: status_circle.x,
+                y: status_circle.y,
+                diameter: status_circle.width,
+                color: if is_active {
+                    theme.tray.circle_active
+                } else {
+                    theme.tray.circle
+                },
+            },
+            Dot {
+                x: settings_circle.x,
+                y: settings_circle.y,
+                diameter: settings_circle.width,
+                color: theme.tray.circle,
+            },
+        ],
         pointer: None,
         texts: vec![
             Text {
-                x: text_x,
-                center_y: card.y + measures::HEADER_HEIGHT / 2.0 - 11.0,
-                content: display_name(name, kind),
-                size: typography::TITLE_SIZE,
+                x: title.x + measures::PADDING,
+                center_y: title.y + title.height / 2.0,
+                content: measures::NETWORK_TITLE.to_owned(),
+                size: measures::TITLE_SIZE,
                 is_bold: true,
-                color: theme.menu.text,
+                color: theme.tray.text,
                 align: TextAlign::Left,
             },
             Text {
                 x: text_x,
-                center_y: card.y + measures::HEADER_HEIGHT / 2.0 + 11.0,
-                content: detail(kind, has_internet),
-                size: typography::BODY_SIZE,
-                is_bold: false,
-                color: theme.menu.text,
+                center_y: status.y + status.height / 2.0 - 11.0,
+                content: display_name(name, kind),
+                size: measures::TITLE_SIZE,
+                is_bold: true,
+                color: theme.tray.text,
                 align: TextAlign::Left,
             },
             Text {
-                x: bounds.x + measures::PADDING + measures::TEXT_INSET,
-                center_y: settings.y + measures::ROW_HEIGHT / 2.0,
-                content: measures::NETWORK_SETTINGS_LABEL.to_owned(),
-                size: typography::MENU_SIZE,
+                x: text_x,
+                center_y: status.y + status.height / 2.0 + 11.0,
+                content: detail(kind, has_internet),
+                size: measures::SUBTITLE_SIZE,
                 is_bold: false,
-                color: settings_color,
+                color: theme.tray.secondary,
+                align: TextAlign::Left,
+            },
+            Text {
+                x: settings_circle.x + settings_circle.width + measures::ICON_GAP,
+                center_y: settings.y + settings.height / 2.0,
+                content: measures::NETWORK_SETTINGS_LABEL.to_owned(),
+                size: measures::TITLE_SIZE,
+                is_bold: false,
+                color: theme.tray.text,
                 align: TextAlign::Left,
             },
         ],
-        icons: vec![Icon {
-            x: icon_x,
-            y: card.y + (measures::HEADER_HEIGHT - measures::HEADER_ICON_SIDE) / 2.0,
-            side: measures::HEADER_ICON_SIDE,
-            image: Some(IconImage::Drawing(icons.for_panel(kind))),
-            placeholder: theme.panel.highlight,
-            placeholder_radius: 0.0,
-        }],
+        icons: vec![
+            Icon {
+                x: status_circle.x + (status_circle.width - measures::CIRCLE_ICON) / 2.0,
+                y: status_circle.y + (status_circle.height - measures::CIRCLE_ICON) / 2.0,
+                side: measures::CIRCLE_ICON,
+                image: Some(IconImage::Drawing(icons.for_circle(kind, is_active))),
+                placeholder: theme.tray.tile,
+                placeholder_radius: 0.0,
+            },
+            Icon {
+                x: settings_circle.x + (settings_circle.width - measures::CIRCLE_ICON) / 2.0,
+                y: settings_circle.y + (settings_circle.height - measures::CIRCLE_ICON) / 2.0,
+                side: measures::CIRCLE_ICON,
+                image: Some(IconImage::Drawing(Arc::clone(icons.settings()))),
+                placeholder: theme.tray.tile,
+                placeholder_radius: 0.0,
+            },
+            Icon {
+                x: settings.x + settings.width - measures::PADDING - chevron_side,
+                y: settings.y + (settings.height - chevron_side) / 2.0,
+                side: chevron_side,
+                image: Some(IconImage::Drawing(Arc::clone(icons.chevron()))),
+                placeholder: theme.tray.tile,
+                placeholder_radius: 0.0,
+            },
+        ],
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -101,7 +142,7 @@ pub fn network_panel(
 
 /// Fila de ajustes que hay en el punto, si cae en ella.
 pub fn network_hit(bounds: Rect, x: f32, y: f32) -> Option<NetworkHit> {
-    let row = settings_row(bounds);
+    let row = settings_tile(bounds);
     if x >= row.x && x < row.x + row.width && y >= row.y && y < row.y + row.height {
         Some(NetworkHit::Settings)
     } else {
@@ -109,32 +150,51 @@ pub fn network_hit(bounds: Rect, x: f32, y: f32) -> Option<NetworkHit> {
     }
 }
 
-fn header_card(bounds: Rect) -> Rect {
+fn tile_row(bounds: Rect, top: f32, height: f32) -> Rect {
     Rect {
-        x: bounds.x + measures::PADDING,
-        y: bounds.y + measures::PADDING,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::HEADER_HEIGHT,
+        x: bounds.x + measures::GAP,
+        y: top,
+        width: bounds.width - measures::GAP * 2.0,
+        height,
     }
 }
 
-fn settings_row(bounds: Rect) -> Rect {
-    Rect {
-        x: bounds.x + measures::PADDING,
-        y: bounds.y + measures::PADDING + measures::HEADER_HEIGHT + measures::SEPARATOR_HEIGHT,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::ROW_HEIGHT,
+fn title_tile(bounds: Rect) -> Rect {
+    tile_row(bounds, bounds.y + measures::GAP, measures::TITLE_HEIGHT)
+}
+
+fn status_tile(bounds: Rect) -> Rect {
+    tile_row(
+        bounds,
+        bounds.y + measures::GAP * 2.0 + measures::TITLE_HEIGHT,
+        measures::ROW_HEIGHT,
+    )
+}
+
+fn settings_tile(bounds: Rect) -> Rect {
+    tile_row(
+        bounds,
+        bounds.y + measures::GAP * 3.0 + measures::TITLE_HEIGHT + measures::ROW_HEIGHT,
+        measures::SETTINGS_HEIGHT,
+    )
+}
+
+fn glass(theme: &Theme, bounds: Rect, radius: f32) -> Panel {
+    Panel {
+        bounds,
+        corner_radius: radius.min(bounds.height / 2.0),
+        border_width: measures::TILE_BORDER_WIDTH,
+        tint: theme.tray.tile,
+        border: theme.tray.tile_border,
     }
 }
 
-fn separator(bounds: Rect) -> Rect {
-    let middle =
-        bounds.y + measures::PADDING + measures::HEADER_HEIGHT + measures::SEPARATOR_HEIGHT / 2.0;
+fn circle_in(tile: Rect) -> Rect {
     Rect {
-        x: bounds.x + measures::PADDING + measures::TEXT_INSET,
-        y: middle - measures::DIVIDER_HEIGHT / 2.0,
-        width: bounds.width - (measures::PADDING + measures::TEXT_INSET) * 2.0,
-        height: measures::DIVIDER_HEIGHT,
+        x: tile.x + measures::PADDING,
+        y: tile.y + (tile.height - measures::CIRCLE) / 2.0,
+        width: measures::CIRCLE,
+        height: measures::CIRCLE,
     }
 }
 
@@ -148,15 +208,18 @@ fn settings_highlight(theme: &Theme, row: Rect, highlighted: Option<NetworkHit>)
         },
         corner_radius: measures::HIGHLIGHT_RADIUS,
         border_width: 0.0,
-        tint: theme.menu.highlight,
-        border: theme.menu.highlight,
+        tint: theme.tray.hover,
+        border: theme.tray.hover,
     };
     if highlighted != Some(NetworkHit::Settings) {
         return hidden;
     }
     Panel {
         bounds: row,
-        ..hidden
+        corner_radius: measures::TILE_RADIUS.min(row.height / 2.0),
+        border_width: 0.0,
+        tint: theme.tray.hover,
+        border: theme.tray.hover,
     }
 }
 

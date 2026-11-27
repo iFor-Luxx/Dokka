@@ -1,31 +1,47 @@
 use std::sync::Arc;
 
-use dokka_icons::language_check_icon;
+use dokka_icons::{language_row_icon, tray_chevron_icon, tray_settings_icon};
 use dokka_scene::Drawing;
 use dokka_theme::Theme;
 
-/// Marca Lucide del idioma activo, ya construida con los colores de un tema.
-/// Se reutiliza entre fotogramas: la plataforma solo repinta
-/// cuando recibe otro dibujo.
+/// Teclado de cada fila e iconos de ajustes, ya construidos con el tema.
+/// Sin marca de verificación: el círculo blanco con icono azul ya indica
+/// el idioma en uso. Se reutiliza entre fotogramas.
 #[derive(Debug)]
 pub struct LanguageIcons {
-    normal: Arc<Drawing>,
-    highlighted: Arc<Drawing>,
+    active: Arc<Drawing>,
+    inactive: Arc<Drawing>,
+    settings: Arc<Drawing>,
+    chevron: Arc<Drawing>,
 }
 
 impl LanguageIcons {
     pub fn new(theme: &Theme) -> Self {
         Self {
-            normal: Arc::new(language_check_icon(theme.menu.text)),
-            highlighted: Arc::new(language_check_icon(theme.menu.highlighted_text)),
+            active: Arc::new(language_row_icon(theme.tray.circle_active_icon)),
+            inactive: Arc::new(language_row_icon(theme.tray.circle_icon)),
+            settings: Arc::new(tray_settings_icon(theme.tray.circle_icon)),
+            chevron: Arc::new(tray_chevron_icon(theme.tray.text)),
         }
     }
 
-    pub(crate) fn for_row(&self, is_highlighted: bool) -> Arc<Drawing> {
-        if is_highlighted {
-            Arc::clone(&self.highlighted)
+    /// Teclado del círculo: azul sobre blanco si es el idioma en uso,
+    /// blanco sobre translúcido si no.
+    pub(crate) fn for_row(&self, is_active: bool) -> Arc<Drawing> {
+        if is_active {
+            Arc::clone(&self.active)
         } else {
-            Arc::clone(&self.normal)
+            Arc::clone(&self.inactive)
         }
+    }
+
+    /// Engranaje blanco de la zona de ajustes.
+    pub(crate) fn settings(&self) -> &Arc<Drawing> {
+        &self.settings
+    }
+
+    /// Chevrón blanco de la zona de ajustes.
+    pub(crate) fn chevron(&self) -> &Arc<Drawing> {
+        &self.chevron
     }
 }

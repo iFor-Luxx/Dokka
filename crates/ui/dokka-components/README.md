@@ -27,9 +27,10 @@ barra plana con anterior, pausa/reproducir y siguiente con los glifos de música
 existentes, "Nada en reproducción" sin canción y golpe por tercios; con y sin
 canción entrega los mismos textos, iconos y planos —ocultos con tamaño cero—),
 panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
-botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
-tarjeta de estado con nombre, tipo e internet y fila de ajustes), lista de
-idiomas (`language_panel`: marca del activo, resaltado de fila y ajustes),
+botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
+idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
+"Activa", resaltado suave y ajustes aparte, sin marca),
 centro de control (`control_center_panel`: tarjetas de red, volumen con
 deslizador y música más botones redondos, sin resaltar) y buscador
 (`search_panel`: casilla grande con lupa y texto, hasta siete resultados con
