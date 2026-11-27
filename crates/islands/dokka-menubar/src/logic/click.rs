@@ -169,18 +169,10 @@ impl Menubar {
         screen_height: f32,
     ) -> MenubarClick {
         if let Some(bounds) = self.calendar_bounds(bar_width)
-            && let Some((offset, weeks)) = calendar_step(
-                self.today,
-                self.calendar_month_offset(),
-                self.calendar_weeks_seen(),
-                bounds,
-                x,
-                y,
-            )
+            && let Some(offset) = calendar_step(self.calendar_month_offset(), bounds, x, y)
         {
             if let Some(open) = self.calendar.as_mut() {
                 open.month_offset = offset;
-                open.calendar_weeks = weeks;
             }
             return MenubarClick::CalendarKept;
         }

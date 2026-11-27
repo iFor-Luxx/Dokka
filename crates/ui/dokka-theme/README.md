@@ -2,13 +2,15 @@
 
 **Hace:** reúne todos los estilos. Cambiar un valor aquí lo cambia en todo Dokka.
 
-- `palette.rs`: colores base. Único lugar con valores de color. `HOME_LINE_FILL`
+- `palette.rs`: colores base. Único lugar con valores de color. `PANEL_ADJACENT_TEXT`
+  es el texto atenuado de los días vecinos del calendario. `HOME_LINE_FILL`
   con `HOME_LINE_BORDER` dibujan la línea del dock oculto sobre fondos
   claros y oscuros. `SHADOW` es la sombra negra suave del buscador y de
   Preferencias (negro ~30%, desenfoque ~30, caída de 8). `TRAY_TILE` y
   `TRAY_TILE_TRANSLUCENT` comparten el tono neutro de `MIST` y `MIST_STRONG` con
   menos alfa para las piezas Liquid Glass, sin aclarar el resto de paneles.
-- `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
+- `theme.rs`: para qué se usa cada color. `PanelColors` (`theme.panel`: fondo,
+  borde, texto, texto atenuado de los días vecinos y resaltado de hoy), `MenuColors` (`theme.menu`), `MenubarColors`
   (`theme.menubar`: mismo cristal del dock, texto y hover suave del icono), `TooltipColors`
   (`theme.tooltip`), `LaunchpadColors` (`theme.launchpad`: fondo, texto, resaltado, casilla de
   búsqueda, puntos de página y baldosa de los iconos), `NavPillColors`

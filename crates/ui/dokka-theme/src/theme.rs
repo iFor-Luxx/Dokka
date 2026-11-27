@@ -36,6 +36,9 @@ pub struct PanelColors {
     pub background: Color,
     pub border: Color,
     pub text: Color,
+    /// Días vecinos del mes anterior y del siguiente: mismo tono que
+    /// el texto, atenuado para distinguirse sin perder legibilidad.
+    pub adjacent_text: Color,
     pub highlight: Color,
 }
 

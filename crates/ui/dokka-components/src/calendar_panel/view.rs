@@ -9,17 +9,11 @@ use crate::nav_pill::{
 use crate::popup_panel::popup_panel;
 
 const WEEKDAYS: [&str; 7] = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
-/// Semanas mínimas: los meses de 4 o 5 semanas miden igual y las flechas
-/// no saltan al navegar; solo los de 6 semanas crecen una fila.
-const MINIMUM_WEEKS: u16 = 5;
+/// El calendario mide siempre 6 filas de semanas, como macOS.
+const WEEKS: u16 = 6;
 
-pub fn calendar_weeks(month: &CalendarMonth) -> u16 {
-    let used = u32::from(month.first_column) + u32::from(month.days);
-    (used.div_ceil(7) as u16).max(MINIMUM_WEEKS)
-}
-
-pub fn calendar_size(weeks: u16) -> Size {
-    let rows = 1.0 + f32::from(weeks);
+pub fn calendar_size() -> Size {
+    let rows = 1.0 + f32::from(WEEKS);
     Size {
         width: measures::CALENDAR_CELL_WIDTH * 7.0 + measures::PADDING * 2.0,
         height: measures::CALENDAR_HEADER
@@ -78,6 +72,18 @@ pub fn calendar_panel(
     }));
 
     let mut dots = Vec::new();
+    // Vecinos del mes anterior: últimos días antes del día 1, atenuados.
+    for cell in 0..month.first_column {
+        let day = month.prev_days - month.first_column + 1 + cell;
+        let (x, y) = (column_x(cell % 7), row_y(cell / 7 + 1));
+        texts.push(centered(
+            day.to_string(),
+            (x, y),
+            typography::BODY_SIZE,
+            false,
+            theme.panel.adjacent_text,
+        ));
+    }
     for day in 1..=month.days {
         let cell = month.first_column + day - 1;
         let (x, y) = (column_x(cell % 7), row_y(cell / 7 + 1));
@@ -96,6 +102,20 @@ pub fn calendar_panel(
             typography::BODY_SIZE,
             false,
             theme.panel.text,
+        ));
+    }
+    // Vecinos del mes siguiente: primeros días hasta completar 6 filas.
+    let used = u32::from(month.first_column) + u32::from(month.days);
+    let trailing = 7 * u32::from(WEEKS) - used;
+    for next in 0..trailing {
+        let cell = (used + next) as u16;
+        let (x, y) = (column_x(cell % 7), row_y(cell / 7 + 1));
+        texts.push(centered(
+            (next + 1).to_string(),
+            (x, y),
+            typography::BODY_SIZE,
+            false,
+            theme.panel.adjacent_text,
         ));
     }
 

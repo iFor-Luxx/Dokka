@@ -46,16 +46,10 @@ impl crate::Menubar {
         }
     }
 
-    /// Rectángulo del calendario abierto, con el recuerdo de semanas.
+    /// Rectángulo del calendario abierto, siempre con 6 filas.
     pub(crate) fn calendar_bounds(&self, bar_width: f32) -> Option<Rect> {
-        use dokka_components::calendar_panel::{calendar_month, calendar_weeks};
-
-        let open = self.calendar?;
-        let month = calendar_month(self.today, open.month_offset);
-        Some(super::calendar_panel_for(
-            bar_width,
-            calendar_weeks(&month).max(open.calendar_weeks),
-        ))
+        self.calendar?;
+        Some(super::calendar_panel_for(bar_width))
     }
 
     pub(crate) fn open_at(&mut self, bar_width: f32) {
@@ -75,10 +69,7 @@ impl crate::Menubar {
     }
 
     pub(crate) fn open_calendar(&mut self) {
-        self.calendar = Some(OpenCalendar {
-            month_offset: 0,
-            calendar_weeks: 0,
-        });
+        self.calendar = Some(OpenCalendar { month_offset: 0 });
         self.menu = None;
         self.icon_hovered = false;
         self.close_tray();

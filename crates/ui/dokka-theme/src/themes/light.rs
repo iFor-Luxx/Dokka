@@ -28,6 +28,7 @@ pub fn light() -> Theme {
             background: palette::MIST,
             border,
             text: palette::INK,
+            adjacent_text: palette::PANEL_ADJACENT_TEXT,
             highlight: palette::white(245),
         },
         tooltip: TooltipColors {

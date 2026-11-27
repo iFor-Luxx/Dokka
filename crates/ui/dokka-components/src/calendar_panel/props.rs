@@ -5,5 +5,8 @@ pub struct CalendarMonth {
     /// Columna del día 1; 0 es domingo.
     pub first_column: u16,
     pub days: u16,
+    /// Días que trae el mes anterior, para dibujar sus últimos días
+    /// en las celdas antes del día 1.
+    pub prev_days: u16,
     pub today: Option<u16>,
 }

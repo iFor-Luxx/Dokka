@@ -33,7 +33,6 @@ pub struct MenubarPainted {
     pub highlighted: Option<usize>,
     pub calendar_open: bool,
     pub month_offset: i32,
-    pub weeks_seen: u16,
     pub nav_hovered: Option<NavHalf>,
     pub clock_hovered: bool,
     pub tray_open: Option<TrayKind>,
@@ -73,7 +72,6 @@ impl PartialEq for MenubarPainted {
             && self.highlighted == other.highlighted
             && self.calendar_open == other.calendar_open
             && self.month_offset == other.month_offset
-            && self.weeks_seen == other.weeks_seen
             && self.nav_hovered == other.nav_hovered
             && self.clock_hovered == other.clock_hovered
             && self.tray_open == other.tray_open

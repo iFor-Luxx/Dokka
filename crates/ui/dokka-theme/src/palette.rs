@@ -139,6 +139,11 @@ pub(crate) const TRAY_SEPARATOR: Color = Color::rgba(0, 0, 0, 28);
 /// Número del volumen dentro del relleno blanco: gris oscuro.
 pub(crate) const TRAY_PERCENT: Color = Color::rgba(30, 32, 36, 170);
 
+/// Días vecinos del calendario (mes anterior y siguiente): mismo tono
+/// que el texto, atenuado para distinguirse sin perder legibilidad.
+/// Separado de `TRAY_SECONDARY` para poder ajustarlo sin tocar la barra.
+pub(crate) const PANEL_ADJACENT_TEXT: Color = Color::rgba(30, 32, 36, 150);
+
 /// Relleno claro de la línea del dock oculto: se lee sobre fondos claros
 /// y oscuros; el borde oscuro la recorta sobre lo claro.
 pub(crate) const HOME_LINE_FILL: Color = Color::rgba(248, 248, 250, 140);

@@ -9,4 +9,4 @@ mod view;
 pub use month::calendar_month;
 pub use navigation::{calendar_hovered, calendar_pill_props, calendar_step};
 pub use props::CalendarMonth;
-pub use view::{calendar_nav_pill, calendar_panel, calendar_size, calendar_weeks};
+pub use view::{calendar_nav_pill, calendar_panel, calendar_size};
