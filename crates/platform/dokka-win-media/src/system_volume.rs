@@ -2,8 +2,8 @@
 
 use dokka_contracts::{ContractError, VolumeControl};
 use dokka_model::VolumeState;
-use windows::Win32::Media::Audio::{IMMDeviceEnumerator, MMDeviceEnumerator, eConsole, eRender};
 use windows::Win32::Media::Audio::Endpoints::IAudioEndpointVolume;
+use windows::Win32::Media::Audio::{IMMDeviceEnumerator, MMDeviceEnumerator, eConsole, eRender};
 use windows::Win32::System::Com::{
     CLSCTX_ALL, COINIT_APARTMENTTHREADED, CoCreateInstance, CoInitializeEx, CoUninitialize,
 };
@@ -54,11 +54,9 @@ impl VolumeControl for SystemVolume {
         let endpoint = default_endpoint()?;
         // SAFETY: igual que en `set_level`; el booleano se convierte solo.
         unsafe {
-            endpoint
-                .SetMute(muted, std::ptr::null())
-                .map_err(|error| {
-                    ContractError::Failed(format!("no se pudo cambiar el silencio: {error}"))
-                })
+            endpoint.SetMute(muted, std::ptr::null()).map_err(|error| {
+                ContractError::Failed(format!("no se pudo cambiar el silencio: {error}"))
+            })
         }
     }
 }
@@ -110,9 +108,10 @@ fn default_endpoint() -> Result<IAudioEndpointVolume, ContractError> {
     };
     // SAFETY: activa la interfaz documentada de volumen sobre ese dispositivo.
     unsafe {
-        let endpoint: IAudioEndpointVolume = device.Activate(CLSCTX_ALL, None).map_err(|error| {
-            ContractError::Failed(format!("no se pudo abrir el volumen: {error}"))
-        })?;
+        let endpoint: IAudioEndpointVolume =
+            device.Activate(CLSCTX_ALL, None).map_err(|error| {
+                ContractError::Failed(format!("no se pudo abrir el volumen: {error}"))
+            })?;
         Ok(endpoint)
     }
 }
