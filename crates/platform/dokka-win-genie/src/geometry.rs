@@ -160,7 +160,6 @@ impl Turn {
     pub(crate) fn apply(self, root: &ContainerVisual) -> Result<()> {
         if let Some(matrix) = self.matrix() {
             let (width, height) = self.size();
-            root.SetRelativeSizeAdjustment(Vector2 { X: 0.0, Y: 0.0 })?;
             root.SetSize(Vector2 {
                 X: width,
                 Y: height,
