@@ -36,7 +36,6 @@ pub(crate) fn card_heights(section: usize, card: usize) -> Vec<f32> {
                 measures::CONTENT_ROW_HEIGHT,
                 measures::CONTENT_ROW_HEIGHT,
                 measures::CONTENT_ROW_HEIGHT,
-                measures::CONTENT_ROW_HEIGHT,
             ],
         }
     } else if section == SECTION_MENUBAR {
@@ -68,7 +67,6 @@ pub(crate) fn section_cards(section: usize) -> Vec<Vec<&'static str>> {
             ],
             vec![
                 "Animar al abrir apps",
-                "Efecto genio al minimizar",
                 "Mostrar indicadores de apps abiertas",
                 "Vistas previas de ventanas",
             ],

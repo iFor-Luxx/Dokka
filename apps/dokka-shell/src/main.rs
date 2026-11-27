@@ -6,8 +6,6 @@ mod context_menu;
 mod dock_fit;
 mod dock_session;
 mod floating_panels;
-mod genie;
-mod genie_flow;
 mod handle_event;
 mod handle_frame;
 mod launchpad;
@@ -85,13 +83,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut session = DockSession::new(renderer, explorer.id.clone());
     // El seguimiento incluye SOLO Preferencias del proceso propio, minimizada.
     session.remember_settings_window(surface.settings_handle());
-    // El vuelo pasa tras el cristal del dock.
-    session
-        .genie
-        .set_dock_window(surface.handle().raw().0 as isize);
-    session
-        .genie
-        .set_settings_window(surface.settings_handle().raw().0 as u64);
     let _watcher = ChangeWatcher::start();
 
     load_pinned(&mut session, explorer);
@@ -101,24 +92,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     crate::apply_preferences::load_preferences(&mut session);
     session.sync()?;
-    // Por si un cierre brusco dejo transiciones apagadas, se devuelven a las
-    // abiertas ahora.
-    {
-        let open = session
-            .state
-            .apps()
-            .iter()
-            .flat_map(|app| app.windows.iter())
-            .map(|window| window.id.value() as isize)
-            .collect::<Vec<_>>();
-        dokka_win_genie::ensure_clean_startup(&open);
-    }
     session.update_clock_and_trash();
     crate::menubar::refresh_foreground(&mut session);
     crate::menubar::refresh_clock(&mut session);
     session.resize(&mut surface)?;
-    // La animación propia debe estar apagada antes de la primera minimización.
-    crate::genie_flow::refresh(&mut session);
     crate::session_render::render(&mut session, &mut surface)?;
 
     println!("Dokka en marcha. Para cerrarlo: Ctrl+C en esta terminal.");
@@ -129,8 +106,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         session.is_animating()
     });
     // La barra siempre vuelve, también si `run` terminó con error.
-    // El genio devuelve las transiciones que apago (tambien con "Reiniciar").
-    session.genie.restore_transitions();
     surface.menubar_hide();
     set_taskbar_visible(true);
     result?;

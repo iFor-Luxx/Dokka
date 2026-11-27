@@ -10,7 +10,6 @@ mod list_entries;
 mod menu;
 mod menu_place;
 mod menu_query;
-mod minimize_target;
 mod orientation;
 mod pin_target;
 mod place_dock;

@@ -73,7 +73,6 @@ pub(crate) struct DockSession {
     windows: SystemWindows,
     /// Valor bruto de la ventana propia de Preferencias, si ya se conoce.
     settings_raw: Option<u64>,
-    pub(crate) genie: crate::genie::GenieBridge,
     pub(crate) icons: IconCache,
     pub(crate) names: NameCache,
     pub(crate) renderer: SceneRenderer,
@@ -115,7 +114,6 @@ impl DockSession {
             taskbar_auto: false,
             windows: SystemWindows::default(),
             settings_raw: None,
-            genie: crate::genie::GenieBridge::new(),
             icons: IconCache::new(),
             names: NameCache::default(),
             renderer,
@@ -177,7 +175,6 @@ impl DockSession {
 
     pub(crate) fn is_animating(&self) -> bool {
         self.dock.is_animating()
-            || self.genie.is_flying()
             || self.previews.is_waiting()
             || (self.launchpad.is_open() && self.launchpad.is_moving())
             || (self.launchpad.is_open() && self.launchpad.is_zooming())

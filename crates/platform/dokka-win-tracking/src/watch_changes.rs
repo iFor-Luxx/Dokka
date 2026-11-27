@@ -97,17 +97,13 @@ unsafe extern "system" fn notify(
     } else {
         LAST_OCCLUDED.store(foreground_occludes_primary(), Ordering::Relaxed);
     }
-    // Al empezar a minimizar no se puede esperar a agrupar avisos: `wParam` a 1.
-    // Vía de Muelle (MIT): el hwnd viaja en `lParam` para actuar de inmediato,
-    // sin deducirlo comparando listas después.
-    let urgent = usize::from(event == EVENT_SYSTEM_MINIMIZESTART);
-    // SAFETY: publica un mensaje sin datos propios en la cola del hilo actual.
+    // SAFETY: publica un mensaje sin datos en la cola del hilo actual.
     let _ = unsafe {
         PostThreadMessageW(
             GetCurrentThreadId(),
             WINDOWS_CHANGED_MESSAGE,
-            WPARAM(urgent),
-            LPARAM(window.0 as isize),
+            WPARAM(0),
+            LPARAM(0),
         )
     };
 }

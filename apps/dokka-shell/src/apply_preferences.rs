@@ -27,7 +27,6 @@ pub(crate) fn load_preferences(session: &mut DockSession) {
     };
     session.preferences = stored;
     session.dock.set_preferences(stored.dock);
-    session.genie.set_enabled(stored.dock.genie);
     session.refresh_occlusion();
     session.menubar.set_shown(stored.menubar);
     apply_background_apps(session, stored.menubar.background_apps);
@@ -50,12 +49,6 @@ pub(crate) fn apply_preferences(
     }
     session.preferences = preferences;
     session.dock.set_preferences(preferences.dock);
-    if preferences.dock.genie {
-        session.genie.set_enabled(true);
-    } else {
-        session.genie.restore_transitions();
-        session.genie.set_enabled(false);
-    }
     session.refresh_occlusion();
     session.menubar.set_shown(preferences.menubar);
     apply_background_apps(session, preferences.menubar.background_apps);

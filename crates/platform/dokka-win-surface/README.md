@@ -34,11 +34,7 @@ nativo de Windows, permite minimizarla desde la barra de tareas, aplica un tama�
 nuevo de contenido con `settings_apply_size` (zoom verde o vuelta a normal:
 limitado al área de trabajo contando el contenido, no el margen, y recentrado
 con el aire alrededor) y da la
-hora local. Un aviso urgente de minimizar
-(`wParam` a 1 con la ventana en `lParam`) se entrega ya como `MinimizeStarted`
-con su handle, sin agrupar; el resto se agrupa como `Refresh`. Un aviso urgente de minimizar
-(`wParam` a 1 con la ventana en `lParam`) se entrega ya como `MinimizeStarted`
-con su handle, sin agrupar; el resto se agrupa como `Refresh`. El Launchpad queda siempre justo debajo del dock y los
+hora local. Los avisos de cambios se agrupan como `Refresh`. El Launchpad queda siempre justo debajo del dock y los
 clics del dock no lo cierran. `cursor_over_dock` devuelve la posición
 lógica del cursor real si está sobre el dock (con DPI y zonas activas) y
 `set_preview_watch` arma un aviso cada 200 ms solo con panel, para que el

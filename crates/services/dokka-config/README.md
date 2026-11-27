@@ -7,7 +7,7 @@ las preferencias en `%APPDATA%\Dokka\preferences.txt` (`PreferencesFile`,
 `PreferencesStore`): una por línea como `clave=valor` (`dock.icon_scale`,
 `dock.magnification`, `dock.magnification_strength`, `dock.position`
 (`left`/`bottom`/`right`), `dock.auto_hide`, `dock.animate_launch`,
-`dock.show_indicators`, `dock.previews`, `dock.genie`, `menubar.volume`, `menubar.network`,
+`dock.show_indicators`, `dock.previews`, `menubar.volume`, `menubar.network`,
 `menubar.music`, `menubar.language`, `menubar.search`, `menubar.control_center`,
 `menubar.background_apps`, `menubar.order` (`volume,network,music,background_apps,language,search,control_center`
 de izquierda a derecha); sin archivo devuelve los valores de fábrica, las
