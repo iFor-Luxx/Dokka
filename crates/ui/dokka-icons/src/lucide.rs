@@ -102,26 +102,34 @@ pub fn traffic_circle(circle: Color) -> Drawing {
 }
 
 /// Semáforo completo: círculo con su símbolo oscuro centrado al pasar el
-/// cursor. El glifo se achica al lado que tenía dentro del círculo para no
-/// agrandarse al mostrarse a diámetro completo.
+/// cursor. El trazo de Lucide es muy fino a este tamaño: el mismo glifo se
+/// repite apenas desplazado en cruz para engrosarlo sin dibujar uno propio.
 fn traffic_button(circle: Color, icon: lucide_icons::Icon, symbol: Color) -> Drawing {
-    Drawing {
-        shapes: vec![
-            Shape::Circle {
-                x: CENTER,
-                y: CENTER,
-                radius: CENTER,
-                color: circle,
-            },
-            Shape::Glyph {
-                glyph: char::from(icon),
-                x: CENTER,
-                y: CENTER,
-                size: settings::TRAFFIC_GLYPH_SIDE * DRAWING_SIDE / settings::TRAFFIC_DIAMETER,
-                color: symbol,
-            },
-        ],
-    }
+    let to_canvas = DRAWING_SIDE / settings::TRAFFIC_DIAMETER;
+    let spread = settings::TRAFFIC_GLYPH_SPREAD * to_canvas;
+    let glyphs = [
+        (0.0, 0.0),
+        (-spread, 0.0),
+        (spread, 0.0),
+        (0.0, -spread),
+        (0.0, spread),
+    ]
+    .into_iter()
+    .map(|(dx, dy)| Shape::Glyph {
+        glyph: char::from(icon),
+        x: CENTER + dx,
+        y: CENTER + dy,
+        size: settings::TRAFFIC_GLYPH_SIDE * to_canvas,
+        color: symbol,
+    });
+    let mut shapes = vec![Shape::Circle {
+        x: CENTER,
+        y: CENTER,
+        radius: CENTER,
+        color: circle,
+    }];
+    shapes.extend(glyphs);
+    Drawing { shapes }
 }
 
 /// Círculo rojo con su × oscura al pasar el cursor.
@@ -134,9 +142,9 @@ pub fn traffic_minimize_button(circle: Color, symbol: Color) -> Drawing {
     traffic_button(circle, lucide_icons::Icon::Minus, symbol)
 }
 
-/// Círculo verde con su + oscuro al pasar el cursor.
+/// Círculo verde con sus flechas diagonales (pantalla completa) al pasar el cursor.
 pub fn traffic_zoom_button(circle: Color, symbol: Color) -> Drawing {
-    traffic_button(circle, lucide_icons::Icon::Plus, symbol)
+    traffic_button(circle, lucide_icons::Icon::Maximize2, symbol)
 }
 
 /// Icono blanco de la sección General sobre su cuadrado de color.
