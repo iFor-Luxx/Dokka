@@ -169,9 +169,21 @@ impl Flight {
         let image = captured.image;
         let restore = captured.restore;
         let size = (image.width as f32, image.height as f32);
-        let pieces = cut(gfx, &self.root, &image, image.height)?;
-        let drive = bind(gfx, &self.genie, &pieces, size, false)?;
-        launch(gfx, &self.genie, &drive, false, self.seconds)?;
+        // Cada paso dice cuál falló: el compositor rechaza en silencio.
+        let step = |name: &'static str| {
+            move |error: &windows::core::Error| {
+                eprintln!(
+                    "genio: fallo al {name}: {} ({:#X})",
+                    error.message(),
+                    error.code().0
+                );
+            }
+        };
+        let pieces =
+            cut(gfx, &self.root, &image, image.height).inspect_err(step("cortar las tiras"))?;
+        let drive = bind(gfx, &self.genie, &pieces, size, false)
+            .inspect_err(step("dar forma al embudo"))?;
+        launch(gfx, &self.genie, &drive, false, self.seconds).inspect_err(step("lanzar"))?;
         self.captured = Some((restore, self.source));
         Ok(drive)
     }
