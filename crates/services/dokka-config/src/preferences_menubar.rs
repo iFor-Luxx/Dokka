@@ -5,7 +5,7 @@
 //! fábrica. El orden incompleto, repetido o mal escrito conserva los válidos
 //! en su orden y añade los que falten en el orden de fábrica.
 
-use dokka_model::{MenubarItem, Preferences};
+use dokka_model::{ControlItem, HiddenControls, MenubarItem, Preferences};
 
 use super::preferences_file::{format_bool, parse_bool};
 
@@ -71,6 +71,32 @@ fn format_order(order: &[MenubarItem; 7]) -> String {
         .join(",")
 }
 
+/// Ocultos leídos de `menubar.hidden_controls`: nombres en minúsculas
+/// separados por comas; lo desconocido se ignora y vacío es nada oculto.
+pub(crate) fn parse_hidden(value: &str) -> HiddenControls {
+    let mut hidden = HiddenControls::empty();
+    for part in value.split(',') {
+        let name = part.trim();
+        if name.is_empty() {
+            continue;
+        }
+        if let Some(item) = ControlItem::from_name(name) {
+            hidden.insert(item);
+        }
+    }
+    hidden
+}
+
+/// Ocultos para escribir: nombres en el orden de fábrica, sin lo visible.
+fn format_hidden(hidden: HiddenControls) -> String {
+    ControlItem::FACTORY_ORDER
+        .into_iter()
+        .filter(|item| hidden.contains(*item))
+        .map(ControlItem::name)
+        .collect::<Vec<_>>()
+        .join(",")
+}
+
 /// Aplica una clave de la barra; `true` si era de la barra.
 pub(crate) fn apply_menubar(preferences: &mut Preferences, key: &str, value: &str) -> bool {
     match key {
@@ -120,6 +146,10 @@ pub(crate) fn apply_menubar(preferences: &mut Preferences, key: &str, value: &st
             preferences.menubar.order = parse_order(value);
             true
         }
+        "menubar.hidden_controls" => {
+            preferences.menubar.hidden_controls = parse_hidden(value);
+            true
+        }
         _ => false,
     }
 }
@@ -144,5 +174,9 @@ pub(crate) fn render_menubar(preferences: &Preferences) -> Vec<(&'static str, St
             format_bool(preferences.menubar.background_apps),
         ),
         ("menubar.order", format_order(&preferences.menubar.order)),
+        (
+            "menubar.hidden_controls",
+            format_hidden(preferences.menubar.hidden_controls),
+        ),
     ]
 }

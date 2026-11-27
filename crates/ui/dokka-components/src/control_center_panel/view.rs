@@ -1,3 +1,4 @@
+use dokka_model::HiddenControls;
 use dokka_scene::{Overlay, Panel, Rect, Size};
 use dokka_theme::{Theme, control_center as measures};
 
@@ -6,40 +7,41 @@ use super::brightness::add_brightness;
 use super::capsules::add_capsules;
 use super::circles::add_circles;
 use super::icons::ControlCenterIcons;
+use super::layout::arrange;
 use super::music::add_music;
 use super::paint::Pieces;
 use super::slider::add_slider;
 
-/// Tamaño del panel: con brillo una tarjeta más y su hueco.
-/// Sin brillo es exactamente el de antes.
-pub fn control_center_size(brightness: Option<f32>) -> Size {
+/// Tamaño del panel: rejilla repartida según los ocultos; con todo
+/// oculto solo queda el aire exterior.
+pub fn control_center_size(hidden: HiddenControls, brightness: Option<f32>) -> Size {
+    let dummy = Rect {
+        x: 0.0,
+        y: 0.0,
+        width: measures::WIDTH,
+        height: 0.0,
+    };
     Size {
         width: measures::WIDTH,
-        height: if brightness.is_some() {
-            measures::HEIGHT_WITH_BRIGHTNESS
-        } else {
-            measures::HEIGHT
-        },
+        height: arrange(dummy, hidden, brightness.is_some()).height(),
     }
 }
 
-/// Rejilla Tahoe de cuatro columnas sobre fondo invisible: cápsula de red
-/// con dos círculos blancos a la izquierda, música a la derecha (dos por
-/// dos), cápsula de Preferencias con dos círculos debajo, Pantalla a todo lo
-/// ancho si hay brillo DDC, Sonido a todo lo ancho y cuatro círculos al final.
-/// Cada zona añade lo suyo; todo existe siempre: lo oculto mide cero o vacío.
+/// Rejilla Tahoe de cuatro columnas sobre fondo invisible, repartida según
+/// los ocultos: cada zona añade lo suyo si su control se ve.
 pub fn control_center_panel(
     theme: &Theme,
     icons: &ControlCenterIcons,
     bounds: Rect,
     props: &ControlCenterProps,
 ) -> Overlay {
+    let layout = arrange(bounds, props.hidden, props.brightness.is_some());
     let mut pieces = Pieces::new();
-    add_capsules(&mut pieces, theme, bounds, props, icons);
-    add_music(&mut pieces, theme, bounds, props, icons);
-    add_circles(&mut pieces, theme, bounds, props, icons);
-    add_brightness(&mut pieces, theme, bounds, props, icons);
-    add_slider(&mut pieces, theme, bounds, props, icons);
+    add_capsules(&mut pieces, theme, &layout, props, icons);
+    add_music(&mut pieces, theme, &layout, props, icons);
+    add_circles(&mut pieces, theme, &layout, props, icons);
+    add_brightness(&mut pieces, theme, &layout, props, icons);
+    add_slider(&mut pieces, theme, &layout, props, icons);
     Overlay {
         panel: Panel {
             bounds,

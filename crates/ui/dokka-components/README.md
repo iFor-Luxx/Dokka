@@ -37,11 +37,11 @@ activas si hay, botón de silencio, separador y fila de ajustes), panel de red (
 con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
 idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),
-centro de control (`control_center_panel`: rejilla estricta de cuatro
-columnas de 66 con hueco de 12 (círculo 66, cápsula 144 × 66, música
-144 × 144 con la carátula real en píxeles cuando hay —marcador si no—,
-igual que `music_panel`, Sonido a todo lo ancho de 68 y Pantalla igual
-justo encima solo con brillo DDC): Red con dos círculos blancos,
+centro de control (`control_center_panel`: rejilla de cuatro columnas que reparte
+los controles visibles en el orden de fábrica al primer hueco libre —Red y
+Preferencias 2x1, Música 2x2, Pantalla y Sonido 4x1, el resto 1x1— con las
+mismas celda, hueco y aire; con nada oculto cae donde caía; lo oculto no se
+dibuja ni responde y el alto se recalcula; Pantalla solo con brillo DDC): Red con dos círculos blancos,
 música de dos por dos con textos recortados a 16, Preferencias con dos círculos
 y textos de cápsula en 12/11 recortados a 12 con "…", Pantalla si hay,
 Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal

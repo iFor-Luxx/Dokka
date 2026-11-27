@@ -1,31 +1,32 @@
-//! Tarjeta ancha de Pantalla: justo encima de Sonido y con su misma forma,
-//! márgenes y geometría. Título arriba a la izquierda, pista fina del
-//! componente `slider` con relleno blanco y tirador en cápsula en la parte
-//! baja y un sol pequeño a cada extremo (tenue a la izquierda, pleno a la
-//! derecha), alineados con la barra. Solo existe con brillo DDC disponible.
+//! Tarjeta ancha de Pantalla donde la ponga la rejilla: título arriba a la
+//! izquierda, pista fina del componente `slider` con relleno blanco y
+//! tirador en cápsula en la parte baja y un sol pequeño a cada extremo
+//! (tenue a la izquierda, pleno a la derecha), alineados con la barra.
+//! Solo existe visible y con brillo DDC.
 
-use dokka_scene::Rect;
+use dokka_model::ControlItem;
 use dokka_theme::{Theme, control_center as measures, tray_glass as glass};
 
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
-use super::layout::{brightness_card, slider_area, sound_left_icon, sound_mute_icon};
+use super::layout::{ControlLayout, slider_area, sound_left_icon, sound_mute_icon};
 use super::paint::{Pieces, picture, tile, title};
 use crate::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
 
-/// Suma la Pantalla si hay brillo: cristal, pista con relleno y tirador,
-/// título y soles. Sin brillo no añade nada y el panel queda como antes.
+/// Suma la Pantalla si se ve y hay brillo; si no, no añade nada.
 pub(crate) fn add_brightness(
     pieces: &mut Pieces,
     theme: &Theme,
-    bounds: Rect,
+    layout: &ControlLayout,
     props: &ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
     let Some(level) = props.brightness else {
         return;
     };
-    let card = brightness_card(bounds);
+    let Some(card) = layout.rect(ControlItem::Brightness) else {
+        return;
+    };
     let area = slider_area(card);
     let track = slider_track_bounds(area);
     let slider = SliderProps {

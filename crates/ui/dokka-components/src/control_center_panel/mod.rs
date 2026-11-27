@@ -1,10 +1,10 @@
-//! Centro de control estilo Tahoe: rejilla de cuatro columnas con la cápsula
-//! de red y dos círculos blancos a la izquierda, música a la derecha, cápsula
-//! de Preferencias con dos círculos debajo, Pantalla a todo lo ancho si hay
-//! brillo DDC justo encima de Sonido, Sonido a todo lo ancho y cuatro
-//! círculos al final. Una carpeta por zona (`capsules`, `music`, `circles`,
-//! `slider`, `brightness`) con ayudas comunes en `paint`. No conoce ninguna
-//! isla ni llama a Windows: describe qué dibujar y qué zona se pulsa.
+//! Centro de control estilo Tahoe: rejilla de cuatro columnas que reparte
+//! los controles visibles en el orden de fábrica (red, música, círculos,
+//! Preferencias, Pantalla a todo lo ancho si hay brillo DDC, Sonido igual y
+//! cuatro círculos al reacomodarse). Una carpeta por zona (`capsules`,
+//! `music`, `circles`, `slider`, `brightness`) con ayudas comunes en `paint`
+//! y el reparto en `layout`. No conoce ninguna isla ni llama a Windows:
+//! describe qué dibujar y qué zona se pulsa.
 
 mod brightness;
 mod capsules;

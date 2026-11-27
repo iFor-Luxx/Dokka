@@ -1,35 +1,36 @@
 //! Botones circulares, todos en el mismo cristal con icono oscuro: el blanco
 //! solo marca un icono activo (el círculo interior de la cápsula de red),
-//! nunca un botón entero.
+//! nunca un botón entero. Lo oculto no se dibuja.
 
-use dokka_scene::Rect;
+use dokka_model::ControlItem;
 use dokka_theme::{Theme, control_center as measures};
 
 use super::icons::ControlCenterIcons;
-use super::layout::circle_slot;
+use super::layout::ControlLayout;
 use super::paint::{Pieces, picture, tile};
 
-/// Suma los ocho círculos con su icono centrado a 22.
+/// Suma los círculos visibles con su icono centrado a 22.
 pub(crate) fn add_circles(
     pieces: &mut Pieces,
     theme: &Theme,
-    bounds: Rect,
-    props: &super::ControlCenterProps,
+    layout: &ControlLayout,
+    _props: &super::ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
-    let with_brightness = props.brightness.is_some();
     let circles = [
-        &icons.desktop,
-        &icons.lock,
-        &icons.task_view,
-        &icons.project,
-        &icons.calculator,
-        &icons.screen_clip,
-        &icons.clock,
-        &icons.task_manager,
+        (ControlItem::Desktop, &icons.desktop),
+        (ControlItem::Lock, &icons.lock),
+        (ControlItem::TaskView, &icons.task_view),
+        (ControlItem::Project, &icons.project),
+        (ControlItem::Calculator, &icons.calculator),
+        (ControlItem::ScreenClip, &icons.screen_clip),
+        (ControlItem::Clock, &icons.clock),
+        (ControlItem::TaskManager, &icons.task_manager),
     ];
-    for (index, drawing) in circles.into_iter().enumerate() {
-        let slot = circle_slot(bounds, index, with_brightness);
+    for (item, drawing) in circles {
+        let Some(slot) = layout.rect(item) else {
+            continue;
+        };
         pieces.tiles.push(tile(theme, slot, slot.width / 2.0));
         pieces
             .icons

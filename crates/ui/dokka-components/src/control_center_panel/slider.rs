@@ -1,28 +1,29 @@
-//! Tarjeta ancha de Sonido: título arriba a la izquierda, pista fina del
-//! componente `slider` con relleno blanco y tirador en cápsula en la parte
-//! baja e icono pequeño a cada extremo (el derecho silencia), alineados con
-//! la barra.
+//! Tarjeta ancha de Sonido donde la ponga la rejilla: título arriba a la
+//! izquierda, pista fina del componente `slider` con relleno blanco y
+//! tirador en cápsula en la parte baja e icono pequeño a cada extremo (el
+//! derecho silencia), alineados con la barra. Oculta no se dibuja.
 
-use dokka_scene::Rect;
+use dokka_model::ControlItem;
 use dokka_theme::{Theme, control_center as measures, tray_glass as glass};
 
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
-use super::layout::{slider_area, sound_card, sound_left_icon, sound_mute_icon};
+use super::layout::{ControlLayout, slider_area, sound_left_icon, sound_mute_icon};
 use super::paint::{Pieces, picture, tile, title};
 use crate::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
 
-/// Suma el Sonido: cristal, pista con relleno y tirador, título y los dos
-/// iconos. Sin silencio el relleno es blanco; con él, atenuado.
+/// Suma el Sonido si se ve: cristal, pista con relleno y tirador, título y
+/// los dos iconos. Sin silencio el relleno es blanco; con él, atenuado.
 pub(crate) fn add_slider(
     pieces: &mut Pieces,
     theme: &Theme,
-    bounds: Rect,
+    layout: &ControlLayout,
     props: &ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
-    let with_brightness = props.brightness.is_some();
-    let card = sound_card(bounds, with_brightness);
+    let Some(card) = layout.rect(ControlItem::Sound) else {
+        return;
+    };
     let area = slider_area(card);
     let track = slider_track_bounds(area);
     let slider = SliderProps {

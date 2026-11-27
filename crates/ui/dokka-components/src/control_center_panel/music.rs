@@ -1,28 +1,31 @@
-//! Tarjeta de música: dos columnas por dos filas con carátula, título,
-//! artista y controles grandes de anterior, pausa y siguiente.
+//! Tarjeta de música de dos por dos donde la ponga la rejilla, con carátula,
+//! título, artista y controles grandes de anterior, pausa y siguiente.
 //! La carátula es un icono con píxeles cuando hay foto; sin ella, un
 //! marcador transparente sobre el plano de detrás. Siempre hay icono,
-//! con o sin imagen: la cantidad de elementos no cambia.
+//! con o sin imagen: la cantidad de elementos no cambia. Oculta no se dibuja.
 
 use std::sync::Arc;
 
+use dokka_model::ControlItem;
 use dokka_scene::{Bitmap, Icon, IconImage, Rect};
 use dokka_theme::{Theme, control_center as measures, tray_glass as glass};
 
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
-use super::layout::{music_art, music_button, music_tile};
+use super::layout::{ControlLayout, music_art, music_button};
 use super::paint::{Pieces, flat, picture, shorten, subtitle, tile, title};
 
-/// Suma la música: cristal, carátula, textos y los tres controles.
+/// Suma la música si se ve: cristal, carátula, textos y los tres controles.
 pub(crate) fn add_music(
     pieces: &mut Pieces,
     theme: &Theme,
-    bounds: Rect,
+    layout: &ControlLayout,
     props: &ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
-    let card = music_tile(bounds);
+    let Some(card) = layout.rect(ControlItem::Music) else {
+        return;
+    };
     let art = music_art(card);
     pieces.tiles.push(tile(theme, card, glass::TILE_RADIUS));
     pieces

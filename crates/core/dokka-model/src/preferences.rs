@@ -1,5 +1,7 @@
 //! Lo que el usuario puede ajustar desde Preferencias.
 
+use super::control_item::HiddenControls;
+
 /// Límites de los multiplicadores del dock, sobre las medidas del tema (1.0).
 pub const DOCK_ICON_SCALE_RANGE: (f32, f32) = (0.75, 1.5);
 pub const DOCK_MAGNIFICATION_RANGE: (f32, f32) = (0.5, 1.5);
@@ -67,6 +69,8 @@ pub struct MenubarPreferences {
     /// Orden de izquierda a derecha en la barra; cada icono aparece una vez.
     /// La hora no se ordena: va siempre al final.
     pub order: [MenubarItem; 7],
+    /// Controles del centro ocultos; los demás se reacomodan sin huecos.
+    pub hidden_controls: HiddenControls,
 }
 
 /// Un icono ordenable de la parte derecha de la barra.
@@ -105,6 +109,7 @@ impl Default for MenubarPreferences {
             control_center: true,
             background_apps: true,
             order: MenubarItem::FACTORY_ORDER,
+            hidden_controls: HiddenControls::empty(),
         }
     }
 }

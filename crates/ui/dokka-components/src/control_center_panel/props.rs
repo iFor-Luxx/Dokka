@@ -2,10 +2,11 @@
 
 use std::sync::Arc;
 
-use dokka_model::{NetworkState, NowPlayingInfo, VolumeState};
+use dokka_model::{HiddenControls, NetworkState, NowPlayingInfo, VolumeState};
 use dokka_scene::Bitmap;
 
-/// Estado que pinta el panel: red, volumen, reproducción en curso y carátula.
+/// Estado que pinta el panel: red, volumen, reproducción en curso, carátula,
+/// brillo y qué controles están ocultos.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ControlCenterProps {
     pub network: NetworkState,
@@ -15,6 +16,8 @@ pub struct ControlCenterProps {
     pub artwork: Option<Arc<Bitmap>>,
     /// Brillo del monitor de 0 a 1; `None` sin DDC: sin tarjeta.
     pub brightness: Option<f32>,
+    /// Controles ocultos; no se dibujan ni responden.
+    pub hidden: HiddenControls,
 }
 
 /// Zona pulsable del panel.

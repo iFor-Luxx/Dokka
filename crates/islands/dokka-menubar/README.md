@@ -14,9 +14,11 @@ debajo su panel real (`volume_panel`, `network_panel`, `language_panel`,
 `<x>_size` y colocado bajo su icono sin salirse del ancho (el buscador va
 separado de la barra, centrado a lo ancho de la pantalla, con sombra suave
 bajo la casilla y la tarjeta). `set_shown(MenubarPreferences)` elige qué iconos se ven
-y en qué orden: los apagados no se dibujan ni reciben clics, los demás se
-recolocan sin huecos según `order` y si estaba abierto su panel se cierra
-(también si cambia el orden con un panel abierto); el filtrado y el orden
+y en qué orden, y qué controles del centro se ocultan: los apagados no se dibujan
+ni reciben clics, los demás se recolocan sin huecos según `order` y si estaba
+abierto su panel se cierra (también si cambia el orden con un panel abierto);
+si el centro está abierto y cambian sus ocultos, su tamaño se recalcula sin
+cerrarlo; el filtrado y el orden
 viven en `logic/tray.rs` (`is_shown` y `saved_order`: añadir un `TrayKind`
 nuevo es una línea en cada uno) y la huella lo nota. Navega meses con las flechas, con hover, midiendo siempre
 6 filas con los vecinos atenuados; la hora y la fila se resaltan suave (plano, como el icono) al
@@ -54,7 +56,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `language.rs` | `open_language`, `set_languages`, elección de idioma |
 | `music.rs` | `open_music`, `set_now_playing` (canción y carátula), botón anterior/pausa/siguiente; expone `artwork` para reutilizarla |
 | `search.rs` | `open_search` (separado de la barra, centrado a lo ancho), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
-| `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula y el brillo en sus props, con `set_brightness` que recoloca el alto); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
+| `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula, los ocultos de `shown` y el brillo en sus props, con `set_brightness` que recoloca el alto y `set_shown` que lo recoloca si cambian los ocultos); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
 | `background.rs` | `open_background`, `set_background_apps` (recoloca el alto si está abierto), clic izquierdo `TrayActivate`, clic derecho `TrayMenu` y hover |
 | `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
 | `tray.rs` | `TrayKind`, celdas de la fila y colocación (`tray_place`, `tray_place_centered` del buscador estilo Spotlight con el alto del monitor) |

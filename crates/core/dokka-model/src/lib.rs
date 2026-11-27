@@ -3,6 +3,7 @@
 mod app_id;
 mod app_info;
 mod app_window;
+mod control_item;
 mod dock_app;
 mod open_window;
 mod preferences;
@@ -13,6 +14,7 @@ mod window_id;
 pub use app_id::AppId;
 pub use app_info::AppInfo;
 pub use app_window::AppWindow;
+pub use control_item::{ControlItem, HiddenControls};
 pub use dock_app::DockApp;
 pub use open_window::OpenWindow;
 pub use preferences::{
