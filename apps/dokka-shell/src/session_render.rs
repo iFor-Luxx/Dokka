@@ -24,13 +24,6 @@ pub(crate) fn render(
     update_media(session);
     update_pinned(session);
     let mut scene = dock_scene(session);
-    if let Some((flying, opacity)) = session.genie.landing() {
-        for thumbnail in &mut scene.thumbnails {
-            if thumbnail.window == flying {
-                thumbnail.opacity = opacity;
-            }
-        }
-    }
     if session.launchpad.is_open() {
         // Con el Launchpad no hay menú ni vistas previas.
         scene.overlay = None;

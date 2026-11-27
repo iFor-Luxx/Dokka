@@ -51,9 +51,6 @@ impl Settings {
                 DockSwitch::AnimateLaunch => {
                     preferences.dock.animate_launch = !preferences.dock.animate_launch;
                 }
-                DockSwitch::Genie => {
-                    preferences.dock.genie = !preferences.dock.genie;
-                }
                 DockSwitch::ShowIndicators => {
                     preferences.dock.show_indicators = !preferences.dock.show_indicators;
                 }

@@ -140,13 +140,7 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::Frame { seconds } => {
-            if crate::handle_frame::handle_frame(session, surface, seconds)? {
-                return Ok(());
-            }
-        }
-        SurfaceEvent::MinimizeStarted { window } => {
-            // Vía de Muelle (MIT): la ventana concreta de inmediato.
-            crate::genie_flow::on_minimize_started(session, surface, window)?;
+            crate::handle_frame::handle_frame(session, surface, seconds)?;
         }
         SurfaceEvent::CursorCheck => {
             if !session.launchpad.is_open() {
@@ -157,11 +151,6 @@ pub(crate) fn handle_event(
             // Avisa también cuando Windows saca su barra por su cuenta.
             crate::taskbar_mode::keep_taskbar_hidden(session);
             let changed = session.sync()?;
-            // El genio detecta minimizadas nuevas; si cambió la lista, tras
-            // recolocar el dock para apuntar al hueco definitivo.
-            if !changed {
-                crate::genie_flow::refresh(session);
-            }
             // Otra ventana al frente también avisa, aunque la lista siga igual.
             let foreground_changed = session.poll_foreground_changed();
             let occluded_changed = session.refresh_occlusion();
@@ -179,9 +168,6 @@ pub(crate) fn handle_event(
                 surface.menu_closed();
             }
             session.resize(surface)?;
-            if changed {
-                crate::genie_flow::refresh(session);
-            }
         }
         SurfaceEvent::Tick => {
             crate::taskbar_mode::keep_taskbar_hidden(session);
