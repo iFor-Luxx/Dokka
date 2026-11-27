@@ -72,6 +72,16 @@ impl Dock {
         }
     }
 
+    /// Guarda si una app ocupa la pantalla principal.
+    /// Sin ese dato (falla sola) se llama con `false` y el dock se ve.
+    pub fn set_occluded(&mut self, occluded: bool) {
+        self.hide.set_occluded(occluded);
+    }
+
+    pub fn is_occluded(&self) -> bool {
+        self.hide.is_occluded()
+    }
+
     /// Coordenada a lo largo del dock bajo el cursor (x abajo, y en laterales).
     pub(crate) fn cursor_along(&self) -> f32 {
         if crate::logic::is_vertical(self) {

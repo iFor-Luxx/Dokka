@@ -6,10 +6,17 @@ pub const DOCK_BOTTOM_MARGIN: f32 = 8.0;
 /// Margen con el borde en vertical: el mismo que abajo.
 pub const DOCK_EDGE_MARGIN: f32 = DOCK_BOTTOM_MARGIN;
 
-/// Franja fina que queda visible al esconderse, para volver al tocarla.
-pub const HIDE_STRIP: f32 = 3.0;
-/// Espera antes de empezar a esconderse tras perder el cursor.
-pub const HIDE_DELAY_SECONDS: f32 = 0.6;
+/// Cápsula que queda al borde cuando el dock se oculta con una app
+/// a pantalla completa: como el indicador de inicio del iPhone.
+pub const HOME_LINE_LENGTH: f32 = 140.0;
+pub const HOME_LINE_THICKNESS: f32 = 5.0;
+/// Separación entre la línea y el borde de la pantalla.
+pub const HOME_LINE_EDGE_GAP: f32 = 6.0;
+/// Zona de toque de la línea, más generosa y pegada al borde.
+pub const HOME_LINE_TOUCH_LENGTH: f32 = 180.0;
+pub const HOME_LINE_TOUCH_THICKNESS: f32 = 28.0;
+/// Espera corta antes de volver a bajar tras salir del dock.
+pub const HIDE_DELAY_SECONDS: f32 = 0.4;
 /// Cuánto tarda en deslizarse fuera y en volver.
 pub const HIDE_MOVE_SECONDS: f32 = 0.25;
 pub const SHOW_MOVE_SECONDS: f32 = 0.18;

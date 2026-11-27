@@ -27,6 +27,7 @@ pub(crate) fn load_preferences(session: &mut DockSession) {
     };
     session.preferences = stored;
     session.dock.set_preferences(stored.dock);
+    session.refresh_occlusion();
     session.menubar.set_shown(stored.menubar);
     apply_background_apps(session, stored.menubar.background_apps);
     if !stored.dock.previews {
@@ -48,6 +49,7 @@ pub(crate) fn apply_preferences(
     }
     session.preferences = preferences;
     session.dock.set_preferences(preferences.dock);
+    session.refresh_occlusion();
     session.menubar.set_shown(preferences.menubar);
     apply_background_apps(session, preferences.menubar.background_apps);
     if !preferences.dock.previews {
