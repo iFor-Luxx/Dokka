@@ -55,18 +55,12 @@ pub const GENIE_SECONDS: f32 = 0.35;
 pub const GENIE_SETTLE_SECONDS: f32 = 0.12;
 /// La miniatura del dock aparece durante el tramo final del vuelo.
 pub const GENIE_LANDING_START: f32 = 0.8;
-/// Filas de pantalla por tira: el borde del embudo avanza de a pocos pixeles.
-pub const GENIE_STRIP_ROWS: u32 = 3;
-/// Tope de tiras por vuelo.
-pub const GENIE_MAX_STRIPS: u32 = 400;
+/// Tiras por vuelo: cada una sigue la curva con sus bordes inclinados.
+pub const GENIE_STRIPS: i32 = 48;
 /// Filas de mas que dibuja cada tira para no dejar costuras.
-pub const GENIE_OVERLAP_ROWS: f32 = 1.0;
+pub const GENIE_OVERLAP_ROWS: i32 = 1;
 /// Fotogramas que se espera el hueco antes de rendirse.
 pub const GENIE_AIM_FRAMES: u32 = 2;
-/// Fotogramas que conviven la foto fija y las tiras antes de soltar la foto.
-pub const GENIE_HANDOVER_FRAMES: u32 = 2;
-/// Se abandona una copia de pantalla que tarda mas que esto.
-pub const GENIE_CAPTURE_TIMEOUT_SECONDS: f32 = 0.75;
 /// Se abandona un vuelo que tarda mas que esto.
 pub const GENIE_FLIGHT_TIMEOUT_SECONDS: f32 = 2.0;
 
@@ -88,11 +82,6 @@ impl Genie {
         let x = ((t - SLIDE_START) / (1.0 - SLIDE_START)).clamp(0.0, 1.0);
         x * x
     }
-}
-
-/// Cuantas tiras lleva una ventana de esta altura en pixeles.
-pub fn strip_count(window_height: u32) -> u32 {
-    (window_height / GENIE_STRIP_ROWS).clamp(1, GENIE_MAX_STRIPS)
 }
 
 /// Progreso lineal de 0 a 1 con segundos transcurridos y duracion.

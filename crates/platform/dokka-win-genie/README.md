@@ -1,25 +1,21 @@
 # dokka-win-genie
 
-**Hace:** efecto genio al minimizar y restaurar hacia el dock: foto de la
-ventana en un hilo aparte, miniatura DWM fija, tiras de composición sobre una
-ventana superpuesta que no recibe clics y apagado temporal de las
-transiciones de las demás ventanas. Falla sola: si algo falla, la ventana se
-minimiza o restaura como siempre.
+**Hace:** efecto genio al minimizar y restaurar hacia el dock: tiras de composición con la imagen
+viva de la ventana (`dokka-win-thumbnail`) sobre una ventana superpuesta que no recibe clics, y
+apagado temporal de las transiciones de las demás ventanas. Falla sola: si algo falla, la ventana se
+minimiza o restaura sin efecto.
 
-**No hace:** no decide cuándo minimizar ni dónde está el hueco del dock (lo
-pide el shell con rectángulos en píxeles de pantalla); no guarda preferencias
-ni dibuja el dock. Solo vive mientras dura un vuelo.
+**No hace:** no decide cuándo minimizar ni dónde está el hueco del dock (lo pide el shell con
+rectángulos en píxeles de pantalla); no copia la pantalla, no guarda imágenes ni preferencias. Solo
+trabaja mientras dura un vuelo.
 
-**Vía inmediata:** el shell avisa la ventana concreta al empezar a minimizar
-y la foto fija va primero (`from` entera con bordes para la miniatura DWM,
-`frame` visible para copiar y volar; maximizadas desde su área de trabajo);
-el hueco llega después con `aim`. El vuelo pasa tras el cristal solo con el
-dock oculto. Cada salida temprana escribe una línea `genio: ...` con el
-motivo; al empezar, apuntar, despegar y terminar también. Sin líneas por
-fotograma.
+**Tiras:** 48 miniaturas vivas, cada una de su franja y en perspectiva. No repartir una sola imagen
+viva entre muchas tiras: Windows se atasca (se midió: 9 fotogramas por vuelo frente a 63).
 
-La foto se toma con la gráfica (Desktop Duplication) en un hilo propio; si falla, con GDI como
-respaldo.
+**Vuelo:** el shell avisa la ventana al empezar a minimizar y las tiras aparecen donde estaba
+(`from`, entera con bordes invisibles; `frame`, lo visible, que es lo que vuela; maximizadas desde su
+área de trabajo). El hueco llega después con `aim`. De cada ventana minimizada solo se recuerda de
+dónde salió. El vuelo pasa tras el cristal solo con el dock oculto. Cada salida temprana escribe una
+línea `genio: ...` con el motivo.
 
-A pantalla completa (vídeos, juegos) no hay genio y esas ventanas conservan la animación de
-Windows. El registro anota lo que tarda cada paso (`genio: tiempos`).
+A pantalla completa (vídeos, juegos) no hay genio y esas ventanas conservan la animación de Windows.
