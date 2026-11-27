@@ -49,7 +49,7 @@ pub fn submenu_overlay(
 
 /// Fila de texto que hay en el punto, si es elegible.
 pub fn menu_row_at(rows: &[MenuRow], bounds: Rect, x: f32, y: f32) -> Option<usize> {
-    if x < bounds.x || x > bounds.x + bounds.width {
+    if x < bounds.x + measures::PADDING || x > bounds.x + bounds.width - measures::PADDING {
         return None;
     }
     let mut top = bounds.y + measures::PADDING;

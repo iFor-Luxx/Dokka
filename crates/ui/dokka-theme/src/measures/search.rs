@@ -48,8 +48,8 @@ pub const RESULTS_BORDER_WIDTH: f32 = glass::TILE_BORDER_WIDTH;
 pub const ROW_HEIGHT: f32 = 44.0;
 /// Margen lateral del resaltado dentro de la tarjeta.
 pub const ROW_MARGIN: f32 = 6.0;
-/// Radio del resaltado: cápsula (mitad del alto de la fila).
-pub const ROW_RADIUS: f32 = ROW_HEIGHT / 2.0;
+/// Radio del resaltado: concéntrico con la tarjeta (radio menos margen).
+pub const ROW_RADIUS: f32 = 18.0;
 /// Lado del icono de app en cada fila.
 pub const ROW_ICON_SIDE: f32 = 28.0;
 /// Radio del hueco del icono cuando no hay imagen.

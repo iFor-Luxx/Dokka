@@ -4,7 +4,7 @@
 //! fila de ajustes.
 
 use dokka_scene::Rect;
-use dokka_theme::network_language as measures;
+use dokka_theme::{network_language as measures, tray_glass as glass};
 
 use super::LanguageEntry;
 
@@ -22,12 +22,12 @@ pub(crate) fn title_row(bounds: Rect) -> Rect {
 pub(crate) fn row_rect(bounds: Rect, index: usize) -> Rect {
     let title = title_row(bounds);
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN,
         y: title.y
             + title.height
             + measures::TITLE_GAP
             + index as f32 * (measures::ROW_HEIGHT + measures::ROW_GAP),
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - glass::ROW_MARGIN * 2.0,
         height: measures::ROW_HEIGHT,
     }
 }
@@ -42,9 +42,9 @@ pub(crate) fn settings_row(bounds: Rect, count: usize) -> Rect {
         last.y + last.height
     };
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN,
         y: top + measures::SECTION_GAP + dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - glass::ROW_MARGIN * 2.0,
         height: measures::ROW_HEIGHT,
     }
 }
@@ -54,9 +54,9 @@ pub(crate) fn settings_row(bounds: Rect, count: usize) -> Rect {
 pub(crate) fn separator_rect(bounds: Rect, count: usize) -> Rect {
     let settings = settings_row(bounds, count);
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN + glass::ROW_INSET,
         y: settings.y - measures::SECTION_GAP,
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - (glass::ROW_MARGIN + glass::ROW_INSET) * 2.0,
         height: dokka_theme::tray_glass::SEPARATOR_HEIGHT,
     }
 }
@@ -65,7 +65,7 @@ pub(crate) fn separator_rect(bounds: Rect, count: usize) -> Rect {
 pub(crate) fn code_rect(bounds: Rect, index: usize, _language: &LanguageEntry) -> Rect {
     let row = row_rect(bounds, index);
     Rect {
-        x: row.x + row.width - measures::CODE_WIDTH,
+        x: row.x + row.width - glass::ROW_INSET - measures::CODE_WIDTH,
         y: row.y + (row.height - measures::CODE_HEIGHT) / 2.0,
         width: measures::CODE_WIDTH,
         height: measures::CODE_HEIGHT,

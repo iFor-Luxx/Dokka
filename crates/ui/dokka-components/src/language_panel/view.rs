@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use dokka_scene::{Divider, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, network_language as measures};
+use dokka_theme::{Theme, network_language as measures, tray_glass as glass};
 
 use super::layout::{code_rect, row_rect, separator_rect, settings_row, title_row};
 use super::{LanguageEntry, LanguageHit, LanguageIcons};
@@ -31,7 +31,7 @@ pub fn language_panel(
     }
     let mut texts = Vec::with_capacity(languages.len() * 2 + 2);
     texts.push(Text {
-        x: title.x + measures::PADDING,
+        x: title.x + glass::ROW_MARGIN + glass::ROW_INSET,
         center_y: title.y + title.height / 2.0,
         content: measures::LANGUAGE_TITLE.to_owned(),
         size: measures::TITLE_SIZE,
@@ -42,7 +42,7 @@ pub fn language_panel(
     for (index, language) in languages.iter().enumerate() {
         let row = row_rect(bounds, index);
         texts.push(Text {
-            x: row.x + measures::CHECK_SIDE + measures::ICON_GAP,
+            x: row.x + glass::ROW_INSET + measures::CHECK_SIDE + measures::ICON_GAP,
             center_y: row.y + row.height / 2.0,
             content: short(&language.name),
             size: measures::TITLE_SIZE,
@@ -63,7 +63,7 @@ pub fn language_panel(
     }
     let settings = settings_row(bounds, languages.len());
     texts.push(Text {
-        x: settings.x,
+        x: settings.x + glass::ROW_INSET,
         center_y: settings.y + settings.height / 2.0,
         content: measures::LANGUAGE_SETTINGS_LABEL.to_owned(),
         size: measures::TITLE_SIZE,
@@ -79,7 +79,7 @@ pub fn language_panel(
     }
     let chevron_side = measures::CHEVRON_SIDE;
     panel_icons.push(Icon {
-        x: settings.x + settings.width - chevron_side,
+        x: settings.x + settings.width - glass::ROW_INSET - chevron_side,
         y: settings.y + (settings.height - chevron_side) / 2.0,
         side: chevron_side,
         image: Some(IconImage::Drawing(Arc::clone(icons.chevron()))),
@@ -149,7 +149,7 @@ fn code_box(theme: &Theme, code: Rect) -> Panel {
 fn check_icon(theme: &Theme, icons: &LanguageIcons, row: Rect, language: &LanguageEntry) -> Icon {
     if language.is_active {
         Icon {
-            x: row.x,
+            x: row.x + glass::ROW_INSET,
             y: row.y + (row.height - measures::CHECK_SIDE) / 2.0,
             side: measures::CHECK_SIDE,
             image: Some(IconImage::Drawing(icons.check())),
@@ -158,7 +158,7 @@ fn check_icon(theme: &Theme, icons: &LanguageIcons, row: Rect, language: &Langua
         }
     } else {
         Icon {
-            x: row.x,
+            x: row.x + glass::ROW_INSET,
             y: row.y + row.height / 2.0,
             side: 0.0,
             image: None,

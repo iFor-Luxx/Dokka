@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use dokka_scene::{Divider, Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, network_language as measures};
+use dokka_theme::{Theme, network_language as measures, tray_glass as glass};
 
 use super::layout::{circle_in, separator_rect, settings_row, status_row, title_row};
 use super::{NetworkHit, NetworkIcons, NetworkType};
@@ -51,7 +51,7 @@ pub fn network_panel(
         pointer: None,
         texts: vec![
             Text {
-                x: title.x + measures::PADDING,
+                x: title.x + glass::ROW_MARGIN + glass::ROW_INSET,
                 center_y: title.y + title.height / 2.0,
                 content: measures::NETWORK_TITLE.to_owned(),
                 size: measures::TITLE_SIZE,
@@ -78,7 +78,7 @@ pub fn network_panel(
                 align: TextAlign::Left,
             },
             Text {
-                x: settings.x,
+                x: settings.x + glass::ROW_INSET,
                 center_y: settings.y + settings.height / 2.0,
                 content: measures::NETWORK_SETTINGS_LABEL.to_owned(),
                 size: measures::TITLE_SIZE,
@@ -97,7 +97,7 @@ pub fn network_panel(
                 placeholder_radius: 0.0,
             },
             Icon {
-                x: settings.x + settings.width - measures::CHEVRON_SIDE,
+                x: settings.x + settings.width - glass::ROW_INSET - measures::CHEVRON_SIDE,
                 y: settings.y + (settings.height - measures::CHEVRON_SIDE) / 2.0,
                 side: measures::CHEVRON_SIDE,
                 image: Some(IconImage::Drawing(Arc::clone(icons.chevron()))),

@@ -3,7 +3,7 @@
 //! Una columna: título y una fila compacta por app con su círculo.
 
 use dokka_scene::Rect;
-use dokka_theme::background as measures;
+use dokka_theme::{background as measures, tray_glass as glass};
 
 /// Fila del título en negrita arriba a la izquierda.
 pub(crate) fn title_row(bounds: Rect) -> Rect {
@@ -19,12 +19,12 @@ pub(crate) fn title_row(bounds: Rect) -> Rect {
 pub(crate) fn row_rect(bounds: Rect, index: usize) -> Rect {
     let title = title_row(bounds);
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN,
         y: title.y
             + title.height
             + measures::TITLE_GAP
             + index as f32 * (measures::ROW_HEIGHT + measures::ROW_GAP),
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - glass::ROW_MARGIN * 2.0,
         height: measures::ROW_HEIGHT,
     }
 }
@@ -32,7 +32,7 @@ pub(crate) fn row_rect(bounds: Rect, index: usize) -> Rect {
 /// Círculo suave dentro de la fila, a la izquierda.
 pub(crate) fn circle_in(row: Rect) -> Rect {
     Rect {
-        x: row.x,
+        x: row.x + glass::ROW_INSET,
         y: row.y + (row.height - measures::CIRCLE) / 2.0,
         width: measures::CIRCLE,
         height: measures::CIRCLE,
