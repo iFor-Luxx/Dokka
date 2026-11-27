@@ -7,6 +7,7 @@ mod explorer;
 mod launchpad;
 mod lucide;
 mod music;
+mod network_language;
 mod shapes;
 mod tile_color;
 mod tile_frame;
@@ -32,6 +33,10 @@ pub use lucide::{
     traffic_zoom_icon,
 };
 pub use music::music_bar_icon;
+pub use network_language::{
+    language_check_icon, network_ethernet_icon, network_offline_icon, network_other_icon,
+    network_wifi_icon,
+};
 pub use trash::trash_icon;
 pub use volume::{
     volume_high_icon, volume_low_icon, volume_mute_icon, volume_muted_icon, volume_off_icon,
