@@ -9,9 +9,11 @@ impl Menubar {
     /// Qué iconos de la fila derecha se muestran. Los apagados no se dibujan
     /// ni reciben clics; si estaba abierto su panel, se cierra. Si cambia el
     /// orden con un panel abierto, también se cierra para no quedarse colgando
-    /// del icono viejo.
+    /// del icono viejo. Si cambian los ocultos del centro con el centro
+    /// abierto, su tamaño se recalcula sin cerrarlo.
     pub fn set_shown(&mut self, shown: MenubarPreferences) {
         let order_changed = self.shown.order != shown.order;
+        let hidden_changed = self.shown.hidden_controls != shown.hidden_controls;
         self.shown = shown;
         if order_changed && self.tray.is_some() {
             self.close_tray();
@@ -19,6 +21,10 @@ impl Menubar {
         }
         if self.tray.is_some_and(|open| !self.is_shown(open.kind)) {
             self.close_tray();
+            return;
+        }
+        if hidden_changed && self.tray_kind() == Some(TrayKind::ControlCenter) {
+            self.resize_control_center();
         }
     }
 

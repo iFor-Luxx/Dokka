@@ -10,7 +10,7 @@ use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
-    /// Mide con su tamaño real (crece con brillo) y lo coloca bajo su icono.
+    /// Mide con su tamaño real (según ocultos y brillo) y lo coloca bajo su icono.
     /// Reutiliza los datos de volumen, brillo, red y música ya guardados.
     pub fn open_control_center(&mut self, bar_width: f32) {
         let Some(anchor) = self.tray_anchor(super::TrayKind::ControlCenter, bar_width) else {
@@ -18,7 +18,11 @@ impl Menubar {
         };
         self.show_tray(
             super::TrayKind::ControlCenter,
-            tray_place(anchor, control_center_size(self.brightness), bar_width),
+            tray_place(
+                anchor,
+                control_center_size(self.shown.hidden_controls, self.brightness),
+                bar_width,
+            ),
         );
     }
 
@@ -28,17 +32,22 @@ impl Menubar {
         let changed = self.brightness != brightness;
         self.brightness = brightness;
         if changed && self.tray_kind() == Some(super::TrayKind::ControlCenter) {
-            let size = control_center_size(self.brightness);
-            self.tray = self.tray.map(|open| super::OpenTray {
-                panel: dokka_scene::Rect {
-                    x: open.panel.x,
-                    y: open.panel.y,
-                    width: size.width,
-                    height: size.height,
-                },
-                ..open
-            });
+            self.resize_control_center();
         }
+    }
+
+    /// Recoloca el alto del centro abierto según ocultos y brillo.
+    pub(crate) fn resize_control_center(&mut self) {
+        let size = control_center_size(self.shown.hidden_controls, self.brightness);
+        self.tray = self.tray.map(|open| super::OpenTray {
+            panel: dokka_scene::Rect {
+                x: open.panel.x,
+                y: open.panel.y,
+                width: size.width,
+                height: size.height,
+            },
+            ..open
+        });
     }
 
     pub(crate) fn control_props(&self) -> ControlCenterProps {
@@ -48,23 +57,20 @@ impl Menubar {
             now_playing: self.now_playing.clone(),
             artwork: self.artwork(),
             brightness: self.brightness,
+            hidden: self.shown.hidden_controls,
         }
     }
 
     pub(crate) fn control_overlay(&self) -> Overlay {
-        let size = control_center_size(self.brightness);
+        let props = self.control_props();
+        let size = control_center_size(props.hidden, props.brightness);
         let bounds = self.tray_bounds().unwrap_or(dokka_scene::Rect {
             x: 0.0,
             y: dokka_theme::menubar::HEIGHT,
             width: size.width,
             height: size.height,
         });
-        control_center_panel(
-            &self.theme,
-            &self.control_icons,
-            bounds,
-            &self.control_props(),
-        )
+        control_center_panel(&self.theme, &self.control_icons, bounds, &props)
     }
 
     /// Botón abajo en un deslizador: fija el nivel ya, como en volumen.
@@ -92,15 +98,14 @@ impl Menubar {
             return None;
         }
         let bounds = self.tray_bounds()?;
+        let props = self.control_props();
         if self.dragging_brightness {
             Some(MenubarAction::BrightnessSetLevel(
-                control_center_brightness_value(bounds, x),
+                control_center_brightness_value(bounds, x, &props),
             ))
         } else {
             Some(MenubarAction::VolumeSetLevel(control_center_slider_value(
-                bounds,
-                x,
-                self.brightness,
+                bounds, x, &props,
             )))
         }
     }

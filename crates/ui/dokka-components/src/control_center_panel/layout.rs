@@ -1,129 +1,147 @@
-//! Posiciones del Centro de control, compartidas por el dibujo y el hit.
+//! Dónde cae cada control visible, única fuente para tamaño, dibujo,
+//! golpe y arrastre.
 //!
-//! Rejilla estricta de cuatro columnas: celda cuadrada de lado `CELL` con
-//! hueco `GAP` igual en horizontal y vertical. La cápsula ancha ocupa dos
-//! celdas más un hueco y la música dos por dos. Filas sin brillo: Red +
-//! música, dos círculos, Preferencias + dos círculos, Sonido y cuatro
-//! círculos. Con brillo: Pantalla justo encima de Sonido, con su misma forma
-//! y hueco, y las filas de debajo recolocadas. Sin brillo la geometría es
-//! exactamente la de antes.
+//! Rejilla de cuatro columnas: se recorren los controles visibles en el
+//! orden de fábrica y cada uno va al primer hueco libre (por filas, de
+//! izquierda a derecha) donde quepa. Anchos por alto en celdas: Red y
+//! Preferencias 2x1, Música 2x2, Pantalla y Sonido 4x1, el resto 1x1. Una
+//! fila con deslizador mide su alto; las demás, `CELL`. Hueco `GAP` y aire
+//! `PADDING` como siempre. Con nada oculto cada pieza cae donde caía.
 
+use dokka_model::{ControlItem, HiddenControls};
 use dokka_scene::Rect;
 use dokka_theme::control_center as measures;
 
-/// Borde izquierdo de la rejilla, tras el aire exterior.
-fn content_x(bounds: Rect) -> f32 {
-    bounds.x + measures::PADDING
+/// Ancho por alto en celdas de cada control.
+fn cell_span(item: ControlItem) -> (usize, usize) {
+    match item {
+        ControlItem::Network | ControlItem::Settings => (2, 1),
+        ControlItem::Music => (2, 2),
+        ControlItem::Brightness | ControlItem::Sound => (4, 1),
+        _ => (1, 1),
+    }
 }
 
-/// Borde superior de la rejilla, tras el aire exterior.
-fn top_y(bounds: Rect) -> f32 {
-    bounds.y + measures::PADDING
+/// Alto en píxeles de una fila con deslizador a todo lo ancho.
+fn slider_height(item: ControlItem) -> Option<f32> {
+    match item {
+        ControlItem::Brightness => Some(measures::BRIGHTNESS_HEIGHT),
+        ControlItem::Sound => Some(measures::SOUND_HEIGHT),
+        _ => None,
+    }
 }
 
-/// Borde superior de la fila `row`.
-///
-/// Sin brillo: filas 0-2 de alto `CELL`, fila 3 de alto `SOUND_HEIGHT`
-/// (Sonido) y fila 4 de alto `CELL` (círculos). Con brillo: fila 3 de alto
-/// `BRIGHTNESS_HEIGHT` (Pantalla), fila 4 de alto `SOUND_HEIGHT` (Sonido) y
-/// fila 5 de alto `CELL` (círculos). La fila 3 cae en el mismo sitio con y
-/// sin brillo: la Pantalla ocupa donde estaba el Sonido y este baja.
-fn row_y(bounds: Rect, row: usize, with_brightness: bool) -> f32 {
-    let top = top_y(bounds);
-    let third = top + (measures::CELL + measures::GAP) * 3.0;
-    match row {
-        0 => top,
-        1 => top + measures::CELL + measures::GAP,
-        2 => top + (measures::CELL + measures::GAP) * 2.0,
-        3 => third,
-        4 => third + measures::SOUND_HEIGHT + measures::GAP,
-        _ => {
-            if with_brightness {
-                third + (measures::SOUND_HEIGHT + measures::GAP) * 2.0
-            } else {
-                third + measures::SOUND_HEIGHT + measures::GAP
+/// Rectángulo de cada control visible y alto total del panel.
+#[derive(Debug, Clone)]
+pub(crate) struct ControlLayout {
+    rects: [Option<Rect>; 13],
+    height: f32,
+}
+
+impl ControlLayout {
+    /// Rectángulo de este control, o nada si está oculto (o sin DDC).
+    pub(crate) fn rect(&self, item: ControlItem) -> Option<Rect> {
+        self.rects[item as usize]
+    }
+
+    /// Alto total con el aire exterior.
+    pub(crate) fn height(&self) -> f32 {
+        self.height
+    }
+}
+
+/// Reparte los controles visibles sobre la rejilla de cuatro columnas.
+pub(crate) fn arrange(
+    bounds: Rect,
+    hidden: HiddenControls,
+    with_brightness: bool,
+) -> ControlLayout {
+    let mut visible = Vec::with_capacity(13);
+    for item in ControlItem::FACTORY_ORDER {
+        if hidden.contains(item) {
+            continue;
+        }
+        if item == ControlItem::Brightness && !with_brightness {
+            continue;
+        }
+        visible.push(item);
+    }
+    let mut grid: Vec<[bool; 4]> = Vec::new();
+    let mut row_heights: Vec<f32> = Vec::new();
+    let mut placed: Vec<(ControlItem, usize, usize)> = Vec::with_capacity(visible.len());
+    for item in visible {
+        let (span_w, span_h) = cell_span(item);
+        let mut row = 0;
+        let (placed_row, placed_column) = loop {
+            while grid.len() < row + span_h {
+                grid.push([false; 4]);
+                row_heights.push(measures::CELL);
+            }
+            let mut at = None;
+            for column in 0..=(4 - span_w) {
+                if fits(&grid, row, column, span_w, span_h) {
+                    at = Some((row, column));
+                    break;
+                }
+            }
+            if let Some(found) = at {
+                break found;
+            }
+            row += 1;
+        };
+        let (row, column) = (placed_row, placed_column);
+        if let Some(height) = slider_height(item) {
+            row_heights[row] = height;
+        }
+        for delta_row in 0..span_h {
+            for delta_column in 0..span_w {
+                grid[row + delta_row][column + delta_column] = true;
+            }
+        }
+        placed.push((item, row, column));
+    }
+    let mut rows_top = Vec::with_capacity(row_heights.len());
+    let mut cursor = bounds.y + measures::PADDING;
+    for height in &row_heights {
+        rows_top.push(cursor);
+        cursor += height + measures::GAP;
+    }
+    let height = if row_heights.is_empty() {
+        measures::PADDING * 2.0
+    } else {
+        cursor - measures::GAP + measures::PADDING - bounds.y
+    };
+    let mut rects: [Option<Rect>; 13] = [None; 13];
+    for (item, row, column) in placed {
+        let (span_w, span_h) = cell_span(item);
+        let width = span_w as f32 * measures::CELL + (span_w as f32 - 1.0) * measures::GAP;
+        let item_height = slider_height(item)
+            .unwrap_or(span_h as f32 * measures::CELL + (span_h as f32 - 1.0) * measures::GAP);
+        rects[item as usize] = Some(Rect {
+            x: bounds.x + measures::PADDING + column as f32 * (measures::CELL + measures::GAP),
+            y: rows_top[row],
+            width,
+            height: item_height,
+        });
+    }
+    ControlLayout { rects, height }
+}
+
+/// `true` si el hueco de este tamaño cabe libre aquí (lo que aún no
+/// existe cuenta como libre).
+fn fits(grid: &[[bool; 4]], row: usize, column: usize, span_w: usize, span_h: usize) -> bool {
+    for delta_row in 0..span_h {
+        for delta_column in 0..span_w {
+            if let Some(occupied) = grid
+                .get(row + delta_row)
+                .map(|cells| cells[column + delta_column])
+                && occupied
+            {
+                return false;
             }
         }
     }
-}
-
-/// Borde izquierdo de la columna `column` (0 a 3).
-fn column_x(bounds: Rect, column: usize) -> f32 {
-    content_x(bounds) + column as f32 * (measures::CELL + measures::GAP)
-}
-
-/// Cápsula de red: fila 1, columnas 1 y 2.
-pub(crate) fn network_capsule(bounds: Rect) -> Rect {
-    Rect {
-        x: column_x(bounds, 0),
-        y: row_y(bounds, 0, false),
-        width: measures::SPAN,
-        height: measures::CELL,
-    }
-}
-
-/// Círculo `index`: 0 Escritorio y 1 Bloquear (fila 2);
-/// 2 Vista de tareas y 3 Proyectar (fila 3);
-/// 4 Calculadora, 5 Recorte, 6 Reloj y 7 Tareas (última fila).
-pub(crate) fn circle_slot(bounds: Rect, index: usize, with_brightness: bool) -> Rect {
-    let bottom = if with_brightness { 5 } else { 4 };
-    let (column, row) = match index {
-        0 => (0, 1),
-        1 => (1, 1),
-        2 => (2, 2),
-        3 => (3, 2),
-        4 => (0, bottom),
-        5 => (1, bottom),
-        6 => (2, bottom),
-        _ => (3, bottom),
-    };
-    Rect {
-        x: column_x(bounds, column),
-        y: row_y(bounds, row, with_brightness),
-        width: measures::CELL,
-        height: measures::CELL,
-    }
-}
-
-/// Tarjeta de música: dos columnas por dos filas, a la derecha.
-pub(crate) fn music_tile(bounds: Rect) -> Rect {
-    Rect {
-        x: column_x(bounds, 2),
-        y: row_y(bounds, 0, false),
-        width: measures::SPAN,
-        height: measures::SPAN,
-    }
-}
-
-/// Cápsula de Preferencias: fila 3, columnas 1 y 2.
-pub(crate) fn prefs_capsule(bounds: Rect) -> Rect {
-    Rect {
-        x: column_x(bounds, 0),
-        y: row_y(bounds, 2, false),
-        width: measures::SPAN,
-        height: measures::CELL,
-    }
-}
-
-/// Tarjeta de Pantalla a todo lo ancho, justo encima de Sonido.
-/// Solo existe con brillo; misma forma y márgenes que Sonido.
-pub(crate) fn brightness_card(bounds: Rect) -> Rect {
-    Rect {
-        x: content_x(bounds),
-        y: row_y(bounds, 3, true),
-        width: measures::CELL * 4.0 + measures::GAP * 3.0,
-        height: measures::BRIGHTNESS_HEIGHT,
-    }
-}
-
-/// Tarjeta de Sonido a todo lo ancho: fila 4 sin brillo, fila 5 con él.
-pub(crate) fn sound_card(bounds: Rect, with_brightness: bool) -> Rect {
-    Rect {
-        x: content_x(bounds),
-        y: row_y(bounds, if with_brightness { 4 } else { 3 }, with_brightness),
-        width: measures::CELL * 4.0 + measures::GAP * 3.0,
-        height: measures::SOUND_HEIGHT,
-    }
+    true
 }
 
 /// Círculo con icono dentro de una cápsula, con margen igual arriba,

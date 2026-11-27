@@ -1,68 +1,61 @@
-//! Cápsulas del Centro de control: Red en la fila 1 y Preferencias en la 3.
-//! Estadio totalmente redondo con círculo interior, título y subtítulo.
+//! Cápsulas del Centro de control: Red y Preferencias donde las ponga la
+//! rejilla. Estadio totalmente redondo con círculo interior, título y
+//! subtítulo. Lo oculto no se dibuja.
 
-use dokka_model::NetworkKind;
+use dokka_model::{ControlItem, NetworkKind};
 use dokka_scene::Rect;
 use dokka_theme::{Theme, control_center as measures};
 
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
-use super::layout::{capsule_circle, capsule_text_x, network_capsule, prefs_capsule};
+use super::layout::{ControlLayout, capsule_circle, capsule_text_x};
 use super::paint::{Pieces, flat, picture, shorten_to, subtitle_sized, tile, title_sized};
 
-/// Suma las dos cápsulas: cristal, círculo interior, textos e iconos.
+/// Suma las cápsulas visibles: cristal, círculo interior, textos e iconos.
 pub(crate) fn add_capsules(
     pieces: &mut Pieces,
     theme: &Theme,
-    bounds: Rect,
+    layout: &ControlLayout,
     props: &ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
-    let network = network_capsule(bounds);
-    let prefs = prefs_capsule(bounds);
+    if let Some(network) = layout.rect(ControlItem::Network) {
+        add_network(pieces, theme, network, props, icons);
+    }
+    if let Some(prefs) = layout.rect(ControlItem::Settings) {
+        add_prefs(pieces, theme, prefs, icons);
+    }
+}
+
+fn add_network(
+    pieces: &mut Pieces,
+    theme: &Theme,
+    network: Rect,
+    props: &ControlCenterProps,
+    icons: &ControlCenterIcons,
+) {
     let connected = network_connected(props);
     pieces
         .tiles
         .push(tile(theme, network, network.height / 2.0));
-    pieces.tiles.push(tile(theme, prefs, prefs.height / 2.0));
     pieces.flats.push(flat(
         capsule_circle(network),
         measures::CAPSULE_CIRCLE_SIDE / 2.0,
         circle_tint(theme, connected),
     ));
-    pieces.flats.push(flat(
-        capsule_circle(prefs),
-        measures::CAPSULE_CIRCLE_SIDE / 2.0,
-        theme.tray.circle,
-    ));
-    let network_middle = network.y + network.height / 2.0;
-    let prefs_middle = prefs.y + prefs.height / 2.0;
+    let middle = network.y + network.height / 2.0;
     pieces.texts.push(title_sized(
         theme,
         capsule_text_x(network),
-        network_middle - measures::CAPSULE_TEXT_HALF,
+        middle - measures::CAPSULE_TEXT_HALF,
         shorten_to(&network_name(props), measures::CAPSULE_TEXT_CHARACTERS),
         measures::CAPSULE_TITLE_SIZE,
     ));
     pieces.texts.push(subtitle_sized(
         theme,
         capsule_text_x(network),
-        network_middle + measures::CAPSULE_TEXT_HALF,
+        middle + measures::CAPSULE_TEXT_HALF,
         shorten_to(&network_status(props), measures::CAPSULE_TEXT_CHARACTERS),
-        measures::CAPSULE_SUBTITLE_SIZE,
-    ));
-    pieces.texts.push(title_sized(
-        theme,
-        capsule_text_x(prefs),
-        prefs_middle - measures::CAPSULE_TEXT_HALF,
-        shorten_to("Preferencias", measures::CAPSULE_TEXT_CHARACTERS),
-        measures::CAPSULE_TITLE_SIZE,
-    ));
-    pieces.texts.push(subtitle_sized(
-        theme,
-        capsule_text_x(prefs),
-        prefs_middle + measures::CAPSULE_TEXT_HALF,
-        shorten_to("Dokka", measures::CAPSULE_TEXT_CHARACTERS),
         measures::CAPSULE_SUBTITLE_SIZE,
     ));
     pieces.icons.push(picture(
@@ -70,6 +63,30 @@ pub(crate) fn add_capsules(
         icons.network_glyph(&props.network, connected),
         capsule_circle(network),
         measures::CIRCLE_ICON_SIDE,
+    ));
+}
+
+fn add_prefs(pieces: &mut Pieces, theme: &Theme, prefs: Rect, icons: &ControlCenterIcons) {
+    pieces.tiles.push(tile(theme, prefs, prefs.height / 2.0));
+    pieces.flats.push(flat(
+        capsule_circle(prefs),
+        measures::CAPSULE_CIRCLE_SIDE / 2.0,
+        theme.tray.circle,
+    ));
+    let middle = prefs.y + prefs.height / 2.0;
+    pieces.texts.push(title_sized(
+        theme,
+        capsule_text_x(prefs),
+        middle - measures::CAPSULE_TEXT_HALF,
+        shorten_to("Preferencias", measures::CAPSULE_TEXT_CHARACTERS),
+        measures::CAPSULE_TITLE_SIZE,
+    ));
+    pieces.texts.push(subtitle_sized(
+        theme,
+        capsule_text_x(prefs),
+        middle + measures::CAPSULE_TEXT_HALF,
+        shorten_to("Dokka", measures::CAPSULE_TEXT_CHARACTERS),
+        measures::CAPSULE_SUBTITLE_SIZE,
     ));
     pieces.icons.push(picture(
         theme,

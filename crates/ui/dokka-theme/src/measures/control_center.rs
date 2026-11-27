@@ -1,13 +1,12 @@
 //! Medidas del Centro de control estilo Tahoe.
 //!
-//! Rejilla estricta de cuatro columnas: celda cuadrada de lado `CELL` con
-//! hueco `GAP` igual en horizontal y vertical, ancho total `4 * CELL + 3 * GAP`.
+//! Rejilla de cuatro columnas: celda cuadrada de lado `CELL` con hueco
+//! `GAP` igual en horizontal y vertical, ancho total `4 * CELL + 3 * GAP`.
 //! Un círculo mide `CELL`; la cápsula ancha mide `2 * CELL + GAP` de ancho y
 //! `CELL` de alto; la música mide `(2 * CELL + GAP)` por `(2 * CELL + GAP)`;
-//! el Sonido mide el ancho total y `SOUND_HEIGHT` de alto.
-//! Fila 1: cápsula Red + música (filas 1 y 2). Fila 2: dos círculos.
-//! Fila 3: cápsula Preferencias + dos círculos. Fila 4: Sonido.
-//! Fila 5: cuatro círculos. El alto total suma filas, huecos y aire exterior.
+//! el Sonido y la Pantalla miden el ancho total con su alto propio. El alto
+//! total lo calcula el reparto (`layout`) según los visibles: suma filas,
+//! huecos y aire exterior.
 
 use dokka_scene::DRAWING_SIDE;
 
@@ -17,20 +16,12 @@ pub const CELL: f32 = 66.0;
 pub const GAP: f32 = 12.0;
 /// Aire exterior en los cuatro lados, igual que el hueco.
 pub const PADDING: f32 = 12.0;
-/// Ancho de una pieza doble: dos celdas más el hueco entre ellas.
-pub const SPAN: f32 = CELL * 2.0 + GAP;
 /// Ancho fijo del panel: rejilla más aire exterior.
 pub const WIDTH: f32 = CELL * 4.0 + GAP * 3.0 + PADDING * 2.0;
 /// Alto de la tarjeta de Sonido a todo lo ancho (≈ 68).
 pub const SOUND_HEIGHT: f32 = 68.0;
 /// Alto de la tarjeta de Pantalla: exactamente igual que la de Sonido.
 pub const BRIGHTNESS_HEIGHT: f32 = SOUND_HEIGHT;
-/// Hueco extra que añade la tarjeta de Pantalla (tarjeta más hueco).
-pub const BRIGHTNESS_EXTRA: f32 = BRIGHTNESS_HEIGHT + GAP;
-/// Alto fijo: aire + cuatro celdas + Sonido + cuatro huecos entre cinco filas.
-pub const HEIGHT: f32 = PADDING * 2.0 + CELL * 4.0 + SOUND_HEIGHT + GAP * 4.0;
-/// Alto con Pantalla disponible: una tarjeta más y su hueco (484).
-pub const HEIGHT_WITH_BRIGHTNESS: f32 = HEIGHT + BRIGHTNESS_EXTRA;
 /// Esquinas del fondo invisible, como los demás paneles flotantes.
 pub const CORNER_RADIUS: f32 = 16.0;
 
