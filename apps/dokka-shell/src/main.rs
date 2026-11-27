@@ -8,6 +8,7 @@ mod handle_event;
 mod launchpad;
 mod media;
 mod menubar;
+mod menubar_actions;
 mod menubar_language;
 mod menubar_music;
 mod menubar_network;

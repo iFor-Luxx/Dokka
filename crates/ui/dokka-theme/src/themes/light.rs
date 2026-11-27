@@ -71,9 +71,9 @@ pub fn light() -> Theme {
         // referencias de Tahoe se toma la forma, no el tono.
         tray: TrayColors {
             clear: palette::TRAY_CLEAR,
-            tile: palette::MIST,
+            tile: palette::TRAY_TILE,
             tile_border: border,
-            tile_translucent: palette::MIST_STRONG,
+            tile_translucent: palette::TRAY_TILE_TRANSLUCENT,
             text: palette::INK,
             secondary: palette::TRAY_SECONDARY,
             track: palette::TRAY_TRACK,

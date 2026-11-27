@@ -17,9 +17,10 @@ pub fn control_center_size() -> Size {
     }
 }
 
-/// Rejilla Tahoe de cuatro columnas sobre fondo invisible: la cápsula de red
-/// con dos círculos blancos a la izquierda, la música a la derecha, la
-/// cápsula de Preferencias con un círculo debajo y Sonido a todo lo ancho.
+/// Rejilla Tahoe de cuatro columnas sobre fondo invisible: cápsula de red
+/// con dos círculos blancos a la izquierda, música a la derecha (dos por
+/// dos), cápsula de Preferencias con dos círculos debajo, Sonido a todo lo
+/// ancho y cuatro círculos al final.
 /// Cada zona añade lo suyo; todo existe siempre: lo oculto mide cero o vacío.
 pub fn control_center_panel(
     theme: &Theme,

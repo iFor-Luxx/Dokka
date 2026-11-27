@@ -14,9 +14,12 @@ use crate::text_layer::TextLayer;
 /// Elementos visuales de un panel flotante.
 /// Orden: panel, píldora, punta, resaltado, líneas, puntos, textos, iconos.
 /// Todo cuelga de un contenedor para fundir el panel sin tocar el dock ni las etiquetas.
+/// El fondo puede no tener cristal: cuando el tinte y el borde del `Overlay.panel`
+/// son transparentes (alfa 0, como el centro de control y el buscador) no se crea
+/// ninguna capa para no ver un rectángulo borroso; el resto de paneles no cambia.
 pub(crate) struct OverlayLayers {
     container: ContainerVisual,
-    panel: PanelLayer,
+    panel: Option<PanelLayer>,
     tiles: Vec<PanelLayer>,
     /// Estilo con el que se creó cada pieza.
     tile_styles: Vec<Panel>,
@@ -51,11 +54,12 @@ impl OverlayLayers {
         parent.Children()?.InsertAtTop(&container)?;
         container.SetOpacity(overlay.opacity)?;
         apply_scale(&container, overlay)?;
-        let panel = PanelLayer::add(compositor, &container, &overlay.panel)?;
+        let panel = panel_layer(compositor, &container, &overlay.panel)?;
+        // Las piezas llevan filo de luz y brillo alto (Liquid Glass).
         let tiles = overlay
             .tiles
             .iter()
-            .map(|tile| PanelLayer::add(compositor, &container, tile))
+            .map(|tile| PanelLayer::add_tile(compositor, &container, tile))
             .collect::<Result<Vec<_>>>()?;
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;
@@ -133,8 +137,11 @@ impl OverlayLayers {
     /// Un panel de otro color (calendario frente a vista previa) se crea de nuevo.
     /// El resaltado del menú tiene estilo constante, así que moverse por él no reconstruye;
     /// la punta se mueve con `update`. La opacidad, la posición y la escala no reconstruyen.
+    /// Un fondo transparente tampoco reconstruye a uno con cristal: el cristal
+    /// se decide por el alfa del tinte y del borde, como al crearse.
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
-        self.style.tint == overlay.panel.tint
+        self.panel.is_some() == has_glass(&overlay.panel)
+            && self.style.tint == overlay.panel.tint
             && self.pill.is_some() == overlay.pill.is_some()
             && self.pill_style.map(pill_style_of) == overlay.pill.map(pill_style_of)
             && self.pointer.is_some() == overlay.pointer.is_some()
@@ -173,7 +180,9 @@ impl OverlayLayers {
     ) -> Result<()> {
         self.container.SetOpacity(overlay.opacity)?;
         apply_scale(&self.container, overlay)?;
-        self.panel.update(&overlay.panel)?;
+        if let Some(layer) = &self.panel {
+            layer.update(&overlay.panel)?;
+        }
         for (layer, tile) in self.tiles.iter().zip(&overlay.tiles) {
             layer.update(tile)?;
         }
@@ -202,6 +211,25 @@ impl OverlayLayers {
             layer.update(compositor, painter, icon)?;
         }
         Ok(())
+    }
+}
+
+/// `true` si el fondo lleva cristal: tinte o borde con alfa visible.
+/// Transparente (los dos a 0) no crea capa, como el centro y el buscador.
+fn has_glass(panel: &Panel) -> bool {
+    panel.tint.alpha != 0 || panel.border.alpha != 0
+}
+
+/// Crea el cristal del fondo, salvo que sea transparente.
+fn panel_layer(
+    compositor: &Compositor,
+    parent: &ContainerVisual,
+    panel: &Panel,
+) -> Result<Option<PanelLayer>> {
+    if has_glass(panel) {
+        PanelLayer::add(compositor, parent, panel).map(Some)
+    } else {
+        Ok(None)
     }
 }
 

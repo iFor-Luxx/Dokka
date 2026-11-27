@@ -2,7 +2,9 @@
 
 **Hace:** reúne todos los estilos. Cambiar un valor aquí lo cambia en todo Dokka.
 
-- `palette.rs`: colores base. Único lugar con valores de color.
+- `palette.rs`: colores base. Único lugar con valores de color. `TRAY_TILE` y
+  `TRAY_TILE_TRANSLUCENT` comparten el tono neutro de `MIST` y `MIST_STRONG` con
+  menos alfa para las piezas Liquid Glass, sin aclarar el resto de paneles.
 - `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
   (`theme.menubar`: mismo cristal del dock, texto y hover suave del icono), `TooltipColors`
   (`theme.tooltip`), `LaunchpadColors` (`theme.launchpad`: fondo, texto, resaltado, casilla de
@@ -22,8 +24,9 @@
   a 20; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de
   cristal separadas de 320 de ancho con hueco de 10, aire de 12, cápsula de 60
   con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
-  la rejilla del Centro de control (cuatro columnas de 66.5, cápsula doble de 143 × 60, música de dos por dos,
-  tres círculos blancos y Sonido de 296 × 84, alto total 324.5); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  la rejilla estricta del Centro de control (celda de 66, hueco de 12,
+  cápsula doble de 144 × 66 con círculo de 42, música de 144 × 144,
+  Sonido de 300 × 68, alto total 404); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 300 para que quepa el
   calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560,

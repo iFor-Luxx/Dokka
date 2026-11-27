@@ -23,5 +23,10 @@ pub enum ControlCenterHit {
     Preferences,
     Desktop,
     Lock,
+    TaskView,
+    Project,
+    Calculator,
+    ScreenClip,
+    Clock,
     TaskManager,
 }

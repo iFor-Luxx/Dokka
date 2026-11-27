@@ -20,6 +20,11 @@ pub enum MenubarAction {
     MusicPrevious,
     MusicToggle,
     MusicNext,
+    TaskView,
+    Project,
+    Calculator,
+    ScreenClip,
+    Clock,
     /// Abrir el resultado visible con este índice.
     SearchOpen(usize),
 }
