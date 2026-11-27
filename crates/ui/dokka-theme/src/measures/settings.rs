@@ -26,19 +26,19 @@ pub const SIDEBAR_BORDER_WIDTH: f32 = 1.0;
 pub const SIDEBAR_WIDTH: f32 = 260.0;
 
 /// Diámetro de cada semáforo (cerrar, minimizar, zoom).
-pub const TRAFFIC_DIAMETER: f32 = 14.0;
+pub const TRAFFIC_DIAMETER: f32 = 16.0;
 /// Distancia entre bordes izquierdos de semáforos seguidos.
-pub const TRAFFIC_PITCH: f32 = 23.0;
+pub const TRAFFIC_PITCH: f32 = 25.0;
 /// Borde izquierdo del primer semáforo: con aire (~18) al borde del panel.
-pub const TRAFFIC_LEFT: f32 = SIDEBAR_INSET + 17.0;
+pub const TRAFFIC_LEFT: f32 = SIDEBAR_INSET + 16.0;
 /// Borde superior de los semáforos: centrados entre el panel y la casilla.
-pub const TRAFFIC_TOP: f32 = 24.0;
+pub const TRAFFIC_TOP: f32 = 23.0;
 /// Aire para pulsar cada semáforo alrededor de su círculo.
 pub const TRAFFIC_HIT_PADDING: f32 = 4.5;
 /// Lado del símbolo Lucide dentro de cada semáforo (círculo de 14).
-pub const TRAFFIC_GLYPH_SIDE: f32 = 11.5;
+pub const TRAFFIC_GLYPH_SIDE: f32 = 13.0;
 /// Desplazamiento de las copias que engrosan el trazo del símbolo.
-pub const TRAFFIC_GLYPH_SPREAD: f32 = 0.35;
+pub const TRAFFIC_GLYPH_SPREAD: f32 = 0.4;
 /// Tamaño del glifo Lucide del semáforo: llena el lienzo de 100, así la
 /// fuente efectiva es 10 al mostrarse a 10 de lado.
 pub const TRAFFIC_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
