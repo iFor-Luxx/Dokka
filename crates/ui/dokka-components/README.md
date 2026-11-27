@@ -26,8 +26,10 @@ y tarjeta de música (`music_panel`: tamaño fijo, título y artista recortados 
 barra plana con anterior, pausa/reproducir y siguiente con los glifos de música
 existentes, "Nada en reproducción" sin canción y golpe por tercios; con y sin
 canción entrega los mismos textos, iconos y planos —ocultos con tamaño cero—),
-panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
-botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
+panel de volumen (`volume_panel`: dos piezas de cristal Tahoe —tarjeta
+"Sonido" con deslizador fino sin tirador y tarjeta con la fila de ajustes—;
+el altavoz de la izquierda silencia según nivel, con `slider` reutilizable
+que recibe sus colores), panel de red (`network_panel`:
 tarjeta de estado con nombre, tipo e internet y fila de ajustes), lista de
 idiomas (`language_panel`: marca del activo, resaltado de fila y ajustes),
 centro de control (`control_center_panel`: tarjetas de red, volumen con

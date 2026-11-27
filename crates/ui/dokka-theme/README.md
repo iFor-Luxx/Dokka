@@ -10,7 +10,9 @@
   (`theme.nav_pill`: cápsula, borde, chevrones, divisor y hover de la píldora de
   navegación) y `SettingsColors`
   (`theme.settings`: ventana, barra, casilla, selección y hover de filas, título, tarjeta,
-  cuadrados de color, semáforos con sus símbolos oscuros de hover y su gris sin foco).
+  cuadrados de color, semáforos con sus símbolos oscuros de hover, su gris sin foco y
+  `TrayColors` (`theme.tray`: cristal ahumado de la barra, texto blanco, pista,
+  relleno y hover).
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
   glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
@@ -30,6 +32,6 @@
   `music_panel.rs`: tarjeta de música de 280 × 124, barra de botones de 44 con radio
   concéntrico (exterior menos separación), título y artista recortados y
   "Nada en reproducción", glifos a 20;
-  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto).
+  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto; `tray_glass.rs` con las piezas Tahoe y `volume.rs` con el panel de volumen).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.
