@@ -1,9 +1,9 @@
 //! Medidas del panel de música de la barra superior, estilo Tahoe.
 //!
-//! Una sola tarjeta de cristal ahumado: carátula cuadrada a la izquierda,
-//! título y artista a su derecha y tres controles grandes centrados abajo.
-//! Radios concéntricos: la carátula recorta el radio de la tarjeta
-//! (exterior menos separación).
+//! Un solo cristal oscuro: carátula cuadrada a la izquierda, título y
+//! artista a su derecha y tres controles grandes centrados abajo.
+//! Radios concéntricos: la carátula recorta el radio del cristal
+//! (exterior menos el aire).
 
 use dokka_scene::DRAWING_SIDE;
 
@@ -17,13 +17,13 @@ pub const HEIGHT: f32 = glass::PADDING * 2.0 + ARTWORK_SIDE + glass::GAP + CONTR
 pub const PADDING: f32 = glass::PADDING;
 /// Hueco entre la fila de carátula y la de controles.
 pub const GAP: f32 = glass::GAP;
-/// Esquinas de la tarjeta.
-pub const TILE_RADIUS: f32 = glass::TILE_RADIUS;
-pub const TILE_BORDER_WIDTH: f32 = glass::TILE_BORDER_WIDTH;
+/// Esquinas del cristal único.
+pub const TILE_RADIUS: f32 = glass::PANEL_RADIUS;
+pub const TILE_BORDER_WIDTH: f32 = glass::PANEL_BORDER_WIDTH;
 
 /// Lado de la carátula (marcador cuadrado redondeado).
 pub const ARTWORK_SIDE: f32 = 56.0;
-/// Radio de la carátula: exterior menos la separación, concéntrico.
+/// Radio de la carátula: exterior menos el aire, concéntrico.
 pub const ARTWORK_RADIUS: f32 = TILE_RADIUS - PADDING;
 /// Aire entre la carátula y los textos.
 pub const TEXT_GAP: f32 = 10.0;

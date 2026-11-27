@@ -112,3 +112,12 @@ pub(crate) const TRAY_SECONDARY: Color = Color::rgba(255, 255, 255, 170);
 pub(crate) const TRAY_TRACK: Color = Color::rgba(255, 255, 255, 60);
 pub(crate) const TRAY_CIRCLE: Color = Color::rgba(255, 255, 255, 46);
 pub(crate) const TRAY_HOVER: Color = Color::rgba(255, 255, 255, 34);
+/// Cristal único de los menús de la barra: azulado ahumado oscuro y
+/// translúcido (el desenfoque pone el color del fondo).
+pub(crate) const TRAY_PANEL: Color = Color::rgba(28, 32, 42, 215);
+/// Borde fino del cristal único, con filo claro.
+pub(crate) const TRAY_PANEL_BORDER: Color = Color::rgba(255, 255, 255, 70);
+/// Línea fina que separa secciones dentro del cristal único.
+pub(crate) const TRAY_SEPARATOR: Color = Color::rgba(255, 255, 255, 28);
+/// Número del volumen dentro del relleno blanco: gris oscuro.
+pub(crate) const TRAY_PERCENT: Color = Color::rgba(30, 32, 36, 170);

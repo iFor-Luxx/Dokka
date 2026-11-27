@@ -33,7 +33,7 @@
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;
-  `music_panel.rs`: tarjeta de música Tahoe de 320 × 142, carátula cuadrada de 56
+  `music_panel.rs`: cristal único de música Tahoe de 320 × 138, carátula cuadrada de 56
   con radio concéntrico (exterior menos separación), título y artista recortados y
   "Nada en reproducción" con controles atenuados, glifos Lucide blancos a 28;
   `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto).

@@ -1,4 +1,4 @@
-//! Tarjeta de música Tahoe sin saber qué es la barra: carátula cuadrada,
+//! Cristal único de música sin saber qué es la barra: carátula cuadrada,
 //! título y artista recortados con "…" y controles grandes de anterior,
 //! pausa/reproducir y siguiente; sin canción, atenuados.
 

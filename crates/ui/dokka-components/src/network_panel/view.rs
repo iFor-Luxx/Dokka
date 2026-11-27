@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
-use dokka_scene::{Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_scene::{Divider, Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, network_language as measures};
 
+use super::layout::{circle_in, separator_rect, settings_row, status_row, title_row};
 use super::{NetworkHit, NetworkIcons, NetworkType};
 
 /// Alto fijo del panel de red.
@@ -13,8 +14,9 @@ pub fn network_size() -> Size {
     }
 }
 
-/// Menú Tahoe: título, cápsula con círculo e internet, y ajustes aparte.
-/// El `panel` es invisible; cada pieza va en `tiles` con cristal ahumado.
+/// Un solo cristal oscuro: título, estado con círculo e internet, línea
+/// y ajustes. `tiles` vacío y cantidad constante: sin planos, una línea,
+/// un punto, cuatro textos y dos iconos.
 pub fn network_panel(
     theme: &Theme,
     icons: &NetworkIcons,
@@ -24,49 +26,28 @@ pub fn network_panel(
     has_internet: bool,
     highlighted: Option<NetworkHit>,
 ) -> Overlay {
-    let title = title_tile(bounds);
-    let status = status_tile(bounds);
-    let settings = settings_tile(bounds);
+    let title = title_row(bounds);
+    let status = status_row(bounds);
+    let settings = settings_row(bounds);
     let is_active = kind != NetworkType::Offline;
-    let status_circle = circle_in(status);
-    let settings_circle = circle_in(settings);
-    let text_x = status_circle.x + status_circle.width + measures::ICON_GAP;
-    let chevron_side = measures::CHEVRON_SIDE;
+    let circle = circle_in(status);
     Overlay {
-        panel: Panel {
-            bounds,
-            corner_radius: measures::TILE_RADIUS,
-            border_width: 0.0,
-            tint: theme.tray.clear,
-            border: theme.tray.clear,
-        },
-        tiles: vec![
-            glass(theme, title, measures::TILE_RADIUS),
-            glass(theme, status, status.height / 2.0),
-            glass(theme, settings, measures::TILE_RADIUS),
-        ],
+        panel: glass(theme, bounds),
+        tiles: Vec::new(),
         pill: None,
         highlight: Some(settings_highlight(theme, settings, highlighted)),
         flat_panels: Vec::new(),
-        dividers: Vec::new(),
-        dots: vec![
-            Dot {
-                x: status_circle.x,
-                y: status_circle.y,
-                diameter: status_circle.width,
-                color: if is_active {
-                    theme.tray.circle_active
-                } else {
-                    theme.tray.circle
-                },
+        dividers: vec![separator(theme, bounds)],
+        dots: vec![Dot {
+            x: circle.x,
+            y: circle.y,
+            diameter: circle.width,
+            color: if is_active {
+                theme.tray.circle_active
+            } else {
+                theme.tray.circle
             },
-            Dot {
-                x: settings_circle.x,
-                y: settings_circle.y,
-                diameter: settings_circle.width,
-                color: theme.tray.circle,
-            },
-        ],
+        }],
         pointer: None,
         texts: vec![
             Text {
@@ -79,25 +60,25 @@ pub fn network_panel(
                 align: TextAlign::Left,
             },
             Text {
-                x: text_x,
+                x: circle.x + circle.width + measures::ICON_GAP,
                 center_y: status.y + status.height / 2.0 - 11.0,
-                content: display_name(name, kind),
+                content: kind_label(kind),
                 size: measures::TITLE_SIZE,
                 is_bold: true,
                 color: theme.tray.text,
                 align: TextAlign::Left,
             },
             Text {
-                x: text_x,
+                x: circle.x + circle.width + measures::ICON_GAP,
                 center_y: status.y + status.height / 2.0 + 11.0,
-                content: detail(kind, has_internet),
+                content: display_name(name, kind, has_internet),
                 size: measures::SUBTITLE_SIZE,
                 is_bold: false,
                 color: theme.tray.secondary,
                 align: TextAlign::Left,
             },
             Text {
-                x: settings_circle.x + settings_circle.width + measures::ICON_GAP,
+                x: settings.x,
                 center_y: settings.y + settings.height / 2.0,
                 content: measures::NETWORK_SETTINGS_LABEL.to_owned(),
                 size: measures::TITLE_SIZE,
@@ -108,27 +89,19 @@ pub fn network_panel(
         ],
         icons: vec![
             Icon {
-                x: status_circle.x + (status_circle.width - measures::CIRCLE_ICON) / 2.0,
-                y: status_circle.y + (status_circle.height - measures::CIRCLE_ICON) / 2.0,
+                x: circle.x + (circle.width - measures::CIRCLE_ICON) / 2.0,
+                y: circle.y + (circle.height - measures::CIRCLE_ICON) / 2.0,
                 side: measures::CIRCLE_ICON,
                 image: Some(IconImage::Drawing(icons.for_circle(kind, is_active))),
-                placeholder: theme.tray.tile,
+                placeholder: theme.tray.panel,
                 placeholder_radius: 0.0,
             },
             Icon {
-                x: settings_circle.x + (settings_circle.width - measures::CIRCLE_ICON) / 2.0,
-                y: settings_circle.y + (settings_circle.height - measures::CIRCLE_ICON) / 2.0,
-                side: measures::CIRCLE_ICON,
-                image: Some(IconImage::Drawing(Arc::clone(icons.settings()))),
-                placeholder: theme.tray.tile,
-                placeholder_radius: 0.0,
-            },
-            Icon {
-                x: settings.x + settings.width - measures::PADDING - chevron_side,
-                y: settings.y + (settings.height - chevron_side) / 2.0,
-                side: chevron_side,
+                x: settings.x + settings.width - measures::CHEVRON_SIDE,
+                y: settings.y + (settings.height - measures::CHEVRON_SIDE) / 2.0,
+                side: measures::CHEVRON_SIDE,
                 image: Some(IconImage::Drawing(Arc::clone(icons.chevron()))),
-                placeholder: theme.tray.tile,
+                placeholder: theme.tray.panel,
                 placeholder_radius: 0.0,
             },
         ],
@@ -140,62 +113,32 @@ pub fn network_panel(
     }
 }
 
-/// Fila de ajustes que hay en el punto, si cae en ella.
-pub fn network_hit(bounds: Rect, x: f32, y: f32) -> Option<NetworkHit> {
-    let row = settings_tile(bounds);
-    if x >= row.x && x < row.x + row.width && y >= row.y && y < row.y + row.height {
-        Some(NetworkHit::Settings)
-    } else {
-        None
+/// Línea fina entre el estado y los ajustes, con el color del cristal.
+fn separator(theme: &Theme, bounds: Rect) -> Divider {
+    Divider {
+        bounds: separator_rect(bounds),
+        color: theme.tray.separator,
     }
 }
 
-fn tile_row(bounds: Rect, top: f32, height: f32) -> Rect {
-    Rect {
-        x: bounds.x + measures::GAP,
-        y: top,
-        width: bounds.width - measures::GAP * 2.0,
-        height,
-    }
-}
-
-fn title_tile(bounds: Rect) -> Rect {
-    tile_row(bounds, bounds.y + measures::GAP, measures::TITLE_HEIGHT)
-}
-
-fn status_tile(bounds: Rect) -> Rect {
-    tile_row(
-        bounds,
-        bounds.y + measures::GAP * 2.0 + measures::TITLE_HEIGHT,
-        measures::ROW_HEIGHT,
-    )
-}
-
-fn settings_tile(bounds: Rect) -> Rect {
-    tile_row(
-        bounds,
-        bounds.y + measures::GAP * 3.0 + measures::TITLE_HEIGHT + measures::ROW_HEIGHT,
-        measures::SETTINGS_HEIGHT,
-    )
-}
-
-fn glass(theme: &Theme, bounds: Rect, radius: f32) -> Panel {
+fn glass(theme: &Theme, bounds: Rect) -> Panel {
     Panel {
         bounds,
-        corner_radius: radius.min(bounds.height / 2.0),
-        border_width: measures::TILE_BORDER_WIDTH,
-        tint: theme.tray.tile,
-        border: theme.tray.tile_border,
+        corner_radius: capped(bounds, measures::PANEL_RADIUS),
+        border_width: measures::PANEL_BORDER_WIDTH,
+        tint: theme.tray.panel,
+        border: theme.tray.panel_border,
     }
 }
 
-fn circle_in(tile: Rect) -> Rect {
-    Rect {
-        x: tile.x + measures::PADDING,
-        y: tile.y + (tile.height - measures::CIRCLE) / 2.0,
-        width: measures::CIRCLE,
-        height: measures::CIRCLE,
+fn capped(tile: Rect, maximum: f32) -> f32 {
+    if tile.width <= 0.0 || tile.height <= 0.0 {
+        return 0.0;
     }
+    maximum
+        .min(tile.width / 2.0)
+        .min(tile.height / 2.0)
+        .max(0.0)
 }
 
 fn settings_highlight(theme: &Theme, row: Rect, highlighted: Option<NetworkHit>) -> Panel {
@@ -206,7 +149,7 @@ fn settings_highlight(theme: &Theme, row: Rect, highlighted: Option<NetworkHit>)
             width: 0.0,
             height: 0.0,
         },
-        corner_radius: measures::HIGHLIGHT_RADIUS,
+        corner_radius: 0.0,
         border_width: 0.0,
         tint: theme.tray.hover,
         border: theme.tray.hover,
@@ -216,36 +159,33 @@ fn settings_highlight(theme: &Theme, row: Rect, highlighted: Option<NetworkHit>)
     }
     Panel {
         bounds: row,
-        corner_radius: measures::TILE_RADIUS.min(row.height / 2.0),
+        corner_radius: capped(row, measures::HIGHLIGHT_RADIUS),
         border_width: 0.0,
         tint: theme.tray.hover,
         border: theme.tray.hover,
     }
 }
 
-fn display_name(name: &str, kind: NetworkType) -> String {
+/// Tipo de conexión como título de la fila (Cable/Wi-Fi).
+fn kind_label(kind: NetworkType) -> String {
+    match kind {
+        NetworkType::Offline => measures::TYPE_OFFLINE.to_owned(),
+        NetworkType::Ethernet => measures::TYPE_ETHERNET.to_owned(),
+        NetworkType::Wifi => measures::TYPE_WIFI.to_owned(),
+        NetworkType::Other => measures::TYPE_OTHER.to_owned(),
+    }
+}
+
+fn display_name(name: &str, kind: NetworkType, has_internet: bool) -> String {
     if kind == NetworkType::Offline || name.trim().is_empty() {
         return measures::OFFLINE_NAME.to_owned();
     }
-    short(name)
-}
-
-fn detail(kind: NetworkType, has_internet: bool) -> String {
-    let kind_label = match kind {
-        NetworkType::Offline => measures::TYPE_OFFLINE,
-        NetworkType::Ethernet => measures::TYPE_ETHERNET,
-        NetworkType::Wifi => measures::TYPE_WIFI,
-        NetworkType::Other => measures::TYPE_OTHER,
-    };
-    if kind == NetworkType::Offline {
-        return kind_label.to_owned();
-    }
-    let internet = if has_internet {
-        measures::WITH_INTERNET
+    let short = short(name);
+    if has_internet {
+        short
     } else {
-        measures::WITHOUT_INTERNET
-    };
-    format!("{kind_label} · {internet}")
+        format!("{short} · {}", measures::WITHOUT_INTERNET)
+    }
 }
 
 fn short(name: &str) -> String {

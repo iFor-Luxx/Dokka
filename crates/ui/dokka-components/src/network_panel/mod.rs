@@ -1,12 +1,15 @@
-//! Panel de red que cuelga de la barra, estilo Tahoe: título, cápsula
-//! con círculo, nombre e internet, y ajustes en su zona propia.
+//! Panel de red que cuelga de la barra, estilo Tahoe: un solo cristal
+//! oscuro con título, estado con círculo e internet, línea y ajustes.
 //! El círculo activo es blanco con icono azul; el apagado, translúcido
 //! con icono blanco. El icono blanco de la barra sale de `for_bar`.
 
+mod hit;
 mod icons;
+mod layout;
 mod props;
 mod view;
 
+pub use hit::network_hit;
 pub use icons::NetworkIcons;
 pub use props::{NetworkHit, NetworkType};
-pub use view::{network_hit, network_panel, network_size};
+pub use view::{network_panel, network_size};

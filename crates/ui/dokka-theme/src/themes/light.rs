@@ -81,6 +81,10 @@ pub fn light() -> Theme {
             circle_active: palette::white(255),
             circle_active_icon: palette::MACOS_BLUE,
             hover: palette::TRAY_HOVER,
+            panel: palette::TRAY_PANEL,
+            panel_border: palette::TRAY_PANEL_BORDER,
+            separator: palette::TRAY_SEPARATOR,
+            percent: palette::TRAY_PERCENT,
         },
         settings: settings_colors(border),
     }

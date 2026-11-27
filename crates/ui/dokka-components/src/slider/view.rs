@@ -24,7 +24,7 @@ fn capped_radius(maximum: f32, width: f32, height: f32) -> f32 {
     maximum.min(width / 2.0).min(height / 2.0).max(0.0)
 }
 
-/// Tamaño de la barra para este ancho: barra fina sin tirador.
+/// Tamaño de la cápsula para este ancho: extremos totalmente redondos.
 pub fn slider_size(track_width: f32) -> Size {
     Size {
         width: track_width.max(0.0),
