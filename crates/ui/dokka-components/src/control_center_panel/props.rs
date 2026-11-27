@@ -13,6 +13,8 @@ pub struct ControlCenterProps {
     pub now_playing: NowPlayingInfo,
     /// Carátula real; sin ella la tarjeta muestra su marcador.
     pub artwork: Option<Arc<Bitmap>>,
+    /// Brillo del monitor de 0 a 1; `None` sin DDC: sin tarjeta.
+    pub brightness: Option<f32>,
 }
 
 /// Zona pulsable del panel.
@@ -21,6 +23,8 @@ pub enum ControlCenterHit {
     Network,
     /// Punto del deslizador de volumen, de 0 (mínimo) a 1 (máximo).
     Slider(f32),
+    /// Punto del deslizador de brillo, de 0 (mínimo) a 1 (máximo).
+    Brightness(f32),
     Mute,
     Previous,
     Toggle,

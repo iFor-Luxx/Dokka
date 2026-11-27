@@ -18,7 +18,8 @@ pub(crate) fn add_slider(
     props: &ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
-    let card = sound_card(bounds);
+    let with_brightness = props.brightness.is_some();
+    let card = sound_card(bounds, with_brightness);
     let track = slider_track(card);
     let level = props.volume.level.clamp(0.0, 1.0);
     let fill_width = if props.volume.is_muted {

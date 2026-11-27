@@ -40,9 +40,11 @@
   con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
   la rejilla estricta del Centro de control (celda de 66, hueco de 12,
   cápsula doble de 144 × 66 con círculo de 42, música de 144 × 144,
-  Sonido de 300 × 68, alto total 404); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
-  reloj, menú colgando con su separación y ventana de 300 para que quepa el
-  calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
+  Sonido de 300 × 68 y Pantalla igual justo encima si hay DDC,
+  alto total 404 sin brillo y 484 con él); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  reloj, menú colgando con su separación y ventana de 560 para que quepa el
+  centro con brillo (520) además del calendario de 6 semanas;
+  la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560,
   cápsula de 52 con lupa a 20 y cursor, tarjeta de resultados con hasta 7 filas de 44
   con icono de 28, resaltado redondeado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la

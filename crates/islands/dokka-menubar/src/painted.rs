@@ -40,6 +40,7 @@ pub struct MenubarPainted {
     pub tray_hovered: Option<TrayKind>,
     pub volume_level: f32,
     pub volume_muted: bool,
+    pub brightness: Option<f32>,
     pub volume_hovered: Option<VolumePanelHit>,
     pub audio_outputs: Vec<AudioOutput>,
     pub network_kind: NetworkKind,
@@ -79,6 +80,7 @@ impl PartialEq for MenubarPainted {
             && self.tray_hovered == other.tray_hovered
             && self.volume_level == other.volume_level
             && self.volume_muted == other.volume_muted
+            && self.brightness == other.brightness
             && self.volume_hovered == other.volume_hovered
             && self.audio_outputs == other.audio_outputs
             && self.network_kind == other.network_kind

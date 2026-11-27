@@ -162,3 +162,13 @@ pub fn control_center_screen_clip_icon(color: Color) -> Drawing {
 pub fn control_center_clock_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Clock, measures::GLYPH_SIZE, color)
 }
+
+/// Sol tenue del extremo izquierdo del brillo.
+pub fn control_center_sun_dim_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::SunDim, measures::GLYPH_SIZE, color)
+}
+
+/// Sol pleno del extremo derecho del brillo.
+pub fn control_center_sun_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Sun, measures::GLYPH_SIZE, color)
+}

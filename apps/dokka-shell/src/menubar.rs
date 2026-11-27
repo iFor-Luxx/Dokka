@@ -86,11 +86,13 @@ pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) 
     }
 }
 
-/// Datos de los paneles en cada `Tick`: volumen y música siempre; red e
-/// idioma cada pocos `Tick` y con la fila cerrada (el idioma activo es el
-/// de la ventana al frente, antes de que la barra tome el foco).
+/// Datos de los paneles en cada `Tick`: volumen, brillo (solo el último valor
+/// conocido, sin DDC) y música siempre; red e idioma cada pocos `Tick` y con
+/// la fila cerrada (el idioma activo es el de la ventana al frente, antes de
+/// que la barra tome el foco).
 fn refresh_panels(session: &mut DockSession) {
     crate::menubar_volume::refresh_volume(session);
+    crate::menubar_brightness::refresh_brightness(session);
     crate::menubar_music::refresh_music(session);
     crate::menubar_background::refresh_background_apps(session);
     session.menubar.tick_search_cursor();
@@ -203,6 +205,9 @@ fn click_menubar(
         match session.menubar.tray_kind() {
             Some(dokka_menubar::TrayKind::Volume) => {
                 crate::menubar_volume::refresh_audio_outputs(session);
+            }
+            Some(dokka_menubar::TrayKind::ControlCenter) => {
+                crate::menubar_brightness::request_brightness(session);
             }
             Some(dokka_menubar::TrayKind::Network) => {
                 crate::menubar_network::refresh_network(session);

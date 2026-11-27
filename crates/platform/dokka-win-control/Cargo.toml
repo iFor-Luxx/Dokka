@@ -9,6 +9,7 @@ dokka-contracts.workspace = true
 dokka-model.workspace = true
 windows = { workspace = true, features = [
     "Networking_Connectivity",
+    "Win32_Devices_Display",
     "Win32_Foundation",
     "Win32_Globalization",
     "Win32_Graphics_Gdi",
