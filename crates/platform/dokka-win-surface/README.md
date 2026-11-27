@@ -32,9 +32,16 @@ reserva arriba con AppBar (`ABM_NEW`, `ABM_QUERYPOS`, `ABM_SETPOS` borde superio
 `ABM_REMOVE` en `menubar_hide` y en `Drop`) y coloca una ventana más alta para el
 menú desplegado, recortada por región (`menubar_area.rs`); `menubar_width`,
 `menubar_scale` y `menubar_set_active_areas` usan esa escala, y
-`menubar_menu_opened/closed/dismissed` guardan el foco igual que el menú del dock.
-`run_loop.rs` traduce su ratón a `MenubarMoved`, `MenubarLeft`, `MenubarClicked` y
-su pérdida de foco o Esc a `MenubarDismissed` (`menubar_loop.rs`).
+`menubar_menu_opened/closed/dismissed` guardan el foco igual que el menú del dock,
+pero `menubar_menu_opened` une la entrada al hilo activo (`AttachThreadInput`)
+y fija el foco del teclado (`SetFocus`), como el Launchpad, para recibir teclas.
+`run_loop.rs` traduce su ratón a `MenubarMoved`, `MenubarLeft`, `MenubarPressed`
+(botón abajo) y `MenubarClicked`, y sus teclas con foco a `MenubarTyped`
+(`WM_CHAR` con `TranslateMessage`), `MenubarBackspace`, `MenubarEnter`,
+`MenubarUp` y `MenubarDown`; su pérdida de foco o Esc a `MenubarDismissed`
+(`menubar_loop.rs`). Mientras el botón está abajo usa `SetCapture` para que
+el movimiento y la suelta lleguen aunque el cursor salga, con coordenadas
+negativas correctas, y libera la captura al soltar.
 Ante pantalla completa (`ABN_FULLSCREENAPP`) la oculta y la recupera al salir; el
 Launchpad y la vista grande (pantalla completa) sí la cubren, y el dock sigue
 anclado al área de trabajo, así que la reserva de arriba no lo descoloca.

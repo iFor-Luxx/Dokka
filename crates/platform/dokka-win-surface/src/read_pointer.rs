@@ -141,7 +141,7 @@ fn wheel_delta(message: &MSG) -> i16 {
 }
 
 /// Las coordenadas llegan como dos enteros de 16 bits con signo, en píxeles.
-fn pointer_position(message: &MSG, scale: f32) -> (f32, f32) {
+pub(crate) fn pointer_position(message: &MSG, scale: f32) -> (f32, f32) {
     let x = f32::from(message.lParam.0 as i16) / scale;
     let y = f32::from((message.lParam.0 >> 16) as i16) / scale;
     (x, y)
