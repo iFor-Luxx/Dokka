@@ -1,4 +1,5 @@
-//! Mes completo con su píldora de navegación.
+//! Mes completo con su píldora de navegación: claro en el dock y cristal
+//! oscuro en la barra (`dark`), sin duplicar el trazado.
 
 mod month;
 mod navigation;

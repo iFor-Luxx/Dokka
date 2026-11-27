@@ -1,11 +1,9 @@
-//! Panel de volumen estilo Tahoe: dos piezas de cristal (tarjeta
-//! "Sonido" con deslizador fino y tarjeta con la fila de ajustes).
+//! Panel de volumen estilo Tahoe: un solo cristal oscuro con título,
+//! cápsula ancha con el número, silenciar y ajustes separados por líneas.
 //!
 //! No sabe de dónde sale el volumen: recibe el nivel de 0 a 1,
-//! si está silenciado y la zona bajo el cursor. El fondo es invisible y
-//! cada pieza va en `tiles`; el deslizador no lleva tirador y el altavoz
-//! de la izquierda silencia. La cantidad de elementos es constante entre
-//! estados (el resaltado oculto es de tamaño cero) para no reconstruir
+//! si está silenciado y la zona bajo el cursor. `tiles` vacío y cantidad
+//! constante (el resaltado oculto es de tamaño cero) para no reconstruir
 //! capas.
 
 mod icons;

@@ -98,7 +98,7 @@ pub struct NavPillColors {
     pub hover: Color,
 }
 
-/// Paneles de la barra superior: cristal ahumado con texto blanco.
+/// Paneles de la barra superior: un solo cristal ahumado con texto blanco.
 #[derive(Debug, Clone, Copy)]
 pub struct TrayColors {
     /// Fondo transparente que agrupa las piezas.
@@ -116,6 +116,14 @@ pub struct TrayColors {
     pub circle_active: Color,
     pub circle_active_icon: Color,
     pub hover: Color,
+    /// Cristal único oscuro de cada menú.
+    pub panel: Color,
+    /// Borde fino del cristal único, con filo claro.
+    pub panel_border: Color,
+    /// Línea fina entre secciones del cristal único.
+    pub separator: Color,
+    /// Número del volumen sobre el relleno blanco.
+    pub percent: Color,
 }
 
 /// Colores de la ventana de Preferencias en tema claro.

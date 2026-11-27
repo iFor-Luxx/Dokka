@@ -3,7 +3,8 @@
 **Hace:** componentes reutilizables de interfaz: etiqueta flotante de cristal (`tooltip`),
 fondo de paneles (`popup_panel`), calendario con su píldora de navegación (`calendar_panel`:
 mes ya calculado, semanas, tamaño, píldora y paso entre meses compartidos por
-el dock y la barra; la tarjeta nunca se encoge al navegar), píldora
+el dock (claro) y la barra (cristal oscuro con texto blanco y hoy en blanco);
+la tarjeta nunca se encoge al navegar), píldora
 segmentada (`nav_pill`: cápsula con dos chevrones Lucide y línea central, a partir
 de su rectángulo, qué lados están disponibles y el hover; sin saber qué navega),
 vistas previas con botones redondos de cerrar y fijar, menú del clic derecho
@@ -22,15 +23,16 @@ pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
 `filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna)
-y tarjeta de música Tahoe (`music_panel`: carátula cuadrada con título y artista recortados
+y cristal único de música Tahoe (`music_panel`: carátula cuadrada con título y artista recortados
 con "…", controles grandes de anterior, pausa/reproducir y siguiente con los glifos Lucide
 en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
 canción entrega los mismos textos e iconos),
-panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
-botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
-con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
-idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
-"Activa", resaltado suave y ajustes aparte, sin marca),
+panel de volumen (`volume_panel`: un solo cristal con título, cápsula ancha con el número
+en gris dentro a la izquierda y tirador blanco, líneas finas, silenciar y ajustes),
+panel de red (`network_panel`: cristal único con título, fila de estado con círculo,
+tipo y nombre en gris, línea y ajustes), lista de
+idiomas (`language_panel`: cristal único con título, filas compactas con marca
+de verificación Lucide en el activo y código en recuadro, línea y ajustes),
 centro de control (`control_center_panel`: tarjetas de red, volumen con
 deslizador y música más botones redondos, sin resaltar) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de

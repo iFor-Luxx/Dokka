@@ -13,10 +13,10 @@ pub fn music_panel_size(_track: Option<&MusicTrack>) -> Size {
     }
 }
 
-/// Tarjeta de cristal ahumado con carátula, título y controles grandes.
+/// Un solo cristal oscuro con carátula, título y controles grandes.
 /// Sin canción muestra "Nada en reproducción" con los botones atenuados.
-/// Capas siempre iguales: panel invisible, una pieza, un plano de carátula,
-/// dos textos y tres iconos.
+/// Capas siempre iguales: cristal, un plano de carátula, dos textos
+/// y tres iconos.
 pub fn music_panel_panel(
     theme: &Theme,
     icons: &MusicPanelIcons,
@@ -26,18 +26,12 @@ pub fn music_panel_panel(
     Overlay {
         panel: Panel {
             bounds,
-            corner_radius: measures::TILE_RADIUS,
-            border_width: 0.0,
-            tint: theme.tray.clear,
-            border: theme.tray.clear,
-        },
-        tiles: vec![Panel {
-            bounds,
-            corner_radius: measures::TILE_RADIUS,
+            corner_radius: capped(bounds, measures::TILE_RADIUS),
             border_width: measures::TILE_BORDER_WIDTH,
-            tint: theme.tray.tile,
-            border: theme.tray.tile_border,
-        }],
+            tint: theme.tray.panel,
+            border: theme.tray.panel_border,
+        },
+        tiles: Vec::new(),
         pill: None,
         highlight: None,
         flat_panels: vec![artwork_panel(theme, bounds)],
@@ -84,9 +78,10 @@ fn artwork_rect(bounds: Rect) -> Rect {
 }
 
 fn artwork_panel(theme: &Theme, bounds: Rect) -> Panel {
+    let art = artwork_rect(bounds);
     Panel {
-        bounds: artwork_rect(bounds),
-        corner_radius: measures::ARTWORK_RADIUS.min(measures::ARTWORK_SIDE / 2.0),
+        bounds: art,
+        corner_radius: capped(art, measures::ARTWORK_RADIUS),
         border_width: 0.0,
         tint: theme.tray.circle,
         border: theme.tray.circle,
@@ -187,6 +182,17 @@ fn music_icons(
 
 fn contains(bounds: &Rect, x: f32, y: f32) -> bool {
     x >= bounds.x && x < bounds.x + bounds.width && y >= bounds.y && y < bounds.y + bounds.height
+}
+
+/// Radio recortado para no superar la mitad del lado menor.
+fn capped(tile: Rect, maximum: f32) -> f32 {
+    if tile.width <= 0.0 || tile.height <= 0.0 {
+        return 0.0;
+    }
+    maximum
+        .min(tile.width / 2.0)
+        .min(tile.height / 2.0)
+        .max(0.0)
 }
 
 fn shorten(value: &str, limit: usize) -> String {

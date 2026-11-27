@@ -1,4 +1,4 @@
-//! Deslizador reutilizable estilo Tahoe: barra fina con relleno, sin tirador.
+//! Deslizador reutilizable estilo Tahoe: cápsula ancha con relleno.
 //!
 //! Recibe su zona, el valor de 0 a 1, si está activo y sus colores (barra,
 //! relleno y relleno atenuado); da los planos de la barra y el relleno y el

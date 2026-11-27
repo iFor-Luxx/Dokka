@@ -11,8 +11,8 @@
   navegación) y `SettingsColors`
   (`theme.settings`: ventana, barra, casilla, selección y hover de filas, título, tarjeta,
   cuadrados de color, semáforos con sus símbolos oscuros de hover, su gris sin foco y
-  `TrayColors` (`theme.tray`: cristal ahumado de la barra, texto blanco, pista,
-  relleno y hover).
+  `TrayColors` (`theme.tray`: cristal único oscuro de los menús, texto blanco,
+  pista, relleno, círculo, hover, separador y número gris).
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
   glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
@@ -29,7 +29,7 @@
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;
-  `music_panel.rs`: tarjeta de música Tahoe de 320 × 142, carátula cuadrada de 56
+  `music_panel.rs`: cristal único de música Tahoe de 320 × 138, carátula cuadrada de 56
   con radio concéntrico (exterior menos separación), título y artista recortados y
   "Nada en reproducción" con controles atenuados, glifos Lucide blancos a 28;
   `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto).
