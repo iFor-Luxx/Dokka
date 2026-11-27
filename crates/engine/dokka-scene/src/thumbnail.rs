@@ -12,4 +12,6 @@ pub struct Thumbnail {
     pub bounds: Rect,
     /// Lado del cuadrado libre en la esquina inferior derecha.
     pub reserved_corner: f32,
+    /// De 0 (invisible) a 1: el genio la funde al aterrizar.
+    pub opacity: f32,
 }

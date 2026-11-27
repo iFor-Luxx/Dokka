@@ -16,6 +16,7 @@ pub(crate) fn minimized_window(window: WindowId, slot: Rect) -> (Thumbnail, Rect
         height: side,
     };
     let thumbnail = Thumbnail {
+        opacity: 1.0,
         window: window.value(),
         bounds: slot,
         reserved_corner: inside,

@@ -54,7 +54,7 @@ impl WindowThumbnails {
             .collect();
         let all: Vec<(&Thumbnail, u8)> = dock
             .iter()
-            .map(|item| (item, u8::MAX))
+            .map(|item| (item, (item.opacity.clamp(0.0, 1.0) * 255.0).round() as u8))
             .chain(scaled.iter().map(|item| (item, opacity)))
             .collect();
         // Una misma ventana puede verse en el dock y en un panel a la vez.
@@ -136,6 +136,7 @@ fn scaled_thumbnail(item: &Thumbnail, scale: f32, origin: (f32, f32)) -> Thumbna
             height: item.bounds.height * scale,
         },
         reserved_corner: item.reserved_corner * scale,
+        opacity: item.opacity,
     }
 }
 

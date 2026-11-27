@@ -84,6 +84,18 @@ impl Flight {
             .map(|(image, window)| Snapshot::from_capture(image, window, edge))
     }
 
+    /// Opacidad de 0 a 1 de la miniatura del dock en este instante.
+    pub(crate) fn landing(&self, now: Instant) -> f32 {
+        let Phase::Flying { start, .. } = &self.phase else {
+            return 0.0;
+        };
+        let progress = flight_progress(
+            now.saturating_duration_since(*start).as_secs_f32(),
+            self.seconds,
+        );
+        f32::from(dokka_animation::landing_opacity(progress, self.restoring)) / 255.0
+    }
+
     /// Avanza el vuelo; `false` cuando termino o ya no puede seguir.
     pub(crate) fn step(&mut self, gfx: &GenieCompositor, now: Instant) -> bool {
         let elapsed = now.saturating_duration_since(self.created_at);
