@@ -39,10 +39,10 @@ pub use lucide::{
     checkmark_icon, media_next_icon, media_pause_icon, media_play_icon, media_previous_icon,
     menubar_icon, nav_next_icon, nav_previous_icon, preview_close_icon, preview_pin_icon,
     preview_pinned_icon, search_icon, settings_about_icon, settings_appearance_icon,
-    settings_dock_icon, settings_general_icon, settings_launchpad_icon, settings_menubar_icon,
-    settings_shortcuts_icon, settings_taskbar_icon, submenu_chevron_icon, traffic_circle,
-    traffic_close_button, traffic_close_icon, traffic_minimize_button, traffic_minimize_icon,
-    traffic_zoom_button, traffic_zoom_icon,
+    settings_dock_icon, settings_general_icon, settings_grip_icon, settings_launchpad_icon,
+    settings_menubar_icon, settings_shortcuts_icon, settings_taskbar_icon, submenu_chevron_icon,
+    traffic_circle, traffic_close_button, traffic_close_icon, traffic_minimize_button,
+    traffic_minimize_icon, traffic_zoom_button, traffic_zoom_icon,
 };
 pub use menubar_tray::{TRAY_GLYPH_SIDE, TrayIcons};
 pub use music::music_bar_icon;

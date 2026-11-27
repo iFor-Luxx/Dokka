@@ -34,6 +34,16 @@ pub struct PaintedSettings {
     pub control: Option<PaintedControl>,
     /// Deslizador a medias: cuál (0 tamaño, 1 ampliación) y su valor de 0 a 1.
     pub drag: Option<(u8, OrderedF32)>,
+    /// Fila de la barra a medias: de dónde a dónde y a qué altura flotante.
+    pub reorder: Option<PaintedReorder>,
+}
+
+/// Fila arrastrada en la huella: hueco de origen, destino y altura.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct PaintedReorder {
+    pub from: usize,
+    pub target: usize,
+    pub height: OrderedF32,
 }
 
 /// `f32` comparable para la huella de repintado: el arrastre nunca es `NaN`.
@@ -54,5 +64,18 @@ pub(crate) fn painted_drag(values: &ContentValues) -> Option<(u8, OrderedF32)> {
             SliderTarget::DockStrength => 1,
         };
         (kind, OrderedF32(values.drag_value))
+    })
+}
+
+/// Fila de la barra a medias: solo si ya pasó el umbral y se mueve.
+pub(crate) fn painted_reorder(values: &ContentValues) -> Option<PaintedReorder> {
+    let drag = values.reorder?;
+    if !drag.is_active() {
+        return None;
+    }
+    Some(PaintedReorder {
+        from: drag.from(),
+        target: drag.target(),
+        height: OrderedF32(drag.current_y()),
     })
 }

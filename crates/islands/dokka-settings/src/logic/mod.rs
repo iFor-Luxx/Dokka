@@ -2,6 +2,7 @@ mod content;
 mod content_hit;
 mod dock_position;
 mod hit;
+mod menubar_order;
 mod search_filter;
 mod sections;
 mod slider_map;
@@ -16,6 +17,10 @@ pub(crate) use content_hit::{
 };
 pub(crate) use dock_position::{position_from_index, position_options, position_to_index};
 pub use hit::drag_zone;
+pub(crate) use menubar_order::{
+    float_top, menubar_bottom, menubar_label, menubar_on, menubar_row_at, menubar_top,
+    reorder_target, reordered, toggle_menubar,
+};
 pub(crate) use search_filter::filter_sections;
 pub use sections::SECTION_NAMES;
 pub(crate) use sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};

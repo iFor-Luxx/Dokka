@@ -67,6 +67,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         return ContentScene {
             flats,
             dividers,
+            icons: Vec::new(),
             texts,
         };
     };
@@ -99,6 +100,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         return ContentScene {
             flats,
             dividers,
+            icons: Vec::new(),
             texts,
         };
     };
@@ -132,6 +134,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
     ContentScene {
         flats,
         dividers,
+        icons: Vec::new(),
         texts,
     }
 }

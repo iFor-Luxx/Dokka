@@ -7,9 +7,16 @@ use crate::Menubar;
 
 impl Menubar {
     /// Qué iconos de la fila derecha se muestran. Los apagados no se dibujan
-    /// ni reciben clics; si estaba abierto su panel, se cierra.
+    /// ni reciben clics; si estaba abierto su panel, se cierra. Si cambia el
+    /// orden con un panel abierto, también se cierra para no quedarse colgando
+    /// del icono viejo.
     pub fn set_shown(&mut self, shown: MenubarPreferences) {
+        let order_changed = self.shown.order != shown.order;
         self.shown = shown;
+        if order_changed && self.tray.is_some() {
+            self.close_tray();
+            return;
+        }
         if self.tray.is_some_and(|open| !self.is_shown(open.kind)) {
             self.close_tray();
         }

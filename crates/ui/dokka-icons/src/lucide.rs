@@ -207,6 +207,16 @@ pub fn settings_about_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Info, settings::ROW_GLYPH_SIZE, color)
 }
 
+/// Agarre de las filas reordenables de la barra superior: seis puntos
+/// verticales en color secundario, a tamaño de la fila.
+pub fn settings_grip_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::GripVertical,
+        settings::REORDER_GRIP_GLYPH_SIZE,
+        color,
+    )
+}
+
 /// Botón de pista anterior.
 pub fn media_previous_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::SkipBack, popup::MEDIA_GLYPH_SIZE, color)

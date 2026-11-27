@@ -210,6 +210,20 @@ pub const SLIDER_TICK_WIDTH: f32 = 2.0;
 pub const SLIDER_TICK_HEIGHT: f32 = 10.0;
 /// Separación entre tarjetas de contenido apiladas.
 pub const GROUP_GAP: f32 = 16.0;
+/// Umbral para empezar a reordenar la barra: un clic no mueve nada.
+pub const REORDER_THRESHOLD: f32 = 4.0;
+/// Lado del agarre de cada fila reordenable.
+pub const REORDER_GRIP_SIDE: f32 = 16.0;
+/// El glifo llena el lienzo de 100, como el resto de Lucide.
+pub const REORDER_GRIP_GLYPH_SIZE: f32 = dokka_scene::DRAWING_SIDE;
+/// Aire entre el agarre y el nombre de la fila.
+pub const REORDER_GRIP_GAP: f32 = 8.0;
+/// Texto pequeño bajo la tarjeta que explica el arrastre.
+pub const REORDER_HINT_SIZE: f32 = 12.0;
+/// Aire entre la tarjeta y el texto que explica el arrastre.
+pub const REORDER_HINT_GAP: f32 = 8.0;
+/// Radio del resaltado de la fila arrastrada.
+pub const REORDER_HIGHLIGHT_RADIUS: f32 = 8.0;
 
 /// Secciones en orden, como las ve la barra lateral.
 pub const SECTIONS: usize = 8;

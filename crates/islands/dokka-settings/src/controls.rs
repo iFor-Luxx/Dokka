@@ -5,9 +5,9 @@ use dokka_components::nav_pill::NavHalf;
 
 use super::logic::{
     DockSwitch, SliderTarget, dock_segment_at, dock_slider_at, dock_switch_at, icon_scale_from,
-    magnification_from, menubar_switch_at, position_from_index, taskbar_switch_at,
+    magnification_from, menubar_switch_at, position_from_index, taskbar_switch_at, toggle_menubar,
 };
-use super::pointer::clamped_slider_value;
+use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
 use crate::SettingsAction;
 
@@ -60,19 +60,15 @@ impl Settings {
             self.values_mut().preferences = preferences;
             return SettingsAction::Changed(preferences);
         }
-        // Interruptores de la barra superior.
+        // Interruptores de la barra superior: la fila de arriba es la de más a
+        // la izquierda, así que el interruptor sigue al icono en su orden.
         if let Some(row) = menubar_switch_at(selected, x, y) {
+            let order = self.values().preferences.menubar.order;
+            let Some(item) = order.get(row.min(6)).copied() else {
+                return SettingsAction::Stay;
+            };
             let mut preferences = self.values().preferences;
-            match row {
-                0 => preferences.menubar.volume = !preferences.menubar.volume,
-                1 => preferences.menubar.network = !preferences.menubar.network,
-                2 => preferences.menubar.music = !preferences.menubar.music,
-                3 => preferences.menubar.language = !preferences.menubar.language,
-                4 => preferences.menubar.search = !preferences.menubar.search,
-                5 => preferences.menubar.control_center = !preferences.menubar.control_center,
-                6 => preferences.menubar.background_apps = !preferences.menubar.background_apps,
-                _ => return SettingsAction::Stay,
-            }
+            toggle_menubar(&mut preferences.menubar, item);
             self.values_mut().preferences = preferences;
             return SettingsAction::Changed(preferences);
         }

@@ -14,6 +14,7 @@ pub(crate) struct CachedDrawings {
     badges: Vec<Option<(Color, Arc<Drawing>)>>,
     rows: Vec<Option<(Color, Arc<Drawing>)>>,
     search: Option<(Color, Arc<Drawing>)>,
+    grip: Option<(Color, Arc<Drawing>)>,
     nav: Option<NavPillIcons>,
     traffic: Option<TrafficButtons>,
 }
@@ -24,6 +25,7 @@ impl CachedDrawings {
             badges: vec![None; measures::SECTIONS],
             rows: vec![None; measures::SECTIONS],
             search: None,
+            grip: None,
             nav: None,
             traffic: None,
         }
@@ -72,6 +74,18 @@ impl CachedDrawings {
         match &self.search {
             Some((_, drawing)) => Arc::clone(drawing),
             None => Arc::new(dokka_icons::search_icon(color)),
+        }
+    }
+
+    /// Agarre de las filas reordenables, creado una vez y reutilizado.
+    pub(crate) fn grip(&mut self, theme: &Theme) -> Arc<Drawing> {
+        let color = theme.settings.card_text;
+        if self.grip.as_ref().is_none_or(|(known, _)| *known != color) {
+            self.grip = Some((color, Arc::new(dokka_icons::settings_grip_icon(color))));
+        }
+        match &self.grip {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(dokka_icons::settings_grip_icon(color)),
         }
     }
 

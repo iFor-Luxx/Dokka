@@ -30,15 +30,18 @@ use crate::Settings;
 /// de la ventana: como cristal muestrearían el fondo de pantalla y saldrían
 /// azul oscuro. El resaltado de la píldora va como plano, igual que en el
 /// calendario: como cristal muestrearía el fondo y taparía su sombra suave.
-/// Cada semáforo es un solo icono con su círculo y, con el cursor encima, su
-/// símbolo; sin foco van en gris. El cursor de la casilla siempre está, de
-/// ancho cero cuando no hay foco.
+/// La fila arrastrada de la barra va como plano bajo sus iconos y textos:
+/// los planos se pintan antes y el texto nunca queda tapado. Cada semáforo
+/// es un solo icono con su círculo y, con el cursor encima, su símbolo; sin
+/// foco van en gris. El cursor de la casilla siempre está, de ancho cero
+/// cuando no hay foco.
 pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     let order = settings.filtered_order();
     let selected = settings.selected();
     let pill = settings.pill_props();
     let search = search_bounds();
     let search_drawing = settings.search_drawing(theme);
+    let grip_drawing = settings.grip_drawing(theme);
     let nav = settings.nav_drawings(theme);
     let traffic = settings.traffic_drawings(theme);
     let focused = settings.window_focused();
@@ -49,7 +52,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         badge_drawings.push(settings.badge_drawing(theme, *index));
         glyphs.push(settings.row_drawing(theme, *index));
     }
-    let content = content_scene(theme, settings);
+    let content = content_scene(theme, settings, &grip_drawing);
     let mut icons = filtered_badges(theme, &order, &badge_drawings);
     icons.extend(filtered_icons(theme, &order, &glyphs));
     icons.push(search_magnifier_at(
@@ -61,6 +64,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     ));
     icons.extend(nav_pill_icons(theme, &nav, &pill));
     icons.extend(traffic_icons(theme, &traffic, focused, hovered));
+    icons.extend(content.icons);
     let names = section_names();
     let mut texts = filtered_labels(theme, selected, &order, &names);
     texts.push(settings_search_text(
@@ -134,11 +138,13 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
         // y taparía su tinte. Las tarjetas, los deslizadores (barra, relleno
         // desde la fábrica, marca y tirador en cápsula), el segmentado (fondo
-        // y pastilla), los interruptores (pista y tirador) y el
-        // resaltado de la píldora van aquí. Los tiradores son planos porque
-        // los puntos son círculos. El contenido cambia de tamaño entre
-        // secciones: `SceneLayers` reconstruye si crece o cambia el estilo;
-        // al arrastrar solo se mueven, sin reconstruir.
+        // y pastilla), los interruptores (pista y tirador), el agarre
+        // reordenable y su resaltado y el resaltado de la píldora van aquí.
+        // Los tiradores son planos porque los puntos son círculos. El contenido
+        // cambia de tamaño entre secciones: `SceneLayers` reconstruye si crece
+        // o cambia el estilo; al arrastrar la barra solo se mueven, sin
+        // reconstruir: la tarjeta, el resaltado, los interruptores, las líneas,
+        // los agarres y los textos son siempre los mismos.
         flat_panels: flats,
         highlight: None,
         dividers,

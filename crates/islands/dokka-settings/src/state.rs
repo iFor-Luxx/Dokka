@@ -8,8 +8,7 @@ use dokka_scene::{Drawing, Rect};
 use dokka_theme::{Theme, settings as measures};
 
 use super::drawings::CachedDrawings;
-use super::logic::filter_sections;
-use super::painted::{PaintedSettings, painted_drag};
+use super::painted::{PaintedSettings, painted_drag, painted_reorder};
 use super::values::ContentValues;
 
 /// Ventana abierta o cerrada, historial de secciones, búsqueda y focos, con
@@ -66,6 +65,7 @@ impl Settings {
         self.window_focused = true;
         self.values.control = None;
         self.values.drag = None;
+        self.values.reorder = None;
     }
 
     /// Cierra la ventana: ocultar no borra la sección elegida ni el historial.
@@ -77,6 +77,7 @@ impl Settings {
         self.search_focused = false;
         self.values.control = None;
         self.values.drag = None;
+        self.values.reorder = None;
     }
 
     pub fn is_open(&self) -> bool {
@@ -127,18 +128,29 @@ impl Settings {
     }
 
     /// `true` si hay una sección anterior a la que volver.
-    pub fn can_previous(&self) -> bool {
-        self.position > 0
+    pub(crate) fn position(&self) -> usize {
+        self.position
     }
 
-    /// `true` si hay una sección siguiente a la que avanzar.
-    pub fn can_next(&self) -> bool {
-        self.position + 1 < self.history.len()
+    pub(crate) fn history_len(&self) -> usize {
+        self.history.len()
     }
 
-    /// Secciones visibles con la búsqueda actual, en su orden.
-    pub fn filtered_order(&self) -> Vec<usize> {
-        filter_sections(&self.query)
+    pub(crate) fn push_history(&mut self, index: usize) {
+        self.history.truncate(self.position + 1);
+        self.history.push(index);
+        self.position = self.history.len() - 1;
+        self.selected = index;
+    }
+
+    pub(crate) fn step_back(&mut self) {
+        self.position -= 1;
+        self.selected = self.history[self.position];
+    }
+
+    pub(crate) fn step_forward(&mut self) {
+        self.position += 1;
+        self.selected = self.history[self.position];
     }
 
     /// Recuerda lo vigente antes de mostrar: el shell lo llama al abrir.
@@ -162,7 +174,7 @@ impl Settings {
     }
 
     /// Lo ya dibujado, para que el shell solo repinte si cambió algo: incluye
-    /// los valores y el hover del contenido.
+    /// los valores, el orden arrastrado y el hover del contenido.
     pub fn painted(&self) -> PaintedSettings {
         PaintedSettings {
             selected: self.selected,
@@ -178,6 +190,7 @@ impl Settings {
             taskbar_auto: self.values.taskbar_auto,
             control: self.values.control,
             drag: painted_drag(&self.values),
+            reorder: painted_reorder(&self.values),
         }
     }
 
@@ -206,6 +219,11 @@ impl Settings {
         self.drawings.traffic(theme)
     }
 
+    /// Agarre de las filas reordenables, creado una vez y reutilizado.
+    pub(crate) fn grip_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
+        self.drawings.grip(theme)
+    }
+
     pub(crate) fn values(&self) -> &ContentValues {
         &self.values
     }
@@ -232,34 +250,6 @@ impl Settings {
 
     pub(crate) fn query_mut(&mut self) -> &mut String {
         &mut self.query
-    }
-
-    pub(crate) fn select_section(&mut self, index: usize) {
-        if index != self.selected {
-            self.history.truncate(self.position + 1);
-            self.history.push(index);
-            self.position = self.history.len() - 1;
-            self.selected = index;
-        }
-        self.hovered = Some(index);
-    }
-
-    pub(crate) fn go_back(&mut self) {
-        if self.can_previous() {
-            self.position -= 1;
-            self.selected = self.history[self.position];
-        }
-    }
-
-    pub(crate) fn go_forward(&mut self) {
-        if self.can_next() {
-            self.position += 1;
-            self.selected = self.history[self.position];
-        }
-    }
-
-    pub(crate) fn clear_search_state(&mut self) {
-        self.search_focused = false;
     }
 
     /// Reenvío para no exponer el tráfico en el puntero.

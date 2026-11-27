@@ -2,8 +2,9 @@
 
 **Hace:** barra superior estilo macOS de lado a lado (30 de alto): icono
 Lucide de Dokka a 20, nombre de la app activa en negrita a la izquierda, fila
-de iconos pulsables a la izquierda de la fecha (de derecha a izquierda:
-centro de control, buscar, idioma como texto de código, segundo plano, música, red y volumen)
+de iconos pulsables a la izquierda de la fecha en el orden guardado en
+Preferencias (la fila de arriba de la lista queda a la izquierda; la hora no
+se ordena y va siempre al final)
 y la hora a la derecha. El clic en el icono abre debajo el mismo menú
 de cristal del dock (`menu_panel` sin punta); el clic en la hora abre
 debajo el calendario de la barra (`calendar_panel` con su píldora de
@@ -11,10 +12,12 @@ flechas), alineado a la derecha bajo el reloj; cada icono visible de la fila abr
 debajo su panel real (`volume_panel`, `network_panel`, `language_panel`,
 `music_panel`, `search_panel`, `control_center_panel`, `background_panel`), medido con su
 `<x>_size` y colocado bajo su icono sin salirse del ancho (el buscador va
-centrado en lo alto). `set_shown(MenubarPreferences)` elige qué iconos se ven:
-los apagados no se dibujan ni reciben clics, los demás se recolocan sin huecos
-y si estaba abierto su panel se cierra; el filtrado vive en `logic/tray.rs`
-(`is_shown`: añadir un `TrayKind` nuevo es una línea) y la huella lo nota. Navega meses con las flechas, con hover, sin encogerse
+centrado en lo alto). `set_shown(MenubarPreferences)` elige qué iconos se ven
+y en qué orden: los apagados no se dibujan ni reciben clics, los demás se
+recolocan sin huecos según `order` y si estaba abierto su panel se cierra
+(también si cambia el orden con un panel abierto); el filtrado y el orden
+viven en `logic/tray.rs` (`is_shown` y `saved_order`: añadir un `TrayKind`
+nuevo es una línea en cada uno) y la huella lo nota. Navega meses con las flechas, con hover, sin encogerse
 al navegar; la hora y la fila se resaltan suave (plano, como el icono) al
 pasar o con su panel abierto. Solo uno de los nueve a la vez: abrir uno cierra
 los demás. Guarda el nombre, la hora, el hoy, el código de idioma, si el menú,
