@@ -4,7 +4,7 @@ pub struct VolumeState {
     /// De 0 (silencio) a 1 (máximo).
     pub level: f32,
     pub is_muted: bool,
-};
+}
 
 /// Salida de audio activa (punto de render).
 #[derive(Debug, Clone, PartialEq, Eq)]

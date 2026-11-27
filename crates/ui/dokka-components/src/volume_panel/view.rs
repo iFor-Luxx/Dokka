@@ -4,10 +4,10 @@ use dokka_theme::{Theme, volume as measures};
 
 use super::knob::slider_knob;
 use super::layout::{
-    mute_row, output_row, output_title_row, separator_rect, settings_row, slider_bar, slider_touch,
-    title_row, visible_count,
+    mute_row, output_row, separator_rect, settings_row, slider_bar, slider_touch, title_row,
+    visible_count,
 };
-use super::rows::{row_icons, row_texts};
+use super::rows::{Rows, row_icons, row_texts};
 use super::track::track_panels;
 use super::{VolumePanelHit, VolumePanelIcons, VolumePanelProps};
 
@@ -32,16 +32,28 @@ pub fn volume_panel(
     let title = title_row(bounds);
     let touch = slider_touch(bounds);
     let bar = slider_bar(touch);
-    let visible = visible_count(outputs);
-    let output_title = (visible > 0).then(|| output_title_row(bounds));
     let mute = mute_row(bounds, outputs);
     let settings = settings_row(bounds, outputs);
     let flats = track_panels(theme, bar, props);
+    let rows = Rows {
+        bounds,
+        title,
+        touch,
+        mute,
+        settings,
+    };
     Overlay {
         panel: glass(theme, bounds),
         tiles: Vec::new(),
         pill: None,
-        highlight: Some(highlight_panel(theme, bounds, outputs, mute, settings, props.hovered)),
+        highlight: Some(highlight_panel(
+            theme,
+            bounds,
+            outputs,
+            mute,
+            settings,
+            props.hovered,
+        )),
         flat_panels: vec![flats[0], flats[1]],
         dividers: vec![
             separator(theme, bounds, outputs, 0),
@@ -49,8 +61,8 @@ pub fn volume_panel(
         ],
         dots: vec![slider_knob(theme, bar, props)],
         pointer: None,
-        texts: row_texts(theme, bounds, title, output_title, outputs, mute, settings, props).into(),
-        icons: row_icons(theme, icons, bounds, touch, outputs, mute, settings, props).into(),
+        texts: row_texts(theme, rows, outputs, props),
+        icons: row_icons(theme, icons, rows, outputs, props),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,

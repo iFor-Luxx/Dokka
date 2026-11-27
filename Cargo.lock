@@ -136,6 +136,7 @@ dependencies = [
  "dokka-state",
  "dokka-theme",
  "dokka-win-apps",
+ "dokka-win-audio-output",
  "dokka-win-composition",
  "dokka-win-control",
  "dokka-win-media",
@@ -166,6 +167,15 @@ dependencies = [
  "dokka-contracts",
  "dokka-model",
  "dokka-scene",
+ "windows",
+]
+
+[[package]]
+name = "dokka-win-audio-output"
+version = "0.1.0"
+dependencies = [
+ "dokka-contracts",
+ "dokka-model",
  "windows",
 ]
 

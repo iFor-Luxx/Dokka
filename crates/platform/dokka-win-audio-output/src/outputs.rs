@@ -6,12 +6,11 @@ use windows::Win32::Devices::FunctionDiscovery::PKEY_Device_FriendlyName;
 use windows::Win32::Media::Audio::{
     DEVICE_STATE_ACTIVE, IMMDevice, IMMDeviceEnumerator, MMDeviceEnumerator, eMultimedia, eRender,
 };
+use windows::Win32::System::Com::StructuredStorage::{PropVariantClear, PropVariantToStringAlloc};
 use windows::Win32::System::Com::{
     CLSCTX_ALL, COINIT_APARTMENTTHREADED, CoCreateInstance, CoInitializeEx, CoTaskMemFree,
     CoUninitialize, STGM_READ,
 };
-use windows::Win32::System::Com::StructuredStorage::PropVariantClear;
-use windows::Win32::UI::Shell::PropertiesSystem::PropVariantToStringAlloc;
 use windows::core::PWSTR;
 
 /// Salidas de audio de Windows (`AudioOutputs`).

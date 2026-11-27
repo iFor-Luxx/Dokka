@@ -60,7 +60,9 @@ impl Menubar {
 
     /// Identificador de la salida con este índice, si sigue en la lista.
     pub fn audio_output_id(&self, index: usize) -> Option<String> {
-        self.audio_outputs.get(index).map(|output| output.id.clone())
+        self.audio_outputs
+            .get(index)
+            .map(|output| output.id.clone())
     }
 
     /// Mide con su tamaño real (según las salidas) y lo coloca bajo su icono.

@@ -149,7 +149,8 @@ fn outputs_block(outputs: &[AudioOutput]) -> f32 {
 /// Fila compacta que silencia, bajo la primera línea.
 pub(crate) fn mute_row(bounds: Rect, outputs: &[AudioOutput]) -> Rect {
     let touch = slider_touch(bounds);
-    let top = touch.y + touch.height
+    let top = touch.y
+        + touch.height
         + outputs_block(outputs)
         + measures::SECTION_GAP
         + dokka_theme::tray_glass::SEPARATOR_HEIGHT;

@@ -13,7 +13,9 @@ use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
 use dokka_components::volume_panel::VolumePanelHit;
 use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{TrayIcons, menubar_icon};
-use dokka_model::{AudioOutput, MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
+use dokka_model::{
+    AudioOutput, MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
+};
 use dokka_scene::{Bitmap, Drawing};
 use dokka_theme::Theme;
 

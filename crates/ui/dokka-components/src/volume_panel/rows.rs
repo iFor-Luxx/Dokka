@@ -11,26 +11,41 @@ use dokka_model::AudioOutput;
 use dokka_scene::{Drawing, Icon, IconImage, Rect, Text, TextAlign};
 use dokka_theme::{Theme, tray_glass as glass, volume as measures};
 
-use super::layout::{level01, output_row, slider_left_icon, slider_right_icon, visible_count};
+use super::layout::{
+    level01, output_row, output_title_row, slider_left_icon, slider_right_icon, visible_count,
+};
 use super::{VolumePanelIcons, VolumePanelProps};
+
+/// Cajas fijas del panel, compartidas por los textos y los iconos.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct Rows {
+    pub bounds: Rect,
+    pub title: Rect,
+    pub touch: Rect,
+    pub mute: Rect,
+    pub settings: Rect,
+}
 
 /// Título, porcentaje, título de salidas, salidas, silenciar y ajustes.
 pub(crate) fn row_texts(
     theme: &Theme,
-    bounds: Rect,
-    title: Rect,
-    output_title: Option<Rect>,
+    rows: Rows,
     outputs: &[AudioOutput],
-    mute: Rect,
-    settings: Rect,
     props: &VolumePanelProps,
 ) -> Vec<Text> {
+    let Rows {
+        bounds,
+        title,
+        mute,
+        settings,
+        ..
+    } = rows;
     let visible = visible_count(outputs);
     let mut texts = Vec::with_capacity(4 + visible * 2);
     texts.push(title_text(theme, title));
     texts.push(percent_text(theme, title, props));
-    if let Some(output_title) = output_title {
-        texts.push(output_title_text(theme, output_title));
+    if visible > 0 {
+        texts.push(output_title_text(theme, output_title_row(bounds)));
     }
     for index in 0..visible {
         let Some(output) = outputs.get(index) else {
@@ -47,16 +62,25 @@ pub(crate) fn row_texts(
 pub(crate) fn row_icons(
     theme: &Theme,
     icons: &VolumePanelIcons,
-    bounds: Rect,
-    touch: Rect,
+    rows: Rows,
     outputs: &[AudioOutput],
-    mute: Rect,
-    settings: Rect,
     props: &VolumePanelProps,
 ) -> Vec<Icon> {
+    let Rows {
+        bounds,
+        touch,
+        mute,
+        settings,
+        ..
+    } = rows;
     let visible = visible_count(outputs);
     let mut panel_icons = Vec::with_capacity(4 + visible);
-    panel_icons.push(slider_end_icon(theme, icons.slider_left(props.is_muted), touch, true));
+    panel_icons.push(slider_end_icon(
+        theme,
+        icons.slider_left(props.is_muted),
+        touch,
+        true,
+    ));
     panel_icons.push(slider_end_icon(
         theme,
         icons.slider_right(props.is_muted),
@@ -67,12 +91,7 @@ pub(crate) fn row_icons(
         let Some(output) = outputs.get(index) else {
             continue;
         };
-        panel_icons.push(output_icon(
-            theme,
-            icons,
-            output_row(bounds, index),
-            output,
-        ));
+        panel_icons.push(output_icon(theme, icons, output_row(bounds, index), output));
     }
     panel_icons.push(speaker_icon(theme, icons, mute, props));
     panel_icons.push(settings_icon(theme, icons, settings));
