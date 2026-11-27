@@ -3,13 +3,17 @@
 //! Formato `clave=valor`, sin dependencias: las claves desconocidas o los
 //! valores mal escritos se ignoran y queda el valor de fábrica; los números
 //! se limitan a su rango. La escritura es atómica (borrador y renombre).
+//! El detalle del dock y de la barra vive en sus módulos.
 
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 
 use dokka_contracts::{ContractError, PreferencesStore};
-use dokka_model::{DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, Preferences};
+use dokka_model::Preferences;
+
+use super::preferences_dock::{apply_dock, render_dock};
+use super::preferences_menubar::{apply_menubar, render_menubar};
 
 /// Preferencias guardadas en `%APPDATA%\Dokka\preferences.txt`.
 #[derive(Debug)]
@@ -63,143 +67,23 @@ fn parse(text: &str) -> Preferences {
 }
 
 fn apply(preferences: &mut Preferences, key: &str, value: &str) {
-    match key {
-        "dock.icon_scale" => {
-            if let Some(parsed) = parse_float(value) {
-                preferences.dock.icon_scale = clamp(parsed, DOCK_ICON_SCALE_RANGE);
-            }
-        }
-        "dock.magnification" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.dock.magnification = parsed;
-            }
-        }
-        "dock.magnification_strength" => {
-            if let Some(parsed) = parse_float(value) {
-                preferences.dock.magnification_strength = clamp(parsed, DOCK_MAGNIFICATION_RANGE);
-            }
-        }
-        "dock.previews" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.dock.previews = parsed;
-            }
-        }
-        "menubar.volume" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.volume = parsed;
-            }
-        }
-        "menubar.network" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.network = parsed;
-            }
-        }
-        "menubar.music" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.music = parsed;
-            }
-        }
-        "menubar.language" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.language = parsed;
-            }
-        }
-        "menubar.search" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.search = parsed;
-            }
-        }
-        "menubar.control_center" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.control_center = parsed;
-            }
-        }
-        "menubar.background_apps" => {
-            if let Some(parsed) = parse_bool(value) {
-                preferences.menubar.background_apps = parsed;
-            }
-        }
-        _ => {}
+    if apply_dock(preferences, key, value) {
+        return;
     }
-}
-
-fn parse_bool(value: &str) -> Option<bool> {
-    match value {
-        "true" | "1" | "yes" | "on" => Some(true),
-        "false" | "0" | "no" | "off" => Some(false),
-        _ => None,
+    if apply_menubar(preferences, key, value) {
+        return;
     }
-}
-
-fn parse_float(value: &str) -> Option<f32> {
-    value
-        .parse::<f32>()
-        .ok()
-        .filter(|parsed| parsed.is_finite())
-}
-
-fn clamp(value: f32, range: (f32, f32)) -> f32 {
-    value.clamp(range.0, range.1)
 }
 
 /// Escribe las claves conocidas, una por línea.
 fn render(preferences: &Preferences) -> String {
     let mut text = String::new();
-    push(
-        &mut text,
-        "dock.icon_scale",
-        &format_float(preferences.dock.icon_scale),
-    );
-    push(
-        &mut text,
-        "dock.magnification",
-        &format_bool(preferences.dock.magnification),
-    );
-    push(
-        &mut text,
-        "dock.magnification_strength",
-        &format_float(preferences.dock.magnification_strength),
-    );
-    push(
-        &mut text,
-        "dock.previews",
-        &format_bool(preferences.dock.previews),
-    );
-    push(
-        &mut text,
-        "menubar.volume",
-        &format_bool(preferences.menubar.volume),
-    );
-    push(
-        &mut text,
-        "menubar.network",
-        &format_bool(preferences.menubar.network),
-    );
-    push(
-        &mut text,
-        "menubar.music",
-        &format_bool(preferences.menubar.music),
-    );
-    push(
-        &mut text,
-        "menubar.language",
-        &format_bool(preferences.menubar.language),
-    );
-    push(
-        &mut text,
-        "menubar.search",
-        &format_bool(preferences.menubar.search),
-    );
-    push(
-        &mut text,
-        "menubar.control_center",
-        &format_bool(preferences.menubar.control_center),
-    );
-    push(
-        &mut text,
-        "menubar.background_apps",
-        &format_bool(preferences.menubar.background_apps),
-    );
+    for (key, value) in render_dock(preferences)
+        .into_iter()
+        .chain(render_menubar(preferences))
+    {
+        push(&mut text, key, &value);
+    }
     text
 }
 
@@ -210,7 +94,22 @@ fn push(text: &mut String, key: &str, value: &str) {
     text.push('\n');
 }
 
-fn format_bool(value: bool) -> String {
+pub(crate) fn parse_bool(value: &str) -> Option<bool> {
+    match value {
+        "true" | "1" | "yes" | "on" => Some(true),
+        "false" | "0" | "no" | "off" => Some(false),
+        _ => None,
+    }
+}
+
+pub(crate) fn parse_float(value: &str) -> Option<f32> {
+    value
+        .parse::<f32>()
+        .ok()
+        .filter(|parsed| parsed.is_finite())
+}
+
+pub(crate) fn format_bool(value: bool) -> String {
     if value {
         "true".to_owned()
     } else {
@@ -218,7 +117,7 @@ fn format_bool(value: bool) -> String {
     }
 }
 
-fn format_float(value: f32) -> String {
+pub(crate) fn format_float(value: f32) -> String {
     format!("{value:.4}")
 }
 

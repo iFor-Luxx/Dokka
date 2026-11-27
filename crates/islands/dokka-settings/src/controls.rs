@@ -4,8 +4,9 @@
 use dokka_components::nav_pill::NavHalf;
 
 use super::logic::{
-    DockSwitch, SliderTarget, dock_slider_at, dock_switch_at, icon_scale_from, magnification_from,
-    menubar_switch_at, taskbar_switch_at,
+    DockSwitch, SliderTarget, dock_segment_at, dock_slider_at, dock_switch_at,
+    icon_scale_from, magnification_from, menubar_switch_at, position_from_index,
+    taskbar_switch_at,
 };
 use super::pointer::clamped_slider_value;
 use super::state::Settings;
@@ -37,12 +38,21 @@ impl Settings {
             return SettingsAction::Stay;
         }
         let selected = self.selected();
-        // Interruptores del Dock: ampliación y vistas previas.
+        // Interruptores del Dock: hábitos y ocultado.
         if let Some(switch) = dock_switch_at(selected, x, y) {
             let mut preferences = self.values().preferences;
             match switch {
                 DockSwitch::Magnification => {
                     preferences.dock.magnification = !preferences.dock.magnification;
+                }
+                DockSwitch::AutoHide => {
+                    preferences.dock.auto_hide = !preferences.dock.auto_hide;
+                }
+                DockSwitch::AnimateLaunch => {
+                    preferences.dock.animate_launch = !preferences.dock.animate_launch;
+                }
+                DockSwitch::ShowIndicators => {
+                    preferences.dock.show_indicators = !preferences.dock.show_indicators;
                 }
                 DockSwitch::Previews => {
                     preferences.dock.previews = !preferences.dock.previews;
@@ -72,6 +82,13 @@ impl Settings {
             let auto = !self.values().taskbar_auto;
             self.values_mut().taskbar_auto = auto;
             return SettingsAction::TaskbarAuto(auto);
+        }
+        // Segmentado de posición: el componente da el índice, la isla traduce.
+        if let Some(index) = dock_segment_at(selected, x, y) {
+            let mut preferences = self.values().preferences;
+            preferences.dock.position = position_from_index(index);
+            self.values_mut().preferences = preferences;
+            return SettingsAction::Changed(preferences);
         }
         // Clic en un deslizador sin arrastrar: salta hasta el punto y emite.
         if let Some(target) = dock_slider_at(selected, x, y) {

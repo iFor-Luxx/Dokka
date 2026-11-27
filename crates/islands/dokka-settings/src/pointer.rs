@@ -38,7 +38,10 @@ pub(crate) fn control_at(selected: usize, x: f32, y: f32) -> Option<PaintedContr
     if let Some(switch) = dock_switch_at(selected, x, y) {
         let card = match switch {
             DockSwitch::Magnification => 0,
-            DockSwitch::Previews => 1,
+            DockSwitch::AutoHide => 1,
+            DockSwitch::AnimateLaunch => 2,
+            DockSwitch::ShowIndicators => 3,
+            DockSwitch::Previews => 4,
         };
         return Some(PaintedControl::DockSwitch(card));
     }

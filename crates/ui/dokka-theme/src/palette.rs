@@ -108,6 +108,12 @@ pub(crate) const SETTINGS_SLIDER_TRACK: Color = Color::rgba(0, 0, 0, 30);
 pub(crate) const SETTINGS_SLIDER_FILL: Color = Color::rgba(10, 100, 215, 255);
 /// Relleno del deslizador cuando está atenuado.
 pub(crate) const SETTINGS_SLIDER_MUTED: Color = Color::rgba(0, 0, 0, 30);
+/// Marca del valor de fábrica en el deslizador: se ve sobre la pista y el relleno.
+pub(crate) const SETTINGS_SLIDER_TICK: Color = Color::rgba(0, 0, 0, 110);
+/// Cápsula gris del segmentado de posición.
+pub(crate) const SETTINGS_SEGMENT_TRACK: Color = Color::rgba(0, 0, 0, 30);
+/// Pastilla blanca del segmento elegido.
+pub(crate) const SETTINGS_SEGMENT_SELECTED: Color = Color::rgba(255, 255, 255, 255);
 /// Semáforos apagados cuando Preferencias no es la ventana activa.
 pub(crate) const SETTINGS_TRAFFIC_INACTIVE: Color = Color::rgba(206, 206, 210, 255);
 /// Símbolo oscuro sobre el semáforo rojo al pasar el cursor.
