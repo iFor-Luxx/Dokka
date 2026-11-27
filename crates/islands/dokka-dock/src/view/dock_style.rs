@@ -19,6 +19,17 @@ pub(crate) fn bottom_margin(dock: &Dock) -> f32 {
     }
 }
 
+/// Hueco que el dock deja por dentro hasta el borde cuando su ventana lo toca
+/// (app a pantalla completa con auto-ocultado): así queda a la altura de
+/// siempre y el píxel del borde sigue dentro de la ventana para la barrita.
+pub(crate) fn lift(dock: &Dock) -> f32 {
+    if dock.preferences.auto_hide && dock.is_occluded() {
+        bottom_margin(dock)
+    } else {
+        0.0
+    }
+}
+
 fn icon_scale(dock: &Dock) -> f32 {
     dock.preferences
         .icon_scale

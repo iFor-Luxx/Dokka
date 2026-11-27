@@ -13,7 +13,7 @@ impl Dock {
     pub fn surface_size(&self, apps: &[DockApp]) -> Size {
         let (entries, _) = list_entries(apps, &self.explorer);
         let length = style::bar_width(self, entries.len()) + style::side_room(self) * 2.0;
-        let cross = style::headroom(self) + style::height(self);
+        let cross = style::headroom(self) + style::height(self) + style::lift(self);
         if is_vertical(self) {
             Size {
                 width: cross,

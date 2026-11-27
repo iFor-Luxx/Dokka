@@ -55,3 +55,6 @@ el shell con esos rectángulos en coordenadas de la ventana.
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Todavía no tiene miniaturas ni arrastre.
 
 **Pendiente:** mover `view/dock_style.rs` a `dokka-theme` cuando exista.
+
+Con una app a pantalla completa la ventana toca el borde, pero el dock se dibuja a la misma
+altura de siempre.
