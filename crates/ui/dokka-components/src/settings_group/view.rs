@@ -2,7 +2,7 @@ use dokka_scene::{Divider, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
 use super::SettingsGroupProps;
-use super::layout::{divider_rect, group_panel_bounds, row_bounds};
+use super::layout::{divider_rect, group_height, group_panel_bounds, row_bounds};
 
 /// Radio recortado para no superar la mitad del lado menor.
 fn capped(maximum: f32, width: f32, height: f32) -> f32 {
@@ -12,10 +12,10 @@ fn capped(maximum: f32, width: f32, height: f32) -> f32 {
     maximum.min(width / 2.0).min(height / 2.0).max(0.0)
 }
 
-/// Tarjeta clara con el mismo radio y borde que la tarjeta antigua: así
-/// cambiar de sección no cambia el estilo y solo reconstruye por cantidad.
+/// Tarjeta clara con el mismo radio y borde de siempre: cambiar de sección
+/// solo cambia la cantidad de planos, no su estilo.
 pub fn group_panel(theme: &Theme, props: &SettingsGroupProps) -> Panel {
-    let bounds = group_panel_bounds(props.top, props.rows.len());
+    let bounds = group_panel_bounds(props.top, group_height(&props.heights));
     Panel {
         bounds,
         corner_radius: capped(measures::CARD_RADIUS, bounds.width, bounds.height),
@@ -27,9 +27,10 @@ pub fn group_panel(theme: &Theme, props: &SettingsGroupProps) -> Panel {
 
 /// Líneas finas entre filas, con el divisor del tema.
 pub fn group_dividers(theme: &Theme, props: &SettingsGroupProps) -> Vec<Divider> {
-    (0..props.rows.len().saturating_sub(1))
+    let last = props.rows.len().saturating_sub(1);
+    (0..last)
         .map(|index| Divider {
-            bounds: divider_rect(props.top, index),
+            bounds: divider_rect(props.top, &props.heights, index),
             color: theme.settings.divider,
         })
         .collect()
@@ -43,7 +44,7 @@ pub fn group_labels(theme: &Theme, props: &SettingsGroupProps, dim: &[bool]) -> 
         .iter()
         .enumerate()
         .map(|(index, label)| {
-            let row: Rect = row_bounds(props.top, index);
+            let row: Rect = row_bounds(props.top, &props.heights, index);
             let dimmed = dim.get(index).copied().unwrap_or(false);
             Text {
                 x: row.x + measures::CONTENT_PADDING,

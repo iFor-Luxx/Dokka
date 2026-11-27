@@ -1,5 +1,5 @@
-use dokka_scene::{Panel, Rect, Size};
-use dokka_theme::tray_glass as measures;
+use dokka_scene::{Panel, Rect};
+use dokka_theme::{settings as measures};
 
 use super::{SliderColors, SliderProps};
 
@@ -15,30 +15,16 @@ fn clamp01(value: f32) -> f32 {
     }
 }
 
-/// Radio recortado para no superar la mitad del lado menor.
-/// Con ancho o alto a cero, el radio es cero.
-fn capped_radius(maximum: f32, width: f32, height: f32) -> f32 {
-    if width <= 0.0 || height <= 0.0 {
-        return 0.0;
-    }
-    maximum.min(width / 2.0).min(height / 2.0).max(0.0)
-}
-
-/// Tamaño de la cápsula para este ancho: extremos totalmente redondos.
-pub fn slider_size(track_width: f32) -> Size {
-    Size {
-        width: track_width.max(0.0),
-        height: measures::TRACK_HEIGHT,
-    }
-}
-
-/// Barra centrada en vertical dentro de su zona de toque (más alta que ella).
+/// Barra fina centrada en vertical dentro de su zona, con aire a los lados
+/// de medio tirador: el centro del tirador recorre la pista sin salirse del
+/// área y en los extremos el tirador enrasa con ella.
 pub fn slider_track_bounds(area: Rect) -> Rect {
+    let side = measures::SLIDER_KNOB_WIDTH / 2.0;
     Rect {
-        x: area.x,
-        y: area.y + (area.height - measures::TRACK_HEIGHT) / 2.0,
-        width: area.width,
-        height: measures::TRACK_HEIGHT,
+        x: area.x + side,
+        y: area.y + (area.height - measures::SLIDER_TRACK_HEIGHT) / 2.0,
+        width: (area.width - side * 2.0).max(0.0),
+        height: measures::SLIDER_TRACK_HEIGHT,
     }
 }
 
@@ -46,7 +32,7 @@ pub fn slider_track_bounds(area: Rect) -> Rect {
 pub fn slider_track_panel(track: Rect, colors: &SliderColors) -> Panel {
     Panel {
         bounds: track,
-        corner_radius: capped_radius(track.height / 2.0, track.width, track.height),
+        corner_radius: track.height / 2.0,
         border_width: 0.0,
         tint: colors.track,
         border: colors.track,
@@ -54,7 +40,8 @@ pub fn slider_track_panel(track: Rect, colors: &SliderColors) -> Panel {
 }
 
 /// Relleno hasta el valor con el color recibido (principal o atenuado).
-/// Existe siempre (de ancho cero al mínimo) para no reconstruir capas.
+/// Existe siempre (de ancho cero al mínimo) y su radio no depende del ancho:
+/// así el estilo no cambia al arrastrar y no se reconstruyen capas.
 pub fn slider_fill_panel(track: Rect, value: f32, active: bool, colors: &SliderColors) -> Panel {
     let width = track.width * clamp01(value);
     let tint = if active { colors.fill } else { colors.muted };
@@ -65,23 +52,62 @@ pub fn slider_fill_panel(track: Rect, value: f32, active: bool, colors: &SliderC
             width,
             height: track.height,
         },
-        corner_radius: capped_radius(track.height / 2.0, width, track.height),
+        corner_radius: track.height / 2.0,
         border_width: 0.0,
         tint,
         border: tint,
     }
 }
 
-/// Barra y relleno, en ese orden.
-pub fn slider_panels(track: Rect, props: &SliderProps, colors: &SliderColors) -> [Panel; 2] {
+/// Tirador en cápsula blanca centrado sobre el valor, con borde fino para
+/// verse sobre la tarjeta. Es un plano porque los puntos son círculos.
+pub fn slider_knob_bounds(track: Rect, value: f32) -> Rect {
+    let center = track.x + track.width * clamp01(value);
+    Rect {
+        x: center - measures::SLIDER_KNOB_WIDTH / 2.0,
+        y: track.y + (track.height - measures::SLIDER_KNOB_HEIGHT) / 2.0,
+        width: measures::SLIDER_KNOB_WIDTH,
+        height: measures::SLIDER_KNOB_HEIGHT,
+    }
+}
+
+/// Tirador con el borde sutil del tema sobre la tarjeta clara.
+pub fn slider_knob_panel(
+    track: Rect,
+    value: f32,
+    knob: dokka_scene::Color,
+    edge: dokka_scene::Color,
+) -> Panel {
+    let bounds = slider_knob_bounds(track, value);
+    Panel {
+        bounds,
+        corner_radius: bounds.height / 2.0,
+        border_width: measures::SLIDER_KNOB_BORDER_WIDTH,
+        tint: knob,
+        border: edge,
+    }
+}
+
+/// Barra, relleno y tirador, en ese orden y siempre los tres.
+pub fn slider_panels(track: Rect, props: &SliderProps, colors: &SliderColors) -> [Panel; 3] {
     [
         slider_track_panel(track, colors),
         slider_fill_panel(track, props.value, props.active, colors),
+        slider_knob_panel(
+            track,
+            props.value,
+            colors.knob,
+            colors.knob_border,
+        ),
     ]
 }
 
-/// Valor bajo el punto sobre la barra, de 0 a 1.
+/// Valor bajo el punto sobre la pista, de 0 a 1. Usa la misma pista que el
+/// dibujo: el centro del tirador coincide con el valor pulsado.
 pub fn slider_value_at(track: Rect, x: f32) -> f32 {
+    if track.width <= 0.0 {
+        return 0.0;
+    }
     clamp01((x - track.x) / track.width)
 }
 

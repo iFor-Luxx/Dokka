@@ -47,11 +47,15 @@ resultados con icono, hasta siete nombres, resaltado redondeado concéntrico,
 (`background_panel`: cristal único Tahoe con título, hasta diez filas con círculo
 suave, icono real en píxeles y nombre recortado, "Sin apps en segundo plano",
 capas constantes y golpe por fila),
-interruptor (`switch`: pista redondeada con tirador blanco, encendido o
-apagado según el tema, sin saber qué ajusta) y grupo de filas de ajustes
-(`settings_group`: tarjeta clara con filas separadas por líneas finas,
+interruptor (`switch`: pista redondeada de 40 × 22 con tirador alargado en
+cápsula blanca de 24 × 18, encendido o apagado según el tema, sin saber qué
+ajusta) y grupo de filas de ajustes (`settings_group`: tarjeta clara con
+filas de alto variable separadas por líneas finas con aire a ambos lados,
 etiqueta a la izquierda y control a la derecha, sin saber qué ajusta cada
 fila; da la tarjeta, las líneas, las etiquetas y la geometría de cada fila
-para que la isla coloque sus interruptores y deslizadores).
+para que la isla coloque sus interruptores y deslizadores) y deslizador
+(`slider`: pista fina de 4 con relleno y tirador blanco en cápsula alargada
+de 22 × 15 con borde fino, que solo usa Preferencias; el volumen y el centro
+de control tienen su propio dibujo).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

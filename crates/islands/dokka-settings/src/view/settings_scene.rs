@@ -132,14 +132,17 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             nav_pill_panel(theme, &pill),
         ],
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
-        // y taparía su tinte. La tarjeta, los deslizadores, los interruptores
-        // y el resaltado de la píldora van aquí. El contenido cambia de tamaño
-        // entre secciones: `SceneLayers` reconstruye si crece o cambia el estilo.
+        // y taparía su tinte. Las tarjetas, los deslizadores (barra, relleno
+        // y tirador en cápsula), los interruptores (pista y tirador) y el
+        // resaltado de la píldora van aquí. Los tiradores son planos porque
+        // los puntos son círculos. El contenido cambia de tamaño entre
+        // secciones: `SceneLayers` reconstruye si crece o cambia el estilo;
+        // al arrastrar solo se mueven, sin reconstruir.
         flat_panels: flats,
         highlight: None,
         dividers,
         icons,
-        dots: content.dots,
+        dots: Vec::new(),
         texts,
         thumbnails: Vec::new(),
         labels: Vec::new(),

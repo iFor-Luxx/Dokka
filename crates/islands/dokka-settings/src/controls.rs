@@ -4,7 +4,7 @@
 use dokka_components::nav_pill::NavHalf;
 
 use super::logic::{
-    SliderTarget, dock_slider_at, dock_switch_at, icon_scale_from, magnification_from,
+    DockSwitch, SliderTarget, dock_slider_at, dock_switch_at, icon_scale_from, magnification_from,
     menubar_switch_at, taskbar_switch_at,
 };
 use super::pointer::clamped_slider_value;
@@ -38,14 +38,15 @@ impl Settings {
         }
         let selected = self.selected();
         // Interruptores del Dock: ampliación y vistas previas.
-        if let Some(card) = dock_switch_at(selected, x, y) {
+        if let Some(switch) = dock_switch_at(selected, x, y) {
             let mut preferences = self.values().preferences;
-            if card == 1 {
-                preferences.dock.magnification = !preferences.dock.magnification;
-            } else if card == 3 {
-                preferences.dock.previews = !preferences.dock.previews;
-            } else {
-                return SettingsAction::Stay;
+            match switch {
+                DockSwitch::Magnification => {
+                    preferences.dock.magnification = !preferences.dock.magnification;
+                }
+                DockSwitch::Previews => {
+                    preferences.dock.previews = !preferences.dock.previews;
+                }
             }
             self.values_mut().preferences = preferences;
             return SettingsAction::Changed(preferences);
