@@ -21,7 +21,9 @@ pub(crate) fn add_capsules(
     let network = network_capsule(bounds);
     let prefs = prefs_capsule(bounds);
     let connected = network_connected(props);
-    pieces.tiles.push(tile(theme, network, network.height / 2.0));
+    pieces
+        .tiles
+        .push(tile(theme, network, network.height / 2.0));
     pieces.tiles.push(tile(theme, prefs, prefs.height / 2.0));
     pieces.flats.push(flat(
         capsule_circle(network),

@@ -27,11 +27,9 @@ pub(crate) fn add_slider(
         track.width * level
     };
     pieces.tiles.push(tile(theme, card, glass::TILE_RADIUS));
-    pieces.flats.push(flat(
-        track,
-        glass::TRACK_HEIGHT / 2.0,
-        theme.tray.track,
-    ));
+    pieces
+        .flats
+        .push(flat(track, glass::TRACK_HEIGHT / 2.0, theme.tray.track));
     pieces.flats.push(flat(
         fill_rect(track, fill_width),
         glass::TRACK_HEIGHT / 2.0,

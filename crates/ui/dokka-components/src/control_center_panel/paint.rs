@@ -19,13 +19,6 @@ impl Pieces {
     pub(crate) fn new() -> Self {
         Self::default()
     }
-
-    pub(crate) fn add(&mut self, other: Pieces) {
-        self.tiles.extend(other.tiles);
-        self.flats.extend(other.flats);
-        self.texts.extend(other.texts);
-        self.icons.extend(other.icons);
-    }
 }
 
 /// Pieza de cristal casi sin tinte con su borde fino y brillante.

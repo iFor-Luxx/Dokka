@@ -53,7 +53,10 @@ pub(crate) fn network_capsule(bounds: Rect) -> Rect {
 pub(crate) fn circle_slot(bounds: Rect, index: usize) -> Rect {
     let side = column_width(bounds);
     let (x, y) = match index {
-        0 => (content_x(bounds), top_y(bounds) + glass::CAPSULE_HEIGHT + glass::GAP),
+        0 => (
+            content_x(bounds),
+            top_y(bounds) + glass::CAPSULE_HEIGHT + glass::GAP,
+        ),
         1 => (
             content_x(bounds) + side + glass::GAP,
             top_y(bounds) + glass::CAPSULE_HEIGHT + glass::GAP,
@@ -63,7 +66,12 @@ pub(crate) fn circle_slot(bounds: Rect, index: usize) -> Rect {
             music_bottom(bounds) + glass::GAP,
         ),
     };
-    Rect { x, y, width: side, height: side }
+    Rect {
+        x,
+        y,
+        width: side,
+        height: side,
+    }
 }
 
 /// Tarjeta de música: dos columnas por dos filas, a la derecha.

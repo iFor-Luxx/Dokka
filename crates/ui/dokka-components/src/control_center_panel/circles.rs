@@ -29,6 +29,8 @@ pub(crate) fn add_circles(
             slot.width / 2.0,
             theme.tray.circle_active,
         ));
-        pieces.icons.push(picture(theme, drawing, slot, glass::CIRCLE_ICON));
+        pieces
+            .icons
+            .push(picture(theme, drawing, slot, glass::CIRCLE_ICON));
     }
 }
