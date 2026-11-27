@@ -20,5 +20,20 @@ hora local. El Launchpad queda siempre justo debajo del dock y los
 clics del dock no lo cierran. `SurfaceOptions.over_taskbar` usa el monitor
 completo para bajar hasta el borde cuando la barra está oculta; si no, usa el área
 de trabajo.
+Crea además la barra superior (`menubar_window.rs`, como el dock: sin activación,
+`tool window`, topmost, cristal) a todo el ancho del principal; `menubar_show`
+reserva arriba con AppBar (`ABM_NEW`, `ABM_QUERYPOS`, `ABM_SETPOS` borde superior,
+`ABM_REMOVE` en `menubar_hide` y en `Drop`) y coloca una ventana más alta para el
+menú desplegado, recortada por región (`menubar_area.rs`); `menubar_width`,
+`menubar_scale` y `menubar_set_active_areas` usan esa escala, y
+`menubar_menu_opened/closed/dismissed` guardan el foco igual que el menú del dock.
+`run_loop.rs` traduce su ratón a `MenubarMoved`, `MenubarLeft`, `MenubarClicked` y
+su pérdida de foco o Esc a `MenubarDismissed` (`menubar_loop.rs`).
+Ante pantalla completa (`ABN_FULLSCREENAPP`) la oculta y la recupera al salir; el
+Launchpad y la vista grande (pantalla completa) sí la cubren, y el dock sigue
+anclado al área de trabajo, así que la reserva de arriba no lo descoloca.
+Si el proceso se mata a la fuerza no pasa por `Drop` y la reserva puede quedarse
+hasta que el área se reevalúe; en uso normal nunca se registra dos veces y
+`menubar_show` solo recoloca.
 
 **No hace:** no dibuja ni decide qué hacer con los eventos. Usa solo el monitor principal y no reacciona aún a cambios de resolución o DPI.
