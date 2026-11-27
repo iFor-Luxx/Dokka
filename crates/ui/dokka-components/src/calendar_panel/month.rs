@@ -1,4 +1,4 @@
-use dokka_components::calendar_panel::CalendarMonth;
+use super::CalendarMonth;
 
 const MONTHS: [&str; 12] = [
     "Enero",
@@ -16,7 +16,7 @@ const MONTHS: [&str; 12] = [
 ];
 
 /// Mes situado a `offset` meses del de `today` (año, mes, día).
-pub(crate) fn calendar_month(today: (u16, u16, u16), offset: i32) -> CalendarMonth {
+pub fn calendar_month(today: (u16, u16, u16), offset: i32) -> CalendarMonth {
     let months = i32::from(today.0) * 12 + i32::from(today.1.max(1)) - 1 + offset;
     let year = months.div_euclid(12);
     let month = months.rem_euclid(12) as usize + 1;

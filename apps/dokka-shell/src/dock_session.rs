@@ -26,9 +26,9 @@ pub(crate) struct DockSession {
     pub(crate) state: DockState,
     pub(crate) dock: Dock,
     pub(crate) menubar: Menubar,
-    /// Última barra ya dibujada (app, hora, menú abierto, icono resaltado,
-    /// fila resaltada): si no cambia, no se repinta para no hacer parpadear.
-    pub(crate) menubar_painted: Option<(String, String, bool, bool, Option<usize>)>,
+    /// Última barra ya dibujada: si no cambia, no se repinta para no hacer
+    /// parpadear (la huella incluye mes, hover y apertura).
+    pub(crate) menubar_painted: Option<dokka_menubar::MenubarPainted>,
     pub(crate) previews: Previews,
     /// Ventana al frente en el último `Refresh`: otro primer plano también
     /// pide cerrar el panel, aunque la lista siga igual.

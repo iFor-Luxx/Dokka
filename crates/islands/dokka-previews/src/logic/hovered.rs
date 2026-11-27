@@ -1,5 +1,5 @@
-use dokka_components::calendar_panel::calendar_nav_pill;
-use dokka_components::nav_pill::{NavHalf, NavPillProps, nav_pill_at};
+use dokka_components::calendar_panel::calendar_hovered;
+use dokka_components::nav_pill::NavHalf;
 use dokka_components::preview_card::preview_slot;
 use dokka_scene::Rect;
 
@@ -16,13 +16,7 @@ pub(crate) fn nav_hovered_at(
     if !matches!(request.content, PreviewContent::Calendar) {
         return None;
     }
-    let props = NavPillProps {
-        bounds: calendar_nav_pill(bounds),
-        can_previous: true,
-        can_next: true,
-        hovered: None,
-    };
-    nav_pill_at(&props, x, y)
+    calendar_hovered(bounds, x, y)
 }
 
 /// Ventana bajo el cursor, si está sobre una mini del panel abierto.
