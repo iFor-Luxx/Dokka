@@ -136,6 +136,7 @@ pub fn control_center_panel(
 
     Overlay {
         panel: popup_panel(theme, bounds),
+        tiles: Vec::new(),
         pill: None,
         highlight: None,
         flat_panels,

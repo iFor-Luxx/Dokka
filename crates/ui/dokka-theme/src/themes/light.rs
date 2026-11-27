@@ -2,7 +2,7 @@ use super::light_icons::light_icons;
 use crate::palette;
 use crate::{
     DockColors, LaunchpadColors, MediaColors, MenuColors, MenubarColors, NavPillColors,
-    PanelColors, SettingsColors, Theme, TooltipColors,
+    PanelColors, SettingsColors, Theme, TooltipColors, TrayColors,
 };
 
 /// Tema claro de cristal: el actual de Dokka.
@@ -66,6 +66,20 @@ pub fn light() -> Theme {
             icon_disabled: palette::NAV_PILL_ICON_DISABLED,
             divider: palette::NAV_PILL_DIVIDER,
             hover: palette::NAV_PILL_HOVER,
+        },
+        tray: TrayColors {
+            clear: palette::TRAY_CLEAR,
+            tile: palette::TRAY_TILE,
+            tile_border: palette::TRAY_TILE_BORDER,
+            text: palette::white(255),
+            secondary: palette::TRAY_SECONDARY,
+            track: palette::TRAY_TRACK,
+            fill: palette::white(255),
+            circle: palette::TRAY_CIRCLE,
+            circle_icon: palette::white(255),
+            circle_active: palette::white(255),
+            circle_active_icon: palette::MACOS_BLUE,
+            hover: palette::TRAY_HOVER,
         },
         settings: settings_colors(border),
     }

@@ -8,10 +8,10 @@ pub mod typography;
 
 pub use measures::{
     control_center, dock, launchpad, menu, menubar, menubar_tray, music_panel, nav_pill,
-    network_language, popup, search, settings, tooltip, volume,
+    network_language, popup, search, settings, tooltip, tray_glass, volume,
 };
 pub use theme::{
     DockColors, IconColors, LaunchpadColors, MediaColors, MenuColors, MenubarColors, NavPillColors,
-    PanelColors, SettingsColors, Theme, TooltipColors,
+    PanelColors, SettingsColors, Theme, TooltipColors, TrayColors,
 };
 pub use themes::light;

@@ -17,6 +17,9 @@ use crate::text_layer::TextLayer;
 pub(crate) struct OverlayLayers {
     container: ContainerVisual,
     panel: PanelLayer,
+    tiles: Vec<PanelLayer>,
+    /// Estilo con el que se creó cada pieza.
+    tile_styles: Vec<Panel>,
     /// Apariencia con la que se creó el fondo.
     style: Panel,
     pill: Option<PanelLayer>,
@@ -49,6 +52,11 @@ impl OverlayLayers {
         container.SetOpacity(overlay.opacity)?;
         apply_scale(&container, overlay)?;
         let panel = PanelLayer::add(compositor, &container, &overlay.panel)?;
+        let tiles = overlay
+            .tiles
+            .iter()
+            .map(|tile| PanelLayer::add(compositor, &container, tile))
+            .collect::<Result<Vec<_>>>()?;
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;
         if let Some(pill_panel) = &overlay.pill {
@@ -104,6 +112,8 @@ impl OverlayLayers {
         Ok(Self {
             container,
             panel,
+            tiles,
+            tile_styles: overlay.tiles.clone(),
             style: overlay.panel,
             pill,
             pill_style: overlay.pill,
@@ -132,6 +142,12 @@ impl OverlayLayers {
             && self.highlight.is_some() == overlay.highlight.is_some()
             && self.highlight_style.map(highlight_style_of)
                 == overlay.highlight.map(highlight_style_of)
+            && self.tile_styles.len() == overlay.tiles.len()
+            && self
+                .tile_styles
+                .iter()
+                .zip(&overlay.tiles)
+                .all(|(old, new)| pill_style_of(*old) == pill_style_of(*new))
             && self.flat_styles.len() == overlay.flat_panels.len()
             && self
                 .flat_styles
@@ -158,6 +174,9 @@ impl OverlayLayers {
         self.container.SetOpacity(overlay.opacity)?;
         apply_scale(&self.container, overlay)?;
         self.panel.update(&overlay.panel)?;
+        for (layer, tile) in self.tiles.iter().zip(&overlay.tiles) {
+            layer.update(tile)?;
+        }
         if let (Some(layer), Some(pill)) = (&self.pill, &overlay.pill) {
             layer.update(pill)?;
         }

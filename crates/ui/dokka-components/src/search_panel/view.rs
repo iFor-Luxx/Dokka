@@ -29,6 +29,7 @@ pub fn search_panel_panel(
     let search = measures::search_box(bounds);
     Overlay {
         panel: popup_panel(theme, bounds),
+        tiles: Vec::new(),
         pill: None,
         highlight: Some(result_highlight(theme, bounds, props, visible)),
         flat_panels: vec![search_panel_at(

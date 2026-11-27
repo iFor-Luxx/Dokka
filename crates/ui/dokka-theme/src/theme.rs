@@ -13,6 +13,7 @@ pub struct Theme {
     pub launchpad: LaunchpadColors,
     pub settings: SettingsColors,
     pub nav_pill: NavPillColors,
+    pub tray: TrayColors,
     pub icons: IconColors,
 }
 
@@ -94,6 +95,26 @@ pub struct NavPillColors {
     pub icon: Color,
     pub icon_disabled: Color,
     pub divider: Color,
+    pub hover: Color,
+}
+
+/// Paneles de la barra superior: cristal ahumado con texto blanco.
+#[derive(Debug, Clone, Copy)]
+pub struct TrayColors {
+    /// Fondo transparente que agrupa las piezas.
+    pub clear: Color,
+    pub tile: Color,
+    pub tile_border: Color,
+    pub text: Color,
+    pub secondary: Color,
+    pub track: Color,
+    pub fill: Color,
+    /// Círculo de un icono apagado y su icono.
+    pub circle: Color,
+    pub circle_icon: Color,
+    /// Círculo activo (blanco con icono azul).
+    pub circle_active: Color,
+    pub circle_active_icon: Color,
     pub hover: Color,
 }
 
