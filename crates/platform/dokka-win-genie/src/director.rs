@@ -33,11 +33,14 @@ use windows::Win32::Foundation::HWND;
 
 use crate::director_support::{dock_handle, ensure_compositor, rect_of};
 use crate::flight::Flight;
+use crate::fullscreen::{covers, is_fullscreen};
 use crate::geometry::{GenieEdge, PixelRect};
 use crate::origin::is_iconic_now;
 use crate::snapshot::Snapshot;
 use crate::strips::GenieCompositor;
-use crate::transitions::{animations_enabled, calm_window, restore_all_transitions};
+use crate::transitions::{
+    animations_enabled, calm_window, restore_all_transitions, restore_window,
+};
 
 /// Fotos guardadas para restaurar con genio.
 pub(crate) const MAX_SNAPSHOTS: usize = 4;
@@ -111,8 +114,20 @@ impl GenieDirector {
         if !self.enabled || !animations_enabled() {
             return;
         }
-        self.calmed.retain(|known| windows.contains(known));
-        for &window in windows {
+        // A pantalla completa no hay genio: conservan (o recuperan) lo suyo.
+        let wanted: Vec<isize> = windows
+            .iter()
+            .copied()
+            .filter(|&window| !is_fullscreen(window))
+            .collect();
+        self.calmed.retain(|&known| {
+            let keep = wanted.contains(&known);
+            if !keep {
+                restore_window(known);
+            }
+            keep
+        });
+        for &window in &wanted {
             if !self.calmed.contains(&window) {
                 calm_window(window);
                 self.calmed.push(window);
@@ -154,11 +169,19 @@ impl GenieDirector {
             eprintln!("genio: sin vuelo para {hwnd}: ya vuela otra ventana");
             return false;
         }
+        if covers(
+            PixelRect::from_win(rect_of(frame)),
+            PixelRect::from_win(rect_of(screen)),
+        ) {
+            eprintln!("genio: sin vuelo para {hwnd}: estaba a pantalla completa");
+            return false;
+        }
         ensure_compositor(&mut self.gfx, &mut self.gfx_failed, hwnd);
         let Some(gfx) = self.gfx.as_ref() else {
             return false;
         };
         let edge = GenieEdge::from_position(position);
+        let preparing = std::time::Instant::now();
         let flight = Flight::start(
             gfx,
             hwnd,
@@ -173,6 +196,10 @@ impl GenieDirector {
         );
         match flight {
             Some(flight) => {
+                eprintln!(
+                    "genio: tiempos {hwnd}: preparar ventanas {} ms",
+                    preparing.elapsed().as_millis()
+                );
                 eprintln!(
                     "genio: vuelo {hwnd} empieza desde [{}, {}, {}, {}]",
                     from[0], from[1], from[2], from[3]

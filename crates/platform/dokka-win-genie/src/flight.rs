@@ -179,13 +179,20 @@ impl Flight {
             .name("dokka-genie-capture".into())
             .spawn(move || {
                 let _permit = _permit;
-                let shot = capture_win(visible_win).map(|image| {
+                let started = Instant::now();
+                let copied = capture_win(visible_win);
+                let copy = started.elapsed().as_millis();
+                let shot = copied.map(|image| {
                     let image = turn.turn_image(image);
                     Captured {
                         restore: halved(&image),
                         image,
                     }
                 });
+                eprintln!(
+                    "genio: tiempos {hwnd}: foto {copy} ms, preparar imagen {} ms",
+                    started.elapsed().as_millis() - copy
+                );
                 let _ = sender.send(shot);
             });
         if built.is_err() {

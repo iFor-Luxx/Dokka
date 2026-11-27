@@ -125,6 +125,7 @@ impl Flight {
                     Ok(None) | Err(std::sync::mpsc::TryRecvError::Disconnected) => return false,
                 };
                 let thumbnail = *thumbnail;
+                let cutting = Instant::now();
                 let Ok(drive) = self.take_off(gfx, image) else {
                     eprintln!(
                         "genio: vuelo {} cancelado: no despego el compositor",
@@ -136,6 +137,11 @@ impl Flight {
                     "genio: vuelo {} despega tras {} ms",
                     self.hwnd,
                     self.created_at.elapsed().as_millis()
+                );
+                eprintln!(
+                    "genio: tiempos {}: cortar y lanzar {} ms",
+                    self.hwnd,
+                    cutting.elapsed().as_millis()
                 );
                 self.phase = Phase::Flying {
                     start: Instant::now(),
