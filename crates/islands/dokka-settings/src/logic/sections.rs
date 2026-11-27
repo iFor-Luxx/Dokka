@@ -1,4 +1,5 @@
-use dokka_scene::{Color, Drawing};
+use dokka_scene::{Color, DRAWING_SIDE, Drawing, Shape};
+use dokka_theme::settings;
 
 /// Nombres de las secciones en el orden de la barra lateral.
 pub const SECTION_NAMES: [&str; 7] = [
@@ -32,4 +33,19 @@ pub(crate) fn section_names() -> Vec<String> {
 /// Dibujo blanco del icono de la sección.
 pub(crate) fn section_drawing(index: usize, color: Color) -> Drawing {
     SECTION_ICONS[index](color)
+}
+
+/// Cuadrado de color de la fila como imagen, para que al filtrar cada capa
+/// repinte su color: el marcador de un icono no cambia al actualizarse.
+pub(crate) fn badge_drawing(color: Color) -> Drawing {
+    Drawing {
+        shapes: vec![Shape::RoundedRect {
+            x: 0.0,
+            y: 0.0,
+            width: DRAWING_SIDE,
+            height: DRAWING_SIDE,
+            radius: settings::BADGE_CANVAS_RADIUS,
+            color,
+        }],
+    }
 }

@@ -62,7 +62,7 @@ pub(crate) fn leave_settings(session: &mut DockSession) {
     session.settings.pointer_left();
 }
 
-/// Clic: cerrar, minimizar o elegir sección.
+/// Clic: cerrar, minimizar, foco de la casilla, píldora o elegir sección.
 pub(crate) fn click_settings(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -75,6 +75,41 @@ pub(crate) fn click_settings(
         SettingsAction::Stay => {}
     }
     Ok(())
+}
+
+/// Foco ganado o perdido: sin foco los semáforos se ven grises.
+pub(crate) fn focus_over_settings(session: &mut DockSession, focused: bool) {
+    if session.settings.is_open() {
+        session.settings.set_window_focused(focused);
+    }
+}
+
+/// Letra escrita con la casilla enfocada: filtra las filas.
+pub(crate) fn type_over_settings(session: &mut DockSession, character: char) {
+    if session.settings.is_open() {
+        session.settings.type_character(character);
+    }
+}
+
+/// Retroceso con la casilla enfocada: borra la última letra.
+pub(crate) fn erase_over_settings(session: &mut DockSession) {
+    if session.settings.is_open() {
+        session.settings.erase_character();
+    }
+}
+
+/// Enter con búsqueda: elige la primera coincidencia.
+pub(crate) fn confirm_over_settings(session: &mut DockSession) {
+    if session.settings.is_open() {
+        session.settings.confirm_search();
+    }
+}
+
+/// Esc: limpia lo escrito y quita el foco.
+pub(crate) fn escape_over_settings(session: &mut DockSession) {
+    if session.settings.is_open() {
+        session.settings.escape_search();
+    }
 }
 
 /// Atiende un evento de la ventana si es suyo. Devuelve si lo consumió.
@@ -97,16 +132,23 @@ pub(crate) fn handle_settings_event(
         // Cierre desde la X, Alt+F4 o la barra de tareas: la ventana ya se
         // ocultó sola; aquí se cierra la isla para poder reabrirla bien.
         SurfaceEvent::SettingsDismissed => close_settings(session, surface),
+        SurfaceEvent::SettingsFocused => focus_over_settings(session, true),
+        SurfaceEvent::SettingsBlurred => focus_over_settings(session, false),
+        SurfaceEvent::SettingsTyped { character } => type_over_settings(session, character),
+        SurfaceEvent::SettingsBackspace => erase_over_settings(session),
+        SurfaceEvent::SettingsEnter => confirm_over_settings(session),
+        SurfaceEvent::SettingsEscape => escape_over_settings(session),
         _ => return Ok(false),
     }
     Ok(true)
 }
 
 /// Dibuja la ventana en su propio árbol visual si está abierta.
-/// Si la sección y el resaltado no cambiaron, no se repinta: redibujar el
-/// cristal en cada evento (pasar el ratón, hacer clic, arrastrar) lo hacía
-/// parpadear. La isla reutiliza los mismos dibujos y las capas solo repintan
-/// lo que cambia, así que basta con dibujar al abrir, elegir o resaltar.
+/// Si nada de lo que se ve cambió, no se repinta: redibujar el cristal en
+/// cada evento (pasar el ratón, hacer clic, arrastrar) lo hacía parpadear.
+/// La isla reutiliza los mismos dibujos y las capas solo repintan lo que
+/// cambia, así que basta con dibujar al abrir, elegir, resaltar, enfocar,
+/// escribir o cambiar el foco de la ventana.
 pub(crate) fn render_settings(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -114,8 +156,8 @@ pub(crate) fn render_settings(
     if !session.settings.is_open() {
         return Ok(());
     }
-    let painted = (session.settings.selected(), session.settings.hovered());
-    if session.settings_painted == Some(painted) {
+    let painted = session.settings.painted();
+    if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());
     }
     surface.settings_place(measures::WIDTH, measures::HEIGHT)?;

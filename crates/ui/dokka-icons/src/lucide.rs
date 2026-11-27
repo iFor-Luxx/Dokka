@@ -65,6 +65,29 @@ pub fn search_icon(color: Color) -> Drawing {
     )
 }
 
+/// Símbolo de cerrar sobre el semáforo rojo al pasar el cursor.
+pub fn traffic_close_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::X, settings::TRAFFIC_GLYPH_SIZE, color)
+}
+
+/// Símbolo de minimizar sobre el semáforo amarillo al pasar el cursor.
+pub fn traffic_minimize_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Minus,
+        settings::TRAFFIC_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Símbolo de zoom sobre el semáforo verde al pasar el cursor.
+pub fn traffic_zoom_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Plus,
+        settings::TRAFFIC_GLYPH_SIZE,
+        color,
+    )
+}
+
 /// Icono blanco de la sección General sobre su cuadrado de color.
 pub fn settings_general_icon(color: Color) -> Drawing {
     glyph(

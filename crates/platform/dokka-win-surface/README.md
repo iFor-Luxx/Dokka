@@ -6,7 +6,9 @@ y superpuesta solo visual), cambia su tamaño y zona activa,
 que sí lo toma, vista grande a pantalla completa transparente al mouse, y superpuesta solo visual), cambia su tamaño y zona activa,
 entrega los eventos del mouse, las teclas escritas (`WM_CHAR` con `TranslateMessage`),
 el Retroceso, el Enter, las flechas izquierda/derecha y la rueda sobre el Launchpad, y sobre
-Preferencias el movimiento, la salida, el botón abajo (para arrastrar) y el clic,
+Preferencias el movimiento, la salida, el botón abajo (para arrastrar), el clic, el foco
+ganado y perdido (reenvía `WM_ACTIVATE` a la cola, como `DISMISS_MESSAGE`), lo escrito,
+el Retroceso, el Enter y el Esc con eventos propios sin mezclarse con el Launchpad,
 y un aviso por segundo, marca
 el ritmo de las animaciones, toma y devuelve el foco al abrir el menú o el Launchpad
 (con `AttachThreadInput` para que Windows conceda el primer plano y `SetFocus` para el

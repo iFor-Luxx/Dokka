@@ -102,5 +102,11 @@ fn settings_colors(border: dokka_scene::Color) -> SettingsColors {
             palette::RED,
         ],
         traffic: [palette::RED, palette::YELLOW, palette::GREEN],
+        traffic_symbol: [
+            palette::TRAFFIC_CLOSE_SYMBOL,
+            palette::TRAFFIC_MINIMIZE_SYMBOL,
+            palette::TRAFFIC_ZOOM_SYMBOL,
+        ],
+        traffic_inactive: palette::SETTINGS_TRAFFIC_INACTIVE,
     }
 }
