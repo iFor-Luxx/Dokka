@@ -3,7 +3,7 @@ use std::sync::Arc;
 use dokka_components::nav_pill::{NavHalf, NavPillIcons, NavPillProps, nav_pill_at};
 use dokka_components::search_field::search_contains_at;
 use dokka_components::settings_list::{filtered_row_at, search_bounds};
-use dokka_components::window_controls::{TrafficButton, TrafficGlyphs, traffic_at};
+use dokka_components::window_controls::{TrafficButton, TrafficButtons, traffic_at};
 use dokka_scene::{Drawing, Rect};
 use dokka_theme::{Theme, settings as measures};
 
@@ -279,8 +279,8 @@ impl Settings {
         self.drawings.nav(theme)
     }
 
-    /// Símbolos de los semáforos, creados una vez y reutilizados.
-    pub(crate) fn traffic_drawings(&mut self, theme: &Theme) -> TrafficGlyphs {
+    /// Botones completos de los semáforos, creados una vez y reutilizados.
+    pub(crate) fn traffic_drawings(&mut self, theme: &Theme) -> TrafficButtons {
         self.drawings.traffic(theme)
     }
 }

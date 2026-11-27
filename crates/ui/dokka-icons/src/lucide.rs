@@ -6,7 +6,7 @@
 //! que se muestra el icono (24); el color lo pone quien llama
 //! (texto normal o blanco de la fila resaltada).
 
-use dokka_scene::{Color, Drawing, Shape};
+use dokka_scene::{Color, DRAWING_SIDE, Drawing, Shape};
 use dokka_theme::{launchpad, menu, menubar, nav_pill, popup, settings};
 
 const CENTER: f32 = 50.0;
@@ -86,6 +86,57 @@ pub fn traffic_zoom_icon(color: Color) -> Drawing {
         settings::TRAFFIC_GLYPH_SIZE,
         color,
     )
+}
+
+/// Círculo liso de un semáforo, sin símbolo: en color con foco y en gris
+/// sin él. Llena el lienzo para pintarse nítido a su diámetro real.
+pub fn traffic_circle(circle: Color) -> Drawing {
+    Drawing {
+        shapes: vec![Shape::Circle {
+            x: CENTER,
+            y: CENTER,
+            radius: CENTER,
+            color: circle,
+        }],
+    }
+}
+
+/// Semáforo completo: círculo con su símbolo oscuro centrado al pasar el
+/// cursor. El glifo se achica al lado que tenía dentro del círculo para no
+/// agrandarse al mostrarse a diámetro completo.
+fn traffic_button(circle: Color, icon: lucide_icons::Icon, symbol: Color) -> Drawing {
+    Drawing {
+        shapes: vec![
+            Shape::Circle {
+                x: CENTER,
+                y: CENTER,
+                radius: CENTER,
+                color: circle,
+            },
+            Shape::Glyph {
+                glyph: char::from(icon),
+                x: CENTER,
+                y: CENTER,
+                size: settings::TRAFFIC_GLYPH_SIDE * DRAWING_SIDE / settings::TRAFFIC_DIAMETER,
+                color: symbol,
+            },
+        ],
+    }
+}
+
+/// Círculo rojo con su × oscura al pasar el cursor.
+pub fn traffic_close_button(circle: Color, symbol: Color) -> Drawing {
+    traffic_button(circle, lucide_icons::Icon::X, symbol)
+}
+
+/// Círculo amarillo con su − oscura al pasar el cursor.
+pub fn traffic_minimize_button(circle: Color, symbol: Color) -> Drawing {
+    traffic_button(circle, lucide_icons::Icon::Minus, symbol)
+}
+
+/// Círculo verde con su + oscuro al pasar el cursor.
+pub fn traffic_zoom_button(circle: Color, symbol: Color) -> Drawing {
+    traffic_button(circle, lucide_icons::Icon::Plus, symbol)
 }
 
 /// Icono blanco de la sección General sobre su cuadrado de color.
