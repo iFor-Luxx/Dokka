@@ -42,7 +42,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         over_taskbar: false,
     })?;
     surface.settings_place(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT)?;
-    crate::menubar::setup_menubar(&mut surface)?;
+    // Sin barra superior Dokka sigue funcionando.
+    if let Err(error) = crate::menubar::setup_menubar(&mut surface) {
+        eprintln!("Dokka no pudo mostrar la barra superior: {error}");
+    }
     let renderer = SceneRenderer::attach(
         WindowHandles {
             main: surface.handle(),

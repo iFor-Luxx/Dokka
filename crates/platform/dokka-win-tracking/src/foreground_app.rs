@@ -21,10 +21,7 @@ pub fn foreground_app() -> Option<AppInfo> {
         return None;
     }
     let executable = find_executable(window)?;
-    let name = executable
-        .file_stem()?
-        .to_string_lossy()
-        .into_owned();
+    let name = executable.file_stem()?.to_string_lossy().into_owned();
     if name.is_empty() {
         return None;
     }

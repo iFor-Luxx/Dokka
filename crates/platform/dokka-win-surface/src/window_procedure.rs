@@ -67,7 +67,9 @@ pub(crate) unsafe extern "system" fn window_procedure(
             // `run_loop` la atienda con el estado de `Surface`.
             if wparam.0 as u32 == ABN_FULLSCREENAPP {
                 // SAFETY: reenvía el aviso a la cola del hilo.
-                let _ = unsafe { PostMessageW(Some(window), MENUBAR_FULLSCREEN_MESSAGE, WPARAM(0), lparam) };
+                let _ = unsafe {
+                    PostMessageW(Some(window), MENUBAR_FULLSCREEN_MESSAGE, WPARAM(0), lparam)
+                };
             }
             LRESULT(0)
         }

@@ -48,6 +48,7 @@ impl Surface {
         // SAFETY: las ventanas pertenecen a este hilo.
         let _ = unsafe { ShowWindow(self.window, SW_SHOWNOACTIVATE) };
         if self.menubar_visible && !self.menubar_fullscreen {
+            // SAFETY: la ventana es propia y de este hilo.
             let _ = unsafe { ShowWindow(self.menubar, SW_SHOWNOACTIVATE) };
         }
         let mut is_animating = false;
@@ -137,11 +138,8 @@ impl Surface {
             return Some(event);
         }
         if message.hwnd == self.menubar_window()
-            && let Some(event) = read_menubar(
-                message,
-                self.menubar_scale(),
-                &mut state.is_menubar_pressed,
-            )
+            && let Some(event) =
+                read_menubar(message, self.menubar_scale(), &mut state.is_menubar_pressed)
         {
             return Some(event);
         }

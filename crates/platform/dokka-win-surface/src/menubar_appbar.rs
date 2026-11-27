@@ -15,7 +15,11 @@ impl Surface {
     /// Reserva `bar_height` arriba (las maximizadas empiezan debajo) y coloca
     /// una ventana de `window_height` para dibujar el menú desplegado debajo.
     /// Medidas lógicas. No registra dos veces: si ya estaba, solo recoloca.
-    pub fn menubar_show(&mut self, bar_height: f32, window_height: f32) -> Result<(), SurfaceError> {
+    pub fn menubar_show(
+        &mut self,
+        bar_height: f32,
+        window_height: f32,
+    ) -> Result<(), SurfaceError> {
         if self.menubar.is_invalid() {
             return Err(windows::core::Error::from_thread().into());
         }

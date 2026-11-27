@@ -1,9 +1,9 @@
 use windows::Win32::System::Com::{
-    CLSCTX_ALL, COINIT_APARTMENTTHREADED, COINIT_DISABLE_OLE1DDE, CoCreateInstance,
-    CoInitializeEx, CoUninitialize,
+    CLSCTX_ALL, COINIT_APARTMENTTHREADED, COINIT_DISABLE_OLE1DDE, CoCreateInstance, CoInitializeEx,
+    CoUninitialize,
 };
 use windows::Win32::UI::Shell::IShellDispatch;
-use windows_core::GUID;
+use windows::core::GUID;
 
 /// Objeto `Shell.Application`: su método `ShutdownWindows` abre el cuadro de
 /// apagar, reiniciar y suspender sin ejecutar nada por sí solo.

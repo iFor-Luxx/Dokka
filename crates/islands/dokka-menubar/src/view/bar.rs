@@ -15,7 +15,9 @@ impl Menubar {
             width: bar_width,
             height: measures::HEIGHT,
         };
-        let highlight = self.highlight_panel();
+        // Plano (sin cristal) y siempre presente: así no se oscurece ni se
+        // reconstruyen las capas al pasar el cursor.
+        let hover = self.highlight_panel();
         Scene {
             panel: Panel {
                 bounds: bar,
@@ -25,14 +27,14 @@ impl Menubar {
                 border: self.theme.menubar.border,
             },
             panels: Vec::new(),
-            flat_panels: Vec::new(),
+            flat_panels: vec![hover],
             icons: vec![self.mark_icon()],
             dots: Vec::new(),
             dividers: Vec::new(),
             thumbnails: Vec::new(),
             labels: Vec::new(),
             texts: self.bar_texts(bar_width),
-            highlight,
+            highlight: None,
             overlay: self.menu_overlay(),
             submenu: None,
             opacity: 1.0,
@@ -71,17 +73,24 @@ impl Menubar {
         }
     }
 
-    fn highlight_panel(&self) -> Option<Panel> {
-        if !self.icon_hovered && self.menu.is_none() {
-            return None;
-        }
-        Some(Panel {
-            bounds: self.icon_hover_bounds(),
+    fn highlight_panel(&self) -> Panel {
+        let visible = self.icon_hovered || self.menu.is_some();
+        Panel {
+            bounds: if visible {
+                self.icon_hover_bounds()
+            } else {
+                Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 0.0,
+                    height: 0.0,
+                }
+            },
             corner_radius: measures::HOVER_RADIUS,
             border_width: 0.0,
             tint: self.theme.menubar.hover,
             border: self.theme.menubar.hover,
-        })
+        }
     }
 
     fn bar_texts(&self, bar_width: f32) -> Vec<Text> {

@@ -29,8 +29,5 @@ impl Menubar {
 }
 
 fn hit_icon(x: f32, y: f32, bounds: &dokka_scene::Rect) -> bool {
-    x >= bounds.x
-        && x <= bounds.x + bounds.width
-        && y >= bounds.y
-        && y <= bounds.y + bounds.height
+    x >= bounds.x && x <= bounds.x + bounds.width && y >= bounds.y && y <= bounds.y + bounds.height
 }

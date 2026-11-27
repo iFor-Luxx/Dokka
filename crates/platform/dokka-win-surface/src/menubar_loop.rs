@@ -1,7 +1,7 @@
 use windows::Win32::UI::WindowsAndMessaging::MSG;
 
-use crate::read_pointer::read_pointer;
 use crate::SurfaceEvent;
+use crate::read_pointer::read_pointer;
 
 /// Traduce un mensaje del ratón o del teclado de la barra a su evento propio.
 /// Las teclas del Launchpad (letras, flechas, rueda) no tienen sentido aquí y

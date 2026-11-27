@@ -22,12 +22,7 @@ impl Menubar {
         }
     }
 
-    pub(crate) fn click_inner(
-        &mut self,
-        x: f32,
-        y: f32,
-        bar_width: f32,
-    ) -> MenubarClick {
+    pub(crate) fn click_inner(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
         if self.menu.is_none() {
             if in_icon(x, y, &self.icon_hit()) {
                 self.open_at(bar_width);
@@ -69,8 +64,5 @@ impl Menubar {
 }
 
 fn in_icon(x: f32, y: f32, bounds: &dokka_scene::Rect) -> bool {
-    x >= bounds.x
-        && x <= bounds.x + bounds.width
-        && y >= bounds.y
-        && y <= bounds.y + bounds.height
+    x >= bounds.x && x <= bounds.x + bounds.width && y >= bounds.y && y <= bounds.y + bounds.height
 }

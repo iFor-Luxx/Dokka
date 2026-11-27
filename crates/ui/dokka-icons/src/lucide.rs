@@ -7,7 +7,7 @@
 //! (texto normal o blanco de la fila resaltada).
 
 use dokka_scene::{Color, Drawing, Shape};
-use dokka_theme::{launchpad, menubar, menu, nav_pill, popup, settings};
+use dokka_theme::{launchpad, menu, menubar, nav_pill, popup, settings};
 
 const CENTER: f32 = 50.0;
 
