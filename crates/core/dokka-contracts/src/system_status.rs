@@ -1,0 +1,23 @@
+use dokka_model::{KeyboardLanguage, NetworkState, VolumeState};
+
+use crate::ContractError;
+
+/// Volumen del dispositivo de salida predeterminado.
+pub trait VolumeControl {
+    fn volume(&self) -> Result<VolumeState, ContractError>;
+    /// `level` de 0 a 1; fuera de rango se recorta.
+    fn set_level(&self, level: f32) -> Result<(), ContractError>;
+    fn set_muted(&self, muted: bool) -> Result<(), ContractError>;
+}
+
+/// Consulta de la conexión de red.
+pub trait NetworkStatus {
+    fn network(&self) -> Result<NetworkState, ContractError>;
+}
+
+/// Idiomas de teclado instalados.
+pub trait KeyboardLanguages {
+    fn languages(&self) -> Result<Vec<KeyboardLanguage>, ContractError>;
+    /// Cambia el idioma de la app que está al frente.
+    fn activate_language(&self, id: u64) -> Result<(), ContractError>;
+}
