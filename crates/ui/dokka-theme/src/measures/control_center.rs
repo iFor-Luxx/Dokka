@@ -34,6 +34,12 @@ pub const HEIGHT_WITH_BRIGHTNESS: f32 = HEIGHT + BRIGHTNESS_EXTRA;
 /// Esquinas del fondo invisible, como los demás paneles flotantes.
 pub const CORNER_RADIUS: f32 = 16.0;
 
+/// Sombra suave bajo cada pieza, para que se distinga sobre un fondo blanco.
+pub const SHADOW_BLUR: f32 = 10.0;
+/// La sombra cae 2 hacia abajo: desenfoque + caída = 12, igual que `PADDING`,
+/// así cabe en el aire exterior sin que la recorte la ventana del panel.
+pub const SHADOW_OFFSET_Y: f32 = 2.0;
+
 /// Lado del círculo interior de una cápsula (≈ `CELL - 24`).
 pub const CAPSULE_CIRCLE_SIDE: f32 = CELL - 24.0;
 /// Margen igual arriba, abajo e izquierda dentro de la cápsula.
