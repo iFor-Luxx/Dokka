@@ -21,150 +21,74 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Tiras de composicion: la foto se corta en bandas finas que siguen el
+//! Tiras de composicion: la imagen viva se corta en bandas finas que siguen el
 //! embudo. El compositor mueve las tiras en su propio hilo a la tasa del
 //! monitor; el hilo de interfaz solo avanza el estado y pide restaurar.
 
-use dokka_animation::{GENIE_OVERLAP_ROWS, Genie, strip_count};
-use windows::Foundation::Size;
-use windows::Graphics::DirectX::{DirectXAlphaMode, DirectXPixelFormat};
+use dokka_animation::{GENIE_OVERLAP_ROWS, Genie, GenieEdges, strip_count};
+use dokka_win_thumbnail::LiveCompositor;
 use windows::UI::Composition::{
-    CompositionDrawingSurface, CompositionGraphicsDevice, CompositionPropertySet, Compositor,
-    SpriteVisual,
+    CompositionPropertySet, CompositionStretch, CompositionVisualSurface, Compositor,
+    ContainerVisual, SpriteVisual,
 };
-use windows::Win32::Foundation::POINT;
-use windows::Win32::Graphics::Direct3D::{D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_WARP};
-use windows::Win32::Graphics::Direct3D11::{
-    D3D11_CREATE_DEVICE_BGRA_SUPPORT, D3D11_CREATE_DEVICE_SINGLETHREADED, D3D11_SDK_VERSION,
-    D3D11CreateDevice, ID3D11Device,
-};
-use windows::Win32::Graphics::Dxgi::IDXGIDevice;
-use windows::Win32::System::WinRT::Composition::{
-    ICompositionDrawingSurfaceInterop, ICompositorInterop,
-};
-use windows::core::{HSTRING, Interface, Result, h};
-use windows_numerics::{Matrix3x2, Vector2};
+use windows::core::{HSTRING, Result, h};
+use windows_numerics::{Matrix3x2, Vector2, Vector3};
 
-use crate::GenieImage;
-use crate::capture_worker::CaptureWorker;
 use crate::geometry::Turn;
 use crate::overlay::flight_duration;
 
-/// Compositor propio del vuelo con su dispositivo grafico.
+/// Compositor propio de los vuelos, capaz de mostrar imágenes vivas.
 pub(crate) struct GenieCompositor {
+    pub(crate) live: LiveCompositor,
     pub(crate) compositor: Compositor,
-    graphics: CompositionGraphicsDevice,
-    _d3d: ID3D11Device,
-    pub(crate) capture: CaptureWorker,
 }
 
 impl GenieCompositor {
     pub(crate) fn new() -> Result<Self> {
-        let compositor = Compositor::new()?;
-        // SAFETY: D3D solo escribe en su ranura de salida; el dispositivo se
-        // envuelve al momento en una interfaz COM propia.
-        let (d3d, graphics) = unsafe {
-            let mut d3d = None;
-            // WARP como el vuelo original: siempre disponible y sin perdidas.
-            let _ = D3D11CreateDevice(
-                None,
-                D3D_DRIVER_TYPE_WARP,
-                Default::default(),
-                D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_SINGLETHREADED,
-                None,
-                D3D11_SDK_VERSION,
-                Some(&mut d3d),
-                None,
-                None,
-            )
-            .or_else(|_| {
-                D3D11CreateDevice(
-                    None,
-                    D3D_DRIVER_TYPE_HARDWARE,
-                    Default::default(),
-                    D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_SINGLETHREADED,
-                    None,
-                    D3D11_SDK_VERSION,
-                    Some(&mut d3d),
-                    None,
-                    None,
-                )
-            });
-            let d3d: ID3D11Device = d3d.ok_or_else(windows::core::Error::from_thread)?;
-            let dxgi: IDXGIDevice = d3d.cast()?;
-            let d2d = windows::Win32::Graphics::Direct2D::D2D1CreateDevice(&dxgi, None)?;
-            let graphics = compositor
-                .cast::<ICompositorInterop>()?
-                .CreateGraphicsDevice(&d2d)?;
-            (d3d, graphics)
-        };
-        Ok(Self {
-            compositor,
-            graphics,
-            _d3d: d3d,
-            capture: CaptureWorker::start(),
-        })
-    }
-
-    /// Superficie con la imagen a su propio tamano para compartirla.
-    pub(crate) fn image_surface(&self, image: &GenieImage) -> Result<CompositionDrawingSurface> {
-        let surface = self.graphics.CreateDrawingSurface(
-            Size {
-                Width: image.width as f32,
-                Height: image.height as f32,
-            },
-            DirectXPixelFormat::B8G8R8A8UIntNormalized,
-            DirectXAlphaMode::Premultiplied,
-        )?;
-        let interop: ICompositionDrawingSurfaceInterop = surface.cast()?;
-        // SAFETY: cada `BeginDraw` se cierra con `EndDraw`, tambien si falla.
-        unsafe {
-            let mut offset = POINT::default();
-            let context: windows::Win32::Graphics::Direct2D::ID2D1DeviceContext =
-                interop.BeginDraw(None, &mut offset)?;
-            let painted = crate::paint::paint_image(&context, offset, image);
-            interop.EndDraw()?;
-            painted?;
-        }
-        Ok(surface)
+        let live = LiveCompositor::new()?;
+        let compositor = live.compositor().clone();
+        Ok(Self { live, compositor })
     }
 }
 
-/// Una tira: su visual y su primera fila en pixeles de la foto.
+/// Una tira: su visual, su primera fila y cuántas cubre.
 pub(crate) struct Piece {
     pub visual: SpriteVisual,
     pub top: f32,
     pub rows: f32,
 }
 
-/// Corta la imagen en tiras de la altura de la ventana en pantalla.
+/// Corta la imagen en tiras y las deja quietas sobre `window`.
 pub(crate) fn cut(
     gfx: &GenieCompositor,
-    root: &windows::UI::Composition::ContainerVisual,
-    image: &GenieImage,
-    window_height: u32,
+    root: &ContainerVisual,
+    surface: &CompositionVisualSurface,
+    window: &GenieEdges,
 ) -> Result<Vec<Piece>> {
-    let surface = gfx.image_surface(image)?;
-    let count = strip_count(window_height);
-    let exact = image.height == window_height;
-    let row = |index: u32| {
-        let row = index as f32 * image.height as f32 / count as f32;
-        if exact { row.floor() } else { row }
-    };
+    let width = window.right - window.left;
+    let height = (window.bottom - window.top) as u32;
+    let count = strip_count(height);
+    // Filas enteras: las fracciones dejan costuras entre tiras.
+    let row = |index: u32| (index as f32 * height as f32 / count as f32).floor();
     let compositor = &gfx.compositor;
     let children = root.Children()?;
     (0..count)
         .map(|index| {
             let (top, rows) = (row(index), row(index + 1) - row(index));
-            let brush = compositor.CreateSurfaceBrushWithSurface(&surface)?;
-            brush.SetStretch(windows::UI::Composition::CompositionStretch::None)?;
+            let brush = compositor.CreateSurfaceBrushWithSurface(surface)?;
+            brush.SetStretch(CompositionStretch::None)?;
             brush.SetHorizontalAlignmentRatio(0.0)?;
             brush.SetVerticalAlignmentRatio(0.0)?;
             brush.SetTransformMatrix(Matrix3x2::translation(0.0, -top))?;
             let visual = compositor.CreateSpriteVisual()?;
             visual.SetSize(Vector2 {
-                X: image.width as f32,
+                X: width,
                 Y: rows + GENIE_OVERLAP_ROWS,
+            })?;
+            visual.SetOffset(Vector3 {
+                X: window.left,
+                Y: window.top + top,
+                Z: 0.0,
             })?;
             visual.SetBrush(&brush)?;
             children.InsertAtTop(&visual)?;
@@ -179,7 +103,6 @@ pub(crate) fn bind(
     gfx: &GenieCompositor,
     genie: &Genie,
     pieces: &[Piece],
-    image: (f32, f32),
     reverse: bool,
 ) -> Result<CompositionPropertySet> {
     let compositor = &gfx.compositor;
@@ -204,17 +127,16 @@ pub(crate) fn bind(
         "Vector3((({width:.3}) + ({narrow:.3}) * {curve}) / {source:.3}, Max(Min(y1, {bottom:.3} - d.shift) - y0, 0) / rows, 1)",
         width = window.right - window.left,
         narrow = (slot.right - slot.left) - (window.right - window.left),
-        source = image.0,
+        source = window.right - window.left,
         bottom = slot.bottom,
     );
     let offset = compositor.CreateExpressionAnimationWithExpression(&HSTRING::from(offset))?;
     let scale = compositor.CreateExpressionAnimationWithExpression(&HSTRING::from(scale))?;
     offset.SetReferenceParameter(h!("d"), &drive)?;
     scale.SetReferenceParameter(h!("d"), &drive)?;
-    let stretch = (window.bottom - window.top) / image.1;
     for piece in pieces {
-        let y0 = window.top + piece.top * stretch;
-        let y1 = y0 + piece.rows * stretch;
+        let y0 = window.top + piece.top;
+        let y1 = y0 + piece.rows;
         offset.SetScalarParameter(h!("y0"), y0)?;
         offset.SetScalarParameter(h!("y1"), y1)?;
         scale.SetScalarParameter(h!("y0"), y0)?;

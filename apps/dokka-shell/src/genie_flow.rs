@@ -21,10 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Vía inmediata del genio: al avisar Windows, la foto fija va primero.
+//! Vía inmediata del genio: al avisar Windows, la imagen viva va primero.
 //!
 //! Como `App::on_minimize_start` de Muelle: si la ventana es de las que sigue
-//! el dock y no es de Dokka ni de Preferencias, primero se pone la foto fija,
+//! el dock y no es de Dokka ni de Preferencias, primero se pone la imagen viva,
 //! luego se sincroniza, se recoloca el dock y se apunta el vuelo al hueco
 //! definitivo (o a la barrita si está oculto).
 
@@ -35,7 +35,7 @@ use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
 
-/// Una ventana empezó a minimizarse: foto fija ya, hueco después.
+/// Una ventana empezó a minimizarse: imagen viva ya, hueco después.
 /// Como Muelle, la ventana sigue su curso normal si algo falla.
 pub(crate) fn on_minimize_started(
     session: &mut DockSession,
@@ -63,7 +63,7 @@ pub(crate) fn on_minimize_started(
     let Some(frame) = session.genie.begin_stand_in(position, hwnd, foreground) else {
         return Ok(());
     };
-    // Ahora que la foto tapa el hueco, sincronizar y recolocar.
+    // Ahora que la imagen tapa el hueco, sincronizar y recolocar.
     let arranging = std::time::Instant::now();
     if let Err(error) = session.sync() {
         eprintln!("genio: vuelo {hwnd} sin apuntar: no se sincronizo ({error})");
