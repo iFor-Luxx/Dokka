@@ -47,9 +47,10 @@ Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los
 en curso para que el icono vuelva a su sitio sin pedir fotogramas
 (el hueco sobre la barra se mantiene). Sin indicadores (`show_indicators`)
 la lista de puntos queda vacía. Da el destino del genio
-(`logic/minimize_target.rs`: `minimized_slot` con el hueco de la miniatura,
-`genie_target` con la barrita si esta oculto, `is_hidden`); el vuelo lo pide
-el shell con esos rectangulos en coordenadas de la ventana.
+(`logic/minimize_target.rs`: `minimized_slot` con el hueco de la miniatura
+ajustado a su proporción y centrado, `genie_target` con la barrita si esta
+oculto, `is_hidden`); el vuelo lo pide
+el shell con esos rectángulos en coordenadas de la ventana.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Todavía no tiene miniaturas ni arrastre.
 

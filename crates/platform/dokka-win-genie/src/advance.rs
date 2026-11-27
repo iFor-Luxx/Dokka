@@ -35,13 +35,14 @@ use dokka_animation::{
 use windows::Win32::Foundation::HWND;
 use windows::Win32::Graphics::Dwm::DwmUnregisterThumbnail;
 
-use crate::flight::{Captured, Phase};
+use crate::GenieCompositor;
+use crate::flight::Flight;
 use crate::geometry::{PixelRect, to_local};
 use crate::overlay::destroy;
 use crate::overlay::tuck_under;
+use crate::phase::{Captured, Phase};
 use crate::snapshot::Snapshot;
 use crate::strips::{bind, clip_at_slot, cut, launch};
-use crate::{Flight, GenieCompositor};
 
 impl Flight {
     /// Da al vuelo su hueco del dock en pixeles de pantalla.
@@ -49,6 +50,10 @@ impl Flight {
         self.genie.slot = self.turn.edges(to_local(slot, self.screen));
         self.aimed = true;
         let _ = clip_at_slot(gfx, &self.root, &self.genie, self.turn);
+        eprintln!(
+            "genio: vuelo {} apuntado al hueco [{}, {}, {}, {}]",
+            self.hwnd, slot.left, slot.top, slot.right, slot.bottom
+        );
     }
 
     /// Pone el vuelo bajo el dock para pasar tras su cristal.
@@ -109,8 +114,13 @@ impl Flight {
                 };
                 let thumbnail = *thumbnail;
                 let Ok(drive) = self.take_off(gfx, image) else {
+                    eprintln!(
+                        "genio: vuelo {} cancelado: no despego el compositor",
+                        self.hwnd
+                    );
                     return false;
                 };
+                eprintln!("genio: vuelo {} despega", self.hwnd);
                 self.phase = Phase::Flying {
                     start: Instant::now(),
                     _drive: drive,
@@ -159,9 +169,21 @@ impl Flight {
         let image = captured.image;
         let restore = captured.restore;
         let size = (image.width as f32, image.height as f32);
-        let pieces = cut(gfx, &self.root, &image, image.height)?;
-        let drive = bind(gfx, &self.genie, &pieces, size, false)?;
-        launch(gfx, &self.genie, &drive, false, self.seconds)?;
+        // Cada paso dice cuál falló: el compositor rechaza en silencio.
+        let step = |name: &'static str| {
+            move |error: &windows::core::Error| {
+                eprintln!(
+                    "genio: fallo al {name}: {} ({:#X})",
+                    error.message(),
+                    error.code().0
+                );
+            }
+        };
+        let pieces =
+            cut(gfx, &self.root, &image, image.height).inspect_err(step("cortar las tiras"))?;
+        let drive = bind(gfx, &self.genie, &pieces, size, false)
+            .inspect_err(step("dar forma al embudo"))?;
+        launch(gfx, &self.genie, &drive, false, self.seconds).inspect_err(step("lanzar"))?;
         self.captured = Some((restore, self.source));
         Ok(drive)
     }

@@ -7,7 +7,9 @@ mod dock_fit;
 mod dock_session;
 mod floating_panels;
 mod genie;
+mod genie_flow;
 mod handle_event;
+mod handle_frame;
 mod launchpad;
 mod media;
 mod menubar;
@@ -55,7 +57,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         position: dokka_model::DockPosition::Bottom,
         hide: 0.0,
     })?;
-    surface.settings_place(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT)?;
+    surface.settings_place(
+        dokka_theme::settings::WIDTH,
+        dokka_theme::settings::HEIGHT,
+        dokka_theme::settings::SHADOW_MARGIN,
+    )?;
     // Sin barra superior Dokka sigue funcionando.
     if let Err(error) = crate::menubar::setup_menubar(&mut surface) {
         eprintln!("Dokka no pudo mostrar la barra superior: {error}");
@@ -111,7 +117,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     crate::menubar::refresh_clock(&mut session);
     session.resize(&mut surface)?;
     // La animación propia debe estar apagada antes de la primera minimización.
-    crate::genie::refresh(&mut session, &surface);
+    crate::genie_flow::refresh(&mut session, &surface);
     crate::session_render::render(&mut session, &mut surface)?;
 
     println!("Dokka en marcha. Para cerrarlo: Ctrl+C en esta terminal.");

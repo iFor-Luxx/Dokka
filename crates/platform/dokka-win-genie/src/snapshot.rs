@@ -27,7 +27,6 @@
 //! se nota en medio segundo de vuelo.
 
 use crate::GenieImage;
-use crate::capture::halved;
 use crate::geometry::{GenieEdge, PixelRect};
 
 /// Lo que parecia una ventana minimizada, para restaurarla con genio.
@@ -41,10 +40,11 @@ pub struct Snapshot {
 }
 
 impl Snapshot {
+    /// La copia reducida ya viene a mitad de resolución del hilo de captura:
+    /// se guarda tal cual para volar de vuelta.
     pub(crate) fn from_capture(image: GenieImage, window: PixelRect, edge: GenieEdge) -> Self {
-        let reduced = halved(&image);
         Self {
-            image: reduced,
+            image,
             window,
             edge,
         }

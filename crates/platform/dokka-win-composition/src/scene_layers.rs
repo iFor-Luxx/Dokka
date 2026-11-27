@@ -81,7 +81,9 @@ impl SceneLayers {
         // Si no se puede crear, el fondo se ve sin ella.
         let panel_shadow_spec = scene.panel_shadow;
         let panel_shadow = match scene.panel_shadow {
-            Some(shadow) => ShadowLayer::add(compositor, &backdrop, &scene.panel, &shadow, &[]).ok(),
+            Some(shadow) => {
+                ShadowLayer::add(compositor, &backdrop, &scene.panel, &shadow, &[]).ok()
+            }
             None => None,
         };
         let panel = PanelLayer::add(compositor, &backdrop, &scene.panel)?;

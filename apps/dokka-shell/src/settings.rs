@@ -68,11 +68,7 @@ pub(crate) fn toggle_settings_zoom(
     session.settings.toggle_zoom();
     let width = session.settings.window_width();
     let height = session.settings.window_height();
-    surface.settings_apply_size(
-        width,
-        height,
-        dokka_theme::settings::SHADOW_MARGIN,
-    )?;
+    surface.settings_apply_size(width, height, dokka_theme::settings::SHADOW_MARGIN)?;
     Ok(())
 }
 

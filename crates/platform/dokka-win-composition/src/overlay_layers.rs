@@ -1,11 +1,13 @@
 use dokka_scene::{Overlay, Panel, Shadow};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
-use windows_numerics::Vector3;
 
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
+use crate::overlay_style::{
+    apply_scale, has_glass, highlight_style_of, panel_layer, pill_style_of,
+};
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
 use crate::pointer_layer::{PointerLayer, pointer_style_of};
@@ -66,19 +68,39 @@ impl OverlayLayers {
         // La sombra del fondo excluye las piezas; las de cada pieza excluyen a
         // las demás para no oscurecerlas. Si fallan, se ve sin ellas.
         let panel_shadow_spec = overlay.panel_shadow;
-        let panel_shadow = panel_shadow_spec
-            .and_then(|shadow| ShadowLayer::add(compositor, &container, &overlay.panel, &shadow, &overlay.tiles).ok());
+        let panel_shadow = panel_shadow_spec.and_then(|shadow| {
+            ShadowLayer::add(
+                compositor,
+                &container,
+                &overlay.panel,
+                &shadow,
+                &overlay.tiles,
+            )
+            .ok()
+        });
         // Las piezas llevan filo de luz y brillo alto (Liquid Glass).
         let tiles = overlay
             .tiles
             .iter()
             .map(|tile| PanelLayer::add_tile(compositor, &container, tile))
             .collect::<Result<Vec<_>>>()?;
-        let tile_shadows = overlay.tiles.iter().enumerate().map(|(index, tile)| {
-            overlay.tile_shadow.and_then(|shadow| {
-                ShadowLayer::add(compositor, &container, tile, &shadow, &others_of(&overlay.tiles, index)).ok()
+        let tile_shadows = overlay
+            .tiles
+            .iter()
+            .enumerate()
+            .map(|(index, tile)| {
+                overlay.tile_shadow.and_then(|shadow| {
+                    ShadowLayer::add(
+                        compositor,
+                        &container,
+                        tile,
+                        &shadow,
+                        &others_of(&overlay.tiles, index),
+                    )
+                    .ok()
+                })
             })
-        }).collect();
+            .collect();
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;
         if let Some(pill_panel) = &overlay.pill {
@@ -213,7 +235,8 @@ impl OverlayLayers {
         for (layer, tile) in self.tiles.iter().zip(&overlay.tiles) {
             layer.update(tile)?;
         }
-        for (index, (shadow, tile)) in self.tile_shadows.iter_mut().zip(&overlay.tiles).enumerate() {
+        for (index, (shadow, tile)) in self.tile_shadows.iter_mut().zip(&overlay.tiles).enumerate()
+        {
             if let (Some(layer), Some(shadow)) = (shadow, &overlay.tile_shadow) {
                 let _ = layer.update(compositor, tile, shadow, &others_of(&overlay.tiles, index));
             }
@@ -244,52 +267,4 @@ impl OverlayLayers {
         }
         Ok(())
     }
-}
-
-/// `true` si el fondo lleva cristal: tinte o borde con alfa visible.
-/// Transparente (los dos a 0) no crea capa, como el centro y el buscador.
-fn has_glass(panel: &Panel) -> bool {
-    panel.tint.alpha != 0 || panel.border.alpha != 0
-}
-
-/// Crea el cristal del fondo, salvo que sea transparente.
-fn panel_layer(
-    compositor: &Compositor,
-    parent: &ContainerVisual,
-    panel: &Panel,
-) -> Result<Option<PanelLayer>> {
-    if has_glass(panel) {
-        PanelLayer::add(compositor, parent, panel).map(Some)
-    } else {
-        Ok(None)
-    }
-}
-
-/// Lo que fija el aspecto de la píldora al crearse: `update` no lo cambia.
-fn pill_style_of(panel: Panel) -> (dokka_scene::Color, dokka_scene::Color, f32, f32) {
-    (
-        panel.tint,
-        panel.border,
-        panel.corner_radius,
-        panel.border_width,
-    )
-}
-
-/// Lo que fija el aspecto del resaltado al crearse: `update` no lo cambia.
-fn highlight_style_of(panel: Panel) -> (dokka_scene::Color, f32) {
-    (panel.tint, panel.corner_radius)
-}
-
-/// Escala el contenedor sobre el icono, sin mover el resto de la escena.
-fn apply_scale(container: &ContainerVisual, overlay: &Overlay) -> Result<()> {
-    container.SetScale(Vector3 {
-        X: overlay.scale,
-        Y: overlay.scale,
-        Z: 1.0,
-    })?;
-    container.SetCenterPoint(Vector3 {
-        X: overlay.origin.0,
-        Y: overlay.origin.1,
-        Z: 0.0,
-    })
 }
