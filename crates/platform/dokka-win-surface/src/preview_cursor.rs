@@ -4,9 +4,7 @@
 //! de verdad el cursor: si el aviso de salida se perdió, el cursor manda.
 
 use windows::Win32::Foundation::{POINT, RECT};
-use windows::Win32::UI::WindowsAndMessaging::{
-    GetCursorPos, GetWindowRect, KillTimer, SetTimer,
-};
+use windows::Win32::UI::WindowsAndMessaging::{GetCursorPos, GetWindowRect, KillTimer, SetTimer};
 
 use crate::{Surface, SurfaceEvent};
 
@@ -35,9 +33,11 @@ impl Surface {
             if x < 0 || y < 0 || x >= area.right - area.left || y >= area.bottom - area.top {
                 return None;
             }
-            if !self.active_areas.iter().any(|&[left, top, right, bottom]| {
-                x >= left && x < right && y >= top && y < bottom
-            }) {
+            if !self
+                .active_areas
+                .iter()
+                .any(|&[left, top, right, bottom]| x >= left && x < right && y >= top && y < bottom)
+            {
                 return None;
             }
             if self.scale <= 0.0 {
@@ -54,11 +54,9 @@ impl Surface {
             // SAFETY: temporizador del hilo, sin callback.
             let timer = unsafe { SetTimer(None, 0, WATCH_MILLISECONDS, None) };
             self.watch_timer = Some(timer);
-        } else if !watch {
-            if let Some(timer) = self.watch_timer.take() {
-                // SAFETY: cancela el temporizador creado arriba.
-                let _ = unsafe { KillTimer(None, timer) };
-            }
+        } else if !watch && let Some(timer) = self.watch_timer.take() {
+            // SAFETY: cancela el temporizador creado arriba.
+            let _ = unsafe { KillTimer(None, timer) };
         }
     }
 

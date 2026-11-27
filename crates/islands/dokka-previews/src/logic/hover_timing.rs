@@ -84,7 +84,7 @@ impl Previews {
         }
         let fire = if let Some((request, waited)) = &mut self.pending {
             *waited += seconds;
-            *waited >= open_delay(request, self.open.is_some())
+            *waited >= Self::open_delay(request, self.open.is_some())
         } else {
             false
         };
