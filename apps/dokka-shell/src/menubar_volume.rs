@@ -1,11 +1,13 @@
 //! Volumen de la barra: lectura cada `Tick` y ejecución de sus acciones.
 //!
 //! La isla guarda el nivel y decide el gesto; aquí solo se lee la
-//! plataforma con `SystemVolume` y se aplica lo que devuelve.
+//! plataforma con `SystemVolume` y se aplica lo que devuelve. Las salidas
+//! se leen solo al abrir el panel y tras elegir, con `WinAudioOutputs`.
 
 use std::error::Error;
 
-use dokka_contracts::VolumeControl;
+use dokka_contracts::{AudioOutputs, VolumeControl};
+use dokka_win_audio_output::WinAudioOutputs;
 use dokka_win_media::SystemVolume;
 use dokka_win_surface::Surface;
 
@@ -19,11 +21,45 @@ pub(crate) fn refresh_volume(session: &mut DockSession) {
     }
 }
 
+/// Salidas activas para la sección "Salida". Un error se avisa una vez y
+/// la sección desaparece, sin tocar el volumen.
+pub(crate) fn refresh_audio_outputs(session: &mut DockSession) {
+    match WinAudioOutputs.outputs() {
+        Ok(outputs) => session.menubar.set_audio_outputs(outputs),
+        Err(error) => {
+            if !session.audio_error_logged {
+                eprintln!("Dokka no pudo leer las salidas de audio: {error}");
+                session.audio_error_logged = true;
+            }
+            session.menubar.set_audio_outputs(Vec::new());
+        }
+    }
+}
+
 /// Fija el nivel elegido en el deslizador y lo relee para pintar lo real.
 pub(crate) fn set_level(session: &mut DockSession, level: f32) -> Result<(), Box<dyn Error>> {
     if let Err(error) = SystemVolume.set_level(level) {
         eprintln!("Dokka no pudo cambiar el volumen: {error}");
     }
+    refresh_volume(session);
+    Ok(())
+}
+
+/// Cambia la salida predeterminada, relee salidas y volumen. El panel se
+/// queda abierto; un error se avisa una vez y la sección desaparece.
+pub(crate) fn choose_output(session: &mut DockSession, index: usize) -> Result<(), Box<dyn Error>> {
+    let Some(id) = session.menubar.audio_output_id(index) else {
+        return Ok(());
+    };
+    if let Err(error) = WinAudioOutputs.set_default(&id) {
+        if !session.audio_error_logged {
+            eprintln!("Dokka no pudo cambiar la salida de audio: {error}");
+            session.audio_error_logged = true;
+        }
+        session.menubar.set_audio_outputs(Vec::new());
+        return Ok(());
+    }
+    refresh_audio_outputs(session);
     refresh_volume(session);
     Ok(())
 }

@@ -21,7 +21,7 @@ que quepa el buscador y el idioma con una docena de filas, y `draw_menubar`), re
 Los paneles viven un archivo por panel en el shell (`menubar_volume.rs`,
 `menubar_network.rs`, `menubar_language.rs`, `menubar_music.rs`,
 `menubar_search.rs`: el shell les pasa `VolumeState`/`NetworkState`/
-`Vec<LanguageEntry>`/`NowPlayingInfo` y ejecuta su `MenubarAction` en
+`Vec<LanguageEntry>`/`NowPlayingInfo`/`Vec<AudioOutput>` y ejecuta su `MenubarAction` en
 `run_menubar_action`; el centro de control delega en esas mismas variantes). El segundo plano (`background_panel`:
 cristal único Tahoe con título, una fila por app con círculo suave, icono real y nombre
 recortado, hasta diez filas según la ventana, "Sin apps en segundo plano" si no hay,
@@ -29,7 +29,9 @@ capas constantes y golpe por fila) lo rellena `menubar_background.rs` cada `Tick
 revisión del `TrayHost` (`apply_background_apps` al arrancar según Preferencias, error
 una vez y parte apagada; `TrayActivate`/`TrayMenu` cierran con `menubar_menu_dismissed`
 para no devolver el foco; clic derecho con `MenubarRightClicked`).
-Volumen cada `Tick`; red e idioma cada pocos `Tick` y al abrir (el idioma solo
+Volumen cada `Tick` y salidas al abrir el panel y tras elegir (`ChooseOutput`
+las cambia, las relee con el volumen y deja el panel abierto; un error se
+avisa una vez y la sección desaparece); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El buscador filtra el catálogo del
 Escritorio más las fijadas (como el Launchpad) con `filter_search_order` e

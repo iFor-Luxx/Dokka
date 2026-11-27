@@ -24,6 +24,7 @@ pub struct VolumePanelIcons {
     slider_low_dim: Arc<Drawing>,
     slider_high: Arc<Drawing>,
     slider_high_dim: Arc<Drawing>,
+    check: Arc<Drawing>,
     chevron: Arc<Drawing>,
 }
 
@@ -45,6 +46,7 @@ impl VolumePanelIcons {
             slider_low_dim: Arc::new(volume_low_icon(dim)),
             slider_high: Arc::new(volume_high_icon(panel)),
             slider_high_dim: Arc::new(volume_high_icon(dim)),
+            check: Arc::new(dokka_icons::language_check_icon(panel)),
             chevron: Arc::new(volume_settings_icon(panel)),
         }
     }
@@ -86,6 +88,11 @@ impl VolumePanelIcons {
         } else {
             &self.slider_high
         }
+    }
+
+    /// Marca de verificación de la salida activa, a la izquierda.
+    pub(crate) fn output_check(&self) -> &Arc<Drawing> {
+        &self.check
     }
 
     /// Chevrón blanco de la fila de ajustes.

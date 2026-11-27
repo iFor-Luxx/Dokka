@@ -7,6 +7,7 @@
 papelera con la confirmación de Windows.
 
 `VolumeControl`, `NetworkStatus` y `KeyboardLanguages` sirven a los iconos de la derecha de la barra.
+`AudioOutputs` lista las salidas activas y cambia la predeterminada.
 
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 

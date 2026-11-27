@@ -3,6 +3,8 @@
 pub enum VolumePanelHit {
     /// La barra, con el valor elegido de 0 a 1.
     Slider(f32),
+    /// Una salida de la lista, por su índice visible.
+    Output(usize),
     /// El botón de silencio.
     Mute,
     /// La fila que abre los ajustes.

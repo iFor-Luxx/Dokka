@@ -1,16 +1,29 @@
+use dokka_model::AudioOutput;
 use dokka_scene::Rect;
 
 use super::VolumePanelHit;
-use super::layout::{mute_row, settings_row, slider_bar, slider_touch, slider_value_at};
+use super::layout::{
+    mute_row, output_row, settings_row, slider_bar, slider_touch, slider_value_at, visible_count,
+};
 
-/// Zona tocada: silenciar, ajustes o valor sobre la barra fina.
+/// Zona tocada: salida, silenciar, ajustes o valor sobre la barra fina.
 /// La zona de toque es la fila entera, pero el valor siempre sale de la
 /// barra, la misma geometría que dibuja el deslizador.
-pub fn volume_panel_hit(bounds: Rect, x: f32, y: f32) -> Option<VolumePanelHit> {
-    if contains(mute_row(bounds), x, y) {
+pub fn volume_panel_hit(
+    bounds: Rect,
+    x: f32,
+    y: f32,
+    outputs: &[AudioOutput],
+) -> Option<VolumePanelHit> {
+    for index in 0..visible_count(outputs) {
+        if contains(output_row(bounds, index), x, y) {
+            return Some(VolumePanelHit::Output(index));
+        }
+    }
+    if contains(mute_row(bounds, outputs), x, y) {
         return Some(VolumePanelHit::Mute);
     }
-    if contains(settings_row(bounds), x, y) {
+    if contains(settings_row(bounds, outputs), x, y) {
         return Some(VolumePanelHit::Settings);
     }
     let touch = slider_touch(bounds);

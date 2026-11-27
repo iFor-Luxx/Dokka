@@ -31,7 +31,8 @@ en blanco, "Nada en reproducción" con controles atenuados sin responder al golp
 canción entrega los mismos textos e iconos),
 panel de volumen (`volume_panel`: título con porcentaje a la derecha en texto
 secundario, barra fina con tirador redondo entre dos altavoces —atenuados
-con silencio—, botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+con silencio—, sección "Salida" con las salidas activas si hay, botón de
+silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
 con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
 idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),

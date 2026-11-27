@@ -64,6 +64,9 @@ pub(crate) fn run_menubar_action(
         MenubarAction::VolumeToggleMute => {
             crate::menubar_volume::toggle_mute(session)?;
         }
+        MenubarAction::ChooseOutput(index) => {
+            crate::menubar_volume::choose_output(session, index)?;
+        }
         MenubarAction::OpenSoundSettings => {
             crate::menubar_volume::open_sound_settings(session, surface)?;
         }

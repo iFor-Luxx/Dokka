@@ -33,6 +33,7 @@ dokka-settings = { path = "crates/islands/dokka-settings" }
 dokka-state = { path = "crates/core/dokka-state" }
 dokka-theme = { path = "crates/ui/dokka-theme" }
 dokka-win-apps = { path = "crates/platform/dokka-win-apps" }
+dokka-win-audio-output = { path = "crates/platform/dokka-win-audio-output" }
 dokka-win-composition = { path = "crates/platform/dokka-win-composition" }
 dokka-win-control = { path = "crates/platform/dokka-win-control" }
 dokka-win-media = { path = "crates/platform/dokka-win-media" }

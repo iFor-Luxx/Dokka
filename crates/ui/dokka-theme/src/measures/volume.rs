@@ -60,6 +60,14 @@ pub const SETTINGS_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Lado del chevrón de la fila de ajustes.
 pub const SETTINGS_CHEVRON_SIDE: f32 = 16.0;
 
+/// Título de la sección de salidas.
+pub const OUTPUT_TITLE: &str = "Salida";
+/// Salidas visibles como máximo (6 × 34 + título y aires = 386, cabe en 444).
+pub const MAX_OUTPUTS: usize = 6;
+/// Nombres largos recortados con "…".
+pub const MAX_NAME_CHARACTERS: usize = 28;
+/// Lado de la marca de verificación de la salida activa.
+pub const CHECK_SIDE: f32 = 16.0;
 /// Título del panel.
 pub const TITLE: &str = "Sonido";
 /// Fila que silencia.
@@ -69,13 +77,28 @@ pub const SETTINGS_LABEL: &str = "Configuración de sonido…";
 
 /// Tamaños de texto del panel Tahoe.
 pub const TITLE_SIZE: f32 = tray_glass::TITLE_SIZE;
+pub const SUBTITLE_SIZE: f32 = tray_glass::SUBTITLE_SIZE;
 
-/// Alto del panel: título, deslizador, dos líneas y dos filas con sus aires.
-pub fn panel_height() -> f32 {
+/// Salidas que se muestran de `total`.
+pub fn visible_outputs(total: usize) -> usize {
+    total.min(MAX_OUTPUTS)
+}
+
+/// Alto del panel: título, deslizador, sección de salidas si hay, dos
+/// líneas y dos filas con sus aires. Con seis salidas son 386, cabe en
+/// la ventana (480 menos franja de 30 y hueco de 6 = 444).
+pub fn panel_height(output_count: usize) -> f32 {
+    let visible = visible_outputs(output_count) as f32;
+    let outputs = if visible > 0.0 {
+        TITLE_GAP + TITLE_HEIGHT + visible * ROW_HEIGHT
+    } else {
+        0.0
+    };
     PADDING
         + TITLE_HEIGHT
         + TITLE_GAP
         + SLIDER_ROW_HEIGHT
+        + outputs
         + SECTION_GAP
         + tray_glass::SEPARATOR_HEIGHT
         + ROW_HEIGHT
