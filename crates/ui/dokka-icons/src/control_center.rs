@@ -69,11 +69,7 @@ pub fn control_center_muted_icon(color: Color) -> Drawing {
 
 /// Botón de pista anterior.
 pub fn control_center_previous_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::SkipBack,
-        measures::GLYPH_SIZE,
-        color,
-    )
+    glyph(lucide_icons::Icon::SkipBack, measures::GLYPH_SIZE, color)
 }
 
 /// Botón de reproducir.
@@ -88,11 +84,7 @@ pub fn control_center_pause_icon(color: Color) -> Drawing {
 
 /// Botón de pista siguiente.
 pub fn control_center_next_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::SkipForward,
-        measures::GLYPH_SIZE,
-        color,
-    )
+    glyph(lucide_icons::Icon::SkipForward, measures::GLYPH_SIZE, color)
 }
 
 /// Botón redondo de Preferencias de Dokka.

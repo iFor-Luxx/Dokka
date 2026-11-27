@@ -20,13 +20,16 @@
   a 20; `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 300 para que quepa el
   calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
-  etiqueta en forma de píldora; `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
+  etiqueta en forma de píldora; `search.rs` para el buscador tipo Spotlight (panel de 560,
+  casilla grande de 52 con lupa a 20 y cursor, hasta 7 filas de 44 con icono de 28,
+  resaltado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;
-  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto;
-   `control_center.rs`: panel de 320 × 338 con tarjetas de red, volumen (deslizador mínimo) y
-   música más cuatro botones redondos, todo concéntrico y con glifos Lucide a 20).
+  `music_panel.rs`: tarjeta de música de 280 × 124, barra de botones de 44 con radio
+  concéntrico (exterior menos separación), título y artista recortados y
+  "Nada en reproducción", glifos a 20;
+  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.

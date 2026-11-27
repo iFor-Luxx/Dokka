@@ -15,6 +15,12 @@ pub(crate) fn read_sessions(manager: &Manager) -> Vec<MediaSession> {
         .collect()
 }
 
+pub(crate) fn read_current_source(manager: &Manager) -> Option<String> {
+    // Sin sesión actual (nada sonando) no hay error: simplemente no hay actual.
+    let session = manager.GetCurrentSession().ok()?;
+    session.SourceAppUserModelId().ok().map(|id| id.to_string())
+}
+
 pub(crate) fn perform(manager: &Manager, source: &str, action: MediaAction) -> Result<()> {
     for session in each_session(manager) {
         if session.SourceAppUserModelId()? == source {

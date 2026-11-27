@@ -72,7 +72,13 @@ pub fn control_center_panel(
     };
 
     let texts = vec![
-        left_text(theme, network_text_x(network), network.y + 24.0, network_name(props), true),
+        left_text(
+            theme,
+            network_text_x(network),
+            network.y + 24.0,
+            network_name(props),
+            true,
+        ),
         left_text(
             theme,
             network_text_x(network),
@@ -87,7 +93,13 @@ pub fn control_center_panel(
             volume_text(props),
             false,
         ),
-        left_text(theme, music.x + measures::TEXT_INSET, music.y + 20.0, music_title(props), true),
+        left_text(
+            theme,
+            music.x + measures::TEXT_INSET,
+            music.y + 20.0,
+            music_title(props),
+            true,
+        ),
         left_text(
             theme,
             music.x + measures::TEXT_INSET,
@@ -111,7 +123,10 @@ pub fn control_center_panel(
         icon(icons.network(&props.network), network_icon),
         icon(icons.volume(props.volume.is_muted), mute_icon),
         icon(&icons.previous, music_button(music, 0)),
-        icon(icons.toggle(props.now_playing.is_playing), music_button(music, 1)),
+        icon(
+            icons.toggle(props.now_playing.is_playing),
+            music_button(music, 1),
+        ),
         icon(&icons.next, music_button(music, 2)),
         icon(&icons.preferences, round_button(bounds, 0)),
         icon(&icons.desktop, round_button(bounds, 1)),
@@ -208,6 +223,9 @@ fn shorten(content: &str) -> String {
     if content.chars().count() <= measures::TEXT_CHARACTERS {
         return content.to_owned();
     }
-    let kept: String = content.chars().take(measures::TEXT_CHARACTERS - 1).collect();
+    let kept: String = content
+        .chars()
+        .take(measures::TEXT_CHARACTERS - 1)
+        .collect();
     format!("{}…", kept.trim_end())
 }
