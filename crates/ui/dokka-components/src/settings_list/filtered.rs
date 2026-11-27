@@ -17,7 +17,7 @@ fn hidden_panel(theme: &Theme) -> Panel {
             width: 0.0,
             height: 0.0,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.selection,
         border: theme.settings.selection,
@@ -89,19 +89,20 @@ pub fn filtered_labels(
 }
 
 /// Fondo azul de la fila elegida en su sitio visible; oculto si el filtro la
-/// esconde, con el mismo estilo para no reconstruir capas.
+/// esconde, con el mismo estilo para no reconstruir capas. Misma columna que
+/// la casilla de búsqueda.
 pub fn filtered_selection(theme: &Theme, selected: usize, order: &[usize]) -> Panel {
     let Some(display) = order.iter().position(|known| *known == selected) else {
         return hidden_panel(theme);
     };
     Panel {
         bounds: Rect {
-            x: measures::SIDEBAR_INSET + measures::ROW_HIGHLIGHT_MARGIN,
+            x: measures::row_highlight_left(),
             y: measures::row_middle(display) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0,
-            width: measures::sidebar_panel_width() - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
+            width: measures::row_highlight_width(),
             height: measures::ROW_HIGHLIGHT_HEIGHT,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.selection,
         border: theme.settings.selection,
@@ -109,7 +110,7 @@ pub fn filtered_selection(theme: &Theme, selected: usize, order: &[usize]) -> Pa
 }
 
 /// Fondo suave de la fila visible bajo el cursor; oculto sin fila, sobre la
-/// elegida o cuando el filtro la esconde.
+/// elegida o cuando el filtro la esconde. Misma columna que la casilla.
 pub fn filtered_hover(
     theme: &Theme,
     selected: usize,
@@ -123,7 +124,7 @@ pub fn filtered_hover(
             width: 0.0,
             height: 0.0,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.hover,
         border: theme.settings.hover,
@@ -139,24 +140,25 @@ pub fn filtered_hover(
     };
     Panel {
         bounds: Rect {
-            x: measures::SIDEBAR_INSET + measures::ROW_HIGHLIGHT_MARGIN,
+            x: measures::row_highlight_left(),
             y: measures::row_middle(display) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0,
-            width: measures::sidebar_panel_width() - measures::ROW_HIGHLIGHT_MARGIN * 2.0,
+            width: measures::row_highlight_width(),
             height: measures::ROW_HIGHLIGHT_HEIGHT,
         },
-        corner_radius: measures::ROW_HIGHLIGHT_RADIUS,
+        corner_radius: measures::row_highlight_radius(),
         border_width: 0.0,
         tint: theme.settings.hover,
         border: theme.settings.hover,
     }
 }
 
-/// Fila visible que hay en el punto, siguiendo lo mostrado.
+/// Fila visible que hay en el punto, siguiendo lo mostrado: la misma columna
+/// dibujada.
 pub fn filtered_row_at(order: &[usize], x: f32, y: f32) -> Option<usize> {
     (0..order.len()).find_map(|display| {
         let top = measures::row_middle(display) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0;
         if (measures::row_highlight_left()
-            ..measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN)
+            ..measures::row_highlight_left() + measures::row_highlight_width())
             .contains(&x)
             && (top..top + measures::ROW_HIGHLIGHT_HEIGHT).contains(&y)
         {

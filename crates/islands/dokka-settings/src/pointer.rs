@@ -7,9 +7,9 @@
 use dokka_model::Preferences;
 
 use super::logic::{
-    DockSwitch, SliderTarget, card_heights, content_slider_track, dock_slider_at,
-    dock_switch_at, icon_scale_from, icon_scale_to, magnification_from, magnification_to,
-    menubar_switch_at, taskbar_switch_at,
+    DockSwitch, SliderTarget, card_heights, content_slider_track, dock_slider_at, dock_switch_at,
+    icon_scale_from, icon_scale_to, magnification_from, magnification_to, menubar_switch_at,
+    taskbar_switch_at,
 };
 use super::painted::PaintedControl;
 use super::state::Settings;

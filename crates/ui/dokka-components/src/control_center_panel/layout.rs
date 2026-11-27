@@ -153,6 +153,7 @@ pub(crate) fn sound_left_icon(card: Rect) -> Rect {
 }
 
 /// Caja del silencio: icono pequeño a la derecha, con aire para pulsarlo.
+/// Se conserva para el golpe; lo visible va en `sound_mute_icon`.
 pub(crate) fn sound_mute_box(card: Rect) -> Rect {
     Rect {
         x: card.x + card.width - measures::PADDING - measures::MUTE_HIT_SIDE,
@@ -162,12 +163,24 @@ pub(crate) fn sound_mute_box(card: Rect) -> Rect {
     }
 }
 
-/// Pista fina del deslizador, entre los dos iconos.
+/// Icono visible del silencio: termina a la misma distancia del borde que
+/// empieza el izquierdo (`SOUND_ICON_MARGIN`), centrado en la pista.
+pub(crate) fn sound_mute_icon(card: Rect) -> Rect {
+    Rect {
+        x: card.x + card.width - measures::SOUND_ICON_MARGIN - measures::END_ICON_SIDE,
+        y: track_center_y(card) - measures::END_ICON_SIDE / 2.0,
+        width: measures::END_ICON_SIDE,
+        height: measures::END_ICON_SIDE,
+    }
+}
+
+/// Pista fina del deslizador, entre los dos iconos visibles para que la barra
+/// quede simétrica.
 pub(crate) fn slider_track(card: Rect) -> Rect {
     let left = sound_left_icon(card);
-    let mute = sound_mute_box(card);
+    let right = sound_mute_icon(card);
     let x = left.x + left.width + measures::ICON_TEXT_GAP;
-    let end = mute.x - measures::ICON_TEXT_GAP;
+    let end = right.x - measures::ICON_TEXT_GAP;
     Rect {
         x,
         y: track_center_y(card) - dokka_theme::tray_glass::TRACK_HEIGHT / 2.0,

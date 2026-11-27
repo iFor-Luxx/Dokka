@@ -84,8 +84,12 @@ pub const BADGE_SIDE: f32 = 28.0;
 pub const BADGE_RADIUS: f32 = 7.0;
 /// Aire entre el cuadrado y el nombre.
 pub const BADGE_TEXT_GAP: f32 = 10.0;
-/// Borde izquierdo del cuadrado, con el mismo aire interior que la casilla.
-pub const BADGE_LEFT: f32 = SIDEBAR_INSET + SIDEBAR_MARGIN;
+/// Aire interior del resaltado al cuadrado de color: el cuadro empieza con
+/// este aire a la izquierda y se reserva el mismo a la derecha.
+pub const ROW_BADGE_INSET: f32 = 8.0;
+/// Borde izquierdo del cuadrado, con el aire interior de la casilla más el
+/// aire dentro del resaltado para que no quede pegado a su borde.
+pub const BADGE_LEFT: f32 = SIDEBAR_INSET + SIDEBAR_MARGIN + ROW_BADGE_INSET;
 /// Tamaño del nombre de cada sección.
 pub const ROW_TEXT_SIZE: f32 = 13.0;
 /// Tamaño del glifo Lucide blanco sobre el cuadrado.
@@ -96,13 +100,15 @@ pub const ROW_ICON_SIDE: f32 = 18.0;
 /// imagen y que al filtrar cada capa repinte su color (el marcador de un
 /// icono no cambia al actualizarse).
 pub const BADGE_CANVAS_RADIUS: f32 = 25.0;
-/// Margen de la fila resaltada dentro de la barra.
-pub const ROW_HIGHLIGHT_MARGIN: f32 = 8.0;
+/// Margen de la fila resaltada dentro de la barra: igual que la casilla de
+/// búsqueda para ocupar exactamente su misma columna (mismos bordes).
+pub const ROW_HIGHLIGHT_MARGIN: f32 = SIDEBAR_MARGIN;
 /// Alto de la fila resaltada (selección y hover).
 pub const ROW_HIGHLIGHT_HEIGHT: f32 = 36.0;
 /// Esquinas de la fila resaltada, concéntricas con el panel:
-/// radio interior = radio exterior - separación.
-pub const ROW_HIGHLIGHT_RADIUS: f32 = SIDEBAR_RADIUS - ROW_HIGHLIGHT_MARGIN;
+/// radio interior = radio exterior − separación (nunca negativo, recortado
+/// en `row_highlight_radius`).
+pub const ROW_HIGHLIGHT_RADIUS: f32 = SIDEBAR_RADIUS - SIDEBAR_MARGIN;
 
 /// Alto de la zona arrastrable superior (mover la ventana).
 pub const DRAG_HEIGHT: f32 = 64.0;
@@ -139,10 +145,12 @@ pub const CARD_TEXT: &str = "Próximamente";
 /// líneas finas, etiqueta a la izquierda y control a la derecha. La tarjeta
 /// usa el mismo radio y borde que `CARD_*` para no reconstruir capas al
 /// cambiar de sección. Radios concéntricos: interior = exterior − separación.
-/// Borde izquierdo del contenido, tras la barra lateral.
-pub const CONTENT_LEFT: f32 = SIDEBAR_WIDTH + CARD_MARGIN;
-/// Ancho del contenido, con el mismo margen a la derecha.
-pub const CONTENT_WIDTH: f32 = WIDTH - CONTENT_LEFT - CARD_MARGIN;
+/// Borde izquierdo del contenido, alineado con la cabecera
+/// (`HEADER_DIVIDER_LEFT`) para que las tarjetas empiecen bajo la píldora.
+pub const CONTENT_LEFT: f32 = HEADER_DIVIDER_LEFT;
+/// Ancho del contenido, alineado con la cabecera: de su borde izquierdo a su
+/// borde derecho para que las tarjetas queden bajo su línea.
+pub const CONTENT_WIDTH: f32 = HEADER_DIVIDER_RIGHT - HEADER_DIVIDER_LEFT;
 /// Borde superior del contenido, como la tarjeta antigua.
 pub const CONTENT_TOP: f32 = CARD_TOP;
 /// Alto de cada fila de ajustes dentro de su tarjeta.
@@ -206,9 +214,21 @@ pub fn sidebar_panel_width() -> f32 {
     SIDEBAR_WIDTH - SIDEBAR_INSET
 }
 
-/// Borde izquierdo de la fila resaltada (selección y hover), dentro del panel.
+/// Borde izquierdo de la fila resaltada (selección y hover): el mismo que la
+/// casilla de búsqueda para ocupar exactamente su columna.
 pub fn row_highlight_left() -> f32 {
     SIDEBAR_INSET + ROW_HIGHLIGHT_MARGIN
+}
+
+/// Ancho de la fila resaltada: el mismo que la casilla de búsqueda.
+pub fn row_highlight_width() -> f32 {
+    search_width()
+}
+
+/// Radio concéntrico del resaltado: radio del panel menos separación, nunca
+/// negativo.
+pub fn row_highlight_radius() -> f32 {
+    (SIDEBAR_RADIUS - ROW_HIGHLIGHT_MARGIN).max(0.0)
 }
 
 /// Ancho de la casilla de búsqueda dentro del panel flotante.
@@ -226,9 +246,7 @@ pub fn header_middle() -> f32 {
     NAV_TOP + NAV_PILL_HEIGHT / 2.0
 }
 
-/// Límites de la tarjeta gris del contenido.
+/// Límites de la tarjeta gris del contenido, alineados con la cabecera.
 pub fn card_bounds() -> (f32, f32, f32) {
-    let x = SIDEBAR_WIDTH + CARD_MARGIN;
-    let width = WIDTH - x - CARD_MARGIN;
-    (x, CARD_TOP, width)
+    (CONTENT_LEFT, CONTENT_TOP, CONTENT_WIDTH)
 }

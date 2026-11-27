@@ -91,8 +91,8 @@ fn slider_colors(theme: &Theme) -> SliderColors {
 
 /// "Pequeño" bajo el extremo izquierdo y "Grande" bajo el derecho.
 fn slider_captions(theme: &Theme, area: Rect, track: Rect) -> Vec<Text> {
-    let middle = track.y + track.height + measures::SLIDER_CAPTION_GAP
-        + measures::SLIDER_CAPTION_SIZE / 2.0;
+    let middle =
+        track.y + track.height + measures::SLIDER_CAPTION_GAP + measures::SLIDER_CAPTION_SIZE / 2.0;
     vec![
         Text {
             x: area.x,
@@ -245,7 +245,7 @@ fn menubar_content(theme: &Theme, settings: &Settings) -> ContentScene {
     };
     let heights = card_heights(SECTION_MENUBAR, 0);
     let dim = vec![false; labels.len()];
-    let (panel, dividers, mut texts) = group_pieces(theme, top, &labels, &heights, &dim);
+    let (panel, dividers, texts) = group_pieces(theme, top, &labels, &heights, &dim);
     let mut flats = vec![panel];
     let states = [
         shown.menubar.volume,

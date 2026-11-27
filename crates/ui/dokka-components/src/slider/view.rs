@@ -1,5 +1,5 @@
 use dokka_scene::{Panel, Rect};
-use dokka_theme::{settings as measures};
+use dokka_theme::settings as measures;
 
 use super::{SliderColors, SliderProps};
 
@@ -93,12 +93,7 @@ pub fn slider_panels(track: Rect, props: &SliderProps, colors: &SliderColors) ->
     [
         slider_track_panel(track, colors),
         slider_fill_panel(track, props.value, props.active, colors),
-        slider_knob_panel(
-            track,
-            props.value,
-            colors.knob,
-            colors.knob_border,
-        ),
+        slider_knob_panel(track, props.value, colors.knob, colors.knob_border),
     ]
 }
 
