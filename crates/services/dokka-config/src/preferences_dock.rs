@@ -52,6 +52,12 @@ pub(crate) fn apply_dock(preferences: &mut Preferences, key: &str, value: &str) 
             }
             true
         }
+        "dock.genie" => {
+            if let Some(parsed) = parse_bool(value) {
+                preferences.dock.genie = parsed;
+            }
+            true
+        }
         "dock.previews" => {
             if let Some(parsed) = parse_bool(value) {
                 preferences.dock.previews = parsed;
@@ -84,6 +90,7 @@ pub(crate) fn render_dock(preferences: &Preferences) -> Vec<(&'static str, Strin
             "dock.show_indicators",
             format_bool(preferences.dock.show_indicators),
         ),
+        ("dock.genie", format_bool(preferences.dock.genie)),
         ("dock.previews", format_bool(preferences.dock.previews)),
     ]
 }

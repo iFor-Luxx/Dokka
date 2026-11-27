@@ -19,6 +19,7 @@ pub(crate) enum DockSwitch {
     Magnification,
     AutoHide,
     AnimateLaunch,
+    Genie,
     ShowIndicators,
     Previews,
 }
@@ -45,9 +46,12 @@ pub(crate) fn dock_switch_at(section: usize, width: f32, x: f32, y: f32) -> Opti
         return Some(DockSwitch::AnimateLaunch);
     }
     if in_touch(&content_switch(*third, &last, 1, width), x, y) {
-        return Some(DockSwitch::ShowIndicators);
+        return Some(DockSwitch::Genie);
     }
     if in_touch(&content_switch(*third, &last, 2, width), x, y) {
+        return Some(DockSwitch::ShowIndicators);
+    }
+    if in_touch(&content_switch(*third, &last, 3, width), x, y) {
         return Some(DockSwitch::Previews);
     }
     None

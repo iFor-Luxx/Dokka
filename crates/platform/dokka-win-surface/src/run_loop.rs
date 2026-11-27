@@ -99,6 +99,10 @@ impl Surface {
         state: &mut LoopState,
     ) -> Option<SurfaceEvent> {
         if message.hwnd.is_invalid() && message.message == refresh_message {
+            // Un aviso urgente (`wParam` a 1) se entrega ya, sin agrupar.
+            if message.wParam.0 == 1 {
+                return Some(SurfaceEvent::Refresh);
+            }
             // No se reinicia el temporizador: avisos continuos no deben aplazarlo siempre.
             if state.pending_timer.is_none() {
                 // SAFETY: temporizador del hilo, sin callback.

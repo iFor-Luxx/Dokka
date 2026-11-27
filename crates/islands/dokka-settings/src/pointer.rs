@@ -46,8 +46,9 @@ pub(crate) fn control_at(selected: usize, width: f32, x: f32, y: f32) -> Option<
             DockSwitch::Magnification => 0,
             DockSwitch::AutoHide => 1,
             DockSwitch::AnimateLaunch => 2,
-            DockSwitch::ShowIndicators => 3,
-            DockSwitch::Previews => 4,
+            DockSwitch::Genie => 3,
+            DockSwitch::ShowIndicators => 4,
+            DockSwitch::Previews => 5,
         };
         return Some(PaintedControl::DockSwitch(card));
     }

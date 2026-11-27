@@ -142,6 +142,16 @@ pub(crate) fn handle_event(
         }
         SurfaceEvent::Frame { seconds } => {
             session.dock.advance(seconds);
+            // El genio avanza en su propio reloj y pide restaurar al llegar.
+            for window in session.genie.on_frame(std::time::Instant::now()) {
+                if session.is_settings_window(window, surface) {
+                    if let Err(error) = crate::settings::open_or_focus_settings(session, surface) {
+                        eprintln!("Dokka no pudo restaurar Preferencias: {error}");
+                    }
+                } else if let Err(error) = session.control.activate(window) {
+                    eprintln!("Dokka no pudo restaurar la ventana: {error}");
+                }
+            }
             // El auto-ocultado mueve la ventana: solo mientras anima.
             if session.dock.is_hide_animating() {
                 if let Err(error) = session.apply_hide(surface) {
@@ -176,6 +186,11 @@ pub(crate) fn handle_event(
             // Avisa también cuando Windows saca su barra por su cuenta.
             crate::taskbar_mode::keep_taskbar_hidden(session);
             let changed = session.sync()?;
+            // El genio detecta minimizadas nuevas; si cambió la lista, tras
+            // recolocar el dock para apuntar al hueco definitivo.
+            if !changed {
+                crate::genie::refresh(session, surface);
+            }
             // Otra ventana al frente también avisa, aunque la lista siga igual.
             let foreground_changed = session.poll_foreground_changed();
             let occluded_changed = session.refresh_occlusion();
@@ -193,6 +208,9 @@ pub(crate) fn handle_event(
                 surface.menu_closed();
             }
             session.resize(surface)?;
+            if changed {
+                crate::genie::refresh(session, surface);
+            }
         }
         SurfaceEvent::Tick => {
             crate::taskbar_mode::keep_taskbar_hidden(session);
