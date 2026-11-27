@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use dokka_components::control_center_panel::ControlCenterIcons;
+use dokka_components::background_panel::{BackgroundApp, BackgroundHit};
 use dokka_components::language_panel::LanguageHit;
 use dokka_components::language_panel::{LanguageEntry, LanguageIcons};
 use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
@@ -55,6 +56,8 @@ pub struct Menubar {
     pub(crate) track: Option<MusicTrack>,
     pub(crate) artwork: Option<Arc<Bitmap>>,
     pub(crate) now_playing: NowPlayingInfo,
+    pub(crate) background_apps: Vec<BackgroundApp>,
+    pub(crate) background_hovered: Option<BackgroundHit>,
     pub(crate) search_query: String,
     pub(crate) search_results: Vec<SearchPanelItem>,
     pub(crate) search_highlighted: Option<usize>,
@@ -109,6 +112,8 @@ impl Menubar {
                 artist: String::new(),
                 is_playing: false,
             },
+            background_apps: Vec::new(),
+            background_hovered: None,
             search_query: String::new(),
             search_results: Vec::new(),
             search_highlighted: None,
@@ -203,6 +208,18 @@ impl Menubar {
             language_hovered: self.language_hovered,
             track: self.track.clone(),
             artwork: self.artwork.clone(),
+            background_ids: self.background_apps.iter().map(|app| app.id).collect(),
+            background_names: self
+                .background_apps
+                .iter()
+                .map(|app| app.name.clone())
+                .collect(),
+            background_icons: self
+                .background_apps
+                .iter()
+                .map(|app| app.icon.clone())
+                .collect(),
+            background_hovered: self.background_hovered,
             search_query: self.search_query.clone(),
             search_results: self
                 .search_results
@@ -231,6 +248,7 @@ impl Menubar {
         self.volume_hovered = None;
         self.network_hovered = None;
         self.language_hovered = None;
+        self.background_hovered = None;
         self.dragging_slider = false;
     }
 }

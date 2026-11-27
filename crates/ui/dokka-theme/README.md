@@ -39,6 +39,6 @@
   `music_panel.rs`: cristal único de música Tahoe de 320 × 138, carátula cuadrada de 56
   con radio concéntrico (exterior menos separación), título y artista recortados y
   "Nada en reproducción" con controles atenuados, glifos Lucide blancos a 28;
-  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto).
+  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto; `background.rs` para el segundo plano (320 de ancho, título, filas de 34 con círculo de 26 e icono de 16, hasta diez filas y mensaje de vacío)).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.

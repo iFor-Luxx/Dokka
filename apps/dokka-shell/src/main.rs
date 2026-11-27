@@ -10,6 +10,7 @@ mod launchpad;
 mod media;
 mod menubar;
 mod menubar_actions;
+mod menubar_background;
 mod menubar_language;
 mod menubar_music;
 mod menubar_network;
@@ -71,6 +72,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let explorer = explorer_app();
     let mut session = DockSession::new(renderer, explorer.id.clone());
     let _watcher = ChangeWatcher::start();
+    crate::menubar_background::apply_background_apps(
+        &mut session,
+        session.preferences.menubar.background_apps,
+    );
 
     load_pinned(&mut session, explorer);
     if load_taskbar_mode(&mut session) {

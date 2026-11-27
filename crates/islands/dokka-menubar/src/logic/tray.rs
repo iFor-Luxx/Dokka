@@ -12,6 +12,7 @@ pub enum TrayKind {
     ControlCenter,
     Search,
     Language,
+    Background,
     Music,
     Network,
     Volume,
@@ -19,11 +20,12 @@ pub enum TrayKind {
 
 impl TrayKind {
     /// De izquierda a derecha en la barra (al revés del enunciado).
-    pub(crate) fn order() -> [Self; 6] {
+    pub(crate) fn order() -> [Self; 7] {
         [
             Self::Volume,
             Self::Network,
             Self::Music,
+            Self::Background,
             Self::Language,
             Self::Search,
             Self::ControlCenter,
@@ -49,7 +51,7 @@ pub(crate) struct OpenTray {
 /// Cajas pulsables de la fila, a la izquierda del hueco de la fecha.
 pub(crate) fn tray_cells(bar_width: f32) -> Vec<(TrayKind, Rect)> {
     let mut right = bar_width - menubar::SIDE_PADDING - menubar::CLOCK_SLOT - measures::CLOCK_GAP;
-    let mut cells = Vec::with_capacity(6);
+    let mut cells = Vec::with_capacity(7);
     for kind in TrayKind::order().into_iter().rev() {
         let width = kind.cell_width();
         let left = right - width;

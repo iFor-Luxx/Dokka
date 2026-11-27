@@ -27,4 +27,8 @@ pub enum MenubarAction {
     Clock,
     /// Abrir el resultado visible con este índice.
     SearchOpen(usize),
+    /// Clic izquierdo en una app en segundo plano: activarla.
+    TrayActivate(dokka_model::TrayItemId),
+    /// Clic derecho en una app en segundo plano: su menú propio.
+    TrayMenu(dokka_model::TrayItemId),
 }

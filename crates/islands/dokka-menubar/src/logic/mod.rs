@@ -1,4 +1,5 @@
 mod calendar;
+mod background;
 mod click;
 mod clock;
 mod control_center;

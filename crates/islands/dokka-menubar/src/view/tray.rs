@@ -11,7 +11,7 @@ use crate::Menubar;
 impl Menubar {
     /// Iconos de la fila: el altavoz sigue al nivel y al silencio, la red a
     /// su tipo, la lupa y los deslizadores a sus dibujos; el idioma es texto.
-    /// Siempre 5 iconos + texto: no se reconstruyen las capas al pasar.
+    /// Siempre 6 iconos + texto: no se reconstruyen las capas al pasar.
     pub(crate) fn tray_bar_icons(&self, bar_width: f32) -> Vec<Icon> {
         let cells = self.tray_cells(bar_width);
         let at = |kind: TrayKind| {
@@ -46,6 +46,10 @@ impl Menubar {
                     .for_bar(super::super::logic::network_type(self.network.kind)),
             ),
             place(
+                TrayKind::Background,
+                Arc::clone(&self.tray_icons.background),
+            ),
+            place(
                 TrayKind::Volume,
                 Arc::clone(
                     self.volume_icons
@@ -55,7 +59,7 @@ impl Menubar {
         ]
     }
 
-    /// Hovers en cápsula de la fila, uno por icono. Siempre 6 (cero si no se ve).
+    /// Hovers en cápsula de la fila, uno por icono. Siempre 7 (cero si no se ve).
     pub(crate) fn tray_hover_panels(&self, bar_width: f32) -> Vec<Panel> {
         self.tray_cells(bar_width)
             .into_iter()
@@ -142,6 +146,7 @@ impl Menubar {
             TrayKind::Volume => self.volume_overlay(),
             TrayKind::Network => self.network_overlay(),
             TrayKind::Music => self.music_overlay(),
+            TrayKind::Background => self.background_overlay(),
             TrayKind::Language => self.language_overlay(),
             TrayKind::Search => self.search_overlay(),
             TrayKind::ControlCenter => self.control_overlay(),
