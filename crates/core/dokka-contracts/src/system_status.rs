@@ -29,3 +29,13 @@ pub trait AudioOutputs {
     /// Cambia la predeterminada de consola y multimedia.
     fn set_default(&self, id: &str) -> Result<(), ContractError>;
 }
+
+/// Brillo del monitor principal por DDC/CI.
+///
+/// `brightness` devuelve el último valor conocido de 0 a 1.
+/// `None` significa que no se puede leer (sin DDC): la tarjeta no existe.
+/// `set_brightness` envía la orden sin esperar; fuera de rango se recorta.
+pub trait BrightnessControl {
+    fn brightness(&self) -> Option<f32>;
+    fn set_brightness(&self, level: f32);
+}

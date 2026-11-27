@@ -24,7 +24,13 @@ impl Menubar {
     /// mismo lo cierra; fuera o el panel del dock lo cierran.
     /// Soltar tras arrastrar el deslizador no es un clic: el cursor puede haber
     /// quedado sobre el altavoz y silenciaría sin querer.
-    pub fn click(&mut self, x: f32, y: f32, bar_width: f32, screen_height: f32) -> Option<MenubarAction> {
+    pub fn click(
+        &mut self,
+        x: f32,
+        y: f32,
+        bar_width: f32,
+        screen_height: f32,
+    ) -> Option<MenubarAction> {
         if std::mem::take(&mut self.dragging_slider) {
             return None;
         }
@@ -43,6 +49,7 @@ impl Menubar {
     pub fn pressed(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
         // Un arrastre anterior sin suelta no debe tragarse este clic.
         self.dragging_slider = false;
+        self.dragging_brightness = false;
         match self.tray_kind() {
             Some(super::TrayKind::Volume) if self.tray_contains(x, y) => self.volume_press(x, y),
             Some(super::TrayKind::ControlCenter) if self.tray_contains(x, y) => {

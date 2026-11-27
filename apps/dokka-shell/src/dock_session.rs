@@ -17,7 +17,7 @@ use dokka_win_apps::{
     SystemRecycleBin, recycle_bin_size,
 };
 use dokka_win_composition::SceneRenderer;
-use dokka_win_control::{SystemWindowControl, foreground_window};
+use dokka_win_control::{SystemBrightness, SystemWindowControl, foreground_window};
 use dokka_win_media::MediaMonitor;
 use dokka_win_surface::local_time;
 use dokka_win_tracking::SystemWindows;
@@ -65,6 +65,8 @@ pub(crate) struct DockSession {
     pub(crate) app_actions: SystemAppActions,
     pub(crate) recycle_bin: SystemRecycleBin,
     pub(crate) media: MediaMonitor,
+    /// Brillo DDC del monitor principal, en su propio hilo.
+    pub(crate) brightness: SystemBrightness,
     pub(crate) picker: AppPicker,
     pub(crate) taskbar_hidden: bool,
     taskbar_auto: bool,
@@ -104,6 +106,7 @@ impl DockSession {
             app_actions: SystemAppActions,
             recycle_bin: SystemRecycleBin,
             media: MediaMonitor::start(),
+            brightness: SystemBrightness::start(),
             picker: AppPicker::new(),
             taskbar_hidden: false,
             taskbar_auto: false,
@@ -135,6 +138,17 @@ impl DockSession {
             return false;
         }
         self.foreground = current;
+        true
+    }
+
+    /// Relee si una app ocupa la pantalla principal y lo guarda en el dock.
+    /// Si no se puede saber, queda visible (falla sola). Dice si cambió.
+    pub(crate) fn refresh_occlusion(&mut self) -> bool {
+        let occluded = dokka_win_tracking::foreground_occludes_primary();
+        if occluded == self.dock.is_occluded() {
+            return false;
+        }
+        self.dock.set_occluded(occluded);
         true
     }
 

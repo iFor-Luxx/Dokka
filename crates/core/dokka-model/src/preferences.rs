@@ -24,7 +24,7 @@ pub struct DockPreferences {
     pub animate_launch: bool,
     /// Punto bajo las apps abiertas.
     pub show_indicators: bool,
-    /// El dock se esconde y vuelve al acercar el cursor a su borde.
+    /// El dock baja con una app a pantalla completa y queda la línea.
     pub auto_hide: bool,
     /// Borde de la pantalla donde vive el dock.
     pub position: DockPosition,

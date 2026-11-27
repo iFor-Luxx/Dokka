@@ -115,5 +115,6 @@ impl crate::Menubar {
         self.clock_hovered = false;
         self.tray_hovered = Some(kind);
         self.dragging_slider = false;
+        self.dragging_brightness = false;
     }
 }

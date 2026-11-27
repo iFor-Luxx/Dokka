@@ -2,7 +2,9 @@
 
 **Hace:** reúne todos los estilos. Cambiar un valor aquí lo cambia en todo Dokka.
 
-- `palette.rs`: colores base. Único lugar con valores de color. `TRAY_TILE` y
+- `palette.rs`: colores base. Único lugar con valores de color. `HOME_LINE_FILL`
+  con `HOME_LINE_BORDER` dibujan la línea del dock oculto sobre fondos
+  claros y oscuros. `TRAY_TILE` y
   `TRAY_TILE_TRANSLUCENT` comparten el tono neutro de `MIST` y `MIST_STRONG` con
   menos alfa para las piezas Liquid Glass, sin aclarar el resto de paneles.
 - `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
@@ -38,16 +40,19 @@
   con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
   la rejilla estricta del Centro de control (celda de 66, hueco de 12,
   cápsula doble de 144 × 66 con círculo de 42, música de 144 × 144,
-  Sonido de 300 × 68, alto total 404); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
-  reloj, menú colgando con su separación y ventana de 300 para que quepa el
-  calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
+  Sonido de 300 × 68 y Pantalla igual justo encima si hay DDC,
+  alto total 404 sin brillo y 484 con él); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  reloj, menú colgando con su separación y ventana de 560 para que quepa el
+  centro con brillo (520) además del calendario de 6 semanas;
+  la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560, casilla al ~22% del alto con subida en pantallas bajas,
   cápsula de 52 con lupa a 20 y cursor, tarjeta de resultados con hasta 7 filas de 44
   con icono de 28, resaltado redondeado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `dock.rs`: margen al borde (8 como abajo),
-franja fina de 3 al esconderse, espera de 0,6 s y deslizamiento de 0,25/0,18 s;
+línea de 140 × 5 a 6 del borde con toque de 180 × 28, espera de 0,4 s
+y deslizamiento de 0,25/0,18 s;
 `popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;
   `music_panel.rs`: cristal único de música Tahoe de 320 × 138, carátula cuadrada de 56

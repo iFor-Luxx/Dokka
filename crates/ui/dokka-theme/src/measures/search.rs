@@ -119,7 +119,11 @@ pub fn row_top(bounds: Rect, index: usize) -> f32 {
 /// sube lo necesario para que quepan los resultados sin tapar la barra.
 pub fn spotlight_top(screen_height: f32, panel_height: f32) -> f32 {
     let min_top = bar::HEIGHT + bar::MENU_GAP;
-    if !(screen_height > 0.0) || !(panel_height > 0.0) {
+    if screen_height.is_nan()
+        || screen_height <= 0.0
+        || panel_height.is_nan()
+        || panel_height <= 0.0
+    {
         return min_top;
     }
     let desired = screen_height * SPOTLIGHT_HEIGHT_FRACTION;
@@ -133,7 +137,11 @@ pub fn spotlight_top(screen_height: f32, panel_height: f32) -> f32 {
 /// Alto de ventana necesario para dibujar el buscador en su sitio.
 /// Cubre la franja más el panel; si el monitor es bajo, no pasa de su alto.
 pub fn spotlight_window_height(screen_height: f32, panel_height: f32) -> f32 {
-    if !(screen_height > 0.0) || !(panel_height > 0.0) {
+    if screen_height.is_nan()
+        || screen_height <= 0.0
+        || panel_height.is_nan()
+        || panel_height <= 0.0
+    {
         return bar::WINDOW_HEIGHT;
     }
     let bottom = spotlight_top(screen_height, panel_height) + panel_height;

@@ -6,8 +6,9 @@ use dokka_icons::{
     control_center_lock_icon, control_center_muted_icon, control_center_next_icon,
     control_center_pause_icon, control_center_play_icon, control_center_preferences_icon,
     control_center_previous_icon, control_center_project_icon, control_center_screen_clip_icon,
-    control_center_task_manager_icon, control_center_task_view_icon, control_center_volume_icon,
-    control_center_wifi_icon, control_center_wifi_off_icon,
+    control_center_sun_dim_icon, control_center_sun_icon, control_center_task_manager_icon,
+    control_center_task_view_icon, control_center_volume_icon, control_center_wifi_icon,
+    control_center_wifi_off_icon,
 };
 use dokka_model::{NetworkKind, NetworkState};
 use dokka_scene::Drawing;
@@ -28,6 +29,8 @@ pub struct ControlCenterIcons {
     pub(crate) globe_active: Arc<Drawing>,
     pub(crate) volume: Arc<Drawing>,
     pub(crate) muted: Arc<Drawing>,
+    pub(crate) sun_dim: Arc<Drawing>,
+    pub(crate) sun: Arc<Drawing>,
     pub(crate) previous: Arc<Drawing>,
     pub(crate) play: Arc<Drawing>,
     pub(crate) pause: Arc<Drawing>,
@@ -58,6 +61,8 @@ impl ControlCenterIcons {
             globe_active: Arc::new(control_center_globe_icon(active)),
             volume: Arc::new(control_center_volume_icon(ink)),
             muted: Arc::new(control_center_muted_icon(ink)),
+            sun_dim: Arc::new(control_center_sun_dim_icon(ink)),
+            sun: Arc::new(control_center_sun_icon(ink)),
             previous: Arc::new(control_center_previous_icon(ink)),
             play: Arc::new(control_center_play_icon(ink)),
             pause: Arc::new(control_center_pause_icon(ink)),

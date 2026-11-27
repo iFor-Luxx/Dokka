@@ -14,5 +14,8 @@ Lista los idiomas de teclado (`SystemKeyboard` con `GetKeyboardLayoutList`): có
 nombre completo y cuál usa la ventana al frente; activar uno envía
 `WM_INPUTLANGCHANGEREQUEST` a esa ventana. Si la barra tiene el foco (menú abierto), el
 idioma activo es el de Dokka: conviene preguntar antes de abrir el menú.
+Da el brillo DDC/CI del monitor principal (`SystemBrightness` con `dxva2`):
+hilo propio porque tarda decenas o cientos de milisegundos, última orden al
+arrastrar y valor adelantado; `None` sin DDC.
 
 **No hace:** no las busca ni recuerda la última ventana ajena. Windows puede negarse con ventanas abiertas como administrador.

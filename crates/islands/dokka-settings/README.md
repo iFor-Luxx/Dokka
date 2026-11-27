@@ -15,8 +15,8 @@ borra lo de adelante) y título de la sección y tarjetas claras con filas de 44
 finas con aire a ambos lados, etiqueta a la izquierda y control a la derecha
 con el mismo margen (cristal claro y neutro como hoy). Dock: tamaño,
 ampliación y cantidad en una tarjeta (relleno desde la fábrica con su marca);
-posición en pantalla (segmentado Izquierda | Abajo | Derecha) y ocultar
-automáticamente en otra; animar al abrir, indicadores y vistas previas en la
+posición en pantalla (segmentado Izquierda | Abajo | Derecha) y ocultar con
+apps a pantalla completa en otra; animar al abrir, indicadores y vistas previas en la
 última. Barra superior: siete filas reordenables (Volumen, Red, Música,
 Idioma, Buscar, Centro de control y Apps en segundo plano) en una sola
 tarjeta, cada una con agarre a la izquierda (seis puntos verticales en color
