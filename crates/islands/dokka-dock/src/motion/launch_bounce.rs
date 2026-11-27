@@ -23,6 +23,10 @@ impl LaunchBounce {
 
 impl Dock {
     pub fn start_bounce(&mut self, app_id: AppId, apps: &[DockApp]) {
+        // Sin rebote no se guarda nada: el icono se queda en su sitio.
+        if !self.preferences.animate_launch {
+            return;
+        }
         let launch = LaunchBounce {
             bounce: Bounce::new(),
             windows_before: window_count(apps, &app_id),

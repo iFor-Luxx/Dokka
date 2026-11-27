@@ -1,25 +1,40 @@
 //! Filas fijas del menú del icono y sitio del panel colgando.
+//!
+//! Cada fila con acción clara lleva su icono Lucide en el color
+//! del texto; los textos quedan alineados en una sola columna.
+
+use std::sync::Arc;
 
 use dokka_components::menu_panel::{MenuRow, menu_size};
-use dokka_scene::Rect;
+use dokka_icons::{
+    menu_desktop_icon, menu_lock_icon, menu_power_icon, menu_preferences_icon, menu_restart_icon,
+    menu_task_manager_icon,
+};
+use dokka_scene::{Color, Rect};
 use dokka_theme::menubar;
 
 use crate::MenubarAction;
 
 /// Filas del menú: Preferencias, escritorio y tareas, bloqueo y apagado,
 /// reiniciar y salir, con sus separadores.
-pub(crate) fn menu_rows() -> Vec<MenuRow> {
+pub(crate) fn menu_rows(text: Color) -> Vec<MenuRow> {
     vec![
-        MenuRow::item("Preferencias…"),
+        MenuRow::item_with_icon("Preferencias…", Arc::new(menu_preferences_icon(text))),
         MenuRow::Separator,
-        MenuRow::item("Mostrar el escritorio"),
-        MenuRow::item("Administrador de tareas"),
+        MenuRow::item_with_icon(
+            "Mostrar el escritorio",
+            Arc::new(menu_desktop_icon(text)),
+        ),
+        MenuRow::item_with_icon(
+            "Administrador de tareas",
+            Arc::new(menu_task_manager_icon(text)),
+        ),
         MenuRow::Separator,
-        MenuRow::item("Bloquear pantalla"),
-        MenuRow::item("Apagar o reiniciar…"),
+        MenuRow::item_with_icon("Bloquear pantalla", Arc::new(menu_lock_icon(text))),
+        MenuRow::item_with_icon("Apagar o reiniciar…", Arc::new(menu_power_icon(text))),
         MenuRow::Separator,
-        MenuRow::item("Reiniciar Dokka"),
-        MenuRow::item("Salir de Dokka"),
+        MenuRow::item_with_icon("Reiniciar Dokka", Arc::new(menu_restart_icon(text))),
+        MenuRow::item_with_icon("Salir de Dokka", Arc::new(menu_power_icon(text))),
     ]
 }
 

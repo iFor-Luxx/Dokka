@@ -23,7 +23,8 @@ impl MenuChevrons {
     }
 }
 
-/// Iconos de las filas con submenú: centrados en su fila y en la columna derecha.
+/// Iconos de las filas con submenú: centrados en su fila y en la columna derecha,
+/// con el mismo aire que la columna de iconos de la izquierda.
 pub(super) fn chevron_icons(
     theme: &Theme,
     chevrons: &MenuChevrons,
@@ -44,8 +45,8 @@ pub(super) fn chevron_icons(
                 icons.push(Icon {
                     x: bounds.x + bounds.width
                         - measures::PADDING
-                        - measures::ARROW_WIDTH / 2.0
-                        - measures::CHEVRON_SIDE / 2.0,
+                        - measures::ARROW_WIDTH
+                        + (measures::ARROW_WIDTH - measures::CHEVRON_SIDE) / 2.0,
                     y: top + (measures::ROW_HEIGHT - measures::CHEVRON_SIDE) / 2.0,
                     side: measures::CHEVRON_SIDE,
                     image: Some(IconImage::Drawing(Arc::clone(drawing))),

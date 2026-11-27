@@ -1,25 +1,35 @@
 //! Medidas del menú del clic derecho.
+//!
+//! Una sola columna a la izquierda para el icono de la fila o la marca
+//! de opción elegida: todos los textos quedan alineados. El chevrón
+//! va alineado a la derecha, con el mismo aire que el icono.
 
 use dokka_scene::DRAWING_SIDE;
 
-/// Ancho fijo del menú.
-pub const WIDTH: f32 = 250.0;
+/// Ancho fijo del menú: algo más ancho para que quepan los textos
+/// con la columna de iconos.
+pub const WIDTH: f32 = 280.0;
 /// Alto de cada fila de texto.
-pub const ROW_HEIGHT: f32 = 24.0;
+pub const ROW_HEIGHT: f32 = 26.0;
 /// Aire alrededor de las filas, dentro del panel.
 pub const PADDING: f32 = 5.0;
-/// Separación del texto respecto al borde izquierdo del resaltado.
+/// Separación del separador respecto al borde del resaltado, a cada lado.
 pub const TEXT_INSET: f32 = 10.0;
-/// Columna reservada a la izquierda para la marca en los menús que la usan.
-/// El icono de 20 la llena y el texto empieza justo donde acaba.
-pub const CHECK_WIDTH: f32 = 20.0;
-/// Lado del icono de marca, centrado en su columna como el chevrón.
-pub const CHECK_SIDE: f32 = 20.0;
-/// Columna reservada a la derecha para el icono del chevrón en las filas con submenú.
-/// El icono de 20 la llena; va centrado en la fila.
-pub const ARROW_WIDTH: f32 = 20.0;
-/// Lado del icono del chevrón, centrado en la fila y en la columna del chevrón.
-pub const CHEVRON_SIDE: f32 = 20.0;
+/// Columna reservada a la izquierda para el icono o la marca:
+/// del borde del resaltado al texto. Misma que la derecha del chevrón.
+pub const ICON_COLUMN: f32 = 26.0;
+/// Lado del icono de la fila, centrado en su columna.
+pub const ROW_ICON_SIDE: f32 = 15.0;
+/// Tamaño del glifo Lucide: llena el lienzo de 100 (centrado en 50, 50),
+/// de modo que la fuente efectiva iguala al lado con que se muestra.
+pub const ROW_GLYPH_SIZE: f32 = DRAWING_SIDE;
+/// Lado de la marca de opción elegida, centrada en la misma columna.
+pub const CHECK_SIDE: f32 = 15.0;
+/// Columna reservada a la derecha para el chevrón de las filas con submenú.
+/// Igual que la de la izquierda, para el mismo aire a ambos lados.
+pub const ARROW_WIDTH: f32 = 26.0;
+/// Lado del chevrón, centrado en la fila y en su columna.
+pub const CHEVRON_SIDE: f32 = 15.0;
 /// Tamaño del glifo Lucide: llena el lienzo de 100 (centrado en 50, 50),
 /// de modo que la fuente efectiva es 20 al mostrarse a 20 de lado.
 pub const CHEVRON_GLYPH_SIZE: f32 = DRAWING_SIDE;

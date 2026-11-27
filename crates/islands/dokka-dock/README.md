@@ -10,6 +10,9 @@ fijar/quitar, y si está abierta «Cerrar ventana»/«Salir»); los iconos del s
 tienen el suyo (`logic/system_menus.rs`: explorador con carpetas, papelera con vaciado
 solo con contenido, Launchpad con abrir y añadir). Reloj y calendario no tienen menú.
 «Preferencias» abre la ventana de ajustes (`MenuAction::OpenSettings`, en `settings.rs`).
+Cada fila con acción clara lleva su icono Lucide de `dokka-icons` en el color
+del texto (una sola columna; la marca ✓ usa la misma); las madres y las filas
+sin acción clara van sin icono.
 La ventana reserva a cada lado sitio para el menú con su submenú a la derecha
 (`menu::WIDTH + menu::SUBMENU_GAP`, o la lupa si pide más); la zona activa sigue
 cubriendo solo la barra más la lupa para no tapar clics a otras apps.
@@ -21,6 +24,10 @@ y se reutilizan. `set_preferences(DockPreferences)` aplica la escala de iconos
 desde `view/dock_style.rs`, sin medidas nuevas fuera del tema), apaga la lupa
 (`magnification`) y cuánto amplía (`magnification_strength`: efectiva
 1 + (MAX-1) * fuerza); con valores de fábrica el resultado es el de hoy.
+Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los
+en curso para que el icono vuelva a su sitio sin pedir fotogramas
+(el hueco sobre la barra se mantiene). Sin indicadores (`show_indicators`)
+la lista de puntos queda vacía.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Todavía no tiene miniaturas ni arrastre.
 

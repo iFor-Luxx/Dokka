@@ -8,8 +8,9 @@ la tarjeta nunca se encoge al navegar), píldora
 segmentada (`nav_pill`: cápsula con dos chevrones Lucide y línea central, a partir
 de su rectángulo, qué lados están disponibles y el hover; sin saber qué navega),
 vistas previas con botones redondos de cerrar y fijar, menú del clic derecho
-(`menu_panel`: tamaño, `Overlay` y fila bajo un punto, con iconos Lucide de marca elegida y del chevrón
-y submenú sin punta; sin significado), cuadrícula de apps (`app_grid`: 7 columnas que empiezan arriba, iconos,
+(`menu_panel`: tamaño, `Overlay` y fila bajo un punto, con icono Lucide
+opcional por fila en una sola columna (la marca elegida usa la misma),
+chevrón a la derecha y submenú sin punta; sin significado), cuadrícula de apps (`app_grid`: 7 columnas que empiezan arriba, iconos,
 textos recortados con "…", mensaje de vacío centrado, resaltado y app bajo un punto), casilla de búsqueda (`search_field`:
 panel nítido, lupa Lucide reutilizable siempre a la izquierda, texto escrito a la izquierda y
 marcador "Buscar" también a la izquierda (tenue junto al cursor si hay foco), cursor vertical como

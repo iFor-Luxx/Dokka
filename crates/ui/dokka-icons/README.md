@@ -6,6 +6,10 @@ submenú, marca elegida, marca de la barra, chevrones de la píldora de navegaci
 las ocho secciones de Preferencias y símbolos de cerrar, minimizar y zoom de sus semáforos) como glifos,
 más la lupa del buscador (`search`: `search_bar_icon` blanca para la barra superior y
 `search_field_icon` oscura para la casilla clara, ambas Lucide `Search`),
+más iconos de filas de menú (`menu`: abrir, ventana nueva, Launchpad, añadir,
+separadores, mostrar/ocultar, administrador, revelar, fijar/quitar, cerrar,
+salir, carpetas, papelera, preferencias, reiniciar, apagar, tareas y bloqueo,
+todos Lucide de 15 en el color de la fila),
 más el círculo liso y los tres botones completos (círculo con símbolo) de los semáforos, más los bytes
 de su fuente. Y de red e idioma (`network_language`: wifi, sin conexión, cable,
 globo y marca del idioma activo). Y el chevrón hacia abajo de la fila (`menubar_tray`:

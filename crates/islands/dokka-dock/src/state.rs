@@ -49,7 +49,12 @@ impl Dock {
     }
 
     /// Guarda lo ajustado en Preferencias para el dock.
+    /// Sin rebote (`animate_launch`), olvida los saltos en curso para que
+    /// el icono vuelva a su sitio y no pida más fotogramas.
     pub fn set_preferences(&mut self, preferences: DockPreferences) {
+        if !preferences.animate_launch {
+            self.bounces.clear();
+        }
         self.preferences = preferences;
     }
 }

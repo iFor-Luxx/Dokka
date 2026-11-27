@@ -35,20 +35,25 @@ impl Dock {
         }
 
         let dot_y = placement.bar.y + placement.bar.height - style::dot_from_bottom(self);
-        let dots = placement
-            .slots
-            .iter()
-            .filter(|(entry, _)| match entry {
-                Entry::App(app) | Entry::Explorer(app) => app.is_running(),
-                _ => false,
-            })
-            .map(|(_, bounds)| Dot {
-                x: bounds.x + (bounds.width - style::dot_diameter(self)) / 2.0,
-                y: dot_y,
-                diameter: style::dot_diameter(self),
-                color: self.theme.dock.running_dot,
-            })
-            .collect();
+        // Sin indicadores la lista se encoge; `SceneLayers` la reutiliza sin problema.
+        let dots: Vec<Dot> = if self.preferences.show_indicators {
+            placement
+                .slots
+                .iter()
+                .filter(|(entry, _)| match entry {
+                    Entry::App(app) | Entry::Explorer(app) => app.is_running(),
+                    _ => false,
+                })
+                .map(|(_, bounds)| Dot {
+                    x: bounds.x + (bounds.width - style::dot_diameter(self)) / 2.0,
+                    y: dot_y,
+                    diameter: style::dot_diameter(self),
+                    color: self.theme.dock.running_dot,
+                })
+                .collect()
+        } else {
+            Vec::new()
+        };
 
         let labels = hovered_label(self, &placement, names)
             .map(|(text, slot)| tooltip(&self.theme, &text, slot.x + slot.width / 2.0, slot.y))

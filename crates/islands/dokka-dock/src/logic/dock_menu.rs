@@ -1,6 +1,18 @@
 //! Contenido del menú de la línea separadora, con sus submenús.
+//!
+//! Cada fila con acción clara lleva su icono Lucide de `dokka-icons`
+//! en el color del texto; las madres y las opciones sin acción clara
+//! van sin icono para dejar la columna alineada.
+
+use std::sync::Arc;
 
 use dokka_components::menu_panel::MenuRow;
+use dokka_icons::{
+    menu_add_app_icon, menu_add_separator_icon, menu_add_system_icon, menu_desktop_icon,
+    menu_hide_taskbar_icon, menu_power_icon, menu_preferences_icon, menu_remove_separator_icon,
+    menu_restart_icon, menu_show_taskbar_icon, menu_task_manager_icon, menu_taskbar_settings_icon,
+};
+use dokka_scene::Color;
 
 use super::menu::MenuAction;
 
@@ -20,7 +32,7 @@ pub(crate) struct MenuData {
 }
 
 /// Filas, acciones y submenús del menú principal.
-pub(crate) fn dock_menu(taskbar_hidden: bool, taskbar_auto: bool) -> MenuData {
+pub(crate) fn dock_menu(text: Color, taskbar_hidden: bool, taskbar_auto: bool) -> MenuData {
     let rows = vec![
         MenuRow::submenu("Elementos del dock"),
         MenuRow::Separator,
@@ -30,9 +42,9 @@ pub(crate) fn dock_menu(taskbar_hidden: bool, taskbar_auto: bool) -> MenuData {
         MenuRow::Separator,
         MenuRow::item("Workshop"),
         MenuRow::Separator,
-        MenuRow::item("Preferencias"),
-        MenuRow::item("Reiniciar Dokka"),
-        MenuRow::item("Salir de Dokka"),
+        MenuRow::item_with_icon("Preferencias", Arc::new(menu_preferences_icon(text))),
+        MenuRow::item_with_icon("Reiniciar Dokka", Arc::new(menu_restart_icon(text))),
+        MenuRow::item_with_icon("Salir de Dokka", Arc::new(menu_power_icon(text))),
     ];
     let actions = vec![
         None,
@@ -48,11 +60,11 @@ pub(crate) fn dock_menu(taskbar_hidden: bool, taskbar_auto: bool) -> MenuData {
         Some(MenuAction::Quit),
     ];
     let children = vec![
-        Some(dock_items_submenu()),
+        Some(dock_items_submenu(text)),
         None,
-        Some(taskbar_submenu(taskbar_hidden, taskbar_auto)),
+        Some(taskbar_submenu(text, taskbar_hidden, taskbar_auto)),
         None,
-        Some(system_submenu()),
+        Some(system_submenu(text)),
         None,
         None,
         None,
@@ -67,27 +79,44 @@ pub(crate) fn dock_menu(taskbar_hidden: bool, taskbar_auto: bool) -> MenuData {
     }
 }
 
-fn dock_items_submenu() -> SubmenuData {
+fn dock_items_submenu(text: Color) -> SubmenuData {
     SubmenuData {
         rows: vec![
-            MenuRow::item("Añadir app…"),
-            MenuRow::item("Añadir acceso del sistema"),
-            MenuRow::item("Añadir separador"),
-            MenuRow::item("Quitar separador"),
+            MenuRow::item_with_icon("Añadir app…", Arc::new(menu_add_app_icon(text))),
+            MenuRow::item_with_icon(
+                "Añadir acceso del sistema",
+                Arc::new(menu_add_system_icon(text)),
+            ),
+            MenuRow::item_with_icon(
+                "Añadir separador",
+                Arc::new(menu_add_separator_icon(text)),
+            ),
+            MenuRow::item_with_icon(
+                "Quitar separador",
+                Arc::new(menu_remove_separator_icon(text)),
+            ),
         ],
         actions: vec![Some(MenuAction::AddApp), None, None, None],
     }
 }
 
-fn taskbar_submenu(taskbar_hidden: bool, taskbar_auto: bool) -> SubmenuData {
-    let (label, action) = if taskbar_hidden {
-        ("Mostrar ahora", MenuAction::ShowTaskbar)
+fn taskbar_submenu(text: Color, taskbar_hidden: bool, taskbar_auto: bool) -> SubmenuData {
+    let (label, action, icon) = if taskbar_hidden {
+        (
+            "Mostrar ahora",
+            MenuAction::ShowTaskbar,
+            menu_show_taskbar_icon(text),
+        )
     } else {
-        ("Ocultar ahora", MenuAction::HideTaskbar)
+        (
+            "Ocultar ahora",
+            MenuAction::HideTaskbar,
+            menu_hide_taskbar_icon(text),
+        )
     };
     SubmenuData {
         rows: vec![
-            MenuRow::item(label),
+            MenuRow::item_with_icon(label, Arc::new(icon)),
             MenuRow::Separator,
             MenuRow::checked("Manual", !taskbar_auto),
             MenuRow::checked("Automático al abrir Dokka", taskbar_auto),
@@ -101,12 +130,21 @@ fn taskbar_submenu(taskbar_hidden: bool, taskbar_auto: bool) -> SubmenuData {
     }
 }
 
-fn system_submenu() -> SubmenuData {
+fn system_submenu(text: Color) -> SubmenuData {
     SubmenuData {
         rows: vec![
-            MenuRow::item("Mostrar el escritorio"),
-            MenuRow::item("Administrador de tareas"),
-            MenuRow::item("Configuración de la barra de tareas"),
+            MenuRow::item_with_icon(
+                "Mostrar el escritorio",
+                Arc::new(menu_desktop_icon(text)),
+            ),
+            MenuRow::item_with_icon(
+                "Administrador de tareas",
+                Arc::new(menu_task_manager_icon(text)),
+            ),
+            MenuRow::item_with_icon(
+                "Configuración de la barra de tareas",
+                Arc::new(menu_taskbar_settings_icon(text)),
+            ),
         ],
         actions: vec![
             Some(MenuAction::ShowDesktop),

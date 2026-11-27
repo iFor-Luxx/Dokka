@@ -7,6 +7,7 @@ mod control_center;
 mod explorer;
 mod launchpad;
 mod lucide;
+mod menu;
 mod menubar_tray;
 mod music;
 mod network_language;
@@ -45,6 +46,15 @@ pub use lucide::{
     traffic_zoom_button, traffic_zoom_icon,
 };
 pub use menubar_tray::{TRAY_GLYPH_SIDE, TrayIcons};
+pub use menu::{
+    menu_add_app_icon, menu_add_separator_icon, menu_add_system_icon, menu_admin_icon,
+    menu_close_icon, menu_desktop_icon, menu_documents_icon, menu_downloads_icon,
+    menu_empty_trash_icon, menu_hide_taskbar_icon, menu_launchpad_icon, menu_lock_icon,
+    menu_new_window_icon, menu_open_icon, menu_pictures_icon, menu_pin_icon, menu_power_icon,
+    menu_preferences_icon, menu_quit_icon, menu_remove_separator_icon, menu_restart_icon,
+    menu_reveal_icon, menu_show_taskbar_icon, menu_task_manager_icon, menu_taskbar_settings_icon,
+    menu_trash_open_icon, menu_unpin_icon,
+};
 pub use music::music_bar_icon;
 pub use network_language::{
     language_check_icon, language_row_icon, network_ethernet_icon, network_offline_icon,
