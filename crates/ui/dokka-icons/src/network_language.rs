@@ -33,7 +33,7 @@ pub fn network_offline_icon(color: Color) -> Drawing {
 
 /// Red por cable.
 pub fn network_ethernet_icon(color: Color) -> Drawing {
-    glyph(lucide_icons::Icon::Ethernet, color)
+    glyph(lucide_icons::Icon::EthernetPort, color)
 }
 
 /// Otro tipo de red.

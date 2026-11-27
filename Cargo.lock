@@ -189,6 +189,8 @@ dependencies = [
 name = "dokka-win-media"
 version = "0.1.0"
 dependencies = [
+ "dokka-contracts",
+ "dokka-model",
  "windows",
 ]
 

@@ -25,8 +25,9 @@
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;
-  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto;
-  `network_language.rs` para los paneles de red e idioma (cristal de 300 con tarjeta,
-  filas de 32 y radios concéntricos)).
+  `music_panel.rs`: tarjeta de música de 280 × 124, barra de botones de 44 con radio
+  concéntrico (exterior menos separación), título y artista recortados y
+  "Nada en reproducción", glifos a 20;
+  `nav_pill.rs`: chevrones a 20, radio igual a la mitad del alto y línea central de medio alto).
 
 **No hace:** no dibuja ni contiene lógica. Todavía no se puede cambiar de tema con Dokka abierto.

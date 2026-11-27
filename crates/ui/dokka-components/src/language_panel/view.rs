@@ -86,9 +86,7 @@ pub fn language_hit(
     y: f32,
     languages: &[LanguageEntry],
 ) -> Option<LanguageHit> {
-    if x < bounds.x + measures::PADDING
-        || x >= bounds.x + bounds.width - measures::PADDING
-    {
+    if x < bounds.x + measures::PADDING || x >= bounds.x + bounds.width - measures::PADDING {
         return None;
     }
     for (index, language) in languages.iter().enumerate() {
