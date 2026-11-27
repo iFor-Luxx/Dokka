@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_scene::{Color, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_scene::{Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, music_panel as measures};
 
 use super::{MusicPanelHit, MusicPanelIcons, MusicTrack};
@@ -45,7 +45,7 @@ pub fn music_panel_panel(
         dots: Vec::new(),
         pointer: None,
         texts: music_texts(theme, bounds, track),
-        icons: music_icons(icons, bounds, track),
+        icons: music_icons(theme, icons, bounds, track),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -151,6 +151,7 @@ fn music_texts(theme: &Theme, bounds: Rect, track: Option<&MusicTrack>) -> Vec<T
 }
 
 fn music_icons(
+    theme: &Theme,
     icons: &MusicPanelIcons,
     bounds: Rect,
     track: Option<&MusicTrack>,
@@ -177,7 +178,7 @@ fn music_icons(
                 y: area.y + (area.height - side) / 2.0,
                 side,
                 image: Some(IconImage::Drawing(Arc::clone(drawing))),
-                placeholder: Color::rgba(0, 0, 0, 0),
+                placeholder: theme.tray.clear,
                 placeholder_radius: 0.0,
             }
         })

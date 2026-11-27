@@ -32,11 +32,12 @@ pub(super) fn panel_texts(
     ));
     let results = measures::results_box(bounds);
     for slot in 0..measures::MAX_RESULTS {
-        let content = if slot < visible {
-            short_name(&props.results[slot].name)
-        } else {
-            String::new()
-        };
+        let content = props
+            .results
+            .get(slot)
+            .filter(|_| slot < visible)
+            .map(|result| short_name(&result.name))
+            .unwrap_or_default();
         texts.push(Text {
             x: results.x + measures::PADDING + measures::ROW_ICON_SIDE + measures::ROW_TEXT_GAP,
             center_y: measures::row_top(bounds, slot) + measures::ROW_HEIGHT / 2.0,
