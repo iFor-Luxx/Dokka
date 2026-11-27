@@ -2,7 +2,9 @@
 
 **Hace:** reúne todos los estilos. Cambiar un valor aquí lo cambia en todo Dokka.
 
-- `palette.rs`: colores base. Único lugar con valores de color.
+- `palette.rs`: colores base. Único lugar con valores de color. `TRAY_TILE` y
+  `TRAY_TILE_TRANSLUCENT` comparten el tono neutro de `MIST` y `MIST_STRONG` con
+  menos alfa para las piezas Liquid Glass, sin aclarar el resto de paneles.
 - `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
   (`theme.menubar`: mismo cristal del dock, texto y hover suave del icono), `TooltipColors`
   (`theme.tooltip`), `LaunchpadColors` (`theme.launchpad`: fondo, texto, resaltado, casilla de

@@ -11,6 +11,15 @@ pub(crate) const INK: Color = Color::rgba(30, 32, 36, 255);
 pub(crate) const CHARCOAL: Color = Color::rgba(40, 40, 44, 255);
 pub(crate) const MIST: Color = Color::rgba(236, 240, 236, 170);
 pub(crate) const MIST_STRONG: Color = Color::rgba(240, 244, 240, 105);
+/// Tinte de las piezas separadas (buscador y Centro de control): mismo tono
+/// neutro claro que `MIST`, mucho más transparente para el Liquid Glass.
+/// Separado de `MIST` para no aclarar el calendario, las vistas previas
+/// ni los menús de un solo cristal, que comparten ese velo.
+pub(crate) const TRAY_TILE: Color = Color::rgba(236, 240, 236, 70);
+/// Tinte casi sin velo de las piezas del Centro de control: mismo tono
+/// que `MIST_STRONG`, más transparente. Separado para no tocar los
+/// controles multimedia que usan ese velo.
+pub(crate) const TRAY_TILE_TRANSLUCENT: Color = Color::rgba(240, 244, 240, 45);
 /// Tinte neutro translúcido de la etiqueta flotante, como el resto de Dokka.
 pub(crate) const TOOLTIP_TINT: Color = Color::rgba(232, 238, 232, 175);
 /// Borde luminoso de la etiqueta flotante.
