@@ -91,6 +91,7 @@ pub fn calendar_panel(
         panel: popup_panel(theme, bounds),
         pill: Some(nav_pill_panel(theme, pill)),
         highlight: Some(nav_pill_highlight(theme, pill)),
+        flat_panels: Vec::new(),
         dividers: vec![nav_pill_divider(theme, pill)],
         dots,
         pointer: None,

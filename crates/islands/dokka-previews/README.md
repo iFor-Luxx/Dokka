@@ -2,7 +2,8 @@
 
 **Hace:** decide qué panel flotante mostrar (calendario o vistas de ventanas), cuándo abrirlo y cerrarlo,
 qué hace un clic en él (activar, cerrar o fijar una ventana) y con qué estilo entra y sale (crece desde el icono con un rebote leve;
-si el cursor vuelve a mitad de salida, retoma desde donde está). Los chevrones de la píldora
+si el cursor vuelve a mitad de salida, retoma desde donde está). El calendario usa el mes,
+la píldora y el paso entre meses compartidos de `calendar_panel`. Los chevrones de la píldora
 del calendario se crean una vez con los colores del tema y se reutilizan al cambiar de mes.
 El panel de una app espera 0,45 s desde cero (0,12 al cambiar entre paneles
 o para el calendario); la vista grande espera 1 s sobre la mini (al instante

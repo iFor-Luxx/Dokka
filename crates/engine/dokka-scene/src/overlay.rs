@@ -16,6 +16,9 @@ pub struct Overlay {
     /// Su hover va en `highlight`.
     pub pill: Option<Panel>,
     pub highlight: Option<Panel>,
+    /// Rectángulos planos (tinte y borde, sin cristal) sobre el panel: barras
+    /// de deslizadores y tarjetas. Se pintan tras el resaltado.
+    pub flat_panels: Vec<Panel>,
     pub dividers: Vec<Divider>,
     /// Se dibujan debajo de los textos.
     pub dots: Vec<Dot>,

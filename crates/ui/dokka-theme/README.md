@@ -18,7 +18,8 @@
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
   a 20; `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
-  reloj y menú colgando con su separación); `tooltip.rs` para la
+  reloj, menú colgando con su separación y ventana de 300 para que quepa el
+  calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
