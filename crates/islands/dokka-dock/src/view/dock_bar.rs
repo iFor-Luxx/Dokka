@@ -34,7 +34,8 @@ impl Dock {
             icons.push(self.icon(entry, bounds, images));
         }
 
-        let dot_y = placement.bar.y + placement.bar.height - style::DOT_FROM_BOTTOM;
+        let dot_y =
+            placement.bar.y + placement.bar.height - style::dot_from_bottom(self);
         let dots = placement
             .slots
             .iter()
@@ -43,9 +44,9 @@ impl Dock {
                 _ => false,
             })
             .map(|(_, bounds)| Dot {
-                x: bounds.x + (bounds.width - style::DOT_DIAMETER) / 2.0,
+                x: bounds.x + (bounds.width - style::dot_diameter(self)) / 2.0,
                 y: dot_y,
-                diameter: style::DOT_DIAMETER,
+                diameter: style::dot_diameter(self),
                 color: self.theme.dock.running_dot,
             })
             .collect();
@@ -58,8 +59,8 @@ impl Dock {
         Scene {
             panel: Panel {
                 bounds: placement.bar,
-                corner_radius: style::CORNER_RADIUS,
-                border_width: style::BORDER_WIDTH,
+                corner_radius: style::corner_radius(self),
+                border_width: dokka_theme::dock::BORDER_WIDTH,
                 tint: self.theme.dock.background,
                 border: self.theme.dock.border,
             },
@@ -91,7 +92,7 @@ impl Dock {
             side: bounds.width,
             image: self.image_for(entry, images),
             placeholder: self.theme.dock.placeholder,
-            placeholder_radius: style::PLACEHOLDER_RADIUS,
+            placeholder_radius: style::placeholder_radius(self),
         }
     }
 

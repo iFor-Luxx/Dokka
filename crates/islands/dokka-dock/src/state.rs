@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use dokka_animation::Spring;
 use dokka_components::menu_panel::{MenuChecks, MenuChevrons};
-use dokka_model::AppId;
+use dokka_model::{AppId, DockPreferences};
 use dokka_theme::Theme;
 
 use crate::logic::OpenMenu;
@@ -28,6 +28,7 @@ pub struct Dock {
     pub(crate) cursor_x: f32,
     pub(crate) bounces: HashMap<AppId, LaunchBounce>,
     pub(crate) menu: Option<OpenMenu>,
+    pub(crate) preferences: DockPreferences,
 }
 
 impl Dock {
@@ -43,6 +44,12 @@ impl Dock {
             cursor_x: 0.0,
             bounces: HashMap::new(),
             menu: None,
+            preferences: DockPreferences::default(),
         }
+    }
+
+    /// Guarda lo ajustado en Preferencias para el dock.
+    pub fn set_preferences(&mut self, preferences: DockPreferences) {
+        self.preferences = preferences;
     }
 }

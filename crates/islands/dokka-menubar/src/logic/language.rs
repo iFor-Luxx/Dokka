@@ -5,7 +5,7 @@ use dokka_components::language_panel::{
 };
 use dokka_scene::Overlay;
 
-use super::tray::{tray_anchor, tray_place};
+use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
@@ -18,7 +18,7 @@ impl Menubar {
 
     /// Mide según cuántos idiomas hay y lo coloca bajo su icono.
     pub fn open_language(&mut self, bar_width: f32) {
-        let Some(anchor) = tray_anchor(super::TrayKind::Language, bar_width) else {
+        let Some(anchor) = self.tray_anchor(super::TrayKind::Language, bar_width) else {
             return;
         };
         let size = language_size(&self.languages);

@@ -12,7 +12,7 @@ impl Dock {
         let bar = place_dock(self, apps).bar;
         // Ya dentro, la zona se amplía para alcanzar los iconos agrandados.
         let (reach, side) = if self.is_hovered {
-            let rise = style::SLOT * (style::MAXIMUM_SCALE - 1.0);
+            let rise = style::slot(self) * (style::maximum_scale(self) - 1.0);
             (rise + LEAVE_MARGIN, LEAVE_MARGIN)
         } else {
             (0.0, 0.0)
@@ -23,7 +23,12 @@ impl Dock {
         if inside {
             self.cursor_x = x;
         }
-        self.hover.set_target(if inside { 1.0 } else { 0.0 });
+        let target = if inside && self.preferences.magnification {
+            1.0
+        } else {
+            0.0
+        };
+        self.hover.set_target(target);
     }
 
     pub fn pointer_left(&mut self) {

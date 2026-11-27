@@ -10,8 +10,8 @@ impl Dock {
     pub fn surface_size(&self, apps: &[DockApp]) -> Size {
         let (entries, _) = list_entries(apps, &self.explorer);
         Size {
-            width: style::bar_width(entries.len()) + style::side_room() * 2.0,
-            height: style::headroom() + style::HEIGHT,
+            width: style::bar_width(self, entries.len()) + style::side_room(self) * 2.0,
+            height: style::headroom(self) + style::height(self),
         }
     }
 
@@ -22,13 +22,13 @@ impl Dock {
         if !self.needs_headroom() {
             return bar;
         }
-        let rise = style::rise_space();
-        let magnify = style::magnify_room();
+        let rise = style::rise_space(self);
+        let magnify = style::magnify_room(self);
         let (entries, _) = list_entries(apps, &self.explorer);
         Rect {
-            x: style::side_room() - magnify,
+            x: style::side_room(self) - magnify,
             y: bar.y - rise,
-            width: style::bar_width(entries.len()) + magnify * 2.0,
+            width: style::bar_width(self, entries.len()) + magnify * 2.0,
             height: rise + bar.height,
         }
     }

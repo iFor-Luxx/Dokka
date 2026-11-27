@@ -42,7 +42,12 @@ guarda `SystemAppActions` y `SystemRecycleBin` en la sesión. Un error de una ac
 sin cerrar Dokka. Es dueño de si la barra está
 oculta y del modo manual/automático (lo guarda en disco; en automático la oculta ya y en cada
 arranque, con `resize`) y siempre la devuelve al salir, al reiniciar y al terminar `run`,
-incluso con error. `preview_safety` recupera la salida del panel con el
+incluso con error. Lo ajustado en Preferencias se guarda con `PreferencesFile`
+(`PreferencesStore`) y se aplica en el acto (`apply_preferences.rs`: sesión, dock,
+previas y barra, con `resize`; `set_taskbar_auto` guarda el modo y oculta o muestra
+la barra de Windows ya reutilizando `taskbar_mode.rs`; `load_preferences` lo recupera
+al arrancar antes de dibujar; sin previas no se abre ninguna y se cierra la abierta;
+un error al leer o guardar se registra y se sigue). `preview_safety` recupera la salida del panel con el
 cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
 cierra el panel si otro primer plano llega por `Refresh` sin el cursor
 encima, sin quitarlo de debajo del cursor.

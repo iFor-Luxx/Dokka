@@ -52,14 +52,15 @@ impl Dock {
             },
             _ => return None,
         };
+        let gap = style::gap(self);
         let (_, slot) = placement.slots.iter().find(|(_, slot)| {
-            x >= slot.x - style::GAP / 2.0 && x <= slot.x + slot.width + style::GAP / 2.0
+            x >= slot.x - gap / 2.0 && x <= slot.x + slot.width + gap / 2.0
         })?;
-        let baseline = style::headroom() + (style::HEIGHT + style::SLOT) / 2.0;
+        let baseline = style::headroom(self) + (style::height(self) + style::slot(self)) / 2.0;
         Some(HoverTarget {
             kind,
             center_x: slot.x + slot.width / 2.0,
-            icons_top: baseline - style::SLOT * style::MAXIMUM_SCALE,
+            icons_top: baseline - style::slot(self) * style::maximum_scale(self),
             bar_top: placement.bar.y,
         })
     }
