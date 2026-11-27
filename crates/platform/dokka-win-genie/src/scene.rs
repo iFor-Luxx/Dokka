@@ -61,9 +61,12 @@ impl Stage {
             _target: None,
             pieces: Vec::new(),
         };
-        stage
-            .root
-            .SetRelativeSizeAdjustment(Vector2 { X: 1.0, Y: 1.0 })?;
+        // Tamaño fijo: este destino no tiene padre del que tomarlo y, sin él, el
+        // recorte del hueco puede taparlo todo.
+        stage.root.SetSize(Vector2 {
+            X: screen.width() as f32,
+            Y: screen.height() as f32,
+        })?;
         let host = overlay.0 as isize;
         let target = gfx.live.target_for(host)?;
         target.target().SetRoot(&stage.root)?;
