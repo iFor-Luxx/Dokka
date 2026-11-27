@@ -23,8 +23,14 @@ pub const SPAN: f32 = CELL * 2.0 + GAP;
 pub const WIDTH: f32 = CELL * 4.0 + GAP * 3.0 + PADDING * 2.0;
 /// Alto de la tarjeta de Sonido a todo lo ancho (≈ 68).
 pub const SOUND_HEIGHT: f32 = 68.0;
+/// Alto de la tarjeta de Pantalla: exactamente igual que la de Sonido.
+pub const BRIGHTNESS_HEIGHT: f32 = SOUND_HEIGHT;
+/// Hueco extra que añade la tarjeta de Pantalla (tarjeta más hueco).
+pub const BRIGHTNESS_EXTRA: f32 = BRIGHTNESS_HEIGHT + GAP;
 /// Alto fijo: aire + cuatro celdas + Sonido + cuatro huecos entre cinco filas.
 pub const HEIGHT: f32 = PADDING * 2.0 + CELL * 4.0 + SOUND_HEIGHT + GAP * 4.0;
+/// Alto con Pantalla disponible: una tarjeta más y su hueco (484).
+pub const HEIGHT_WITH_BRIGHTNESS: f32 = HEIGHT + BRIGHTNESS_EXTRA;
 /// Esquinas del fondo invisible, como los demás paneles flotantes.
 pub const CORNER_RADIUS: f32 = 16.0;
 

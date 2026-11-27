@@ -66,6 +66,10 @@ pub struct Menubar {
     pub(crate) search_highlighted: Option<usize>,
     pub(crate) search_cursor: bool,
     pub(crate) dragging_slider: bool,
+    /// `true` si lo arrastrado es el brillo (si no, el volumen del centro).
+    pub(crate) dragging_brightness: bool,
+    /// Brillo DDC de 0 a 1; `None` sin DDC: sin tarjeta de Pantalla.
+    pub(crate) brightness: Option<f32>,
     pub(crate) shown: MenubarPreferences,
 }
 
@@ -124,6 +128,8 @@ impl Menubar {
             search_highlighted: None,
             search_cursor: false,
             dragging_slider: false,
+            dragging_brightness: false,
+            brightness: None,
             shown: MenubarPreferences::default(),
         }
     }
@@ -206,6 +212,7 @@ impl Menubar {
             tray_hovered: self.tray_hovered,
             volume_level: self.volume.level,
             volume_muted: self.volume.is_muted,
+            brightness: self.brightness,
             volume_hovered: self.volume_hovered,
             audio_outputs: self.audio_outputs.clone(),
             network_kind: self.network.kind,
@@ -258,5 +265,6 @@ impl Menubar {
         self.language_hovered = None;
         self.background_hovered = None;
         self.dragging_slider = false;
+        self.dragging_brightness = false;
     }
 }

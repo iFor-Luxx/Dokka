@@ -14,8 +14,10 @@ pub(crate) fn add_circles(
     pieces: &mut Pieces,
     theme: &Theme,
     bounds: Rect,
+    props: &super::ControlCenterProps,
     icons: &ControlCenterIcons,
 ) {
+    let with_brightness = props.brightness.is_some();
     let circles = [
         &icons.desktop,
         &icons.lock,
@@ -27,7 +29,7 @@ pub(crate) fn add_circles(
         &icons.task_manager,
     ];
     for (index, drawing) in circles.into_iter().enumerate() {
-        let slot = circle_slot(bounds, index);
+        let slot = circle_slot(bounds, index, with_brightness);
         pieces.tiles.push(tile(theme, slot, slot.width / 2.0));
         pieces
             .icons

@@ -8,6 +8,8 @@ papelera con la confirmación de Windows.
 
 `VolumeControl`, `NetworkStatus` y `KeyboardLanguages` sirven a los iconos de la derecha de la barra.
 `AudioOutputs` lista las salidas activas y cambia la predeterminada.
+`BrightnessControl` da el brillo del monitor principal por DDC/CI
+(`brightness` de 0 a 1, `None` sin DDC) y lo cambia sin esperar.
 
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 

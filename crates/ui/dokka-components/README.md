@@ -39,10 +39,12 @@ idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 centro de control (`control_center_panel`: rejilla estricta de cuatro
 columnas de 66 con hueco de 12 (círculo 66, cápsula 144 × 66, música
 144 × 144 con la carátula real en píxeles cuando hay —marcador si no—,
-igual que `music_panel`, Sonido a todo lo ancho de 68): Red con dos círculos blancos,
-música de dos por dos, Preferencias con dos círculos, Sonido y cuatro
-círculos; fondo invisible sin cristal y piezas en cristal translúcido
-por zonas: `capsules`, `music`, `circles`, `slider`) y buscador Spotlight
+igual que `music_panel`, Sonido a todo lo ancho de 68 y Pantalla igual
+justo encima solo con brillo DDC): Red con dos círculos blancos,
+música de dos por dos, Preferencias con dos círculos, Pantalla si hay,
+Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal
+translúcido
+por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado redondeado concéntrico,
 "Sin resultados" y `filter_search_order` con tildes ignoradas) y segundo plano

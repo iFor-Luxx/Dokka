@@ -8,9 +8,9 @@ use dokka_scene::DRAWING_SIDE;
 /// Alto de la franja (28-32, como macOS).
 pub const HEIGHT: f32 = 30.0;
 /// Alto de la ventana: la franja más el hueco y el panel colgando.
-/// El panel más alto es el buscador (386 con siete filas); el idioma compacto
-/// queda muy por debajo y el calendario (291) sigue cabiendo igual.
-pub const WINDOW_HEIGHT: f32 = 480.0;
+/// El centro de control con brillo (484) es el más alto: 30 + 6 + 484 = 520,
+/// cabe en 560 con aire; el buscador (386) y el calendario (291) siguen igual.
+pub const WINDOW_HEIGHT: f32 = 560.0;
 /// Lado del icono de Dokka (Lucide), igual que los de la derecha.
 pub const ICON_SIDE: f32 = 16.0;
 /// Tamaño del glifo: llena el lienzo de 100, fuente efectiva 20 a 20 de lado.

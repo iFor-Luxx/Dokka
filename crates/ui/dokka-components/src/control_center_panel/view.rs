@@ -2,6 +2,7 @@ use dokka_scene::{Overlay, Panel, Rect, Size};
 use dokka_theme::{Theme, control_center as measures};
 
 use super::ControlCenterProps;
+use super::brightness::add_brightness;
 use super::capsules::add_capsules;
 use super::circles::add_circles;
 use super::icons::ControlCenterIcons;
@@ -9,18 +10,23 @@ use super::music::add_music;
 use super::paint::Pieces;
 use super::slider::add_slider;
 
-/// Tamaño fijo del panel.
-pub fn control_center_size() -> Size {
+/// Tamaño del panel: con brillo una tarjeta más y su hueco.
+/// Sin brillo es exactamente el de antes.
+pub fn control_center_size(brightness: Option<f32>) -> Size {
     Size {
         width: measures::WIDTH,
-        height: measures::HEIGHT,
+        height: if brightness.is_some() {
+            measures::HEIGHT_WITH_BRIGHTNESS
+        } else {
+            measures::HEIGHT
+        },
     }
 }
 
 /// Rejilla Tahoe de cuatro columnas sobre fondo invisible: cápsula de red
 /// con dos círculos blancos a la izquierda, música a la derecha (dos por
-/// dos), cápsula de Preferencias con dos círculos debajo, Sonido a todo lo
-/// ancho y cuatro círculos al final.
+/// dos), cápsula de Preferencias con dos círculos debajo, Pantalla a todo lo
+/// ancho si hay brillo DDC, Sonido a todo lo ancho y cuatro círculos al final.
 /// Cada zona añade lo suyo; todo existe siempre: lo oculto mide cero o vacío.
 pub fn control_center_panel(
     theme: &Theme,
@@ -31,7 +37,8 @@ pub fn control_center_panel(
     let mut pieces = Pieces::new();
     add_capsules(&mut pieces, theme, bounds, props, icons);
     add_music(&mut pieces, theme, bounds, props, icons);
-    add_circles(&mut pieces, theme, bounds, icons);
+    add_circles(&mut pieces, theme, bounds, props, icons);
+    add_brightness(&mut pieces, theme, bounds, props, icons);
     add_slider(&mut pieces, theme, bounds, props, icons);
     Overlay {
         panel: Panel {

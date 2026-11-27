@@ -22,7 +22,7 @@ al navegar; la hora y la fila se resaltan suave (plano, como el icono) al
 pasar o con su panel abierto. Solo uno de los nueve a la vez: abrir uno cierra
 los demás. Guarda el nombre, la hora, el hoy, el código de idioma, si el menú,
 el calendario o la fila están abiertos, el desfase de mes, las semanas vistas,
-los resaltados y los datos de cada panel (volumen, red, idiomas, segundo plano con iconos
+los resaltados y los datos de cada panel (volumen, brillo DDC, red, idiomas, segundo plano con iconos
 por identidad, canción y
 carátula, texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre
 del deslizador y devuelve `MenubarAction`. Da su `Scene` (con el menú, el
@@ -51,7 +51,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `language.rs` | `open_language`, `set_languages`, elección de idioma |
 | `music.rs` | `open_music`, `set_now_playing` (canción y carátula), botón anterior/pausa/siguiente; expone `artwork` para reutilizarla |
 | `search.rs` | `open_search` (centrado), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
-| `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula en sus props); el deslizador delega en volumen, los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
+| `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula y el brillo en sus props, con `set_brightness` que recoloca el alto); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
 | `background.rs` | `open_background`, `set_background_apps` (recoloca el alto si está abierto), clic izquierdo `TrayActivate`, clic derecho `TrayMenu` y hover |
 | `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
 | `tray.rs` | `TrayKind`, celdas de la fila y colocación (`tray_place`, `tray_place_centered`) |
@@ -70,5 +70,5 @@ iconos nuevos, en un archivo propio de `dokka-icons` (no en `lucide.rs`, casi ll
 | Música | `NowPlayingInfo` y carátula (`artwork`) cada `Tick` | `MusicPrevious` / `MusicToggle` / `MusicNext` |
 | Idioma | `Vec<LanguageEntry>` + código (leído antes de tomar el foco) | `ChooseLanguage(id)` / `OpenLanguageSettings` |
 | Buscar | resultados filtrados (`set_search_results`) | `SearchOpen(index)` |
-| Centro de control | combinados de arriba, con la carátula en sus props | delega en las variantes de cada panel y en `TaskView` / `Project` / `Calculator` / `ScreenClip` / `Clock` |
+| Centro de control | combinados de arriba, con la carátula en sus props y brillo (`set_brightness`) al abrir | delega en las variantes de cada panel y en `TaskView` / `Project` / `Calculator` / `ScreenClip` / `Clock`, con `BrightnessSetLevel(f32)` para la Pantalla |
 | Segundo plano | `Vec<BackgroundApp>` (nombre limpio + icono) si cambia la revisión | `TrayActivate(id)` / `TrayMenu(id)` |
