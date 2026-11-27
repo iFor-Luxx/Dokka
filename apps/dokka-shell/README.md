@@ -20,6 +20,9 @@ guarda `SystemAppActions` y `SystemRecycleBin` en la sesión. Un error de una ac
 sin cerrar Dokka. Es dueño de si la barra está
 oculta y del modo manual/automático (lo guarda en disco; en automático la oculta ya y en cada
 arranque, con `resize`) y siempre la devuelve al salir, al reiniciar y al terminar `run`,
-incluso con error.
+incluso con error. `preview_safety` recupera la salida del panel con el
+cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
+cierra el panel si otro primer plano llega por `Refresh` sin el cursor
+encima, sin quitarlo de debajo del cursor.
 
 **No hace:** no contiene lógica. Se cierra con Ctrl+C.

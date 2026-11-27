@@ -7,7 +7,7 @@ use dokka_contracts::WindowSource;
 use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
 use dokka_launchpad::Launchpad;
 use dokka_menubar::Menubar;
-use dokka_model::AppId;
+use dokka_model::{AppId, WindowId};
 use dokka_previews::Previews;
 use dokka_settings::Settings;
 use dokka_state::DockState;
@@ -17,7 +17,7 @@ use dokka_win_apps::{
     SystemRecycleBin, recycle_bin_size,
 };
 use dokka_win_composition::SceneRenderer;
-use dokka_win_control::SystemWindowControl;
+use dokka_win_control::{SystemWindowControl, foreground_window};
 use dokka_win_media::MediaMonitor;
 use dokka_win_surface::{Surface, SurfaceOptions, local_time};
 use dokka_win_tracking::SystemWindows;
@@ -30,6 +30,9 @@ pub(crate) struct DockSession {
     /// fila resaltada): si no cambia, no se repinta para no hacer parpadear.
     pub(crate) menubar_painted: Option<(String, String, bool, bool, Option<usize>)>,
     pub(crate) previews: Previews,
+    /// Ventana al frente en el último `Refresh`: otro primer plano también
+    /// pide cerrar el panel, aunque la lista siga igual.
+    pub(crate) foreground: Option<WindowId>,
     pub(crate) launchpad: Launchpad,
     pub(crate) settings: Settings,
     /// `true` entre el botón abajo y el clic sobre Preferencias; filtra los
@@ -66,6 +69,7 @@ impl DockSession {
             menubar: Menubar::new(Arc::clone(&theme)),
             menubar_painted: None,
             previews: Previews::new(Arc::clone(&theme)),
+            foreground: None,
             launchpad: Launchpad::new(),
             settings: Settings::new(),
             settings_pressed: false,
@@ -100,6 +104,16 @@ impl DockSession {
             self.dock.apps_changed(self.state.apps());
         }
         Ok(changed)
+    }
+
+    /// Guarda la ventana al frente y dice si cambió desde la última vez.
+    pub(crate) fn poll_foreground_changed(&mut self) -> bool {
+        let current = foreground_window();
+        if current == self.foreground {
+            return false;
+        }
+        self.foreground = current;
+        true
     }
 
     pub(crate) fn update_clock_and_trash(&mut self) {
