@@ -5,6 +5,7 @@ use dokka_scene::Color;
 #[derive(Debug, Clone)]
 pub struct Theme {
     pub dock: DockColors,
+    pub menubar: MenubarColors,
     pub panel: PanelColors,
     pub tooltip: TooltipColors,
     pub media: MediaColors,
@@ -45,6 +46,16 @@ pub struct MediaColors {
     pub background: Color,
     pub border: Color,
     pub icon: Color,
+}
+
+/// Colores de la barra superior: mismo cristal claro del dock,
+/// texto oscuro y resaltado suave detrás del icono.
+#[derive(Debug, Clone, Copy)]
+pub struct MenubarColors {
+    pub background: Color,
+    pub border: Color,
+    pub text: Color,
+    pub hover: Color,
 }
 
 /// Colores del menú del clic derecho.

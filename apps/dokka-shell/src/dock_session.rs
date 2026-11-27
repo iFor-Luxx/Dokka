@@ -6,6 +6,7 @@ use std::sync::Arc;
 use dokka_contracts::WindowSource;
 use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
 use dokka_launchpad::Launchpad;
+use dokka_menubar::Menubar;
 use dokka_model::AppId;
 use dokka_previews::Previews;
 use dokka_settings::Settings;
@@ -24,6 +25,10 @@ use dokka_win_tracking::SystemWindows;
 pub(crate) struct DockSession {
     pub(crate) state: DockState,
     pub(crate) dock: Dock,
+    pub(crate) menubar: Menubar,
+    /// Última barra ya dibujada (app, hora, menú abierto, icono resaltado,
+    /// fila resaltada): si no cambia, no se repinta para no hacer parpadear.
+    pub(crate) menubar_painted: Option<(String, String, bool, bool, Option<usize>)>,
     pub(crate) previews: Previews,
     pub(crate) launchpad: Launchpad,
     pub(crate) settings: Settings,
@@ -58,6 +63,8 @@ impl DockSession {
         Self {
             state: DockState::default(),
             dock: Dock::new(explorer.clone(), Arc::clone(&theme)),
+            menubar: Menubar::new(Arc::clone(&theme)),
+            menubar_painted: None,
             previews: Previews::new(Arc::clone(&theme)),
             launchpad: Launchpad::new(),
             settings: Settings::new(),

@@ -69,6 +69,10 @@ pub(crate) fn render(
         render_launchpad(session, surface)?;
     }
     render_settings(session, surface)?;
+    // Un fallo de la barra superior no debe llevarse por delante el resto.
+    if let Err(error) = crate::menubar::render_menubar(session, surface) {
+        eprintln!("Dokka no pudo dibujar la barra superior: {error}");
+    }
     Ok(())
 }
 

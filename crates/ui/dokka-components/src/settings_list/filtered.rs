@@ -28,11 +28,7 @@ fn hidden_panel(theme: &Theme) -> Panel {
 /// Van como imagen para que al filtrar cada capa repinte su color (el
 /// marcador de un icono no cambia al actualizarse). `badges` ya viene en
 /// orden visible, como `order`.
-pub fn filtered_badges(
-    theme: &Theme,
-    order: &[usize],
-    badges: &[Arc<Drawing>],
-) -> Vec<Icon> {
+pub fn filtered_badges(theme: &Theme, order: &[usize], badges: &[Arc<Drawing>]) -> Vec<Icon> {
     order
         .iter()
         .zip(badges.iter())
@@ -49,11 +45,7 @@ pub fn filtered_badges(
 }
 
 /// Glifos blancos centrados sobre los cuadrados visibles.
-pub fn filtered_icons(
-    theme: &Theme,
-    order: &[usize],
-    glyphs: &[Arc<Drawing>],
-) -> Vec<Icon> {
+pub fn filtered_icons(theme: &Theme, order: &[usize], glyphs: &[Arc<Drawing>]) -> Vec<Icon> {
     let inset = (measures::BADGE_SIDE - measures::ROW_ICON_SIDE) / 2.0;
     order
         .iter()
@@ -163,7 +155,8 @@ pub fn filtered_hover(
 pub fn filtered_row_at(order: &[usize], x: f32, y: f32) -> Option<usize> {
     (0..order.len()).find_map(|display| {
         let top = measures::row_middle(display) - measures::ROW_HIGHLIGHT_HEIGHT / 2.0;
-        if (measures::row_highlight_left()..measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN)
+        if (measures::row_highlight_left()
+            ..measures::SIDEBAR_WIDTH - measures::ROW_HIGHLIGHT_MARGIN)
             .contains(&x)
             && (top..top + measures::ROW_HIGHLIGHT_HEIGHT).contains(&y)
         {

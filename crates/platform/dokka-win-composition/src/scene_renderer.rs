@@ -31,6 +31,7 @@ pub struct WindowHandles {
     /// Vista grande, por debajo del dock.
     pub preview: SurfaceHandle,
     pub settings: SurfaceHandle,
+    pub menubar: SurfaceHandle,
 }
 
 /// Mantiene vivos los objetos que sostienen la imagen en pantalla.
@@ -42,6 +43,7 @@ pub struct SceneRenderer {
     layers: Option<SceneLayers>,
     launchpad_layers: Option<SceneLayers>,
     settings_layers: Option<SceneLayers>,
+    menubar_layers: Option<SceneLayers>,
     controls: Option<ControlsLayer>,
     main: WindowRoot,
     above: WindowRoot,
@@ -51,6 +53,7 @@ pub struct SceneRenderer {
     /// Solo se conserva vivo; nunca se dibuja en él.
     _preview_root: WindowRoot,
     settings: WindowRoot,
+    menubar: WindowRoot,
     painter: Painter,
     compositor: Compositor,
     // Va al final: el compositor necesita la cola mientras exista.
@@ -127,6 +130,20 @@ impl SceneRenderer {
         Ok(())
     }
 
+    /// Dibuja la barra superior en su propio árbol visual. Usa la misma escala
+    /// que el dock: ambas ventanas cubren el monitor principal.
+    pub fn draw_menubar(&mut self, scene: &Scene) -> std::result::Result<(), CompositionError> {
+        let layers = self.menubar_layers.take();
+        self.menubar_layers = Some(Self::apply_tree(
+            &self.compositor,
+            &self.painter,
+            &self.menubar.root,
+            layers,
+            scene,
+        )?);
+        Ok(())
+    }
+
     fn build(
         handles: WindowHandles,
         scale: f32,
@@ -143,12 +160,14 @@ impl SceneRenderer {
             layers: None,
             launchpad_layers: None,
             settings_layers: None,
+            menubar_layers: None,
             controls: None,
             main: window_root(&compositor, handles.main, scale)?,
             above: window_root(&compositor, handles.above, scale)?,
             launchpad: window_root(&compositor, handles.launchpad, scale)?,
             _preview_root: window_root(&compositor, handles.preview, 1.0)?,
             settings: window_root(&compositor, handles.settings, settings_scale)?,
+            menubar: window_root(&compositor, handles.menubar, scale)?,
             painter: Painter::new(&compositor, font_family, icon_bytes, scale)?,
             compositor,
             _queue: queue,

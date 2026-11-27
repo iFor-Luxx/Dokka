@@ -2,7 +2,12 @@
 
 **Hace:** es el ejecutable; arranca Dokka y conecta las piezas. Pasa al compositor
 la fuente del sistema y los bytes de la fuente de iconos Lucide (en memoria,
-sin instalar). Pide al dock abrir el menú
+sin instalar). Muestra la barra superior (`menubar.rs`: icono, app al frente
+con `foreground_app` + `NameCache` y hora con `local_time`; su menú reutiliza
+`context_menu.rs` para Preferencias, escritorio, administrador, reiniciar y
+salir, con `menubar_menu_dismissed` antes de Preferencias y administrador y
+`menubar_hide` al salir o reiniciar) en su ventana (`menubar_show` con las
+medidas del tema y `draw_menubar`), redibujándola solo si cambia. Pide al dock abrir el menú
 (con si la barra está oculta o en automático) y ejecuta su `MenuAction`; mientras el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Preferencias» abre la ventana de configuración (o la trae al frente);

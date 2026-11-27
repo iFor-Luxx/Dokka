@@ -17,6 +17,18 @@ pub enum SurfaceEvent {
     },
     /// El menú debe cerrarse: se perdió el foco o se pulsó Esc.
     Dismissed,
+    /// El cursor se mueve sobre la barra superior.
+    MenubarMoved {
+        x: f32,
+        y: f32,
+    },
+    MenubarLeft,
+    MenubarClicked {
+        x: f32,
+        y: f32,
+    },
+    /// La barra perdió el foco con el menú abierto.
+    MenubarDismissed,
     /// El cursor se mueve sobre el Launchpad.
     LaunchpadMoved {
         x: f32,
@@ -69,7 +81,9 @@ pub enum SurfaceEvent {
     /// Preferencias perdió el foco: los semáforos se ven grises.
     SettingsBlurred,
     /// Letra escrita sobre Preferencias, ya traducida de `WM_KEYDOWN`.
-    SettingsTyped { character: char },
+    SettingsTyped {
+        character: char,
+    },
     /// Retroceso sobre Preferencias.
     SettingsBackspace,
     /// Enter sobre Preferencias.

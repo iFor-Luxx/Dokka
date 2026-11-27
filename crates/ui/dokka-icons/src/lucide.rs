@@ -7,7 +7,7 @@
 //! (texto normal o blanco de la fila resaltada).
 
 use dokka_scene::{Color, Drawing, Shape};
-use dokka_theme::{launchpad, menu, nav_pill, popup, settings};
+use dokka_theme::{launchpad, menu, menubar, nav_pill, popup, settings};
 
 const CENTER: f32 = 50.0;
 
@@ -30,6 +30,11 @@ pub fn submenu_chevron_icon(color: Color) -> Drawing {
         menu::CHEVRON_GLYPH_SIZE,
         color,
     )
+}
+
+/// Marca de Dokka en la barra superior: icono Lucide a 20, sin dibujo propio.
+pub fn menubar_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Dock, menubar::GLYPH_SIZE, color)
 }
 
 /// Marca de la opción elegida.
@@ -62,11 +67,7 @@ pub fn search_icon(color: Color) -> Drawing {
 
 /// Símbolo de cerrar sobre el semáforo rojo al pasar el cursor.
 pub fn traffic_close_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::X,
-        settings::TRAFFIC_GLYPH_SIZE,
-        color,
-    )
+    glyph(lucide_icons::Icon::X, settings::TRAFFIC_GLYPH_SIZE, color)
 }
 
 /// Símbolo de minimizar sobre el semáforo amarillo al pasar el cursor.

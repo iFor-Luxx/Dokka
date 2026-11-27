@@ -1,4 +1,6 @@
-use dokka_components::nav_pill::{nav_pill_divider, nav_pill_highlight, nav_pill_icons, nav_pill_panel};
+use dokka_components::nav_pill::{
+    nav_pill_divider, nav_pill_highlight, nav_pill_icons, nav_pill_panel,
+};
 use dokka_components::search_field::{
     search_magnifier_at, search_panel_at, settings_search_cursor, settings_search_text,
 };

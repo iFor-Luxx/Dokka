@@ -96,9 +96,7 @@ pub(crate) fn read_settings_pointer(message: &MSG, scale: f32) -> Option<Surface
         WM_KEYDOWN if message.wParam.0 == VK_ESCAPE.0 as usize => {
             Some(SurfaceEvent::SettingsEscape)
         }
-        WM_KEYDOWN if message.wParam.0 == VK_RETURN.0 as usize => {
-            Some(SurfaceEvent::SettingsEnter)
-        }
+        WM_KEYDOWN if message.wParam.0 == VK_RETURN.0 as usize => Some(SurfaceEvent::SettingsEnter),
         WM_KEYDOWN if message.wParam.0 == VK_BACK.0 as usize => {
             Some(SurfaceEvent::SettingsBackspace)
         }

@@ -91,7 +91,8 @@ fn tint_visual(
 ) -> Result<(ShapeVisual, CompositionRoundedRectangleGeometry)> {
     // El trazo se centra en el contorno: se mete medio grosor para que no se corte.
     let inset = panel.border_width / 2.0;
-    let tint_outline = rounded(compositor, panel.corner_radius - inset)?;
+    // Sin esquinas redondas el radio saldría negativo y Windows lo rechaza.
+    let tint_outline = rounded(compositor, (panel.corner_radius - inset).max(0.0))?;
     tint_outline.SetOffset(Vector2 { X: inset, Y: inset })?;
     let shape = compositor.CreateSpriteShapeWithGeometry(&tint_outline)?;
     shape.SetFillBrush(&compositor.CreateColorBrushWithColor(windows_color(panel.tint))?)?;

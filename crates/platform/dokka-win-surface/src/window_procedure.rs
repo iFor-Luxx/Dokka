@@ -1,4 +1,5 @@
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
+use windows::Win32::UI::Shell::ABN_FULLSCREENAPP;
 use windows::Win32::UI::WindowsAndMessaging::{
     DefWindowProcW, GW_OWNER, GWL_EXSTYLE, GetWindow, GetWindowLongW, HTTRANSPARENT, MA_NOACTIVATE,
     PostMessageW, PostQuitMessage, SW_HIDE, ShowWindow, WA_INACTIVE, WM_ACTIVATE, WM_CLOSE,
@@ -14,10 +15,18 @@ pub(crate) const DISMISS_MESSAGE: u32 = 0x8001;
 /// tareas. `WM_CLOSE` tampoco pasa por la cola, así que se reenvía igual.
 pub(crate) const SETTINGS_DISMISS_MESSAGE: u32 = 0x8002;
 
+/// Aviso del sistema para la barra registrada como AppBar (`SHAppBarMessage`).
+/// Valor fijo propio para no necesitar un global con `RegisterWindowMessageW`.
+pub(crate) const MENUBAR_CALLBACK_MESSAGE: u32 = 0x8003;
+
+/// Reenvío interno de que una app entró o salió de pantalla completa.
+/// `lParam` conserva el valor del aviso: distinto de cero al entrar.
+pub(crate) const MENUBAR_FULLSCREEN_MESSAGE: u32 = 0x8004;
+
 /// Aviso propio de que Preferencias ganó o perdió el foco. `WM_ACTIVATE`
 /// llega directo al procedimiento y no pasa por la cola de `run_loop`, así
 /// que se reenvía como mensaje publicado con el `wParam` original.
-pub(crate) const SETTINGS_FOCUS_MESSAGE: u32 = 0x8003;
+pub(crate) const SETTINGS_FOCUS_MESSAGE: u32 = 0x8005;
 
 pub(crate) unsafe extern "system" fn window_procedure(
     window: HWND,
@@ -39,14 +48,12 @@ pub(crate) unsafe extern "system" fn window_procedure(
         // `run_loop`; el aviso de pérdida sigue llegando como `DISMISS_MESSAGE`.
         WM_ACTIVATE if !is_owned() => {
             // SAFETY: reenvía los avisos a la cola del hilo para que los lea `run_loop`.
-            let _ = unsafe {
-                PostMessageW(Some(window), SETTINGS_FOCUS_MESSAGE, wparam, LPARAM(0))
-            };
+            let _ =
+                unsafe { PostMessageW(Some(window), SETTINGS_FOCUS_MESSAGE, wparam, LPARAM(0)) };
             if wparam.0 & 0xFFFF == WA_INACTIVE as usize {
                 // SAFETY: reenvía el aviso a la cola del hilo para que lo lea `run_loop`.
-                let _ = unsafe {
-                    PostMessageW(Some(window), DISMISS_MESSAGE, WPARAM(0), LPARAM(0))
-                };
+                let _ =
+                    unsafe { PostMessageW(Some(window), DISMISS_MESSAGE, WPARAM(0), LPARAM(0)) };
             }
             // SAFETY: Windows entrega argumentos válidos para el mensaje que se está atendiendo.
             unsafe { DefWindowProcW(window, message, wparam, lparam) }
@@ -64,6 +71,18 @@ pub(crate) unsafe extern "system" fn window_procedure(
             unsafe {
                 let _ = ShowWindow(window, SW_HIDE);
                 let _ = PostMessageW(Some(window), SETTINGS_DISMISS_MESSAGE, WPARAM(0), LPARAM(0));
+            }
+            LRESULT(0)
+        }
+        MENUBAR_CALLBACK_MESSAGE if !is_owned() => {
+            // Solo interesa la pantalla completa: la barra no debe taparla.
+            // Llega por `SendMessage`, así que se reenvía a la cola para que
+            // `run_loop` la atienda con el estado de `Surface`.
+            if wparam.0 as u32 == ABN_FULLSCREENAPP {
+                // SAFETY: reenvía el aviso a la cola del hilo.
+                let _ = unsafe {
+                    PostMessageW(Some(window), MENUBAR_FULLSCREEN_MESSAGE, WPARAM(0), lparam)
+                };
             }
             LRESULT(0)
         }

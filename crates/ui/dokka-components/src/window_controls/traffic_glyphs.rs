@@ -7,11 +7,7 @@ use dokka_theme::{Theme, settings as measures};
 /// Función que dibuja el símbolo de un semáforo en un color.
 type TrafficIcon = fn(Color) -> Drawing;
 
-const GLYPHS: [TrafficIcon; 3] = [
-    traffic_close_icon,
-    traffic_minimize_icon,
-    traffic_zoom_icon,
-];
+const GLYPHS: [TrafficIcon; 3] = [traffic_close_icon, traffic_minimize_icon, traffic_zoom_icon];
 
 /// Símbolos de los semáforos ya construidos con los colores del tema.
 /// Se reutilizan entre fotogramas: la plataforma solo repinta cuando recibe
@@ -33,9 +29,7 @@ impl TrafficGlyphs {
                 Arc::new(GLYPHS[1](colors[1])),
                 Arc::new(GLYPHS[2](colors[2])),
             ],
-            hidden: Arc::new(Drawing {
-                shapes: Vec::new(),
-            }),
+            hidden: Arc::new(Drawing { shapes: Vec::new() }),
         }
     }
 }
@@ -43,11 +37,7 @@ impl TrafficGlyphs {
 /// Los tres símbolos centrados en sus círculos. Siempre hay tres, con el
 /// mismo estilo: ocultos pintan vacío para no reconstruir capas al pasar el
 /// cursor, como el cursor de la casilla de búsqueda.
-pub fn traffic_glyph_icons(
-    theme: &Theme,
-    visible: bool,
-    glyphs: &TrafficGlyphs,
-) -> Vec<Icon> {
+pub fn traffic_glyph_icons(theme: &Theme, visible: bool, glyphs: &TrafficGlyphs) -> Vec<Icon> {
     let inset = (measures::TRAFFIC_DIAMETER - measures::TRAFFIC_GLYPH_SIDE) / 2.0;
     glyphs
         .shown
