@@ -201,6 +201,7 @@ impl Menubar {
                 super::TrayKind::Volume => self.volume_click(x, y),
                 super::TrayKind::Network => self.network_click(x, y),
                 super::TrayKind::Music => self.music_click(x, y),
+                super::TrayKind::Background => self.background_click(x, y),
                 super::TrayKind::Language => self.language_click(x, y),
                 super::TrayKind::Search => self.search_click(x, y),
                 super::TrayKind::ControlCenter => self.control_click(x, y, bar_width),

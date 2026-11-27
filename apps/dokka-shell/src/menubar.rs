@@ -1,6 +1,6 @@
 //! Barra superior: app activa, hora con calendario, menú del icono y fila
-//! derecha con sus paneles reales (volumen, red, música, idioma, buscar y
-//! centro de control).
+//! derecha con sus paneles reales (volumen, red, música, segundo plano,
+//! idioma, buscar y centro de control).
 //!
 //! La isla decide y dibuja; aquí solo se conecta con la plataforma y con lo
 //! que ya hace `context_menu.rs`, sin duplicarlo. Las acciones viven en
@@ -92,6 +92,7 @@ pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) 
 fn refresh_panels(session: &mut DockSession) {
     crate::menubar_volume::refresh_volume(session);
     crate::menubar_music::refresh_music(session);
+    crate::menubar_background::refresh_background_apps(session);
     session.menubar.tick_search_cursor();
     session.menubar_ticks += 1;
     if session.menubar_ticks.is_multiple_of(3) {
@@ -139,7 +140,9 @@ pub(crate) fn handle_menubar_event(
         SurfaceEvent::MenubarClicked { x, y } => {
             click_menubar(session, surface, x, y)?;
         }
-        SurfaceEvent::MenubarRightClicked { .. } => {}
+        SurfaceEvent::MenubarRightClicked { x, y } => {
+            right_click_menubar(session, surface, x, y)?;
+        }
         SurfaceEvent::MenubarTyped { character } => {
             crate::menubar_search::type_search(session, surface, character);
         }
@@ -161,6 +164,21 @@ pub(crate) fn handle_menubar_event(
         _ => return Ok(false),
     }
     Ok(true)
+}
+
+/// Clic derecho en la barra: en una fila de segundo plano abre su menú;
+/// en su botón abre el panel como el clic izquierdo.
+fn right_click_menubar(
+    session: &mut DockSession,
+    surface: &mut Surface,
+    x: f32,
+    y: f32,
+) -> Result<(), Box<dyn Error>> {
+    let width = surface.menubar_width();
+    if let Some(action) = session.menubar.background_right_clicked(x, y, width) {
+        return run_menubar_action(session, surface, action);
+    }
+    Ok(())
 }
 
 /// Clic en la barra: icono, hora, fila, píldora o cerrar fuera. Abrir el menú,

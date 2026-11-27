@@ -97,6 +97,7 @@ impl crate::Menubar {
             super::TrayKind::Volume => self.open_volume(bar_width),
             super::TrayKind::Network => self.open_network(bar_width),
             super::TrayKind::Music => self.open_music(bar_width),
+            super::TrayKind::Background => self.open_background(bar_width),
             super::TrayKind::Language => self.open_language(bar_width),
             super::TrayKind::Search => self.open_search(bar_width),
             super::TrayKind::ControlCenter => self.open_control_center(bar_width),

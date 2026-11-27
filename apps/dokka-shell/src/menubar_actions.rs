@@ -112,6 +112,16 @@ pub(crate) fn run_menubar_action(
         MenubarAction::SearchOpen(index) => {
             crate::menubar_search::launch_search_result(session, surface, index)?;
         }
+        MenubarAction::TrayActivate(id) => {
+            session.menubar.close_tray();
+            surface.menubar_menu_dismissed();
+            crate::menubar_background::activate_background_app(session, id);
+        }
+        MenubarAction::TrayMenu(id) => {
+            session.menubar.close_tray();
+            surface.menubar_menu_dismissed();
+            crate::menubar_background::open_background_menu(session, id);
+        }
     }
     Ok(())
 }

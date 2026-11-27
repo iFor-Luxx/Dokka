@@ -8,7 +8,8 @@ más la lupa del buscador (`search`: `search_bar_icon` blanca para la barra supe
 `search_field_icon` oscura para la casilla clara, ambas Lucide `Search`),
 más el círculo liso y los tres botones completos (círculo con símbolo) de los semáforos, más los bytes
 de su fuente. Y de red e idioma (`network_language`: wifi, sin conexión, cable,
-globo y marca del idioma activo). Y uniforma los iconos de apps para el Launchpad (`app_tile`: si llenan el cuadro
+globo y marca del idioma activo). Y el chevrón hacia abajo de la fila (`menubar_tray`:
+`background` blanco para abrir el segundo plano). Y uniforma los iconos de apps para el Launchpad (`app_tile`: si llenan el cuadro
 —aunque traigan margen transparente— ocupan toda la baldosa con las esquinas recortadas; si son
 silueta se centran sobre un degradado claro sacado de los colores del propio icono (color medio
 de la mitad superior y de la inferior, mezclados con la baldosa clara del tema); el marco blanco

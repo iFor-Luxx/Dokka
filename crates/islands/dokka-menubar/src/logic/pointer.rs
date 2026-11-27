@@ -15,6 +15,7 @@ impl Menubar {
         self.volume_hovered = None;
         self.network_hovered = None;
         self.language_hovered = None;
+        self.background_hovered = None;
         if let Some(menu) = self.menu.as_mut() {
             menu.highlighted = None;
         }
@@ -52,6 +53,7 @@ impl Menubar {
             Some(super::TrayKind::Volume) => self.volume_hover(x, y),
             Some(super::TrayKind::Network) => self.network_hover(x, y),
             Some(super::TrayKind::Language) => self.language_hover(x, y),
+            Some(super::TrayKind::Background) => self.background_hover(x, y),
             Some(super::TrayKind::Search) => self.search_hover(x, y),
             Some(super::TrayKind::Music) | Some(super::TrayKind::ControlCenter) | None => {}
         }
