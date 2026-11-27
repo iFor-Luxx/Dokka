@@ -16,8 +16,8 @@ pub use app_window::AppWindow;
 pub use dock_app::DockApp;
 pub use open_window::OpenWindow;
 pub use preferences::{
-    DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPreferences, MenubarPreferences,
-    Preferences,
+    DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPosition, DockPreferences,
+    MenubarPreferences, Preferences,
 };
 pub use system_status::{KeyboardLanguage, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
 pub use tray_item::{TrayItem, TrayItemId};

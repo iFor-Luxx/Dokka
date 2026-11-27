@@ -20,6 +20,22 @@ pub struct DockPreferences {
     pub magnification_strength: f32,
     /// Vistas previas de ventanas al pasar el cursor.
     pub previews: bool,
+    /// Rebote del icono al abrir una app.
+    pub animate_launch: bool,
+    /// Punto bajo las apps abiertas.
+    pub show_indicators: bool,
+    /// El dock se esconde y vuelve al acercar el cursor a su borde.
+    pub auto_hide: bool,
+    /// Borde de la pantalla donde vive el dock.
+    pub position: DockPosition,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DockPosition {
+    Left,
+    #[default]
+    Bottom,
+    Right,
 }
 
 impl Default for DockPreferences {
@@ -29,6 +45,10 @@ impl Default for DockPreferences {
             magnification: true,
             magnification_strength: 1.0,
             previews: true,
+            animate_launch: true,
+            show_indicators: true,
+            auto_hide: false,
+            position: DockPosition::Bottom,
         }
     }
 }
