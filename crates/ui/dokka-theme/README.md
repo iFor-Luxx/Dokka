@@ -49,7 +49,8 @@
   reloj, menú colgando con su separación y ventana de 560 para que quepa el
   centro con brillo (520) además del calendario de 6 semanas;
   la reserva de la franja no cambia); `tooltip.rs` para la
-  etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560, casilla al ~22% del alto con subida en pantallas bajas,
+  etiqueta en forma de píldora (alto reservado sobre el icono y ancho reservado
+  al lado para el texto más largo, con su relleno y punta); `search.rs` para el buscador Spotlight de Tahoe (panel de 560, casilla al ~22% del alto con subida en pantallas bajas,
   cápsula de 52 con lupa a 20 y cursor, tarjeta de resultados con hasta 7 filas de 44
   con icono de 28, resaltado redondeado concéntrico, "Sin resultados" y sombra
   suave bajo ambas piezas (desenfoque, bajada y aire en `search.rs`); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la

@@ -106,7 +106,7 @@ impl LabelPointer {
         })?;
         self.clip.SetCornerRadius(Vector2 { X: 0.0, Y: 0.0 })?;
         let (square_x, square_y) = match label.side {
-            dokka_scene::LabelSide::After => (edge - height, middle_y),
+            dokka_scene::LabelSide::After => (edge, middle_y),
             dokka_scene::LabelSide::Before => (edge, middle_y),
             dokka_scene::LabelSide::Below => (edge, middle_y),
         };
