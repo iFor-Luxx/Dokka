@@ -15,7 +15,7 @@ use windows::Win32::Devices::Display::{
     DestroyPhysicalMonitors, GetMonitorBrightness, GetNumberOfPhysicalMonitorsFromHMONITOR,
     GetPhysicalMonitorsFromHMONITOR, PHYSICAL_MONITOR, SetMonitorBrightness,
 };
-use windows::Win32::Foundation::{HANDLE, POINT};
+use windows::Win32::Foundation::POINT;
 use windows::Win32::Graphics::Gdi::{HMONITOR, MONITOR_DEFAULTTOPRIMARY, MonitorFromPoint};
 
 /// Órdenes al hilo DDC: fijar el nivel o releerlo.
@@ -150,25 +150,40 @@ fn primary_monitor() -> HMONITOR {
     unsafe { MonitorFromPoint(POINT { x: 0, y: 0 }, MONITOR_DEFAULTTOPRIMARY) }
 }
 
-/// Mínimo, actual y máximo DDC del primer monitor físico, si responde.
-fn read_brightness() -> Option<(u32, u32, u32)> {
+/// Monitores físicos del monitor principal; vacío si no hay o falla la apertura.
+///
+/// No se comprueba `hPhysicalMonitor` con `is_invalid`: ese identificador puede
+/// ser 0 y ser válido (comprobado en un equipo real, donde la lectura y
+/// `SetMonitorBrightness` funcionan con 0). Solo el vector vacío impide leer o
+/// escribir.
+fn open_physical_monitors() -> Vec<PHYSICAL_MONITOR> {
     let monitor = primary_monitor();
     if monitor.is_invalid() {
-        return None;
+        return Vec::new();
     }
     let mut count = 0_u32;
     // SAFETY: cuenta los monitores físicos del principal con un puntero válido.
     unsafe {
-        GetNumberOfPhysicalMonitorsFromHMONITOR(monitor, &mut count).ok()?;
+        if GetNumberOfPhysicalMonitorsFromHMONITOR(monitor, &mut count).is_err() {
+            return Vec::new();
+        }
     }
     if count == 0 {
-        return None;
+        return Vec::new();
     }
     let mut physical = vec![PHYSICAL_MONITOR::default(); count as usize];
-    // SAFETY: rellena el vector ya reservado y lo destruye al salir.
+    // SAFETY: rellena el vector ya reservado; si falla, nada queda abierto.
     unsafe {
-        GetPhysicalMonitorsFromHMONITOR(monitor, &mut physical).ok()?;
+        if GetPhysicalMonitorsFromHMONITOR(monitor, &mut physical).is_err() {
+            return Vec::new();
+        }
     }
+    physical
+}
+
+/// Mínimo, actual y máximo DDC del primer monitor físico, si responde.
+fn read_brightness() -> Option<(u32, u32, u32)> {
+    let physical = open_physical_monitors();
     let handle = physical.first()?.hPhysicalMonitor;
     let mut low = 0_u32;
     let mut current = 0_u32;
@@ -192,38 +207,12 @@ fn write_brightness(level: f32, minimum: u32, maximum: u32) {
         return;
     }
     let value = minimum.saturating_add((level.clamp(0.0, 1.0) * span).round() as u32);
-    let monitor = primary_monitor();
-    if monitor.is_invalid() {
+    let physical = open_physical_monitors();
+    // Sin comprobar `is_invalid`: 0 puede ser un identificador válido.
+    // Con el vector vacío no quedó nada abierto que liberar.
+    let Some(handle) = physical.first().map(|entry| entry.hPhysicalMonitor) else {
         return;
-    }
-    let mut count = 0_u32;
-    // SAFETY: cuenta los monitores físicos del principal con un puntero válido.
-    unsafe {
-        if GetNumberOfPhysicalMonitorsFromHMONITOR(monitor, &mut count).is_err() {
-            return;
-        }
-    }
-    if count == 0 {
-        return;
-    }
-    let mut physical = vec![PHYSICAL_MONITOR::default(); count as usize];
-    // SAFETY: rellena el vector ya reservado y lo destruye al salir.
-    unsafe {
-        if GetPhysicalMonitorsFromHMONITOR(monitor, &mut physical).is_err() {
-            return;
-        }
-    }
-    let handle: HANDLE = physical
-        .first()
-        .map(|entry| entry.hPhysicalMonitor)
-        .unwrap_or_default();
-    if handle.is_invalid() {
-        // SAFETY: libera los monitores abiertos en este mismo bloque.
-        unsafe {
-            let _ = DestroyPhysicalMonitors(&physical);
-        }
-        return;
-    }
+    };
     // SAFETY: escribe un valor dentro del rango leído en el monitor abierto.
     unsafe {
         SetMonitorBrightness(handle, value);
