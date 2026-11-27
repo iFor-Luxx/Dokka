@@ -81,7 +81,7 @@ enum LevelKind {
 fn level_kind(level: f32, is_muted: bool) -> LevelKind {
     if is_muted {
         LevelKind::Muted
-    } else if !(level > 0.0) {
+    } else if level.is_nan() || level <= 0.0 {
         LevelKind::Off
     } else if level < 0.5 {
         LevelKind::Low

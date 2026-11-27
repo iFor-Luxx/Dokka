@@ -6,6 +6,7 @@ mod clock;
 mod explorer;
 mod launchpad;
 mod lucide;
+mod music;
 mod shapes;
 mod tile_color;
 mod tile_frame;
@@ -30,6 +31,7 @@ pub use lucide::{
     traffic_close_icon, traffic_minimize_button, traffic_minimize_icon, traffic_zoom_button,
     traffic_zoom_icon,
 };
+pub use music::music_bar_icon;
 pub use trash::trash_icon;
 pub use volume::{
     volume_high_icon, volume_low_icon, volume_mute_icon, volume_muted_icon, volume_off_icon,

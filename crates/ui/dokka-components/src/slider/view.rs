@@ -6,7 +6,7 @@ use super::SliderProps;
 /// Recorta un valor al rango del deslizador, de 0 a 1.
 /// Sin `clamp`: el silencio (`NaN`) queda en 0 en vez de propagarse.
 fn clamp01(value: f32) -> f32 {
-    if !(value >= 0.0) {
+    if value.is_nan() || value < 0.0 {
         0.0
     } else if value > 1.0 {
         1.0
@@ -94,9 +94,7 @@ pub fn slider_value_at(track: Rect, x: f32) -> f32 {
 
 /// Valor elegido si el punto cae en la zona de toque; fuera, nada.
 pub fn slider_hit(area: Rect, x: f32, y: f32) -> Option<f32> {
-    if (area.x..area.x + area.width).contains(&x)
-        && (area.y..area.y + area.height).contains(&y)
-    {
+    if (area.x..area.x + area.width).contains(&x) && (area.y..area.y + area.height).contains(&y) {
         Some(slider_value_at(slider_track_bounds(area), x))
     } else {
         None

@@ -158,7 +158,8 @@ fn separator(theme: &Theme, bounds: Rect) -> Divider {
     Divider {
         bounds: Rect {
             x: bounds.x + measures::PADDING,
-            y: separator_top(bounds) + (measures::SEPARATOR_HEIGHT - measures::DIVIDER_HEIGHT) / 2.0,
+            y: separator_top(bounds)
+                + (measures::SEPARATOR_HEIGHT - measures::DIVIDER_HEIGHT) / 2.0,
             width: bounds.width - measures::PADDING * 2.0,
             height: measures::DIVIDER_HEIGHT,
         },
