@@ -37,15 +37,13 @@ use crate::flight::Flight;
 use crate::geometry::{PixelRect, to_local};
 use crate::overlay::tuck_under;
 use crate::phase::Phase;
-use crate::strips::{GenieCompositor, bind, clip_at_slot, launch};
+use crate::strips::{GenieCompositor, bind, launch};
 
 impl Flight {
     /// Da al vuelo su hueco del dock en píxeles de pantalla.
-    pub(crate) fn aim(&mut self, gfx: &GenieCompositor, slot: PixelRect) {
+    pub(crate) fn aim(&mut self, slot: PixelRect) {
         self.genie.slot = self.turn.edges(to_local(slot, self.screen));
         self.aimed = true;
-        let _ = clip_at_slot(gfx, &self.stage.root, &self.genie, self.turn);
-        let _ = gfx.live.commit();
         eprintln!(
             "genio: vuelo {} apuntado al hueco [{}, {}, {}, {}]",
             self.hwnd, slot.left, slot.top, slot.right, slot.bottom
