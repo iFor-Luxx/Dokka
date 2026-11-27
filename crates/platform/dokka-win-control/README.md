@@ -7,5 +7,12 @@ da el rectángulo real de una ventana (para una minimizada, su posición restaur
 Bloquea la sesión (`lock_screen`) y abre el cuadro de apagar, reiniciar o suspender
 (`show_shutdown_dialog` con `IShellDispatch::ShutdownWindows`): solo muestra el diálogo,
 nunca apaga sin preguntar.
+Consulta la red en uso (`SystemNetwork` con `NetworkInformation::GetInternetConnectionProfile`):
+tipo (cable, wifi, otra o ninguna), nombre y si hay internet; sin conexión devuelve
+apagado y nombre vacío.
+Lista los idiomas de teclado (`SystemKeyboard` con `GetKeyboardLayoutList`): código corto,
+nombre completo y cuál usa la ventana al frente; activar uno envía
+`WM_INPUTLANGCHANGEREQUEST` a esa ventana. Si la barra tiene el foco (menú abierto), el
+idioma activo es el de Dokka: conviene preguntar antes de abrir el menú.
 
-**No hace:** no las busca. Windows puede negarse con ventanas abiertas como administrador.
+**No hace:** no las busca ni recuerda la última ventana ajena. Windows puede negarse con ventanas abiertas como administrador.
