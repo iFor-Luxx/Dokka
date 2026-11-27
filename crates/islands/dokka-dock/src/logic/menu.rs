@@ -1,9 +1,7 @@
 //! Menú propio del clic derecho: qué opciones tiene y dónde está.
 
-use dokka_components::menu_panel::{MenuRow, menu_row_at, menu_row_top, menu_size};
+use dokka_components::menu_panel::{MenuRow, menu_row_at, menu_row_top};
 use dokka_model::{AppInfo, DockApp, WindowId};
-use dokka_scene::Rect;
-use dokka_theme::menu as measures;
 
 use super::dock_menu::{MenuData, dock_menu};
 use super::submenu::{OpenSubmenu, submenu_contains, submenu_panel};
@@ -48,8 +46,11 @@ pub(crate) struct OpenMenu {
     pub(crate) children: Vec<Option<super::dock_menu::SubmenuData>>,
     pub(crate) panel: Rect,
     pub(crate) tip_x: f32,
+    pub(crate) tip_y: f32,
     pub(crate) floor: f32,
     pub(crate) limit: f32,
+    pub(crate) cross_limit: f32,
+    pub(crate) position: dokka_model::DockPosition,
     pub(crate) highlighted: Option<usize>,
     pub(crate) submenu: Option<OpenSubmenu>,
 }
@@ -72,26 +73,19 @@ impl Dock {
             Some(content) => content,
             None => return false,
         };
-        let size = menu_size(&rows);
-        let limit = self.surface_size(apps).width;
-        let panel_x = (x - size.width / 2.0).clamp(0.0, (limit - size.width).max(0.0));
-        let bar_top = self.menu_floor(apps);
-        let bottom = bar_top - measures::POINTER_HEIGHT;
-        let panel = Rect {
-            x: panel_x,
-            y: (bottom - size.height).max(0.0),
-            width: size.width,
-            height: size.height,
-        };
+        let placed = super::menu_place::place_menu(self, apps, x, y, &rows);
         self.pointer_left();
         self.menu = Some(OpenMenu {
             rows,
             actions,
             children,
-            panel,
-            tip_x: x,
-            floor: bar_top,
-            limit,
+            panel: placed.panel,
+            tip_x: placed.tip_x,
+            tip_y: placed.tip_y,
+            floor: placed.floor,
+            limit: placed.limit,
+            cross_limit: placed.cross_limit,
+            position: placed.position,
             highlighted: None,
             submenu: None,
         });
@@ -136,7 +130,15 @@ impl Dock {
             };
             if let Some(data) = data {
                 let top = menu_row_top(&menu.rows, menu.panel, index);
-                let panel = submenu_panel(menu.panel, top, &data.rows, menu.limit, menu.floor);
+                let panel = submenu_panel(
+                    menu.panel,
+                    top,
+                    &data.rows,
+                    menu.limit,
+                    menu.floor,
+                    menu.position,
+                    menu.cross_limit,
+                );
                 menu.submenu = Some(OpenSubmenu {
                     mother: index,
                     rows: data.rows,
@@ -172,10 +174,6 @@ impl Dock {
 
     pub fn is_menu_open(&self) -> bool {
         self.menu.is_some()
-    }
-
-    fn menu_floor(&self, apps: &[DockApp]) -> f32 {
-        super::place_dock(self, apps).bar.y
     }
 
     fn menu_content(

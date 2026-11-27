@@ -2,4 +2,4 @@
 
 mod view;
 
-pub use view::{place_above, popup_panel, text};
+pub use view::{place_above, place_after, place_before, popup_panel, text};

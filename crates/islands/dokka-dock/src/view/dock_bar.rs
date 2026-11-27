@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dokka_components::tooltip::tooltip;
-use dokka_model::{AppId, DockApp};
+use dokka_components::tooltip::{tooltip, tooltip_side};
+use dokka_model::{AppId, DockApp, DockPosition};
 use dokka_scene::{Bitmap, Divider, Dot, Icon, IconImage, Panel, Rect, Scene};
 
 use super::dock_style as style;
@@ -34,7 +34,6 @@ impl Dock {
             icons.push(self.icon(entry, bounds, images));
         }
 
-        let dot_y = placement.bar.y + placement.bar.height - style::dot_from_bottom(self);
         let dots = placement
             .slots
             .iter()
@@ -42,16 +41,51 @@ impl Dock {
                 Entry::App(app) | Entry::Explorer(app) => app.is_running(),
                 _ => false,
             })
-            .map(|(_, bounds)| Dot {
-                x: bounds.x + (bounds.width - style::dot_diameter(self)) / 2.0,
-                y: dot_y,
-                diameter: style::dot_diameter(self),
-                color: self.theme.dock.running_dot,
+            .map(|(_, bounds)| {
+                let diameter = style::dot_diameter(self);
+                match self.preferences.position {
+                    DockPosition::Left => Dot {
+                        x: placement.bar.x + style::dot_from_bottom(self) - diameter,
+                        y: bounds.y + (bounds.height - diameter) / 2.0,
+                        diameter,
+                        color: self.theme.dock.running_dot,
+                    },
+                    DockPosition::Right => Dot {
+                        x: placement.bar.x + placement.bar.width
+                            - style::dot_from_bottom(self),
+                        y: bounds.y + (bounds.height - diameter) / 2.0,
+                        diameter,
+                        color: self.theme.dock.running_dot,
+                    },
+                    _ => Dot {
+                        x: bounds.x + (bounds.width - diameter) / 2.0,
+                        y: placement.bar.y + placement.bar.height
+                            - style::dot_from_bottom(self),
+                        diameter,
+                        color: self.theme.dock.running_dot,
+                    },
+                }
             })
             .collect();
 
         let labels = hovered_label(self, &placement, names)
-            .map(|(text, slot)| tooltip(&self.theme, &text, slot.x + slot.width / 2.0, slot.y))
+            .map(|(text, slot)| match self.preferences.position {
+                DockPosition::Left => tooltip_side(
+                    &self.theme,
+                    &text,
+                    slot.y + slot.height / 2.0,
+                    slot.x + slot.width,
+                    true,
+                ),
+                DockPosition::Right => tooltip_side(
+                    &self.theme,
+                    &text,
+                    slot.y + slot.height / 2.0,
+                    slot.x,
+                    false,
+                ),
+                _ => tooltip(&self.theme, &text, slot.x + slot.width / 2.0, slot.y),
+            })
             .into_iter()
             .collect();
 

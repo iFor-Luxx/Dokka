@@ -1,3 +1,4 @@
+use dokka_model::DockPosition;
 use windows::Win32::Foundation::{HWND, RECT};
 use windows::Win32::Graphics::Gdi::{
     GetMonitorInfoW, MONITOR_DEFAULTTOPRIMARY, MONITORINFO, MonitorFromWindow,
@@ -12,9 +13,14 @@ use windows::core::Result;
 use crate::SurfaceOptions;
 
 const BASE_DPI: f32 = 96.0;
+/// Franja visible al esconderse, en unidades lógicas.
+const HIDE_STRIP: f32 = 3.0;
 
 /// Coloca la ventana en el monitor principal y devuelve la escala usada.
-pub(crate) fn place_at_bottom_center(window: HWND, options: SurfaceOptions) -> Result<f32> {
+/// Abajo queda centrada como hoy; en laterales centrada en vertical
+/// pegada a su borde con el mismo margen, bajo la reserva superior.
+/// Con `hide` se desplaza hacia fuera dejando solo la franja fina.
+pub(crate) fn place_dock_window(window: HWND, options: SurfaceOptions) -> Result<f32> {
     let base = base_area(window, options.over_taskbar)?;
     // SAFETY: `window` es válida y la escala sale de su DPI real.
     unsafe {
@@ -22,8 +28,42 @@ pub(crate) fn place_at_bottom_center(window: HWND, options: SurfaceOptions) -> R
         let width = (options.width * scale).round() as i32;
         let height = (options.height * scale).round() as i32;
         let margin = (options.bottom_margin * scale).round() as i32;
-        let x = base.left + (base.right - base.left - width) / 2;
-        let y = base.bottom - height - margin;
+        let hide = options.hide.clamp(0.0, 1.0);
+        let strip = (HIDE_STRIP * scale).round() as i32;
+        let (mut x, mut y) = match options.position {
+            DockPosition::Left => (
+                base.left + margin,
+                base.top + (base.bottom - base.top - height) / 2,
+            ),
+            DockPosition::Right => (
+                base.right - width - margin,
+                base.top + (base.bottom - base.top - height) / 2,
+            ),
+            _ => (
+                base.left + (base.right - base.left - width) / 2,
+                base.bottom - height - margin,
+            ),
+        };
+        if hide > 0.0 {
+            // Hacia fuera hasta el borde: abajo baja, izquierda retrocede,
+            // derecha avanza. Incluye el margen para que la franja toque el borde
+            // aunque la barra de tareas siga visible.
+            let eased = hide * hide * (3.0 - 2.0 * hide);
+            match options.position {
+                DockPosition::Left => {
+                    let distance = (width - strip + margin) as f32 * eased;
+                    x -= distance.round() as i32;
+                }
+                DockPosition::Right => {
+                    let distance = (width - strip + margin) as f32 * eased;
+                    x += distance.round() as i32;
+                }
+                _ => {
+                    let distance = (height - strip + margin) as f32 * eased;
+                    y += distance.round() as i32;
+                }
+            }
+        }
 
         SetWindowPos(
             window,
@@ -36,6 +76,12 @@ pub(crate) fn place_at_bottom_center(window: HWND, options: SurfaceOptions) -> R
         )?;
         Ok(scale)
     }
+}
+
+/// Coloca la ventana en el monitor principal y devuelve la escala usada.
+/// Abajo y visible: idéntico a `place_dock_window` sin esconder.
+pub(crate) fn place_at_bottom_center(window: HWND, options: SurfaceOptions) -> Result<f32> {
+    place_dock_window(window, options)
 }
 
 /// Cubre el monitor principal con la ventana y devuelve su escala.
@@ -84,6 +130,15 @@ pub(crate) fn place_centered(window: HWND, width: f32, height: f32) -> Result<f3
         SetWindowPos(window, None, x, y, width_px, height_px, SWP_NOACTIVATE)?;
         Ok(scale)
     }
+}
+
+/// Tamaño en píxeles del área donde vive el dock.
+/// `[0, 0]` si no se puede saber.
+pub(crate) fn work_area_pixels(window: HWND, over_taskbar: bool) -> [i32; 2] {
+    let Ok(area) = base_area(window, over_taskbar) else {
+        return [0, 0];
+    };
+    [area.right - area.left, area.bottom - area.top]
 }
 
 /// Rectángulo donde anclar el dock: el monitor completo si se tapa la barra,

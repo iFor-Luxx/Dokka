@@ -6,10 +6,13 @@
 - `Shape::Glyph` es un glifo de la fuente de iconos, centrado en (`x`, `y`).
 - `Label` es la etiqueta flotante: texto de una línea con la posición de su
   punta; la plataforma mide el texto y la muestra como píldora de cristal
-  (radio = mitad del alto) con punta del mismo tinte y borde.
+  (radio = mitad del alto) con punta del mismo tinte y borde. `side` dice
+  dónde está el icono (`Below` abajo como hoy, `After` a la izquierda con la
+  etiqueta a la derecha, `Before` al revés); `center_y` y `bottom` (punta)
+  colocan las laterales.
 - `Overlay` añade `highlight`, `dividers` y `pointer` (la punta del menú:
-  centro x y altura; base = 2 × altura; nace en el borde inferior del panel
-  y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
+  centro y altura; base = 2 × altura; nace en el borde hacia el dock
+  —abajo, izquierda o derecha según `side`— y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
 - `Overlay` lleva `icons` sobre el resaltado, junto a los textos (el chevrón del menú).
 - `Overlay` lleva `flat_panels`: rectángulos planos (sin cristal) para barras y tarjetas.
 - `Overlay` lleva `tiles`: piezas de cristal separadas, como en el Centro de control de Tahoe.

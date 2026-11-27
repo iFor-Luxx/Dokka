@@ -3,6 +3,7 @@
 mod app_menu_actions;
 mod apply_preferences;
 mod context_menu;
+mod dock_fit;
 mod dock_session;
 mod floating_panels;
 mod handle_event;
@@ -49,6 +50,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         height: 0.0,
         bottom_margin: 0.0,
         over_taskbar: false,
+        position: dokka_model::DockPosition::Bottom,
+        hide: 0.0,
     })?;
     surface.settings_place(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT)?;
     // Sin barra superior Dokka sigue funcionando.
