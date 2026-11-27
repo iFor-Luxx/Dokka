@@ -1,4 +1,8 @@
 use windows::Win32::Foundation::{HWND, WPARAM};
+use windows::Win32::Graphics::Dwm::{
+    DWM_WINDOW_CORNER_PREFERENCE, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND,
+    DwmSetWindowAttribute,
+};
 use windows::Win32::UI::Input::KeyboardAndMouse::ReleaseCapture;
 use windows::Win32::UI::WindowsAndMessaging::{
     HTCAPTION, HWND_NOTOPMOST, HWND_TOPMOST, SW_HIDE, SW_MINIMIZE, SW_SHOWNORMAL, SWP_NOMOVE,
@@ -63,6 +67,7 @@ impl Surface {
         // El dock no activa a Dokka, así que el primer plano puede ser negado.
         foreground_window(self.settings);
         self.settings_visible = true;
+        enable_settings_shadow(self.settings);
         Ok(())
     }
 
@@ -110,5 +115,21 @@ impl Surface {
 
     pub(crate) fn settings_window(&self) -> HWND {
         self.settings
+    }
+}
+
+/// Sombra de la ventana de Preferencias con el sistema (DWM): esquinas
+/// redondeadas con sombra suave, sin cambiar su tamaño ni sus golpes.
+/// Falla sola: si no se puede activar, la ventana se ve sin ella.
+fn enable_settings_shadow(window: HWND) {
+    // SAFETY: la ventana es propia; la preferencia es válida y se pasa su tamaño.
+    unsafe {
+        let preference = DWMWCP_ROUND;
+        let _ = DwmSetWindowAttribute(
+            window,
+            DWMWA_WINDOW_CORNER_PREFERENCE,
+            (&raw const preference).cast(),
+            size_of::<DWM_WINDOW_CORNER_PREFERENCE>() as u32,
+        );
     }
 }

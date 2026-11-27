@@ -49,6 +49,7 @@ pub fn control_center_panel(
             border: theme.tray.clear,
         },
         tiles: pieces.tiles,
+        tile_shadow: None,
         pill: None,
         highlight: None,
         flat_panels: pieces.flats,

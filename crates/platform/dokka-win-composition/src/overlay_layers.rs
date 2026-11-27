@@ -1,4 +1,4 @@
-use dokka_scene::{Overlay, Panel};
+use dokka_scene::{Overlay, Panel, Shadow};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 use windows_numerics::Vector3;
@@ -23,6 +23,8 @@ pub(crate) struct OverlayLayers {
     tiles: Vec<PanelLayer>,
     /// Estilo con el que se creó cada pieza.
     tile_styles: Vec<Panel>,
+    /// Sombra pedida bajo las piezas, si hay.
+    tile_shadow: Option<Shadow>,
     /// Apariencia con la que se creó el fondo.
     style: Panel,
     pill: Option<PanelLayer>,
@@ -61,6 +63,13 @@ impl OverlayLayers {
             .iter()
             .map(|tile| PanelLayer::add_tile(compositor, &container, tile))
             .collect::<Result<Vec<_>>>()?;
+        // La sombra va debajo del cristal y se mueve con él: se crea una vez
+        // y `update` no la toca. Si no se puede crear, las piezas se ven sin ella.
+        if let Some(shadow) = &overlay.tile_shadow {
+            for layer in &tiles {
+                let _ = layer.attach_shadow(compositor, shadow);
+            }
+        }
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;
         if let Some(pill_panel) = &overlay.pill {
@@ -118,6 +127,7 @@ impl OverlayLayers {
             panel,
             tiles,
             tile_styles: overlay.tiles.clone(),
+            tile_shadow: overlay.tile_shadow,
             style: overlay.panel,
             pill,
             pill_style: overlay.pill,
@@ -142,6 +152,7 @@ impl OverlayLayers {
     pub(crate) fn matches(&self, overlay: &Overlay) -> bool {
         self.panel.is_some() == has_glass(&overlay.panel)
             && self.style.tint == overlay.panel.tint
+            && self.tile_shadow == overlay.tile_shadow
             && self.pill.is_some() == overlay.pill.is_some()
             && self.pill_style.map(pill_style_of) == overlay.pill.map(pill_style_of)
             && self.pointer.is_some() == overlay.pointer.is_some()

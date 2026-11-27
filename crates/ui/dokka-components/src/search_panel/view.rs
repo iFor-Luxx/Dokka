@@ -15,9 +15,9 @@ pub fn search_panel_size(props: &SearchPanelProps) -> Size {
 }
 
 /// Dos piezas de cristal separadas: cápsula de búsqueda y tarjeta de
-/// resultados. Capas siempre iguales: panel invisible, dos piezas, un
-/// resaltado, una línea de cursor, nueve textos y ocho iconos; lo que no
-/// se ve va de tamaño cero o vacío.
+/// resultados, con sombra suave bajo cada una. Capas siempre iguales:
+/// panel invisible, dos piezas, un resaltado, una línea de cursor, nueve
+/// textos y ocho iconos; lo que no se ve va de tamaño cero o vacío.
 pub fn search_panel_panel(
     theme: &Theme,
     drawings: &SearchPanelIcons,
@@ -51,6 +51,11 @@ pub fn search_panel_panel(
                 border: theme.tray.tile_border,
             },
         ],
+        tile_shadow: Some(dokka_scene::Shadow {
+            color: theme.tray.shadow,
+            blur: measures::SHADOW_BLUR,
+            offset: (0.0, measures::SHADOW_OFFSET_Y),
+        }),
         pill: None,
         highlight: Some(result_highlight(theme, bounds, props, visible)),
         flat_panels: Vec::new(),

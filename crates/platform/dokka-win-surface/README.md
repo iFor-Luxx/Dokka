@@ -1,7 +1,9 @@
 # dokka-win-surface
 
 **Hace:** crea las ventanas de Dokka (dock sin foco, Launchpad a pantalla completa
-que sí lo toma, Preferencias normal y activable con sitio en la barra de tareas,
+que sí lo toma, Preferencias normal y activable con sitio en la barra de tareas, y con
+sombra suave del sistema (DWM, esquinas redondeadas; si no se puede activar
+se ve sin ella, sin cambiar su tamaño ni sus golpes),
 y superpuesta solo visual), cambia su tamaño y zona activa y coloca el dock
 según su borde (`place_window.rs`: abajo centrado como hoy; en laterales
 centrado en vertical pegado a su borde con el mismo margen, bajo la reserva

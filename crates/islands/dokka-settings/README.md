@@ -1,7 +1,7 @@
 # dokka-settings
 
 **Hace:** ventana de Preferencias estilo Ajustes del Sistema de macOS Tahoe, con
-ajustes reales: semáforos rojo (cierra y limpia la navegación: al volver a abrir
+sombra suave del sistema y ajustes reales: semáforos rojo (cierra y limpia la navegación: al volver a abrir
 empieza en General, sin historial, búsqueda ni foco; los ajustes guardados no se
 tocan), amarillo (minimiza a nuestro dock, a la derecha del separador, como miniatura
 con el engranaje) y verde (alterna el tamaño normal 760 × 720 y uno mayor ≈ 920 × 820,

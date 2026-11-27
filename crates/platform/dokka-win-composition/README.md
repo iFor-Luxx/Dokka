@@ -28,7 +28,10 @@ activo el `holder` se oculta y solo se ve la copia (sin doble imagen), y en repo
 copia se oculta y no hay efectos activos. Si el efecto no se puede crear, se sigue con zoom y desvanecido. Los dibujos (incluidos los glifos Lucide, con la fuente en
 memoria de `dokka-win-text`) se pintan al doble de su lado en pantalla, con un mínimo de 128
 para que los iconos grandes del dock no pierdan al crecer con la lupa; solo se repintan si
-cambia su imagen, nunca al moverse o escalarse.
+cambia su imagen, nunca al moverse o escalarse. Las piezas del buscador
+llevan sombra suave (`DropShadow` bajo el cristal, con su forma redondeada
+y sin oscurecer el interior; si no se puede crear, se ven sin ella y no se
+reconstruye nada al redibujar).
 
 **No hace:** no decide qué dibujar ni crea ventanas. Las miniaturas siempre quedan por encima del resto.
 Todavía no se recupera si falla la tarjeta gráfica.
