@@ -1,5 +1,5 @@
 use dokka_scene::{Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, background as measures};
+use dokka_theme::{Theme, background as measures, tray_glass as glass};
 
 use super::layout::{circle_in, row_rect, title_row};
 use super::{BackgroundApp, BackgroundHit};
@@ -29,7 +29,7 @@ pub fn background_panel(
     let mut icons = Vec::with_capacity(measures::MAX_ROWS);
     let mut texts = Vec::with_capacity(measures::MAX_ROWS + 2);
     texts.push(Text {
-        x: title.x + measures::PADDING,
+        x: title.x + glass::ROW_MARGIN + glass::ROW_INSET,
         center_y: title.y + title.height / 2.0,
         content: measures::TITLE.to_owned(),
         size: measures::TITLE_SIZE,

@@ -20,7 +20,7 @@ pub fn background_hit(
         .enumerate()
         .find(|(index, _)| {
             let row = row_rect(bounds, *index);
-            y >= row.y && y < row.y + row.height
+            x >= row.x && x < row.x + row.width && y >= row.y && y < row.y + row.height
         })
         .map(|(_, app)| BackgroundHit::Row(app.id))
 }

@@ -4,7 +4,7 @@
 //! dos filas compactas (silenciar y ajustes).
 
 use dokka_scene::Rect;
-use dokka_theme::volume as measures;
+use dokka_theme::{tray_glass as glass, volume as measures};
 
 /// Fila del título en negrita arriba a la izquierda.
 pub(crate) fn title_row(bounds: Rect) -> Rect {
@@ -33,9 +33,9 @@ pub(crate) fn mute_row(bounds: Rect) -> Rect {
     let top =
         touch.y + touch.height + measures::SECTION_GAP + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN,
         y: top,
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - glass::ROW_MARGIN * 2.0,
         height: measures::ROW_HEIGHT,
     }
 }
@@ -44,9 +44,9 @@ pub(crate) fn mute_row(bounds: Rect) -> Rect {
 pub(crate) fn settings_row(bounds: Rect) -> Rect {
     let mute = mute_row(bounds);
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN,
         y: mute.y + mute.height + dokka_theme::tray_glass::SEPARATOR_HEIGHT,
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - glass::ROW_MARGIN * 2.0,
         height: measures::ROW_HEIGHT,
     }
 }
@@ -61,9 +61,9 @@ pub(crate) fn separator_rect(bounds: Rect, index: usize) -> Rect {
         mute.y + mute.height
     };
     Rect {
-        x: bounds.x + measures::PADDING,
+        x: bounds.x + glass::ROW_MARGIN + glass::ROW_INSET,
         y,
-        width: bounds.width - measures::PADDING * 2.0,
+        width: bounds.width - (glass::ROW_MARGIN + glass::ROW_INSET) * 2.0,
         height: dokka_theme::tray_glass::SEPARATOR_HEIGHT,
     }
 }

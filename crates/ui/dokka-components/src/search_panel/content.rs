@@ -1,5 +1,5 @@
 use dokka_scene::{Icon, IconImage, Rect, Text, TextAlign};
-use dokka_theme::{Theme, search as measures};
+use dokka_theme::{Theme, search as measures, tray_glass as glass};
 
 use super::{SearchPanelIcons, SearchPanelProps};
 use crate::search_field::{search_label_at, search_magnifier_at};
@@ -39,7 +39,7 @@ pub(super) fn panel_texts(
             .map(|result| short_name(&result.name))
             .unwrap_or_default();
         texts.push(Text {
-            x: results.x + measures::PADDING + measures::ROW_ICON_SIDE + measures::ROW_TEXT_GAP,
+            x: results.x + glass::ROW_MARGIN + glass::ROW_INSET + measures::ROW_ICON_SIDE + measures::ROW_TEXT_GAP,
             center_y: measures::row_top(bounds, slot) + measures::ROW_HEIGHT / 2.0,
             content,
             size: measures::ROW_TEXT_SIZE,
@@ -85,7 +85,7 @@ pub(super) fn panel_icons(
     for slot in 0..measures::MAX_RESULTS {
         if let Some(result) = props.results.get(slot).filter(|_| slot < visible) {
             icons.push(Icon {
-                x: results.x + measures::PADDING,
+                x: results.x + glass::ROW_MARGIN + glass::ROW_INSET,
                 y: measures::row_top(bounds, slot)
                     + (measures::ROW_HEIGHT - measures::ROW_ICON_SIDE) / 2.0,
                 side: measures::ROW_ICON_SIDE,

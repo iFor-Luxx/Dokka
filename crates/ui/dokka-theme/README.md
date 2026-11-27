@@ -26,7 +26,8 @@
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
   a 20; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de
-  cristal separadas de 320 de ancho con hueco de 10, aire de 12, cápsula de 60
+  cristal separadas de 320 de ancho con hueco de 10, aire de 12, resaltado con margen de 6
+  e inset de 10 y radio concéntrico de 10, cápsula de 60
   con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
   la rejilla estricta del Centro de control (celda de 66, hueco de 12,
   cápsula doble de 144 × 66 con círculo de 42, música de 144 × 144,
@@ -35,7 +36,7 @@
   calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560,
   cápsula de 52 con lupa a 20 y cursor, tarjeta de resultados con hasta 7 filas de 44
-  con icono de 28, resaltado en cápsula translúcida y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
+  con icono de 28, resaltado redondeado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
   desenfoque máximo (`ZOOM_BLUR_MAX`); `popup.rs`: reserva 420 sobre el dock, animación de paneles,

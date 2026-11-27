@@ -15,12 +15,16 @@ pub fn language_hit(
     }
     for (index, language) in languages.iter().enumerate() {
         let row = row_rect(bounds, index);
-        if y >= row.y && y < row.y + row.height {
+        if x >= row.x && x < row.x + row.width && y >= row.y && y < row.y + row.height {
             return Some(LanguageHit::Language(language.id));
         }
     }
     let settings = settings_row(bounds, languages.len());
-    if y >= settings.y && y < settings.y + settings.height {
+    if x >= settings.x
+        && x < settings.x + settings.width
+        && y >= settings.y
+        && y < settings.y + settings.height
+    {
         return Some(LanguageHit::Settings);
     }
     None

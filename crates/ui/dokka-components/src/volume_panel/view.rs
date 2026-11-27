@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use dokka_scene::{Divider, Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, volume as measures};
+use dokka_theme::{Theme, tray_glass as glass, volume as measures};
 
 use crate::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
 
@@ -189,7 +189,7 @@ fn percent_text(theme: &Theme, track: Rect, props: &VolumePanelProps) -> Text {
 
 fn mute_text(theme: &Theme, row: Rect) -> Text {
     Text {
-        x: row.x + measures::ICON_SIDE + measures::ICON_GAP,
+        x: row.x + glass::ROW_INSET + measures::ICON_SIDE + measures::ICON_GAP,
         center_y: row.y + row.height / 2.0,
         content: measures::MUTE_LABEL.to_owned(),
         size: measures::TITLE_SIZE,
@@ -201,7 +201,7 @@ fn mute_text(theme: &Theme, row: Rect) -> Text {
 
 fn settings_text(theme: &Theme, settings: Rect) -> Text {
     Text {
-        x: settings.x,
+        x: settings.x + glass::ROW_INSET,
         center_y: settings.y + settings.height / 2.0,
         content: measures::SETTINGS_LABEL.to_owned(),
         size: measures::TITLE_SIZE,
@@ -218,7 +218,7 @@ fn speaker_icon(
     props: &VolumePanelProps,
 ) -> Icon {
     Icon {
-        x: row.x,
+        x: row.x + glass::ROW_INSET,
         y: row.y + (row.height - measures::ICON_SIDE) / 2.0,
         side: measures::ICON_SIDE,
         image: Some(IconImage::Drawing(Arc::clone(
@@ -231,7 +231,7 @@ fn speaker_icon(
 
 fn settings_icon(theme: &Theme, icons: &VolumePanelIcons, settings: Rect) -> Icon {
     Icon {
-        x: settings.x + settings.width - measures::SETTINGS_CHEVRON_SIDE,
+        x: settings.x + settings.width - glass::ROW_INSET - measures::SETTINGS_CHEVRON_SIDE,
         y: settings.y + (settings.height - measures::SETTINGS_CHEVRON_SIDE) / 2.0,
         side: measures::SETTINGS_CHEVRON_SIDE,
         image: Some(IconImage::Drawing(Arc::clone(icons.chevron()))),

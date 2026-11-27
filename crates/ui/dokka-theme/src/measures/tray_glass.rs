@@ -22,6 +22,10 @@ pub const ROW_HEIGHT: f32 = 34.0;
 pub const SEPARATOR_HEIGHT: f32 = 1.0;
 /// Radio del resaltado suave dentro del cristal, concéntrico.
 pub const HIGHLIGHT_RADIUS: f32 = 10.0;
+/// Separación del resaltado al borde del panel, igual a izquierda y derecha.
+pub const ROW_MARGIN: f32 = 6.0;
+/// Aire dentro del resaltado antes del contenido, igual a izquierda y derecha.
+pub const ROW_INSET: f32 = 10.0;
 /// Alto de una cápsula (icono, título y subtítulo, compatibilidad).
 pub const CAPSULE_HEIGHT: f32 = 60.0;
 /// Lado de los círculos de icono en filas de dispositivo.
