@@ -46,8 +46,8 @@ pub use lucide::{
 pub use menubar_tray::{TRAY_GLYPH_SIDE, TrayIcons};
 pub use music::music_bar_icon;
 pub use network_language::{
-    language_check_icon, network_ethernet_icon, network_offline_icon, network_other_icon,
-    network_wifi_icon,
+    language_check_icon, language_row_icon, network_ethernet_icon, network_offline_icon,
+    network_other_icon, network_wifi_icon, tray_chevron_icon, tray_settings_icon,
 };
 pub use search::{search_bar_icon, search_field_icon};
 pub use trash::trash_icon;

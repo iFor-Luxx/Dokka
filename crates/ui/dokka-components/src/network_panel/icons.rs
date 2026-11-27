@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use dokka_icons::{
     network_ethernet_icon, network_offline_icon, network_other_icon, network_wifi_icon,
+    tray_chevron_icon, tray_settings_icon,
 };
 use dokka_scene::Drawing;
 use dokka_theme::Theme;
@@ -13,20 +14,32 @@ use super::NetworkType;
 /// cuando recibe otro dibujo.
 #[derive(Debug)]
 pub struct NetworkIcons {
-    panel: [Arc<Drawing>; 4],
+    /// Icono azul sobre el círculo blanco activo, por tipo.
+    active: [Arc<Drawing>; 4],
+    /// Icono blanco sobre el círculo translúcido apagado, por tipo.
+    inactive: [Arc<Drawing>; 4],
     bar: [Arc<Drawing>; 4],
+    settings: Arc<Drawing>,
+    chevron: Arc<Drawing>,
 }
 
 impl NetworkIcons {
     pub fn new(theme: &Theme) -> Self {
-        let panel = theme.menu.text;
+        let active_color = theme.tray.circle_active_icon;
+        let inactive_color = theme.tray.circle_icon;
         let bar = theme.menubar.text;
         Self {
-            panel: [
-                Arc::new(network_offline_icon(panel)),
-                Arc::new(network_ethernet_icon(panel)),
-                Arc::new(network_wifi_icon(panel)),
-                Arc::new(network_other_icon(panel)),
+            active: [
+                Arc::new(network_offline_icon(active_color)),
+                Arc::new(network_ethernet_icon(active_color)),
+                Arc::new(network_wifi_icon(active_color)),
+                Arc::new(network_other_icon(active_color)),
+            ],
+            inactive: [
+                Arc::new(network_offline_icon(inactive_color)),
+                Arc::new(network_ethernet_icon(inactive_color)),
+                Arc::new(network_wifi_icon(inactive_color)),
+                Arc::new(network_other_icon(inactive_color)),
             ],
             bar: [
                 Arc::new(network_offline_icon(bar)),
@@ -34,12 +47,34 @@ impl NetworkIcons {
                 Arc::new(network_wifi_icon(bar)),
                 Arc::new(network_other_icon(bar)),
             ],
+            settings: Arc::new(tray_settings_icon(inactive_color)),
+            chevron: Arc::new(tray_chevron_icon(theme.tray.text)),
         }
     }
 
-    /// Dibujo oscuro para la cabecera del panel claro.
+    /// Dibujo azul para el círculo blanco activo (se mantiene por
+    /// compatibilidad: es el icono de la cabecera).
     pub fn for_panel(&self, kind: NetworkType) -> Arc<Drawing> {
-        Arc::clone(&self.panel[kind_index(kind)])
+        Arc::clone(&self.active[kind_index(kind)])
+    }
+
+    /// Icono del círculo según si la conexión está activa.
+    pub fn for_circle(&self, kind: NetworkType, is_active: bool) -> Arc<Drawing> {
+        if is_active {
+            self.for_panel(kind)
+        } else {
+            Arc::clone(&self.inactive[kind_index(kind)])
+        }
+    }
+
+    /// Engranaje blanco de la zona de ajustes.
+    pub fn settings(&self) -> &Arc<Drawing> {
+        &self.settings
+    }
+
+    /// Chevrón blanco de la zona de ajustes.
+    pub fn chevron(&self) -> &Arc<Drawing> {
+        &self.chevron
     }
 
     /// Dibujo blanco para la barra, según el tipo de red.

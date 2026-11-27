@@ -1,5 +1,7 @@
-//! Lista de idiomas instalados con marca Lucide en el activo,
-//! resaltado de fila y ajustes. En la barra el idioma es su código en texto.
+//! Lista de idiomas estilo Tahoe: título, una cápsula por idioma con
+//! círculo y subtítulo "Activa", y ajustes en su zona propia. Sin marca
+//! de verificación: el círculo activo ya indica el idioma en uso.
+//! En la barra el idioma es su código en texto.
 
 mod icons;
 mod props;
