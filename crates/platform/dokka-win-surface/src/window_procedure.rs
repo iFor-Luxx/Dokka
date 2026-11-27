@@ -1,4 +1,5 @@
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
+use windows::Win32::UI::Shell::ABN_FULLSCREENAPP;
 use windows::Win32::UI::WindowsAndMessaging::{
     DefWindowProcW, GW_OWNER, GWL_EXSTYLE, GetWindow, GetWindowLongW, HTTRANSPARENT, MA_NOACTIVATE,
     PostMessageW, PostQuitMessage, SW_HIDE, ShowWindow, WA_INACTIVE, WM_ACTIVATE, WM_CLOSE,
@@ -13,6 +14,14 @@ pub(crate) const DISMISS_MESSAGE: u32 = 0x8001;
 /// Aviso propio de que Preferencias se cerró con la X, Alt+F4 o la barra de
 /// tareas. `WM_CLOSE` tampoco pasa por la cola, así que se reenvía igual.
 pub(crate) const SETTINGS_DISMISS_MESSAGE: u32 = 0x8002;
+
+/// Aviso del sistema para la barra registrada como AppBar (`SHAppBarMessage`).
+/// Valor fijo propio para no necesitar un global con `RegisterWindowMessageW`.
+pub(crate) const MENUBAR_CALLBACK_MESSAGE: u32 = 0x8003;
+
+/// Reenvío interno de que una app entró o salió de pantalla completa.
+/// `lParam` conserva el valor del aviso: distinto de cero al entrar.
+pub(crate) const MENUBAR_FULLSCREEN_MESSAGE: u32 = 0x8004;
 
 pub(crate) unsafe extern "system" fn window_procedure(
     window: HWND,
@@ -49,6 +58,18 @@ pub(crate) unsafe extern "system" fn window_procedure(
             unsafe {
                 let _ = ShowWindow(window, SW_HIDE);
                 let _ = PostMessageW(Some(window), SETTINGS_DISMISS_MESSAGE, WPARAM(0), LPARAM(0));
+            }
+            LRESULT(0)
+        }
+        MENUBAR_CALLBACK_MESSAGE if !is_owned() => {
+            // Solo interesa la pantalla completa: la barra no debe taparla.
+            // Llega por `SendMessage`, así que se reenvía a la cola para que
+            // `run_loop` la atienda con el estado de `Surface`.
+            if wparam.0 as u32 == ABN_FULLSCREENAPP {
+                // SAFETY: reenvía el aviso a la cola del hilo.
+                let _ = unsafe {
+                    PostMessageW(Some(window), MENUBAR_FULLSCREEN_MESSAGE, WPARAM(0), lparam)
+                };
             }
             LRESULT(0)
         }

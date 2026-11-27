@@ -6,8 +6,11 @@ use windows::Win32::UI::WindowsAndMessaging::{
     SetTimer, ShowWindow, TranslateMessage, WM_QUIT, WM_TIMER,
 };
 
+use crate::menubar_loop::read_menubar;
 use crate::read_pointer::{read_pointer, read_settings_pointer};
-use crate::window_procedure::{DISMISS_MESSAGE, SETTINGS_DISMISS_MESSAGE};
+use crate::window_procedure::{
+    DISMISS_MESSAGE, MENUBAR_FULLSCREEN_MESSAGE, SETTINGS_DISMISS_MESSAGE,
+};
 use crate::{Surface, SurfaceError, SurfaceEvent};
 
 /// Espera para agrupar ráfagas de avisos en una sola actualización.
@@ -22,6 +25,7 @@ struct LoopState {
     pending_timer: Option<usize>,
     is_pressed: bool,
     is_launchpad_pressed: bool,
+    is_menubar_pressed: bool,
 }
 
 impl Surface {
@@ -41,8 +45,12 @@ impl Surface {
             ..Default::default()
         };
         let mut last_frame: Option<Instant> = None;
-        // SAFETY: la ventana pertenece a este hilo.
+        // SAFETY: las ventanas pertenecen a este hilo.
         let _ = unsafe { ShowWindow(self.window, SW_SHOWNOACTIVATE) };
+        if self.menubar_visible && !self.menubar_fullscreen {
+            // SAFETY: la ventana es propia y de este hilo.
+            let _ = unsafe { ShowWindow(self.menubar, SW_SHOWNOACTIVATE) };
+        }
         let mut is_animating = false;
 
         loop {
@@ -84,7 +92,7 @@ impl Surface {
     }
 
     fn process(
-        &self,
+        &mut self,
         message: &MSG,
         refresh_message: u32,
         state: &mut LoopState,
@@ -110,6 +118,14 @@ impl Surface {
         if message.hwnd == self.window && message.message == DISMISS_MESSAGE {
             return Some(SurfaceEvent::Dismissed);
         }
+        if message.hwnd == self.menubar_window() && message.message == DISMISS_MESSAGE {
+            return Some(SurfaceEvent::MenubarDismissed);
+        }
+        if message.hwnd == self.menubar_window() && message.message == MENUBAR_FULLSCREEN_MESSAGE {
+            // `lParam` distinto de cero al entrar en pantalla completa.
+            self.apply_fullscreen(message.lParam.0 != 0);
+            return None;
+        }
         if message.hwnd == self.launchpad_window() && message.message == DISMISS_MESSAGE {
             return Some(SurfaceEvent::LaunchpadDismissed);
         }
@@ -118,6 +134,12 @@ impl Surface {
         }
         if message.hwnd == self.window
             && let Some(event) = read_pointer(message, self.scale, &mut state.is_pressed)
+        {
+            return Some(event);
+        }
+        if message.hwnd == self.menubar_window()
+            && let Some(event) =
+                read_menubar(message, self.menubar_scale(), &mut state.is_menubar_pressed)
         {
             return Some(event);
         }

@@ -76,6 +76,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "dokka-menubar"
+version = "0.1.0"
+dependencies = [
+ "dokka-components",
+ "dokka-icons",
+ "dokka-scene",
+ "dokka-theme",
+]
+
+[[package]]
 name = "dokka-model"
 version = "0.1.0"
 
@@ -113,6 +123,7 @@ dependencies = [
  "dokka-events",
  "dokka-icons",
  "dokka-launchpad",
+ "dokka-menubar",
  "dokka-model",
  "dokka-previews",
  "dokka-scene",

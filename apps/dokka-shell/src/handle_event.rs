@@ -27,6 +27,9 @@ pub(crate) fn handle_event(
     if handle_settings_event(session, surface, event)? {
         return crate::session_render::render(session, surface);
     }
+    if crate::menubar::handle_menubar_event(session, surface, event)? {
+        return crate::session_render::render(session, surface);
+    }
     match event {
         // Los eventos de Preferencias ya se atendieron arriba.
         SurfaceEvent::SettingsMoved { .. }
@@ -34,9 +37,17 @@ pub(crate) fn handle_event(
         | SurfaceEvent::SettingsPressed { .. }
         | SurfaceEvent::SettingsClicked { .. }
         | SurfaceEvent::SettingsDismissed => {}
+        // Los de la barra ya se atendieron arriba.
+        SurfaceEvent::MenubarMoved { .. }
+        | SurfaceEvent::MenubarLeft
+        | SurfaceEvent::MenubarClicked { .. }
+        | SurfaceEvent::MenubarDismissed => {}
         SurfaceEvent::PointerMoved { x, y } => {
             if session.launchpad.is_open() {
                 session.dock.pointer_moved(x, y, session.state.apps());
+            } else if session.menubar.is_menu_open() {
+                // Con el menú de la barra no se abren previas ni se mueve el dock.
+                session.previews.close();
             } else if session.dock.is_menu_open() {
                 session.dock.move_over_menu(x, y);
             } else if session.previews.contains(x, y) {
@@ -173,6 +184,8 @@ fn click(
     y: f32,
     with_shift: bool,
 ) -> Result<(), Box<dyn Error>> {
+    // Un clic en el dock es fuera de la barra: cierra su menú.
+    crate::menubar::dismiss_menubar(session, surface);
     if session.dock.is_menu_open() {
         if let Some(action) = session.dock.click_menu(x, y) {
             return run_menu_action(session, surface, action);

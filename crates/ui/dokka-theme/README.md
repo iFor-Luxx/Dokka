@@ -3,7 +3,8 @@
 **Hace:** reúne todos los estilos. Cambiar un valor aquí lo cambia en todo Dokka.
 
 - `palette.rs`: colores base. Único lugar con valores de color.
-- `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `TooltipColors`
+- `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
+  (`theme.menubar`: mismo cristal del dock, texto y hover suave del icono), `TooltipColors`
   (`theme.tooltip`), `LaunchpadColors` (`theme.launchpad`: fondo, texto, resaltado, casilla de
   búsqueda, puntos de página y baldosa de los iconos), `NavPillColors`
   (`theme.nav_pill`: cápsula, borde, chevrones, divisor y hover de la píldora de
@@ -15,7 +16,8 @@
   filas, cabecera con su píldora de 72 × 34 y tarjeta), con funciones para filas, título y tarjeta.
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
-  a 20; `tooltip.rs` para la
+  a 20; `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  reloj y menú colgando con su separación); `tooltip.rs` para la
   etiqueta en forma de píldora; `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
