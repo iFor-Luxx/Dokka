@@ -1,6 +1,7 @@
-//! Cristal único de música sin saber qué es la barra: carátula cuadrada,
-//! título y artista recortados con "…" y controles grandes de anterior,
-//! pausa/reproducir y siguiente; sin canción, atenuados.
+//! Cristal único de música sin saber qué es la barra: carátula cuadrada
+//! (foto real cuando Windows la publica, marcador si no), título y artista
+//! recortados con "…" y controles grandes de anterior, pausa/reproducir y
+//! siguiente; sin canción, atenuados.
 
 mod icons;
 mod props;

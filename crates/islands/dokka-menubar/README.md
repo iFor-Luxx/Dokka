@@ -16,8 +16,8 @@ al navegar; la hora y la fila se resaltan suave (plano, como el icono) al
 pasar o con su panel abierto. Solo uno de los ocho a la vez: abrir uno cierra
 los demás. Guarda el nombre, la hora, el hoy, el código de idioma, si el menú,
 el calendario o la fila están abiertos, el desfase de mes, las semanas vistas,
-los resaltados y los datos de cada panel (volumen, red, idiomas, canción,
-texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre
+los resaltados y los datos de cada panel (volumen, red, idiomas, canción y
+carátula, texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre
 del deslizador y devuelve `MenubarAction`. Da su `Scene` (con el menú, el
 calendario o el panel real como `overlay`) y sus zonas activas (la franja y,
 abierto, lo desplegado con su hueco). Expone `MenubarPainted` para repintar
@@ -42,7 +42,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `volume.rs` | `open_volume` (mide y coloca), `set_volume`, gesto de botón abajo y arrastre del deslizador con `VolumeSetLevel` en vivo |
 | `network.rs` | `open_network`, `set_network`, clic en ajustes |
 | `language.rs` | `open_language`, `set_languages`, elección de idioma |
-| `music.rs` | `open_music`, `set_now_playing`, botones anterior/pausa/siguiente |
+| `music.rs` | `open_music`, `set_now_playing` (canción y carátula), botón anterior/pausa/siguiente; expone `artwork` para reutilizarla |
 | `search.rs` | `open_search` (centrado), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
 | `control_center.rs` | `open_control_center` con los datos combinados; el deslizador delega en volumen, los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
 | `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
@@ -59,7 +59,7 @@ iconos nuevos, en un archivo propio de `dokka-icons` (no en `lucide.rs`, casi ll
 |---|---|---|
 | Volumen | `VolumeState { level, is_muted }` cada `Tick` | `VolumeSetLevel(f32)` / `VolumeToggleMute` / `OpenSoundSettings` |
 | Red | `NetworkState` cada pocos `Tick` y al abrir | `OpenNetworkSettings` |
-| Música | `NowPlayingInfo` cada `Tick` | `MusicPrevious` / `MusicToggle` / `MusicNext` |
+| Música | `NowPlayingInfo` y carátula (`artwork`) cada `Tick` | `MusicPrevious` / `MusicToggle` / `MusicNext` |
 | Idioma | `Vec<LanguageEntry>` + código (leído antes de tomar el foco) | `ChooseLanguage(id)` / `OpenLanguageSettings` |
 | Buscar | resultados filtrados (`set_search_results`) | `SearchOpen(index)` |
 | Centro de control | combinados de arriba | delega en las variantes de cada panel y en `TaskView` / `Project` / `Calculator` / `ScreenClip` / `Clock` |

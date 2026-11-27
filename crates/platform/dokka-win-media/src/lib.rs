@@ -1,6 +1,7 @@
 //! Reproducción multimedia de otras aplicaciones.
 #![allow(unsafe_code)]
 
+mod artwork;
 mod media_monitor;
 mod media_session;
 mod read_sessions;

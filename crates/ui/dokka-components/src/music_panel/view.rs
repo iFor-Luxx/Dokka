@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dokka_scene::{Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_scene::{Bitmap, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, music_panel as measures};
 
 use super::{MusicPanelHit, MusicPanelIcons, MusicTrack};
@@ -15,13 +15,18 @@ pub fn music_panel_size(_track: Option<&MusicTrack>) -> Size {
 
 /// Un solo cristal oscuro con carátula, título y controles grandes.
 /// Sin canción muestra "Nada en reproducción" con los botones atenuados.
-/// Capas siempre iguales: cristal, un plano de carátula, dos textos
-/// y tres iconos.
+/// Capas siempre iguales: cristal, un plano marcador, dos textos
+/// y cuatro iconos (la carátula primero, luego los tres botones).
+/// La carátula es un icono con píxeles cuando hay foto; sin ella, un
+/// marcador transparente sobre el plano. El número no cambia para no
+/// reconstruir capas, y pasar de foto a marcador (o al revés) reconstruye
+/// una vez esa capa en la plataforma y queda bien.
 pub fn music_panel_panel(
     theme: &Theme,
     icons: &MusicPanelIcons,
     bounds: Rect,
     track: Option<&MusicTrack>,
+    artwork: Option<&Arc<Bitmap>>,
 ) -> Overlay {
     Overlay {
         panel: Panel {
@@ -39,7 +44,7 @@ pub fn music_panel_panel(
         dots: Vec::new(),
         pointer: None,
         texts: music_texts(theme, bounds, track),
-        icons: music_icons(theme, icons, bounds, track),
+        icons: music_icons(theme, icons, bounds, track, artwork),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -150,6 +155,7 @@ fn music_icons(
     icons: &MusicPanelIcons,
     bounds: Rect,
     track: Option<&MusicTrack>,
+    artwork: Option<&Arc<Bitmap>>,
 ) -> Vec<Icon> {
     let playing = track.is_some_and(|track| track.is_playing);
     let dimmed = track.is_none();
@@ -163,21 +169,41 @@ fn music_icons(
     } else {
         [&icons.previous, &icons.play, &icons.next]
     };
-    music_buttons(bounds)
-        .iter()
-        .zip(drawings)
-        .map(|(area, drawing)| {
-            let side = measures::BUTTON_ICON_SIDE;
-            Icon {
-                x: area.x + (area.width - side) / 2.0,
-                y: area.y + (area.height - side) / 2.0,
-                side,
-                image: Some(IconImage::Drawing(Arc::clone(drawing))),
-                placeholder: theme.tray.clear,
-                placeholder_radius: 0.0,
-            }
-        })
-        .collect()
+    let mut all = Vec::with_capacity(4);
+    all.push(artwork_icon(theme, bounds, artwork));
+    all.extend(
+        music_buttons(bounds)
+            .iter()
+            .zip(drawings)
+            .map(|(area, drawing)| {
+                let side = measures::BUTTON_ICON_SIDE;
+                Icon {
+                    x: area.x + (area.width - side) / 2.0,
+                    y: area.y + (area.height - side) / 2.0,
+                    side,
+                    image: Some(IconImage::Drawing(Arc::clone(drawing))),
+                    placeholder: theme.tray.clear,
+                    placeholder_radius: 0.0,
+                }
+            }),
+    );
+    all
+}
+
+/// La foto en el sitio del cuadro; sin foto, un marcador transparente
+/// sobre el plano redondeado de detrás (el de hoy). Siempre hay icono,
+/// con o sin imagen: la plataforma solo reconstruye la capa al pasar de
+/// una a otra, y repinta sin reconstruir cuando cambia la foto.
+fn artwork_icon(theme: &Theme, bounds: Rect, artwork: Option<&Arc<Bitmap>>) -> Icon {
+    let art = artwork_rect(bounds);
+    Icon {
+        x: art.x,
+        y: art.y,
+        side: art.width,
+        image: artwork.map(|bitmap| IconImage::Pixels(Arc::clone(bitmap))),
+        placeholder: theme.tray.clear,
+        placeholder_radius: 0.0,
+    }
 }
 
 fn contains(bounds: &Rect, x: f32, y: f32) -> bool {

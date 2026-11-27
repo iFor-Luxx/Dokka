@@ -13,45 +13,11 @@ use dokka_components::volume_panel::VolumePanelHit;
 use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{TrayIcons, menubar_icon};
 use dokka_model::{NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
-use dokka_scene::Drawing;
+use dokka_scene::{Bitmap, Drawing};
 use dokka_theme::Theme;
 
 use super::logic::{OpenCalendar, OpenMenu, TrayKind};
-
-/// Huella de la barra ya dibujada: app, hora, hoy, idioma, aperturas,
-/// resaltados, mes, píldora y los datos que muestra cada panel.
-/// Vive aquí para no exponer los tipos del componente.
-#[derive(Debug, Clone, PartialEq)]
-pub struct MenubarPainted {
-    pub app: String,
-    pub clock: String,
-    pub today: (u16, u16, u16),
-    pub language: String,
-    pub menu_open: bool,
-    pub icon_hovered: bool,
-    pub highlighted: Option<usize>,
-    pub calendar_open: bool,
-    pub month_offset: i32,
-    pub weeks_seen: u16,
-    pub nav_hovered: Option<NavHalf>,
-    pub clock_hovered: bool,
-    pub tray_open: Option<TrayKind>,
-    pub tray_hovered: Option<TrayKind>,
-    pub volume_level: f32,
-    pub volume_muted: bool,
-    pub volume_hovered: Option<VolumePanelHit>,
-    pub network_kind: NetworkKind,
-    pub network_name: String,
-    pub network_online: bool,
-    pub network_hovered: Option<NetworkHit>,
-    pub languages: Vec<LanguageEntry>,
-    pub language_hovered: Option<LanguageHit>,
-    pub track: Option<MusicTrack>,
-    pub search_query: String,
-    pub search_results: Vec<String>,
-    pub search_highlighted: Option<usize>,
-    pub search_cursor: bool,
-}
+use super::painted::MenubarPainted;
 
 /// Lo que la barra recuerda entre eventos: nombre, hora, idioma, menú,
 /// calendario, fila derecha con sus datos y resaltados.
@@ -87,6 +53,7 @@ pub struct Menubar {
     pub(crate) languages: Vec<LanguageEntry>,
     pub(crate) language_hovered: Option<LanguageHit>,
     pub(crate) track: Option<MusicTrack>,
+    pub(crate) artwork: Option<Arc<Bitmap>>,
     pub(crate) now_playing: NowPlayingInfo,
     pub(crate) search_query: String,
     pub(crate) search_results: Vec<SearchPanelItem>,
@@ -136,6 +103,7 @@ impl Menubar {
             languages: Vec::new(),
             language_hovered: None,
             track: None,
+            artwork: None,
             now_playing: NowPlayingInfo {
                 title: String::new(),
                 artist: String::new(),
@@ -234,6 +202,7 @@ impl Menubar {
             languages: self.languages.clone(),
             language_hovered: self.language_hovered,
             track: self.track.clone(),
+            artwork: self.artwork.clone(),
             search_query: self.search_query.clone(),
             search_results: self
                 .search_results

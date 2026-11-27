@@ -35,7 +35,7 @@ pub(crate) fn perform(manager: &Manager, source: &str, action: MediaAction) -> R
     Ok(())
 }
 
-fn each_session(manager: &Manager) -> Vec<Session> {
+pub(crate) fn each_session(manager: &Manager) -> Vec<Session> {
     let Ok(sessions) = manager.GetSessions() else {
         return Vec::new();
     };

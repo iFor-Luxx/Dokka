@@ -7,10 +7,13 @@ publish.workspace = true
 [dependencies]
 dokka-contracts.workspace = true
 dokka-model.workspace = true
+dokka-scene.workspace = true
 windows = { workspace = true, features = [
     "Foundation",
     "Foundation_Collections",
+    "Graphics_Imaging",
     "Media_Control",
+    "Storage_Streams",
     "Win32_Media_Audio",
     "Win32_Media_Audio_Endpoints",
     "Win32_System_Com",
