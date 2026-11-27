@@ -80,6 +80,10 @@ impl GenieDirector {
             return;
         }
         self.enabled = enabled;
+        if enabled {
+            // Como Muelle: crearlo ahora evita que la primera vez tarde.
+            ensure_compositor(&mut self.gfx, &mut self.gfx_failed, 0);
+        }
         if !enabled {
             self.flight = None;
             self.snapshots.clear();
