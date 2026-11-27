@@ -158,6 +158,8 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::Refresh => {
+            // Avisa también cuando Windows saca su barra por su cuenta.
+            crate::taskbar_mode::keep_taskbar_hidden(session);
             let changed = session.sync()?;
             // Otra ventana al frente también avisa, aunque la lista siga igual.
             let foreground_changed = session.poll_foreground_changed();
@@ -177,6 +179,7 @@ pub(crate) fn handle_event(
             session.resize(surface)?;
         }
         SurfaceEvent::Tick => {
+            crate::taskbar_mode::keep_taskbar_hidden(session);
             session.update_clock_and_trash();
             preview_safety::check_preview_cursor(session, surface);
             if session.launchpad.is_open() {
