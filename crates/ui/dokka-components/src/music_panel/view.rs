@@ -171,19 +171,22 @@ fn music_icons(
     };
     let mut all = Vec::with_capacity(4);
     all.push(artwork_icon(theme, bounds, artwork));
-    all.extend(music_buttons(bounds).iter().zip(drawings).map(
-        |(area, drawing)| {
-            let side = measures::BUTTON_ICON_SIDE;
-            Icon {
-                x: area.x + (area.width - side) / 2.0,
-                y: area.y + (area.height - side) / 2.0,
-                side,
-                image: Some(IconImage::Drawing(Arc::clone(drawing))),
-                placeholder: theme.tray.clear,
-                placeholder_radius: 0.0,
-            }
-        },
-    ));
+    all.extend(
+        music_buttons(bounds)
+            .iter()
+            .zip(drawings)
+            .map(|(area, drawing)| {
+                let side = measures::BUTTON_ICON_SIDE;
+                Icon {
+                    x: area.x + (area.width - side) / 2.0,
+                    y: area.y + (area.height - side) / 2.0,
+                    side,
+                    image: Some(IconImage::Drawing(Arc::clone(drawing))),
+                    placeholder: theme.tray.clear,
+                    placeholder_radius: 0.0,
+                }
+            }),
+    );
     all
 }
 

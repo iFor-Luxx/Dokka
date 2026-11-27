@@ -7,8 +7,8 @@
 
 use std::sync::Arc;
 
-use dokka_components::language_panel::LanguageHit;
 use dokka_components::language_panel::LanguageEntry;
+use dokka_components::language_panel::LanguageHit;
 use dokka_components::music_panel::MusicTrack;
 use dokka_components::network_panel::NetworkHit;
 use dokka_components::volume_panel::VolumePanelHit;

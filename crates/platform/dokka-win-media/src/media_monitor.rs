@@ -156,9 +156,10 @@ fn watch(
             // La carátula solo se relee cuando cambia la canción; si es la
             // misma, el `Arc` anterior sigue valiendo y no se repinta.
             let song = current_source.as_ref().and_then(|source| {
-                current.iter().find(|media| &media.source == source).map(
-                    |media| (source.clone(), media.title.clone(), media.artist.clone()),
-                )
+                current
+                    .iter()
+                    .find(|media| &media.source == source)
+                    .map(|media| (source.clone(), media.title.clone(), media.artist.clone()))
             });
             if song != previous_song {
                 let artwork = song

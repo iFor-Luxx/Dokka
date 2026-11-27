@@ -194,6 +194,7 @@ version = "0.1.0"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
+ "dokka-scene",
  "windows",
 ]
 
