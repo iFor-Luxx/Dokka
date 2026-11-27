@@ -175,6 +175,25 @@ impl Menubar {
             .map(|SearchHit::Result(index)| MenubarAction::SearchOpen(index))
     }
 
+    /// `true` si el punto cae en el aire de la sombra (fuera del panel pero
+    /// dentro de su margen): el clic no hace nada y no cierra.
+    pub(crate) fn search_margin_contains(&self, x: f32, y: f32) -> bool {
+        if self.tray_kind() != Some(super::TrayKind::Search) {
+            return false;
+        }
+        let Some(panel) = self.tray_bounds() else {
+            return false;
+        };
+        if self.tray_contains(x, y) {
+            return false;
+        }
+        let margin = dokka_theme::search::SHADOW_MARGIN;
+        x >= panel.x - margin
+            && x <= panel.x + panel.width + margin
+            && y >= panel.y - margin
+            && y <= panel.y + panel.height + margin
+    }
+
     pub(crate) fn search_hover(&mut self, x: f32, y: f32) {
         let hit = self
             .tray_bounds()

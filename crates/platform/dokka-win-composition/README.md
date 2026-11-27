@@ -28,10 +28,15 @@ activo el `holder` se oculta y solo se ve la copia (sin doble imagen), y en repo
 copia se oculta y no hay efectos activos. Si el efecto no se puede crear, se sigue con zoom y desvanecido. Los dibujos (incluidos los glifos Lucide, con la fuente en
 memoria de `dokka-win-text`) se pintan al doble de su lado en pantalla, con un mínimo de 128
 para que los iconos grandes del dock no pierdan al crecer con la lupa; solo se repintan si
-cambia su imagen, nunca al moverse o escalarse. Las piezas del buscador
-llevan sombra suave (`DropShadow` bajo el cristal, con su forma redondeada
-y sin oscurecer el interior; si no se puede crear, se ven sin ella y no se
-reconstruye nada al redibujar).
+cambia su imagen, nunca al moverse o escalarse. La sombra es del compositor
+(`ShadowLayer`: `SpriteVisual` sin pincel con `DropShadow` cuya `Mask` es la
+forma vectorial del panel —superficie de un `ShapeVisual` con su rectángulo
+redondeado— debajo del cristal; el clip es el anillo exterior menos el
+interior —y los vecinos que no debe oscurecer— como `CompositionPath` de
+geometría D2D combinada, sin imágenes; si no se puede crear, se ve sin ella).
+La pide la escena (`Scene.panel_shadow` para Preferencias, `Overlay.panel_shadow`
+o `Overlay.tile_shadow` para el buscador) con color, desenfoque y
+desplazamiento del tema; se actualiza al mover o redimensionar sin reconstruir.
 
 **No hace:** no decide qué dibujar ni crea ventanas. Las miniaturas siempre quedan por encima del resto.
 Todavía no se recupera si falla la tarjeta gráfica.

@@ -118,6 +118,7 @@ impl Dock {
             highlight: None,
             overlay: None,
             submenu: None,
+            panel_shadow: None,
             labels,
             // El dock no usa el zoom del Launchpad: siempre en reposo.
             opacity: 1.0,
@@ -181,6 +182,7 @@ impl Dock {
             highlight: None,
             overlay: None,
             submenu: None,
+            panel_shadow: None,
             labels: Vec::new(),
             opacity: 1.0,
             scale: 1.0,

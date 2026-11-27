@@ -57,7 +57,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         position: dokka_model::DockPosition::Bottom,
         hide: 0.0,
     })?;
-    surface.settings_place(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT)?;
+    surface.settings_place(
+        dokka_theme::settings::WIDTH,
+        dokka_theme::settings::HEIGHT,
+        dokka_theme::settings::SHADOW_MARGIN,
+    )?;
     // Sin barra superior Dokka sigue funcionando.
     if let Err(error) = crate::menubar::setup_menubar(&mut surface) {
         eprintln!("Dokka no pudo mostrar la barra superior: {error}");

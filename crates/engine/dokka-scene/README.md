@@ -13,6 +13,8 @@
 - `Overlay` añade `highlight`, `dividers` y `pointer` (la punta del menú:
   centro y altura; base = 2 × altura; nace en el borde hacia el dock
   —abajo, izquierda o derecha según `side`— y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
+- `Overlay` lleva `panel_shadow`: sombra suave opcional bajo el fondo, con su
+  forma redondeada; hoy nadie la pide, pero cualquier panel puede pedirla.
 - `Overlay` lleva `tile_shadow`: sombra suave opcional bajo cada pieza
   (`tiles`), con su forma redondeada; solo el buscador la pide.
 - `Overlay` lleva `icons` sobre el resaltado, junto a los textos (el chevrón del menú).
@@ -20,6 +22,8 @@
 - `Overlay` lleva `tiles`: piezas de cristal separadas, como en el Centro de control de Tahoe.
 - `Overlay` lleva `opacity` y escala con origen (`scale` y `origin`): los paneles
   animados crecen desde el icono; el menú siempre vale 1.
+- `Scene` añade `panel_shadow`: sombra suave opcional bajo el fondo, con su
+  forma redondeada; solo Preferencias la pide.
 - `Scene` añade `texts` sueltos, `highlight` opcional para el Launchpad y
   `submenu` opcional para el segundo panel del menú (mismo cristal, sin punta).
 - `Scene` añade `flat_panels`: planos (tinte y borde, sin cristal) sobre el
@@ -30,6 +34,7 @@
 - `Scene` añade `blur`: desenfoque gaussiano del contenido en unidades lógicas
   (0 en reposo, máximo del tema durante el zoom del Launchpad).
 - `Shadow` es la sombra negra suave (color con su alfa, desenfoque y
-  desplazamiento) que pide un `Overlay` bajo sus piezas.
+  desplazamiento) que pide una `Scene` bajo su fondo o un `Overlay` bajo su
+  fondo o sus piezas.
 
 **No hace:** no dibuja ni habla con Windows. Las medidas son lógicas, sin escalar por DPI.

@@ -1,4 +1,4 @@
-use dokka_scene::{Color, Panel, Scene};
+use dokka_scene::{Color, Panel, Scene, Shadow};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
@@ -11,6 +11,7 @@ use crate::layer_sync::{sync_dividers, sync_dots, sync_icons, sync_labels, sync_
 use crate::overlay_layers::OverlayLayers;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
+use crate::shadow_layer::ShadowLayer;
 use crate::text_layer::TextLayer;
 
 /// Elementos visuales creados para una escena.
@@ -29,6 +30,10 @@ pub(crate) struct SceneLayers {
     root: ContainerVisual,
     blur: BlurStage,
     panel: PanelLayer,
+    /// Sombra bajo el fondo, si se pidió (Preferencias). Falla sola.
+    panel_shadow: Option<ShadowLayer>,
+    /// Sombra pedida para el fondo, exista o no la capa.
+    panel_shadow_spec: Option<Shadow>,
     panels: Vec<PanelLayer>,
     panel_styles: Vec<PanelStyle>,
     flats: Vec<PanelLayer>,
@@ -72,6 +77,15 @@ impl SceneLayers {
         root.Children()?.InsertAtTop(&holder)?;
         let content = compositor.CreateContainerVisual()?;
         holder.Children()?.InsertAtTop(&content)?;
+        // La sombra va debajo del cristal: se crea antes para quedar al fondo.
+        // Si no se puede crear, el fondo se ve sin ella.
+        let panel_shadow_spec = scene.panel_shadow;
+        let panel_shadow = match scene.panel_shadow {
+            Some(shadow) => {
+                ShadowLayer::add(compositor, &backdrop, &scene.panel, &shadow, &[]).ok()
+            }
+            None => None,
+        };
         let panel = PanelLayer::add(compositor, &backdrop, &scene.panel)?;
         // Cada capa se inserta arriba: los paneles quedan sobre el fondo y
         // bajo el resaltado, las líneas, los iconos, los puntos y los textos.
@@ -137,6 +151,8 @@ impl SceneLayers {
             root: root.clone(),
             blur: BlurStage::new(),
             panel,
+            panel_shadow,
+            panel_shadow_spec,
             panels,
             panel_styles: scene.panels.iter().map(panel_style_of).collect(),
             flats,
@@ -175,6 +191,7 @@ impl SceneLayers {
         };
         same_overlay
             && same_submenu
+            && self.panel_shadow_spec == scene.panel_shadow
             && self.highlight.is_some() == scene.highlight.is_some()
             && self.highlight_style == scene.highlight.map(highlight_style_of)
             && self.panel_styles.len() == scene.panels.len()
@@ -210,6 +227,9 @@ impl SceneLayers {
         scene: &Scene,
     ) -> Result<()> {
         self.panel.update(&scene.panel)?;
+        if let (Some(layer), Some(shadow)) = (&mut self.panel_shadow, &scene.panel_shadow) {
+            let _ = layer.update(compositor, &scene.panel, shadow, &[]);
+        }
         for (layer, panel) in self.panels.iter().zip(&scene.panels) {
             layer.update(panel)?;
         }

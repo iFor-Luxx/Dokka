@@ -50,6 +50,7 @@ impl Menubar {
                 .or_else(|| self.calendar_overlay(bar_width))
                 .or_else(|| self.tray_overlay()),
             submenu: None,
+            panel_shadow: None,
             opacity: 1.0,
             scale: 1.0,
             blur: 0.0,
@@ -82,10 +83,10 @@ impl Menubar {
             });
         } else if let Some(bounds) = self.tray_bounds() {
             if self.tray_kind() == Some(crate::TrayKind::Search) {
-                let search = dokka_theme::search::search_box(bounds);
-                let results = dokka_theme::search::results_box(bounds);
-                areas.push(search);
-                areas.push(results);
+                // La región incluye el aire de la sombra para no recortarla.
+                let margin = dokka_theme::search::SHADOW_MARGIN;
+                areas.push(expand(dokka_theme::search::search_box(bounds), margin));
+                areas.push(expand(dokka_theme::search::results_box(bounds), margin));
             } else {
                 areas.push(Rect {
                     x: bounds.x,
@@ -214,4 +215,14 @@ fn capsule_radius(bounds: Rect) -> f32 {
         return 0.0;
     }
     (bounds.width / 2.0).min(bounds.height / 2.0)
+}
+
+/// Región con el aire de la sombra alrededor para no recortarla.
+fn expand(area: Rect, margin: f32) -> Rect {
+    Rect {
+        x: area.x - margin,
+        y: area.y - margin,
+        width: area.width + margin * 2.0,
+        height: area.height + margin * 2.0,
+    }
 }

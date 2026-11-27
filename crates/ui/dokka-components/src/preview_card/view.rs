@@ -65,6 +65,7 @@ pub fn preview_card(
     Overlay {
         panel: popup_panel(theme, bounds),
         tiles: Vec::new(),
+        panel_shadow: None,
         tile_shadow: None,
         pill: None,
         highlight: None,

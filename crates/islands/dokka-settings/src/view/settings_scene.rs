@@ -122,7 +122,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         ),
     ];
     dividers.extend(content.dividers);
-    Scene {
+    let mut scene = Scene {
         panel: dokka_scene::Panel {
             bounds: dokka_scene::Rect {
                 x: 0.0,
@@ -135,6 +135,11 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             tint: theme.settings.window,
             border: theme.settings.window_border,
         },
+        panel_shadow: Some(dokka_scene::Shadow {
+            color: theme.tray.shadow,
+            blur: measures::SHADOW_BLUR,
+            offset: (0.0, measures::SHADOW_OFFSET_Y),
+        }),
         panels: vec![
             sidebar_panel_for(theme, window_height),
             // Cada capa se inserta arriba: la píldora queda sobre el fondo.
@@ -163,5 +168,45 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         blur: 0.0,
         overlay: None,
         submenu: None,
+    };
+    // La ventana exterior añade el aire de la sombra por cada lado: todo el
+    // contenido se desplaza por él en este único sitio (golpes y hover usan
+    // coordenadas de contenido, el shell les quita el margen antes).
+    let (ox, oy) = measures::content_origin();
+    shift_scene(&mut scene, ox, oy);
+    scene
+}
+
+/// Desplaza toda la escena por el aire de la sombra.
+fn shift_scene(scene: &mut Scene, dx: f32, dy: f32) {
+    scene.panel.bounds.x += dx;
+    scene.panel.bounds.y += dy;
+    for panel in &mut scene.panels {
+        panel.bounds.x += dx;
+        panel.bounds.y += dy;
+    }
+    for panel in &mut scene.flat_panels {
+        panel.bounds.x += dx;
+        panel.bounds.y += dy;
+    }
+    if let Some(highlight) = &mut scene.highlight {
+        highlight.bounds.x += dx;
+        highlight.bounds.y += dy;
+    }
+    for divider in &mut scene.dividers {
+        divider.bounds.x += dx;
+        divider.bounds.y += dy;
+    }
+    for icon in &mut scene.icons {
+        icon.x += dx;
+        icon.y += dy;
+    }
+    for dot in &mut scene.dots {
+        dot.x += dx;
+        dot.y += dy;
+    }
+    for text in &mut scene.texts {
+        text.x += dx;
+        text.center_y += dy;
     }
 }

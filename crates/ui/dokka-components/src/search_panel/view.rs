@@ -51,6 +51,7 @@ pub fn search_panel_panel(
                 border: theme.tray.tile_border,
             },
         ],
+        panel_shadow: None,
         tile_shadow: Some(dokka_scene::Shadow {
             color: theme.tray.shadow,
             blur: measures::SHADOW_BLUR,

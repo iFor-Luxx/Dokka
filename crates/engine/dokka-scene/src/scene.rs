@@ -1,9 +1,12 @@
-use crate::{Divider, Dot, Icon, Label, Overlay, Panel, Text, Thumbnail};
+use crate::{Divider, Dot, Icon, Label, Overlay, Panel, Shadow, Text, Thumbnail};
 
 /// Todo lo que muestra una superficie.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Scene {
     pub panel: Panel,
+    /// Sombra suave bajo el fondo, con su forma redondeada. Solo Preferencias
+    /// la pide; el resto vale `None` y se ve igual que hoy.
+    pub panel_shadow: Option<Shadow>,
     /// Paneles extra sobre el fondo y bajo el resaltado, como la casilla de búsqueda.
     pub panels: Vec<Panel>,
     /// Paneles planos (tinte y borde, sin cristal) sobre el cristal de la misma

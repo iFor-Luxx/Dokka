@@ -24,11 +24,12 @@ pub(crate) fn open_or_focus_settings(
         .settings
         .set_values(session.preferences, session.taskbar_auto());
     session.settings.open();
-    // Primera apertura: centra una vez; luego conserva su sitio al moverla.
-    // El zoom aplica su tamaño aparte mientras está abierta.
+    // Primera apertura: centra el contenido una vez con el aire alrededor;
+    // luego conserva su sitio al moverla. El zoom aplica su tamaño aparte.
     surface.settings_place(
         session.settings.window_width(),
         session.settings.window_height(),
+        dokka_theme::settings::SHADOW_MARGIN,
     )?;
     surface.settings_show()?;
     // Restaurar quita la miniatura del dock: el observador ignora el proceso
@@ -47,9 +48,12 @@ pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
     // oculto por el cierre desde la X, Alt+F4 o la barra de tareas.
     session.settings_painted = None;
     surface.settings_hide();
-    // Vuelve al tamaño normal ya oculta, sin parpadeo.
-    let _ =
-        surface.settings_apply_size(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT);
+    // Vuelve al tamaño normal de contenido ya oculta, sin parpadeo.
+    let _ = surface.settings_apply_size(
+        dokka_theme::settings::WIDTH,
+        dokka_theme::settings::HEIGHT,
+        dokka_theme::settings::SHADOW_MARGIN,
+    );
     // Ocultar quita la miniatura del dock: el observador ignora el proceso
     // propio, así que se sincroniza aquí.
     let _ = session.sync();
@@ -64,8 +68,23 @@ pub(crate) fn toggle_settings_zoom(
     session.settings.toggle_zoom();
     let width = session.settings.window_width();
     let height = session.settings.window_height();
-    surface.settings_apply_size(width, height)?;
+    surface.settings_apply_size(width, height, dokka_theme::settings::SHADOW_MARGIN)?;
     Ok(())
+}
+
+/// Coordenadas de contenido desde las de ventana (con el aire de la sombra).
+fn to_content(x: f32, y: f32) -> (f32, f32) {
+    let margin = dokka_theme::settings::SHADOW_MARGIN;
+    (x - margin, y - margin)
+}
+
+/// `true` si el punto cae en el contenido (fuera está el aire de la sombra).
+fn in_content(session: &DockSession, x: f32, y: f32) -> bool {
+    let (cx, cy) = to_content(x, y);
+    cx >= 0.0
+        && cy >= 0.0
+        && cx < session.settings.window_width()
+        && cy < session.settings.window_height()
 }
 
 /// Botón abajo: si agarra un deslizador, la isla lo sigue hasta soltar; si es
@@ -78,13 +97,19 @@ pub(crate) fn press_over_settings(
     x: f32,
     y: f32,
 ) {
+    // Clic en el aire de la sombra: no hace nada.
+    if !in_content(session, x, y) {
+        session.settings_pressed = false;
+        return;
+    }
+    let (cx, cy) = to_content(x, y);
     session.settings_pressed = true;
-    if session.settings.press(x, y) {
+    if session.settings.press(cx, cy) {
         return;
     }
     if drag_zone(
-        x,
-        y,
+        cx,
+        cy,
         session.settings.selected(),
         session.settings.content_width(),
     ) {
@@ -94,12 +119,17 @@ pub(crate) fn press_over_settings(
 }
 
 /// Movimiento: resalta lo que hay bajo el cursor y sigue el deslizador
-/// agarrado; mover la ventana ya lo hace Windows.
+/// agarrado; mover la ventana ya lo hace Windows. En el aire sin botón
+/// se apaga el resaltado; con botón se sigue (clamp) para no perder el arrastre.
 pub(crate) fn move_over_settings(session: &mut DockSession, x: f32, y: f32) {
     if session.settings_pressed {
-        session.settings.drag_to(x, y);
+        let (cx, cy) = to_content(x, y);
+        session.settings.drag_to(cx, cy);
+    } else if !in_content(session, x, y) {
+        session.settings.pointer_left();
     } else {
-        session.settings.pointer_moved(x, y);
+        let (cx, cy) = to_content(x, y);
+        session.settings.pointer_moved(cx, cy);
     }
 }
 
@@ -118,7 +148,11 @@ pub(crate) fn click_settings(
     x: f32,
     y: f32,
 ) -> Result<(), Box<dyn Error>> {
-    match session.settings.release(x, y) {
+    // La suelta llega con captura aunque sea en el aire: se traduce igual y la
+    // isla la sujeta al extremo más cercano; un clic simple en el aire nunca
+    // llega aquí porque su botón abajo ya se ignoró.
+    let (cx, cy) = to_content(x, y);
+    match session.settings.release(cx, cy) {
         SettingsAction::Close => close_settings(session, surface),
         SettingsAction::Minimize => {
             surface.settings_minimize();
@@ -226,6 +260,7 @@ pub(crate) fn render_settings(
     surface.settings_place(
         session.settings.window_width(),
         session.settings.window_height(),
+        dokka_theme::settings::SHADOW_MARGIN,
     )?;
     let theme = Arc::clone(&session.theme);
     let scene = settings_scene(&theme, &mut session.settings);

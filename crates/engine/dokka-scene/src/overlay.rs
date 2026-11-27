@@ -12,6 +12,9 @@ pub struct Controls {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Overlay {
     pub panel: Panel,
+    /// Sombra suave bajo el fondo, con su forma redondeada. Hoy nadie la pide;
+    /// existe para que cualquier panel pueda pedirla igual que las piezas.
+    pub panel_shadow: Option<Shadow>,
     /// Piezas de cristal separadas (cápsulas y círculos) sobre el panel.
     pub tiles: Vec<Panel>,
     /// Sombra suave bajo cada pieza (`tiles`), con su forma redondeada.

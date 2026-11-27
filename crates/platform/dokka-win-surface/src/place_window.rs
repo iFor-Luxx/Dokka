@@ -113,32 +113,43 @@ pub(crate) fn fullscreen_size(window: HWND, scale: f32) -> [f32; 2] {
     ]
 }
 
-/// Centra una ventana de tamaño lógico en el área de trabajo y devuelve su
-/// escala. Se usa una sola vez al crearla; luego conserva su sitio al moverla.
-pub(crate) fn place_centered(window: HWND, width: f32, height: f32) -> Result<f32> {
-    place_centered_clamped(window, width, height)
-}
-
-/// Centra una ventana con el tamaño pedido, limitado al área de trabajo para
-/// que el zoom no se salga de la pantalla. Recentra sin salirse.
-pub(crate) fn place_centered_clamped(window: HWND, width: f32, height: f32) -> Result<f32> {
+/// Centra el contenido en el área de trabajo y pone la ventana exterior
+/// (contenido más el aire de la sombra por cada lado). El límite cuenta el
+/// contenido, no el margen: el aire transparente puede asomar fuera.
+pub(crate) fn place_outer_centered(
+    window: HWND,
+    content_width: f32,
+    content_height: f32,
+    margin: f32,
+) -> Result<f32> {
     let area = base_area(window, false)?;
     // SAFETY: `window` es válida y la escala sale de su DPI real.
     unsafe {
         let scale = GetDpiForWindow(window) as f32 / BASE_DPI;
-        let mut width_px = (width * scale).round() as i32;
-        let mut height_px = (height * scale).round() as i32;
+        let mut content_px = (content_width * scale).round() as i32;
+        let mut content_py = (content_height * scale).round() as i32;
         let area_width = area.right - area.left;
         let area_height = area.bottom - area.top;
         if area_width > 0 {
-            width_px = width_px.min(area_width);
+            content_px = content_px.min(area_width);
         }
         if area_height > 0 {
-            height_px = height_px.min(area_height);
+            content_py = content_py.min(area_height);
         }
-        let x = area.left + (area.right - area.left - width_px) / 2;
-        let y = area.top + (area.bottom - area.top - height_px) / 2;
-        SetWindowPos(window, None, x, y, width_px, height_px, SWP_NOACTIVATE)?;
+        let margin_px = (margin.max(0.0) * scale).round() as i32;
+        let width_px = content_px + margin_px * 2;
+        let height_px = content_py + margin_px * 2;
+        let content_x = area.left + (area.right - area.left - content_px) / 2;
+        let content_y = area.top + (area.bottom - area.top - content_py) / 2;
+        SetWindowPos(
+            window,
+            None,
+            content_x - margin_px,
+            content_y - margin_px,
+            width_px,
+            height_px,
+            SWP_NOACTIVATE,
+        )?;
         Ok(scale)
     }
 }

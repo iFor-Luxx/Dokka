@@ -4,7 +4,8 @@
 
 - `palette.rs`: colores base. Único lugar con valores de color. `HOME_LINE_FILL`
   con `HOME_LINE_BORDER` dibujan la línea del dock oculto sobre fondos
-  claros y oscuros. `SHADOW` es la sombra negra suave del buscador. `TRAY_TILE` y
+  claros y oscuros. `SHADOW` es la sombra negra suave del buscador y de
+  Preferencias (negro ~30%, desenfoque ~30, caída de 8). `TRAY_TILE` y
   `TRAY_TILE_TRANSLUCENT` comparten el tono neutro de `MIST` y `MIST_STRONG` con
   menos alfa para las piezas Liquid Glass, sin aclarar el resto de paneles.
 - `theme.rs`: para qué se usa cada color. `MenuColors` (`theme.menu`), `MenubarColors`
@@ -18,7 +19,9 @@
   `TrayColors` (`theme.tray`: cristal ahumado de la barra, texto blanco, pista,
   relleno, hover y tinte translúcido propio del Centro de control).
 - `themes/`: un archivo por tema (hoy solo `light`).
-- `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
+- `measures/settings.rs`: ventana de Preferencias (contenido de 760 × 720 en una
+  ventana exterior mayor con el aire de la sombra por cada lado, sombra con su
+  desenfoque y caída, barra de 260, semáforos con
   glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
   72 × 34, tarjetas de contenido con filas de 44 (56 la del deslizador, con
   "Pequeño" y "Grande" en 11 bajo la barra), interruptor de 40 × 22 con

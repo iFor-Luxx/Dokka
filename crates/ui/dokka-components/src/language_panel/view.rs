@@ -90,6 +90,7 @@ pub fn language_panel(
     Overlay {
         panel: glass(theme, bounds),
         tiles: Vec::new(),
+        panel_shadow: None,
         tile_shadow: None,
         pill: None,
         highlight: Some(highlight_panel(theme, bounds, languages, highlighted)),

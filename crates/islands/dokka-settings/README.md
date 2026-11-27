@@ -1,7 +1,9 @@
 # dokka-settings
 
 **Hace:** ventana de Preferencias estilo Ajustes del Sistema de macOS Tahoe, con
-sombra suave del sistema y ajustes reales: semáforos rojo (cierra y limpia la navegación: al volver a abrir
+sombra genuina del compositor (una sola ventana exterior: el contenido más un
+aire transparente donde cabe la sombra; el contenido se dibuja desplazado por
+ese aire y el clic en él no hace nada) y ajustes reales: semáforos rojo (cierra y limpia la navegación: al volver a abrir
 empieza en General, sin historial, búsqueda ni foco; los ajustes guardados no se
 tocan), amarillo (minimiza a nuestro dock, a la derecha del separador, como miniatura
 con el engranaje) y verde (alterna el tamaño normal 760 × 720 y uno mayor ≈ 920 × 820,
@@ -39,7 +41,9 @@ hace cada clic (`SettingsAction`: `Changed` o `TaskbarAuto` solo al soltar, para
 no guardar ni redimensionar a cada píxel) y qué puntos arrastran la ventana
 (`drag_zone`, que nunca incluye un control del contenido), y resume lo dibujado
 (`PaintedSettings` con valores, orden arrastrado y hover del contenido) para que el shell solo
-repinte si cambió algo. Da su `Scene` de 760 × 720 con forma fija: fondo, barra
+repinte si cambió algo. Da su `Scene` de 760 × 720 de contenido en una ventana
+exterior mayor (más el aire de la sombra por cada lado, desplazado en un único
+sitio): fondo, barra
 flotante y píldora como paneles; tarjeta, buscador, selección, hover de filas,
 resaltado de la píldora, tarjetas del contenido, deslizadores (barra fina,
 relleno desde la fábrica, marca y tirador en cápsula con "Pequeño" y "Grande" debajo),
