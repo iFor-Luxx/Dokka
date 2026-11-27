@@ -4,7 +4,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_DOWN, VK_ESCAPE, VK_RETURN, VK_UP,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    MSG, WM_CHAR, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE,
+    MSG, WM_CHAR, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_RBUTTONUP,
 };
 
 use crate::SurfaceEvent;
@@ -58,6 +58,10 @@ pub(crate) fn read_menubar(
                 return None;
             }
             Some(SurfaceEvent::MenubarLeft)
+        }
+        WM_RBUTTONUP => {
+            let (x, y) = pointer_position(message, scale);
+            Some(SurfaceEvent::MenubarRightClicked { x, y })
         }
         WM_LBUTTONDOWN => {
             *is_pressed = true;

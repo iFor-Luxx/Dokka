@@ -33,6 +33,11 @@ pub enum SurfaceEvent {
         y: f32,
     },
     /// La barra perdió el foco con el menú abierto.
+    /// Botón derecho soltado sobre la barra.
+    MenubarRightClicked {
+        x: f32,
+        y: f32,
+    },
     MenubarDismissed,
     /// Letra escrita sobre la barra, ya traducida de `WM_KEYDOWN`.
     /// Solo llega cuando la barra tiene el foco.

@@ -39,6 +39,7 @@ dokka-win-media = { path = "crates/platform/dokka-win-media" }
 dokka-win-surface = { path = "crates/platform/dokka-win-surface" }
 dokka-win-text = { path = "crates/platform/dokka-win-text" }
 dokka-win-tracking = { path = "crates/platform/dokka-win-tracking" }
+dokka-win-tray = { path = "crates/platform/dokka-win-tray" }
 lucide-icons = { version = "1.81", default-features = false }
 windows = "0.62"
 windows-collections = "0.3"

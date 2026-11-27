@@ -73,6 +73,12 @@ pub(crate) fn click_settings(
         SettingsAction::Close => close_settings(session, surface),
         SettingsAction::Minimize => surface.settings_minimize(),
         SettingsAction::Stay => {}
+        SettingsAction::Changed(preferences) => {
+            crate::apply_preferences::apply_preferences(session, surface, preferences);
+        }
+        SettingsAction::TaskbarAuto(auto) => {
+            crate::apply_preferences::set_taskbar_auto(session, surface, auto);
+        }
     }
     Ok(())
 }

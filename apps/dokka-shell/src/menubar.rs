@@ -139,6 +139,7 @@ pub(crate) fn handle_menubar_event(
         SurfaceEvent::MenubarClicked { x, y } => {
             click_menubar(session, surface, x, y)?;
         }
+        SurfaceEvent::MenubarRightClicked { .. } => {}
         SurfaceEvent::MenubarTyped { character } => {
             crate::menubar_search::type_search(session, surface, character);
         }

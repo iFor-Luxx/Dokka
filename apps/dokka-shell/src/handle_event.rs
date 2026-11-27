@@ -53,6 +53,7 @@ pub(crate) fn handle_event(
         | SurfaceEvent::MenubarEnter
         | SurfaceEvent::MenubarUp
         | SurfaceEvent::MenubarDown
+        | SurfaceEvent::MenubarRightClicked { .. }
         | SurfaceEvent::MenubarDismissed => {}
         SurfaceEvent::PointerMoved { x, y } => {
             if session.launchpad.is_open() {

@@ -7,7 +7,7 @@ use dokka_contracts::WindowSource;
 use dokka_dock::{DOCK_BOTTOM_MARGIN, Dock, DockTime};
 use dokka_launchpad::Launchpad;
 use dokka_menubar::Menubar;
-use dokka_model::{AppId, WindowId};
+use dokka_model::{AppId, Preferences, WindowId};
 use dokka_previews::Previews;
 use dokka_settings::Settings;
 use dokka_state::DockState;
@@ -39,6 +39,8 @@ pub(crate) struct DockSession {
     pub(crate) foreground: Option<WindowId>,
     pub(crate) launchpad: Launchpad,
     pub(crate) settings: Settings,
+    /// Valores vigentes de Preferencias.
+    pub(crate) preferences: Preferences,
     /// `true` entre el botón abajo y el clic sobre Preferencias; filtra los
     /// botones sueltos sin pulsación previa (el arrastre nativo se traga el
     /// suyo y el cursor puede salir y volver a entrar).
@@ -78,6 +80,7 @@ impl DockSession {
             foreground: None,
             launchpad: Launchpad::new(),
             settings: Settings::new(),
+            preferences: Preferences::default(),
             settings_pressed: false,
             settings_painted: None,
             catalog: DesktopCatalog::new(),

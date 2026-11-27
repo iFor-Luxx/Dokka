@@ -111,6 +111,7 @@ version = "0.1.0"
 dependencies = [
  "dokka-components",
  "dokka-icons",
+ "dokka-model",
  "dokka-scene",
  "dokka-theme",
 ]
@@ -219,6 +220,15 @@ dependencies = [
  "dokka-contracts",
  "dokka-model",
  "windows",
+]
+
+[[package]]
+name = "dokka-win-tray"
+version = "0.1.0"
+dependencies = [
+ "dokka-contracts",
+ "dokka-model",
+ "dokka-scene",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
 //! Punto de entrada de Dokka: crea las piezas y las conecta.
 
 mod app_menu_actions;
+mod apply_preferences;
 mod context_menu;
 mod dock_session;
 mod floating_panels;

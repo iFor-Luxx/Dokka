@@ -11,3 +11,6 @@ papelera con la confirmación de Windows.
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 
 Cambiar un contrato requiere aprobación.
+
+`SystemTray` da los iconos de las apps en segundo plano y reenvía sus clics; `PreferencesStore`
+guarda lo ajustado en Preferencias.
