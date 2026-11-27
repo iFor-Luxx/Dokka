@@ -76,16 +76,26 @@ pub(crate) fn content_row(top: f32, index: usize) -> Rect {
     row_bounds(top, index)
 }
 
-/// Zona de toque del interruptor de esa fila.
+/// Zona de toque del interruptor de esa fila, a la derecha con el mismo aire
+/// que la etiqueta a la izquierda. El componente lo pega al borde; aquí se
+/// reserva `CONTENT_PADDING` para igualar ambos márgenes. Dibujo y golpe usan
+/// este rectángulo.
 pub(crate) fn content_switch(top: f32, index: usize) -> Rect {
-    switch_touch(content_row(top, index))
+    let touch = switch_touch(content_row(top, index));
+    Rect {
+        x: touch.x - measures::CONTENT_PADDING,
+        y: touch.y,
+        width: touch.width,
+        height: touch.height,
+    }
 }
 
-/// Zona de toque del deslizador de esa fila, a la derecha.
+/// Zona de toque del deslizador de esa fila, a la derecha con el mismo aire
+/// que la etiqueta a la izquierda, centrada en vertical.
 pub(crate) fn content_slider_area(top: f32, index: usize) -> Rect {
     let row = content_row(top, index);
     Rect {
-        x: row.x + row.width - measures::SLIDER_WIDTH,
+        x: row.x + row.width - measures::CONTENT_PADDING - measures::SLIDER_WIDTH,
         y: row.y + (row.height - measures::SLIDER_TOUCH_HEIGHT) / 2.0,
         width: measures::SLIDER_WIDTH,
         height: measures::SLIDER_TOUCH_HEIGHT,

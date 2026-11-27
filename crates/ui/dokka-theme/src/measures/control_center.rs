@@ -57,6 +57,9 @@ pub const SLIDER_TRACK_BOTTOM: f32 = 20.0;
 pub const END_ICON_SIDE: f32 = 14.0;
 /// Lado de la zona pulsable del silencio, alrededor de su icono.
 pub const MUTE_HIT_SIDE: f32 = 28.0;
+/// Margen del icono visible de cada extremo al borde de la tarjeta: el
+/// derecho termina a la misma distancia que empieza el izquierdo.
+pub const SOUND_ICON_MARGIN: f32 = PADDING;
 /// Aire vertical del deslizador para no exigir puntería fina.
 pub const SLIDER_HIT_HALF: f32 = 14.0;
 
