@@ -55,10 +55,11 @@ impl OverlayLayers {
         container.SetOpacity(overlay.opacity)?;
         apply_scale(&container, overlay)?;
         let panel = panel_layer(compositor, &container, &overlay.panel)?;
+        // Las piezas llevan filo de luz y brillo alto (Liquid Glass).
         let tiles = overlay
             .tiles
             .iter()
-            .map(|tile| PanelLayer::add(compositor, &container, tile))
+            .map(|tile| PanelLayer::add_tile(compositor, &container, tile))
             .collect::<Result<Vec<_>>>()?;
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;

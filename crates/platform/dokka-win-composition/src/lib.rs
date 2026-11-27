@@ -27,6 +27,7 @@ mod scene_layers;
 mod scene_renderer;
 mod solid_brush;
 mod text_layer;
+mod tile_brushes;
 mod window_thumbnails;
 mod windows_color;
 
