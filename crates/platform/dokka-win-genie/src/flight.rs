@@ -50,7 +50,7 @@ use crate::overlay::{create_overlay, destroy, show_no_activate};
 use crate::phase::{Captured, Phase};
 use crate::strips::GenieCompositor;
 
-/// Solo una copia de pantalla viva a la vez, incluido un hilo huerfano.
+/// Solo una copia pendiente a la vez: si una se atasca, no se encolan mas.
 static CAPTURE_BUSY: AtomicBool = AtomicBool::new(false);
 
 struct CapturePermit;
@@ -71,7 +71,7 @@ impl Drop for CapturePermit {
 }
 
 /// Un vuelo en curso hacia el dock o de vuelta.
-pub struct Flight {
+pub(crate) struct Flight {
     pub hwnd: isize,
     pub(crate) created_at: Instant,
     pub(crate) seconds: f32,

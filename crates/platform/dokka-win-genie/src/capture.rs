@@ -38,7 +38,7 @@ use crate::geometry::PixelRect;
 
 /// Foto BGRA opaca, fila de arriba primero.
 #[derive(Debug, Clone)]
-pub struct GenieImage {
+pub(crate) struct GenieImage {
     pub width: u32,
     pub height: u32,
     pub bgra: Vec<u8>,

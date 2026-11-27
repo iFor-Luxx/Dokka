@@ -35,7 +35,7 @@ use windows::Win32::UI::WindowsAndMessaging::{SPI_GETCLIENTAREAANIMATION, System
 use windows::core::BOOL;
 
 /// `true` si el usuario deja las animaciones de Windows activas.
-pub fn animations_enabled() -> bool {
+pub(crate) fn animations_enabled() -> bool {
     let mut enabled = BOOL::from(false);
     // SAFETY: `enabled` es un `BOOL` escribible del tamano pedido.
     let ok = unsafe {
@@ -76,7 +76,7 @@ pub(crate) fn restore_window(window: isize) {
 
 /// Devuelve la animacion a todas estas ventanas. Se llama al apagar la opcion,
 /// al cerrar Dokka y al arrancar por si un cierre brusco las dejo apagadas.
-pub fn restore_all_transitions(windows: &[isize]) {
+pub(crate) fn restore_all_transitions(windows: &[isize]) {
     for &window in windows {
         restore_window(window);
     }

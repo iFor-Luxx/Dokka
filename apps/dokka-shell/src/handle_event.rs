@@ -160,7 +160,7 @@ pub(crate) fn handle_event(
             // El genio detecta minimizadas nuevas; si cambió la lista, tras
             // recolocar el dock para apuntar al hueco definitivo.
             if !changed {
-                crate::genie_flow::refresh(session, surface);
+                crate::genie_flow::refresh(session);
             }
             // Otra ventana al frente también avisa, aunque la lista siga igual.
             let foreground_changed = session.poll_foreground_changed();
@@ -180,7 +180,7 @@ pub(crate) fn handle_event(
             }
             session.resize(surface)?;
             if changed {
-                crate::genie_flow::refresh(session, surface);
+                crate::genie_flow::refresh(session);
             }
         }
         SurfaceEvent::Tick => {

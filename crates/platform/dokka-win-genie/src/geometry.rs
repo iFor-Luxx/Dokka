@@ -242,7 +242,7 @@ pub fn monitor_rect_for_window(window: isize) -> [i32; 4] {
 }
 
 /// Primario completo en pixeles. Reserva si el monitor no se sabe.
-pub fn primary_screen_rect() -> [i32; 4] {
+pub(crate) fn primary_screen_rect() -> [i32; 4] {
     use windows::Win32::UI::WindowsAndMessaging::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
     // SAFETY: metricas del sistema sin argumentos de salida.
     unsafe {

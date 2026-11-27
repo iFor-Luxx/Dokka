@@ -28,8 +28,6 @@
 //! hacia dentro (`slide`). El ancho depende solo de la altura en pantalla,
 //! como liquido por un embudo. `t` va de 0 (ventana intacta) a 1 (dentro).
 
-use std::f32::consts::PI;
-
 /// Rectangulo por sus bordes, en las mismas unidades en ambos extremos.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Edges {
@@ -37,16 +35,6 @@ pub struct Edges {
     pub top: f32,
     pub right: f32,
     pub bottom: f32,
-}
-
-/// Donde se dibuja una tira de la imagen en un fotograma.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Strip {
-    /// Filas de la imagen original, como fraccion de su altura.
-    pub source_top: f32,
-    pub source_bottom: f32,
-    /// `None` cuando la tira ya entro en el hueco.
-    pub target: Option<Edges>,
 }
 
 /// Ventana que vuela hacia su hueco del dock.
@@ -99,47 +87,6 @@ impl Genie {
     pub fn slide(t: f32) -> f32 {
         let x = ((t - SLIDE_START) / (1.0 - SLIDE_START)).clamp(0.0, 1.0);
         x * x
-    }
-
-    /// Bordes izquierdo y derecho de la imagen a la altura `y`.
-    fn sides(&self, y: f32, bend: f32) -> (f32, f32) {
-        let span = self.slot.top - self.window.top;
-        let along = if span > 0.0 {
-            ((y - self.window.top) / span).clamp(0.0, 1.0)
-        } else {
-            1.0
-        };
-        let curve = (1.0 - (PI * along).cos()) / 2.0 * bend;
-        (
-            self.window.left + (self.slot.left - self.window.left) * curve,
-            self.window.right + (self.slot.right - self.window.right) * curve,
-        )
-    }
-
-    /// Coloca `strips.len()` tiras iguales para el progreso `t`.
-    /// Reusa el bufer: no reserva memoria por fotograma.
-    pub fn frame(&self, t: f32, strips: &mut [Strip]) {
-        let count = strips.len().max(1) as f32;
-        let height = self.window.bottom - self.window.top;
-        let bend = Self::bend(t);
-        let shift = Self::slide(t) * (self.slot.bottom - self.window.top).max(0.0);
-        for (index, strip) in strips.iter_mut().enumerate() {
-            let source_top = index as f32 / count;
-            let source_bottom = (index + 1) as f32 / count;
-            let top = self.window.top + source_top * height + shift;
-            let bottom = (self.window.top + source_bottom * height + shift).min(self.slot.bottom);
-            strip.source_top = source_top;
-            strip.source_bottom = source_bottom;
-            strip.target = (top < self.slot.bottom).then(|| {
-                let (left, right) = self.sides((top + bottom) / 2.0, bend);
-                Edges {
-                    left,
-                    top,
-                    right,
-                    bottom,
-                }
-            });
-        }
     }
 }
 
