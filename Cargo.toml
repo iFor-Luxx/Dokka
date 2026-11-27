@@ -25,6 +25,7 @@ dokka-events = { path = "crates/core/dokka-events" }
 dokka-icons = { path = "crates/ui/dokka-icons" }
 dokka-interaction = { path = "crates/engine/dokka-interaction" }
 dokka-launchpad = { path = "crates/islands/dokka-launchpad" }
+dokka-menubar = { path = "crates/islands/dokka-menubar" }
 dokka-model = { path = "crates/core/dokka-model" }
 dokka-previews = { path = "crates/islands/dokka-previews" }
 dokka-scene = { path = "crates/engine/dokka-scene" }

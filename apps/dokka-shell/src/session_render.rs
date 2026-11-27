@@ -69,6 +69,7 @@ pub(crate) fn render(
         render_launchpad(session, surface)?;
     }
     render_settings(session, surface)?;
+    crate::menubar::render_menubar(session, surface)?;
     Ok(())
 }
 

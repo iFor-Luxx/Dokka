@@ -2,6 +2,7 @@
 
 pub mod dock;
 pub mod launchpad;
+pub mod menubar;
 pub mod menu;
 pub mod nav_pill;
 pub mod popup;

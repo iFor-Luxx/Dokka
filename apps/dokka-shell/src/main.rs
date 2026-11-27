@@ -7,6 +7,7 @@ mod floating_panels;
 mod handle_event;
 mod launchpad;
 mod media;
+mod menubar;
 mod perform_click;
 mod pinned_apps;
 mod preview_actions;
@@ -41,6 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         over_taskbar: false,
     })?;
     surface.settings_place(dokka_theme::settings::WIDTH, dokka_theme::settings::HEIGHT)?;
+    crate::menubar::setup_menubar(&mut surface)?;
     let renderer = SceneRenderer::attach(
         WindowHandles {
             main: surface.handle(),
@@ -48,6 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             launchpad: surface.launchpad_handle(),
             preview: surface.preview_handle(),
             settings: surface.settings_handle(),
+            menubar: surface.menubar_handle(),
         },
         surface.scale(),
         surface.settings_scale(),
@@ -65,6 +68,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     session.sync()?;
     session.update_clock_and_trash();
+    crate::menubar::refresh_foreground(&mut session);
+    crate::menubar::refresh_clock(&mut session);
     session.resize(&mut surface)?;
     crate::session_render::render(&mut session, &mut surface)?;
 
@@ -76,6 +81,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         session.is_animating()
     });
     // La barra siempre vuelve, también si `run` terminó con error.
+    surface.menubar_hide();
     set_taskbar_visible(true);
     result?;
     Ok(())
