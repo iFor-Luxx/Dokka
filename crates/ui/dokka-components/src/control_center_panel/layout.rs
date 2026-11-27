@@ -27,11 +27,7 @@ fn row_y(bounds: Rect, row: usize) -> f32 {
         1 => top + measures::CELL + measures::GAP,
         2 => top + (measures::CELL + measures::GAP) * 2.0,
         3 => top + (measures::CELL + measures::GAP) * 3.0,
-        _ => {
-            top + (measures::CELL + measures::GAP) * 3.0
-                + measures::SOUND_HEIGHT
-                + measures::GAP
-        }
+        _ => top + (measures::CELL + measures::GAP) * 3.0 + measures::SOUND_HEIGHT + measures::GAP,
     }
 }
 

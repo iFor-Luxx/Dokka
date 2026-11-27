@@ -87,7 +87,11 @@ pub(crate) fn run_menubar_action(
         }
         MenubarAction::TaskView => {
             surface.menubar_menu_closed();
-            open_place(session, "Vista de tareas", "shell:::{3080F90E-D7AD-11D9-BD98-0000947B0257}")?;
+            open_place(
+                session,
+                "Vista de tareas",
+                "shell:::{3080F90E-D7AD-11D9-BD98-0000947B0257}",
+            )?;
         }
         MenubarAction::Project => {
             surface.menubar_menu_dismissed();

@@ -19,12 +19,9 @@ pub(crate) fn add_circles(
     let active = [&icons.desktop_active, &icons.lock_active];
     for (index, drawing) in active.into_iter().enumerate() {
         let slot = circle_slot(bounds, index);
-        pieces.tiles.push(tile_tinted(
-            theme,
-            slot,
-            slot.width / 2.0,
-            theme.tray.fill,
-        ));
+        pieces
+            .tiles
+            .push(tile_tinted(theme, slot, slot.width / 2.0, theme.tray.fill));
         pieces
             .icons
             .push(picture(theme, drawing, slot, measures::CIRCLE_ICON_SIDE));
