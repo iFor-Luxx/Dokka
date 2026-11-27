@@ -187,7 +187,7 @@ pub(crate) fn bind(
     drive.InsertScalar(h!("bend"), Genie::bend(at(0.0)))?;
     drive.InsertScalar(h!("shift"), Genie::slide(at(0.0)) * travel)?;
     let curve = format!(
-        "((1 - Cos(3.14159265 * Clamp(((y0 + Min(y1, {bottom:.3}) - d.shift)) * 0.5 + d.shift - ({top:.3})) / {span:.3}, 0, 1))) * 0.5 * d.bend)",
+        "((1 - Cos(3.14159265 * Clamp(((y0 + Min(y1, {bottom:.3} - d.shift)) * 0.5 + d.shift - ({top:.3})) / {span:.3}, 0, 1))) * 0.5 * d.bend)",
         bottom = slot.bottom,
         top = window.top,
         span = (slot.top - window.top).max(1.0),
