@@ -59,7 +59,7 @@ impl GenieBridge {
         self.director.is_flying()
     }
 
-    /// Proporción de la ventana minimizada, si se recuerda.
+    /// Proporción de la foto guardada para esta ventana, si la hay.
     pub(crate) fn snapshot_aspect(&self, hwnd: isize) -> Option<f32> {
         self.director.snapshot_aspect(hwnd)
     }
@@ -115,7 +115,7 @@ impl GenieBridge {
     }
 
     /// Tras sincronizar: recuerda dónde está cada ventana, apaga su animación
-    /// propia y descarta el vuelo y las salidas que ya no valen.
+    /// propia y descarta el vuelo y las fotos que ya no valen.
     pub(crate) fn on_refresh(&mut self, apps: &[DockApp]) {
         self.remember_rects(apps);
         self.calm_open(apps);
@@ -125,7 +125,7 @@ impl GenieBridge {
             .cancel_if_stale(foreground, &Self::current_minimized(apps));
     }
 
-    /// Imagen inmediata: lo último visto más lo que diga Windows ahora.
+    /// Foto fija inmediata: lo último visto más lo que diga Windows ahora.
     /// Devuelve lo que se veía para apuntar después. Vía de Muelle (MIT).
     pub(crate) fn begin_stand_in(
         &mut self,
@@ -182,7 +182,7 @@ impl GenieBridge {
         self.director.tuck_current_if_hidden(dock.is_hidden());
     }
 
-    /// Clic en la miniatura: vuela al revés hasta donde estaba.
+    /// Clic en la miniatura: vuela al revés desde su foto.
     pub(crate) fn on_restore_click(
         &mut self,
         dock: &Dock,

@@ -21,74 +21,94 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Vuelo de vuelta: desde el hueco hasta su sitio original.
+//! Vuelo de vuelta: desde la foto guardada hasta su sitio original.
 
 use std::time::Instant;
 
-use dokka_animation::{GENIE_SECONDS, Genie};
+use dokka_animation::Genie;
 
-use crate::departure::Departure;
 use crate::flight::Flight;
-use crate::geometry::{GenieEdge, PixelRect, Turn, to_local};
-use crate::overlay::show_no_activate;
+use crate::geometry::{PixelRect, to_local};
+use crate::overlay::{create_overlay, destroy, show_no_activate};
 use crate::phase::Phase;
-use crate::scene::Stage;
-use crate::strips::{GenieCompositor, bind, launch};
+use crate::snapshot::Snapshot;
+use crate::strips::{GenieCompositor, bind, clip_at_slot, cut, launch};
 
 impl Flight {
-    /// Vuelo de vuelta hasta donde estaba. La ventana real la restaura quien
-    /// llama al llegar a tamaño completo.
+    /// Vuelo de vuelta desde la foto reducida hasta su hueco original.
+    /// La ventana real la restaura quien llama al llegar a tamaño completo.
     pub(crate) fn restore(
         gfx: &GenieCompositor,
         hwnd: isize,
-        departure: Departure,
+        snapshot: &Snapshot,
         slot: PixelRect,
         screen: PixelRect,
-        edge: GenieEdge,
+        edge: crate::geometry::GenieEdge,
         foreground: isize,
     ) -> Option<Self> {
-        if departure.edge != edge {
+        let source = snapshot.window.intersect(screen);
+        if source.is_empty() {
+            eprintln!("genio: sin vuelo de vuelta para {hwnd}: su foto quedo fuera del monitor");
+            return None;
+        }
+        if snapshot.edge != edge {
             eprintln!("genio: sin vuelo de vuelta para {hwnd}: el dock cambio de borde");
             return None;
         }
-        let turn = Turn::new(edge, screen);
-        let build = || -> windows::core::Result<(Stage, Genie, Phase)> {
-            let area = (departure.whole, departure.frame);
-            let (stage, window) = Stage::new(gfx, hwnd, area, screen, turn)?;
-            let genie = Genie {
-                window,
-                slot: turn.edges(to_local(slot, screen)),
-            };
-            let drive = bind(gfx, &genie, &stage.pieces, true)?;
-            launch(gfx, &genie, &drive, true, GENIE_SECONDS)?;
-            gfx.live.commit()?;
-            let phase = Phase::Flying {
-                start: Instant::now(),
-                _drive: drive,
-            };
-            Ok((stage, genie, phase))
+        let turn = crate::geometry::Turn::new(edge, screen);
+        let (overlay, target, root) = create_overlay(&gfx.compositor, screen).or_else(|| {
+            eprintln!("genio: sin vuelo de vuelta para {hwnd}: no se creo el overlay");
+            None
+        })?;
+        let genie = Genie {
+            window: turn.edges(to_local(source, screen)),
+            slot: turn.edges(to_local(slot, screen)),
         };
-        let (stage, genie, phase) = build()
-            .inspect_err(|error| {
-                let code = error.code().0;
-                eprintln!("genio: sin vuelo de vuelta para {hwnd}: (HRESULT {code:#X})");
-            })
-            .ok()?;
-        show_no_activate(stage.overlay);
-        Some(Self {
+        let height = (genie.window.bottom - genie.window.top) as u32;
+        let image = &snapshot.image;
+        let size = (image.width as f32, image.height as f32);
+        let drive = turn
+            .apply(&root)
+            .and_then(|()| clip_at_slot(gfx, &root, &genie, turn))
+            .and_then(|()| cut(gfx, &root, image, height))
+            .and_then(|pieces| bind(gfx, &genie, &pieces, size, true))
+            .and_then(|drive| {
+                launch(gfx, &genie, &drive, true, dokka_animation::GENIE_SECONDS).map(|()| drive)
+            });
+        let Ok(drive) = drive.inspect_err(|error| {
+            let code = error.code().0;
+            eprintln!(
+                "genio: sin vuelo de vuelta para {hwnd}: fallo el compositor (HRESULT {code:#X})"
+            );
+        }) else {
+            destroy(overlay);
+            return None;
+        };
+        let flight = Self {
             hwnd,
             created_at: Instant::now(),
-            seconds: GENIE_SECONDS,
+            seconds: dokka_animation::GENIE_SECONDS,
             foreground,
-            stage,
+            overlay,
+            stand: None,
+            _stand_target: None,
+            _target: target,
+            root,
             screen,
             turn,
+            source,
             genie,
             aimed: true,
-            phase,
+            phase: Phase::Flying {
+                start: Instant::now(),
+                _drive: drive,
+                stand_in: None,
+            },
             restoring: true,
             restore_pending: true,
-            departure: None,
-        })
+            captured: None,
+        };
+        show_no_activate(flight.overlay);
+        Some(flight)
     }
 }

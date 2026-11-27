@@ -154,12 +154,23 @@ impl Turn {
             GenieEdge::Left => (0.0, 1.0, -1.0, 0.0, self.width, 0.0),
             GenieEdge::Right => (0.0, -1.0, 1.0, 0.0, 0.0, self.height),
         };
-        Some(flat_matrix(m11, m12, m21, m22, m41, m42))
+        Some(Matrix4x4 {
+            M11: m11,
+            M12: m12,
+            M21: m21,
+            M22: m22,
+            M33: 1.0,
+            M41: m41,
+            M42: m42,
+            M44: 1.0,
+            ..Matrix4x4::default()
+        })
     }
 
     pub(crate) fn apply(self, root: &ContainerVisual) -> Result<()> {
         if let Some(matrix) = self.matrix() {
             let (width, height) = self.size();
+            root.SetRelativeSizeAdjustment(Vector2 { X: 0.0, Y: 0.0 })?;
             root.SetSize(Vector2 {
                 X: width,
                 Y: height,
@@ -169,29 +180,29 @@ impl Turn {
         Ok(())
     }
 
-    /// Giro de un trozo de `width` × `height` de la ventana para leerse igual en
-    /// el marco. Rotación pura, sin espejo; abajo no hace falta.
-    pub(crate) fn part_matrix(self, width: f32, height: f32) -> Option<Matrix4x4> {
-        let (m11, m12, m21, m22, m41, m42) = match self.edge {
-            GenieEdge::Bottom => return None,
-            GenieEdge::Left => (0.0, -1.0, 1.0, 0.0, 0.0, width),
-            GenieEdge::Right => (0.0, 1.0, -1.0, 0.0, height, 0.0),
-        };
-        Some(flat_matrix(m11, m12, m21, m22, m41, m42))
-    }
-}
-
-fn flat_matrix(m11: f32, m12: f32, m21: f32, m22: f32, m41: f32, m42: f32) -> Matrix4x4 {
-    Matrix4x4 {
-        M11: m11,
-        M12: m12,
-        M21: m21,
-        M22: m22,
-        M33: 1.0,
-        M41: m41,
-        M42: m42,
-        M44: 1.0,
-        ..Matrix4x4::default()
+    /// Copia girada para leer igual en el marco. Rotacion pura, sin espejo.
+    pub(crate) fn turn_image(self, image: crate::GenieImage) -> crate::GenieImage {
+        if !self.edge.is_vertical() {
+            return image;
+        }
+        let (w, h) = (image.width as usize, image.height as usize);
+        let mut bgra = vec![0u8; w * h * 4];
+        for fy in 0..w {
+            for fx in 0..h {
+                let (x, y) = match self.edge {
+                    GenieEdge::Left => (w - 1 - fy, fx),
+                    _ => (fy, h - 1 - fx),
+                };
+                let from = (y * w + x) * 4;
+                let to = (fy * h + fx) * 4;
+                bgra[to..to + 4].copy_from_slice(&image.bgra[from..from + 4]);
+            }
+        }
+        crate::GenieImage {
+            width: image.height,
+            height: image.width,
+            bgra,
+        }
     }
 }
 

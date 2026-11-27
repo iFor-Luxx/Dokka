@@ -21,11 +21,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Cola del director: cancelar vuelos rancios, avanzar y recordar salidas.
+//! Cola del director: cancelar vuelos rancios, avanzar y guardar fotos.
 
 use std::time::Instant;
 
-use crate::director::{GenieDirector, MAX_DEPARTURES};
+use crate::director::{GenieDirector, MAX_SNAPSHOTS};
 
 impl GenieDirector {
     /// Ventana en vuelo y cuánto debe verse su miniatura del dock: nada
@@ -46,12 +46,12 @@ impl GenieDirector {
         }
     }
 
-    /// Proporción de la ventana minimizada, si se recuerda.
+    /// Proporción de la foto guardada para esta ventana, si la hay.
     pub fn snapshot_aspect(&self, hwnd: isize) -> Option<f32> {
-        self.departures
+        self.snapshots
             .iter()
             .find(|(id, _)| *id == hwnd)
-            .map(|(_, departure)| departure.aspect())
+            .map(|(_, snapshot)| snapshot.aspect())
     }
 
     /// Cancela vuelos rancios: otra app ganó el foco o se restauró por fuera.
@@ -65,7 +65,14 @@ impl GenieDirector {
             eprintln!("genio: vuelo {hwnd} cancelado: otra app gano el foco ({foreground})");
             self.flight = None;
         }
-        self.departures.retain(|(id, _)| minimized.contains(id));
+        let before = self.snapshots.len();
+        self.snapshots.retain(|(id, _)| minimized.contains(id));
+        if self.snapshots.len() != before {
+            eprintln!(
+                "genio: se olvidaron {} fotos huerfanas",
+                before - self.snapshots.len()
+            );
+        }
     }
 
     /// Avanza el vuelo; devuelve ventanas a restaurar ahora mismo.
@@ -81,11 +88,19 @@ impl GenieDirector {
                 restore.push(flight.hwnd);
             }
             if !going {
-                if let Some(departure) = flight.take_departure() {
-                    self.departures.push((flight.hwnd, departure));
-                    while self.departures.len() > MAX_DEPARTURES {
-                        self.departures.remove(0);
+                if let Some(snapshot) = flight.take_snapshot_for_restore() {
+                    eprintln!("genio: vuelo {} terminado: foto guardada", flight.hwnd);
+                    self.snapshots.push((flight.hwnd, snapshot));
+                    while self.snapshots.len() > MAX_SNAPSHOTS {
+                        self.snapshots.remove(0);
                     }
+                } else if flight.restoring {
+                    eprintln!("genio: vuelo {} terminado: ventana restaurada", flight.hwnd);
+                } else {
+                    eprintln!(
+                        "genio: vuelo {} terminado sin foto: restaura normal",
+                        flight.hwnd
+                    );
                 }
                 finished = true;
             }
