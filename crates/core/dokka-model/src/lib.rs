@@ -19,6 +19,6 @@ pub use preferences::{
     DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPosition, DockPreferences, MenubarItem,
     MenubarPreferences, Preferences,
 };
-pub use system_status::{KeyboardLanguage, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
+pub use system_status::{AudioOutput, KeyboardLanguage, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
 pub use tray_item::{TrayItem, TrayItemId};
 pub use window_id::WindowId;

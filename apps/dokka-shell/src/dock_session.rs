@@ -38,8 +38,10 @@ pub(crate) struct DockSession {
     pub(crate) background_host: Option<TrayHost>,
     /// Última revisión pasada a la isla; solo se pasa si cambia.
     pub(crate) background_revision: u64,
-    /// El error de arranque ya se avisó una vez.
+    /// El error de la bandeja ya se avisó una vez.
     pub(crate) background_error_logged: bool,
+    /// El error de salidas de audio ya se avisó una vez.
+    pub(crate) audio_error_logged: bool,
     pub(crate) previews: Previews,
     /// Ventana al frente en el último `Refresh`: otro primer plano también
     /// pide cerrar el panel, aunque la lista siga igual.
@@ -86,6 +88,7 @@ impl DockSession {
             background_host: None,
             background_revision: 0,
             background_error_logged: false,
+            audio_error_logged: false,
             previews: Previews::new(Arc::clone(&theme)),
             foreground: None,
             launchpad: Launchpad::new(),

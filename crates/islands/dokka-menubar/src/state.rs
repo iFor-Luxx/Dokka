@@ -13,7 +13,7 @@ use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
 use dokka_components::volume_panel::VolumePanelHit;
 use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{TrayIcons, menubar_icon};
-use dokka_model::{MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
+use dokka_model::{AudioOutput, MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState};
 use dokka_scene::{Bitmap, Drawing};
 use dokka_theme::Theme;
 
@@ -49,6 +49,7 @@ pub struct Menubar {
     pub(crate) tray_hovered: Option<TrayKind>,
     pub(crate) volume: VolumeState,
     pub(crate) volume_hovered: Option<VolumePanelHit>,
+    pub(crate) audio_outputs: Vec<AudioOutput>,
     pub(crate) network: NetworkState,
     pub(crate) network_hovered: Option<NetworkHit>,
     pub(crate) languages: Vec<LanguageEntry>,
@@ -98,6 +99,7 @@ impl Menubar {
                 is_muted: false,
             },
             volume_hovered: None,
+            audio_outputs: Vec::new(),
             network: NetworkState {
                 kind: NetworkKind::Offline,
                 name: String::new(),
@@ -203,6 +205,7 @@ impl Menubar {
             volume_level: self.volume.level,
             volume_muted: self.volume.is_muted,
             volume_hovered: self.volume_hovered,
+            audio_outputs: self.audio_outputs.clone(),
             network_kind: self.network.kind,
             network_name: self.network.name.clone(),
             network_online: self.network.has_internet,

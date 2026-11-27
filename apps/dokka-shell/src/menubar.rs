@@ -201,6 +201,9 @@ fn click_menubar(
     }
     if !was_tray && session.menubar.is_tray_open() {
         match session.menubar.tray_kind() {
+            Some(dokka_menubar::TrayKind::Volume) => {
+                crate::menubar_volume::refresh_audio_outputs(session);
+            }
             Some(dokka_menubar::TrayKind::Network) => {
                 crate::menubar_network::refresh_network(session);
             }

@@ -20,6 +20,7 @@ dokka-settings.workspace = true
 dokka-state.workspace = true
 dokka-theme.workspace = true
 dokka-win-apps.workspace = true
+dokka-win-audio-output.workspace = true
 dokka-win-composition.workspace = true
 dokka-win-control.workspace = true
 dokka-win-media.workspace = true

@@ -1,4 +1,4 @@
-use dokka_model::{KeyboardLanguage, NetworkState, VolumeState};
+use dokka_model::{AudioOutput, KeyboardLanguage, NetworkState, VolumeState};
 
 use crate::ContractError;
 
@@ -20,4 +20,12 @@ pub trait KeyboardLanguages {
     fn languages(&self) -> Result<Vec<KeyboardLanguage>, ContractError>;
     /// Cambia el idioma de la app que está al frente.
     fn activate_language(&self, id: u64) -> Result<(), ContractError>;
+}
+
+/// Salidas de audio activas (render).
+pub trait AudioOutputs {
+    /// Activas con su marca de predeterminada multimedia.
+    fn outputs(&self) -> Result<Vec<AudioOutput>, ContractError>;
+    /// Cambia la predeterminada de consola y multimedia.
+    fn set_default(&self, id: &str) -> Result<(), ContractError>;
 }

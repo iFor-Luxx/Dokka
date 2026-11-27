@@ -2,10 +2,11 @@
 //! el arrastre.
 //!
 //! Una columna: título con porcentaje, fila del deslizador (altavoz bajo,
-//! barra fina y altavoz con ondas), dos líneas finas y dos filas compactas
-//! (silenciar y ajustes). El valor siempre sale de la barra, más corta que
-//! la zona de toque por los iconos de sus extremos.
+//! barra fina y altavoz con ondas), sección de salidas si hay, dos líneas
+//! finas y dos filas compactas (silenciar y ajustes). El valor siempre sale
+//! de la barra, más corta que la zona de toque por los iconos de sus extremos.
 
+use dokka_model::AudioOutput;
 use dokka_scene::Rect;
 use dokka_theme::{tray_glass as glass, volume as measures};
 
@@ -108,11 +109,50 @@ pub(crate) fn level01(value: f32) -> f32 {
     }
 }
 
-/// Fila compacta que silencia, bajo la primera línea.
-pub(crate) fn mute_row(bounds: Rect) -> Rect {
+/// Salidas visibles de la lista (como máximo seis).
+pub(crate) fn visible_count(outputs: &[AudioOutput]) -> usize {
+    measures::visible_outputs(outputs.len())
+}
+
+/// Título pequeño de la sección de salidas, bajo el deslizador.
+pub(crate) fn output_title_row(bounds: Rect) -> Rect {
     let touch = slider_touch(bounds);
-    let top =
-        touch.y + touch.height + measures::SECTION_GAP + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
+    Rect {
+        x: bounds.x,
+        y: touch.y + touch.height + measures::TITLE_GAP,
+        width: bounds.width,
+        height: measures::TITLE_HEIGHT,
+    }
+}
+
+/// Fila compacta de la salida con este índice visible.
+pub(crate) fn output_row(bounds: Rect, index: usize) -> Rect {
+    let title = output_title_row(bounds);
+    Rect {
+        x: bounds.x + glass::ROW_MARGIN,
+        y: title.y + title.height + index as f32 * measures::ROW_HEIGHT,
+        width: bounds.width - glass::ROW_MARGIN * 2.0,
+        height: measures::ROW_HEIGHT,
+    }
+}
+
+/// Alto que ocupa la sección de salidas (cero sin salidas).
+fn outputs_block(outputs: &[AudioOutput]) -> f32 {
+    let visible = visible_count(outputs) as f32;
+    if visible <= 0.0 {
+        0.0
+    } else {
+        measures::TITLE_GAP + measures::TITLE_HEIGHT + visible * measures::ROW_HEIGHT
+    }
+}
+
+/// Fila compacta que silencia, bajo la primera línea.
+pub(crate) fn mute_row(bounds: Rect, outputs: &[AudioOutput]) -> Rect {
+    let touch = slider_touch(bounds);
+    let top = touch.y + touch.height
+        + outputs_block(outputs)
+        + measures::SECTION_GAP
+        + dokka_theme::tray_glass::SEPARATOR_HEIGHT;
     Rect {
         x: bounds.x + glass::ROW_MARGIN,
         y: top,
@@ -122,8 +162,8 @@ pub(crate) fn mute_row(bounds: Rect) -> Rect {
 }
 
 /// Fila compacta de ajustes, bajo la segunda línea.
-pub(crate) fn settings_row(bounds: Rect) -> Rect {
-    let mute = mute_row(bounds);
+pub(crate) fn settings_row(bounds: Rect, outputs: &[AudioOutput]) -> Rect {
+    let mute = mute_row(bounds, outputs);
     Rect {
         x: bounds.x + glass::ROW_MARGIN,
         y: mute.y + mute.height + dokka_theme::tray_glass::SEPARATOR_HEIGHT,
@@ -134,8 +174,8 @@ pub(crate) fn settings_row(bounds: Rect) -> Rect {
 
 /// Línea que separa secciones: la primera sobre silenciar, la segunda
 /// bajo él. Solo geometría; el color lo pone el dibujo.
-pub(crate) fn separator_rect(bounds: Rect, index: usize) -> Rect {
-    let mute = mute_row(bounds);
+pub(crate) fn separator_rect(bounds: Rect, outputs: &[AudioOutput], index: usize) -> Rect {
+    let mute = mute_row(bounds, outputs);
     let y = if index == 0 {
         mute.y - measures::SECTION_GAP
     } else {
