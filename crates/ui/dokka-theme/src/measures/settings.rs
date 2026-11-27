@@ -193,6 +193,21 @@ pub const SLIDER_CAPTION_SIZE: f32 = 11.0;
 pub const SLIDER_CAPTION_RIGHT_WIDTH: f32 = 34.0;
 /// Aire entre la barra y los textos bajo ella.
 pub const SLIDER_CAPTION_GAP: f32 = 4.0;
+/// Ancho del segmentado de posición, a la derecha de su fila con el mismo
+/// aire que el texto a la izquierda. Con tres segmentos de ~68 cada uno
+/// "Izquierda" cabe centrado sin salirse.
+pub const SEGMENTED_WIDTH: f32 = 204.0;
+/// Alto del segmentado Tahoe, centrado en su fila de 44.
+pub const SEGMENTED_HEIGHT: f32 = 28.0;
+/// Aire interior del segmentado: la pastilla elegida encoge esto por lado,
+/// con radio concéntrico (exterior menos separación).
+pub const SEGMENTED_INSET: f32 = 2.0;
+/// Tamaño del texto de cada segmento, centrado en su tercio.
+pub const SEGMENTED_TEXT_SIZE: f32 = 12.0;
+/// Ancho de la marca del valor de fábrica en el deslizador.
+pub const SLIDER_TICK_WIDTH: f32 = 2.0;
+/// Alto de la marca del valor de fábrica, algo más alta que la pista fina.
+pub const SLIDER_TICK_HEIGHT: f32 = 10.0;
 /// Separación entre tarjetas de contenido apiladas.
 pub const GROUP_GAP: f32 = 16.0;
 

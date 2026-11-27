@@ -14,6 +14,7 @@ pub mod popup_panel;
 pub mod preview_card;
 pub mod search_field;
 pub mod search_panel;
+pub mod segmented_control;
 pub mod settings_group;
 pub mod settings_list;
 pub mod slider;

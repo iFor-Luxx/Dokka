@@ -55,8 +55,7 @@ pub(super) fn leading_icons(
 
 fn lead_icon(theme: &Theme, drawing: &Arc<Drawing>, bounds: Rect, top: f32) -> Icon {
     Icon {
-        x: bounds.x + measures::PADDING
-            + (measures::ICON_COLUMN - measures::ROW_ICON_SIDE) / 2.0,
+        x: bounds.x + measures::PADDING + (measures::ICON_COLUMN - measures::ROW_ICON_SIDE) / 2.0,
         y: top + (measures::ROW_HEIGHT - measures::ROW_ICON_SIDE) / 2.0,
         side: measures::ROW_ICON_SIDE,
         image: Some(IconImage::Drawing(Arc::clone(drawing))),
@@ -74,11 +73,7 @@ fn tinted(drawing: &Drawing, color: Color) -> Drawing {
             .iter()
             .map(|shape| match shape {
                 Shape::Glyph {
-                    glyph,
-                    x,
-                    y,
-                    size,
-                    ..
+                    glyph, x, y, size, ..
                 } => Shape::Glyph {
                     glyph: *glyph,
                     x: *x,
@@ -107,7 +102,9 @@ fn tinted(drawing: &Drawing, color: Color) -> Drawing {
                     radius: *radius,
                     color,
                 },
-                Shape::Line { from, to, width, .. } => Shape::Line {
+                Shape::Line {
+                    from, to, width, ..
+                } => Shape::Line {
                     from: *from,
                     to: *to,
                     width: *width,

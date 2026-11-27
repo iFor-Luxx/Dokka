@@ -4,7 +4,8 @@ use super::values::ContentValues;
 /// Lo que cambia lo que se ve del contenido: valores, hover y arrastre.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PaintedControl {
-    /// Interruptor del Dock (0 ampliación, 1 vistas previas).
+    /// Interruptor del Dock (0 ampliación, 1 ocultado, 2 animar,
+    /// 3 indicadores, 4 vistas previas).
     DockSwitch(usize),
     /// Interruptor de la barra superior (fila 0-6).
     MenubarSwitch(usize),

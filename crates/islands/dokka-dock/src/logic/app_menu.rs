@@ -52,22 +52,26 @@ pub(crate) fn app_menu(app: &DockApp, text: Color) -> MenuData {
         &mut rows,
         &mut actions,
         &mut children,
-        [(MenuRow::submenu("Opciones"), None, Some(SubmenuData {
-            rows: vec![MenuRow::item_with_icon(
-                "Abrir ubicación del archivo",
-                Arc::new(menu_reveal_icon(text)),
-            )],
-            actions: vec![Some(MenuAction::ShowInFolder(app.info.clone()))],
-        }))],
+        [(
+            MenuRow::submenu("Opciones"),
+            None,
+            Some(SubmenuData {
+                rows: vec![MenuRow::item_with_icon(
+                    "Abrir ubicación del archivo",
+                    Arc::new(menu_reveal_icon(text)),
+                )],
+                actions: vec![Some(MenuAction::ShowInFolder(app.info.clone()))],
+            }),
+        )],
     );
-    push_section(
-        &mut rows,
-        &mut actions,
-        &mut children,
-        [pin_row(app, text)],
-    );
+    push_section(&mut rows, &mut actions, &mut children, [pin_row(app, text)]);
     if app.is_running() {
-        push_section(&mut rows, &mut actions, &mut children, close_rows(app, text));
+        push_section(
+            &mut rows,
+            &mut actions,
+            &mut children,
+            close_rows(app, text),
+        );
     }
     MenuData {
         rows,

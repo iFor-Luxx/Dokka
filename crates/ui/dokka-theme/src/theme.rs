@@ -161,6 +161,12 @@ pub struct SettingsColors {
     pub slider_fill: Color,
     /// Relleno del deslizador cuando está atenuado.
     pub slider_muted: Color,
+    /// Marca del valor de fábrica en el deslizador.
+    pub slider_tick: Color,
+    /// Cápsula gris del segmentado de posición.
+    pub segment_track: Color,
+    /// Pastilla blanca del segmento elegido.
+    pub segment_selected: Color,
     /// Cuadrado de color de cada sección, en su orden.
     pub badge: [Color; 8],
     /// Semáforos rojo, amarillo y verde, en ese orden.

@@ -43,9 +43,7 @@ pub(super) fn chevron_icons(
                     &chevrons.normal
                 };
                 icons.push(Icon {
-                    x: bounds.x + bounds.width
-                        - measures::PADDING
-                        - measures::ARROW_WIDTH
+                    x: bounds.x + bounds.width - measures::PADDING - measures::ARROW_WIDTH
                         + (measures::ARROW_WIDTH - measures::CHEVRON_SIDE) / 2.0,
                     y: top + (measures::ROW_HEIGHT - measures::CHEVRON_SIDE) / 2.0,
                     side: measures::CHEVRON_SIDE,
