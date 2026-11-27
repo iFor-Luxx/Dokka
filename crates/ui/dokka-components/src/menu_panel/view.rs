@@ -140,6 +140,7 @@ fn overlay_inner(
         },
         highlight: Some(highlight_panel(theme, bounds, rows, highlighted)),
         pill: None,
+        flat_panels: Vec::new(),
         dividers,
         dots: Vec::new(),
         pointer,
