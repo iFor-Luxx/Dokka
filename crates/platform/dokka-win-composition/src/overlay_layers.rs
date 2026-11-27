@@ -28,6 +28,9 @@ pub(crate) struct OverlayLayers {
     highlight: Option<PanelLayer>,
     /// Estilo con el que se creó el resaltado, si lo hay.
     highlight_style: Option<Panel>,
+    flats: Vec<PanelLayer>,
+    /// Estilo con el que se creó cada plano.
+    flat_styles: Vec<Panel>,
     dividers: Vec<DividerLayer>,
     dots: Vec<DotLayer>,
     texts: Vec<TextLayer>,
@@ -72,6 +75,11 @@ impl OverlayLayers {
                 highlight_style,
             )?);
         }
+        let flats = overlay
+            .flat_panels
+            .iter()
+            .map(|panel| PanelLayer::add_flat(compositor, &container, panel))
+            .collect::<Result<Vec<_>>>()?;
         let dividers = overlay
             .dividers
             .iter()
@@ -103,6 +111,8 @@ impl OverlayLayers {
             pointer_style: overlay.pointer.map(pointer_style_of),
             highlight,
             highlight_style: overlay.highlight,
+            flats,
+            flat_styles: overlay.flat_panels.clone(),
             dividers,
             dots,
             texts,
@@ -122,6 +132,12 @@ impl OverlayLayers {
             && self.highlight.is_some() == overlay.highlight.is_some()
             && self.highlight_style.map(highlight_style_of)
                 == overlay.highlight.map(highlight_style_of)
+            && self.flat_styles.len() == overlay.flat_panels.len()
+            && self
+                .flat_styles
+                .iter()
+                .zip(&overlay.flat_panels)
+                .all(|(old, new)| pill_style_of(*old) == pill_style_of(*new))
             && self.dividers.len() == overlay.dividers.len()
             && self.dots.len() == overlay.dots.len()
             && self.texts.len() == overlay.texts.len()
@@ -149,6 +165,9 @@ impl OverlayLayers {
             layer.update(&overlay.panel, pointer)?;
         }
         if let (Some(layer), Some(panel)) = (&self.highlight, &overlay.highlight) {
+            layer.update(panel)?;
+        }
+        for (layer, panel) in self.flats.iter().zip(&overlay.flat_panels) {
             layer.update(panel)?;
         }
         for (layer, divider) in self.dividers.iter().zip(&overlay.dividers) {

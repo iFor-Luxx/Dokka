@@ -66,6 +66,7 @@ pub fn preview_card(
         panel: popup_panel(theme, bounds),
         pill: None,
         highlight: None,
+        flat_panels: Vec::new(),
         dividers: Vec::new(),
         dots: Vec::new(),
         pointer: None,

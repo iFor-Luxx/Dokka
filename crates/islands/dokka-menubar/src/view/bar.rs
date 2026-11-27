@@ -1,5 +1,6 @@
-//! Escena de la franja con el menú colgando como `overlay`.
+//! Escena de la franja con el menú o el calendario colgando como `overlay`.
 
+use dokka_components::calendar_panel::{calendar_month, calendar_panel, calendar_pill_props};
 use dokka_components::menu_panel::submenu_overlay;
 use dokka_scene::{Icon, IconImage, Panel, Rect, Scene, Text, TextAlign};
 use dokka_theme::{menubar as measures, typography};
@@ -7,7 +8,8 @@ use dokka_theme::{menubar as measures, typography};
 use crate::Menubar;
 
 impl Menubar {
-    /// Franja de lado a lado con icono, app y hora; el menú va en `overlay`.
+    /// Franja de lado a lado con icono, app y hora; el menú o el calendario
+    /// va en `overlay` (nunca los dos a la vez).
     pub fn scene(&self, bar_width: f32) -> Scene {
         let bar = Rect {
             x: 0.0,
@@ -15,9 +17,10 @@ impl Menubar {
             width: bar_width,
             height: measures::HEIGHT,
         };
-        // Plano (sin cristal) y siempre presente: así no se oscurece ni se
+        // Planos (sin cristal) y siempre presentes: así no se oscurecen ni se
         // reconstruyen las capas al pasar el cursor.
         let hover = self.highlight_panel();
+        let clock_hover = self.clock_highlight_panel(bar_width);
         Scene {
             panel: Panel {
                 bounds: bar,
@@ -27,7 +30,7 @@ impl Menubar {
                 border: self.theme.menubar.border,
             },
             panels: Vec::new(),
-            flat_panels: vec![hover],
+            flat_panels: vec![hover, clock_hover],
             icons: vec![self.mark_icon()],
             dots: Vec::new(),
             dividers: Vec::new(),
@@ -35,7 +38,9 @@ impl Menubar {
             labels: Vec::new(),
             texts: self.bar_texts(bar_width),
             highlight: None,
-            overlay: self.menu_overlay(),
+            overlay: self
+                .menu_overlay()
+                .or_else(|| self.calendar_overlay(bar_width)),
             submenu: None,
             opacity: 1.0,
             scale: 1.0,
@@ -43,7 +48,7 @@ impl Menubar {
         }
     }
 
-    /// Franja y, abierto, el menú con su hueco para no perder el cursor.
+    /// Franja y, abierto, el menú o el calendario con su hueco.
     pub fn active_areas(&self, bar_width: f32) -> Vec<Rect> {
         let mut areas = vec![Rect {
             x: 0.0,
@@ -57,6 +62,13 @@ impl Menubar {
                 y: measures::HEIGHT,
                 width: menu.panel.width,
                 height: menu.panel.y - measures::HEIGHT + menu.panel.height,
+            });
+        } else if let Some(bounds) = self.calendar_bounds(bar_width) {
+            areas.push(Rect {
+                x: bounds.x,
+                y: measures::HEIGHT,
+                width: bounds.width,
+                height: bounds.y - measures::HEIGHT + bounds.height,
             });
         }
         areas
@@ -78,6 +90,26 @@ impl Menubar {
         Panel {
             bounds: if visible {
                 self.icon_hover_bounds()
+            } else {
+                Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 0.0,
+                    height: 0.0,
+                }
+            },
+            corner_radius: measures::HOVER_RADIUS,
+            border_width: 0.0,
+            tint: self.theme.menubar.hover,
+            border: self.theme.menubar.hover,
+        }
+    }
+
+    fn clock_highlight_panel(&self, bar_width: f32) -> Panel {
+        let visible = self.clock_hovered || self.calendar.is_some();
+        Panel {
+            bounds: if visible {
+                self.clock_hover_bounds(bar_width)
             } else {
                 Rect {
                     x: 0.0,
@@ -129,6 +161,20 @@ impl Menubar {
             menu.panel,
             &menu.rows,
             menu.highlighted,
+        ))
+    }
+
+    fn calendar_overlay(&self, bar_width: f32) -> Option<dokka_scene::Overlay> {
+        let bounds = self.calendar_bounds(bar_width)?;
+        let open = self.calendar?;
+        let month = calendar_month(self.today, open.month_offset);
+        let pill = calendar_pill_props(bounds, self.nav_hovered);
+        Some(calendar_panel(
+            &self.theme,
+            &self.nav_pill,
+            bounds,
+            &month,
+            &pill,
         ))
     }
 }

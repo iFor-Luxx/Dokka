@@ -1,13 +1,11 @@
 use dokka_components::calendar_panel::{
-    calendar_nav_pill, calendar_panel, calendar_size, calendar_weeks,
+    calendar_month, calendar_panel, calendar_pill_props, calendar_size, calendar_weeks,
 };
-use dokka_components::nav_pill::NavPillProps;
 use dokka_components::popup_panel::place_above;
 use dokka_components::preview_card::{PreviewHover, preview_card, preview_size};
 use dokka_scene::{Overlay, Rect};
 use dokka_theme::popup as theme;
 
-use crate::logic::calendar_month;
 use crate::{PreviewContent, Previews};
 
 impl Previews {
@@ -103,12 +101,7 @@ impl Previews {
         let mut overlay = match &request.content {
             PreviewContent::Calendar => {
                 let month = calendar_month(self.today, self.month_offset);
-                let pill = NavPillProps {
-                    bounds: calendar_nav_pill(drawn),
-                    can_previous: true,
-                    can_next: true,
-                    hovered: self.nav_hovered,
-                };
+                let pill = calendar_pill_props(drawn, self.nav_hovered);
                 calendar_panel(&self.theme, &self.nav_pill, drawn, &month, &pill)
             }
             PreviewContent::Windows(windows) => {

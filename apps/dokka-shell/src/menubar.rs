@@ -1,8 +1,9 @@
-//! Barra superior: app activa, hora y menú del icono.
+//! Barra superior: app activa, hora con calendario y menú del icono.
 //!
 //! La isla decide y dibuja; aquí solo se conecta con la plataforma y con lo
-//! que ya hace `context_menu.rs`, sin duplicarlo. Abrir este menú cierra el
-//! del dock y las vistas previas; abrir el del dock lo cierra a él.
+//! que ya hace `context_menu.rs`, sin duplicarlo. Abrir el menú o el
+//! calendario cierra el otro, el del dock y las vistas previas; abrir el del
+//! dock o un panel lo cierra a él.
 
 use std::error::Error;
 
@@ -34,7 +35,7 @@ pub(crate) fn refresh_foreground(session: &mut DockSession) {
     session.menubar.set_app(name);
 }
 
-/// Hora de la barra, desde el reloj local.
+/// Hora de la barra y hoy del calendario, desde el reloj local.
 pub(crate) fn refresh_clock(session: &mut DockSession) {
     let now = local_time();
     session.menubar.set_clock(clock_text(
@@ -44,21 +45,16 @@ pub(crate) fn refresh_clock(session: &mut DockSession) {
         now.hour,
         now.minute,
     ));
+    session.menubar.set_today(now.year, now.month, now.day);
 }
 
-/// Dibuja la barra en su ventana si algo cambió (mira `settings_painted`).
+/// Dibuja la barra en su ventana si algo cambió (mira `menubar_painted`).
 pub(crate) fn render_menubar(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     let width = surface.menubar_width();
-    let finger = (
-        session.menubar.app_name().to_owned(),
-        session.menubar.clock_text().to_owned(),
-        session.menubar.is_menu_open(),
-        session.menubar.is_icon_hovered(),
-        session.menubar.highlighted(),
-    );
+    let finger = session.menubar.painted();
     if session.menubar_painted.as_ref() == Some(&finger) {
         return Ok(());
     }
@@ -75,10 +71,13 @@ pub(crate) fn render_menubar(
     Ok(())
 }
 
-/// Cierra el menú si está abierto, devolviendo el foco. Sin menú no hace nada.
+/// Cierra el menú o el calendario si hay alguno abierto, devolviendo el foco.
 pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) {
     if session.menubar.is_menu_open() {
         session.menubar.close_menu();
+        surface.menubar_menu_closed();
+    } else if session.menubar.is_calendar_open() {
+        session.menubar.close_calendar();
         surface.menubar_menu_closed();
     }
 }
@@ -101,7 +100,8 @@ pub(crate) fn handle_menubar_event(
             return Ok(false);
         }
         SurfaceEvent::MenubarMoved { x, y } => {
-            session.menubar.pointer_moved(x, y);
+            let width = surface.menubar_width();
+            session.menubar.pointer_moved(x, y, width);
         }
         SurfaceEvent::MenubarLeft => {
             session.menubar.pointer_left();
@@ -117,7 +117,8 @@ pub(crate) fn handle_menubar_event(
     Ok(true)
 }
 
-/// Clic en la barra: abrir con el icono, actuar al elegir u olvidarlo fuera.
+/// Clic en la barra: icono, hora, píldora o cerrar fuera. Abrir el menú o el
+/// calendario cierra el otro, el del dock y las previas; cerrar devuelve el foco.
 fn click_menubar(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -125,18 +126,26 @@ fn click_menubar(
     y: f32,
 ) -> Result<(), Box<dyn Error>> {
     let width = surface.menubar_width();
-    let was_open = session.menubar.is_menu_open();
+    let was_menu = session.menubar.is_menu_open();
+    let was_calendar = session.menubar.is_calendar_open();
     let chosen = session.menubar.click(x, y, width);
     if let Some(action) = chosen {
         return run_menubar_action(session, surface, action);
     }
-    if !was_open && session.menubar.is_menu_open() {
+    let now_menu = session.menubar.is_menu_open();
+    let now_calendar = session.menubar.is_calendar_open();
+    if !was_menu && !was_calendar && (now_menu || now_calendar) {
         // Se acaba de abrir: fuera el menú del dock y las previas.
         session.dock.close_menu();
         surface.menu_closed();
         session.previews.close();
         surface.menubar_menu_opened();
-    } else if was_open && !session.menubar.is_menu_open() {
+    } else if (was_menu && now_calendar) || (was_calendar && now_menu) {
+        // Cambio directo entre menú y calendario: ya tenía el foco.
+        session.dock.close_menu();
+        surface.menu_closed();
+        session.previews.close();
+    } else if (was_menu || was_calendar) && !now_menu && !now_calendar {
         surface.menubar_menu_closed();
     }
     Ok(())
