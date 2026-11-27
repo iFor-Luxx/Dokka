@@ -16,12 +16,12 @@ pub struct SearchPanelIcons {
 impl SearchPanelIcons {
     pub fn new(theme: &Theme) -> Self {
         Self {
-            field: Arc::new(search_field_icon(theme.panel.text)),
+            field: Arc::new(search_field_icon(theme.tray.text)),
             bar: Arc::new(search_bar_icon(theme.menubar.text)),
         }
     }
 
-    /// Lupa oscura de la casilla grande dentro del panel claro.
+    /// Lupa blanca de la cápsula grande sobre el cristal ahumado.
     pub fn field(&self) -> &Arc<Drawing> {
         &self.field
     }

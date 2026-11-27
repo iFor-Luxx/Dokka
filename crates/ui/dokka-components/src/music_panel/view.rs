@@ -1,10 +1,9 @@
 use std::sync::Arc;
 
-use dokka_scene::{Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, music_panel as measures, typography};
+use dokka_scene::{Color, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_theme::{Theme, music_panel as measures};
 
 use super::{MusicPanelHit, MusicPanelIcons, MusicTrack};
-use crate::popup_panel::popup_panel;
 
 /// Tamaño fijo de la tarjeta, con o sin canción para no reconstruir capas.
 pub fn music_panel_size(_track: Option<&MusicTrack>) -> Size {
@@ -14,8 +13,10 @@ pub fn music_panel_size(_track: Option<&MusicTrack>) -> Size {
     }
 }
 
-/// Tarjeta de cristal con título, artista y barra de botones.
-/// Con `None` muestra "Nada en reproducción" y la barra mide cero.
+/// Tarjeta de cristal ahumado con carátula, título y controles grandes.
+/// Sin canción muestra "Nada en reproducción" con los botones atenuados.
+/// Capas siempre iguales: panel invisible, una pieza, un plano de carátula,
+/// dos textos y tres iconos.
 pub fn music_panel_panel(
     theme: &Theme,
     icons: &MusicPanelIcons,
@@ -23,16 +24,28 @@ pub fn music_panel_panel(
     track: Option<&MusicTrack>,
 ) -> Overlay {
     Overlay {
-        panel: popup_panel(theme, bounds),
-        tiles: Vec::new(),
+        panel: Panel {
+            bounds,
+            corner_radius: measures::TILE_RADIUS,
+            border_width: 0.0,
+            tint: theme.tray.clear,
+            border: theme.tray.clear,
+        },
+        tiles: vec![Panel {
+            bounds,
+            corner_radius: measures::TILE_RADIUS,
+            border_width: measures::TILE_BORDER_WIDTH,
+            tint: theme.tray.tile,
+            border: theme.tray.tile_border,
+        }],
         pill: None,
         highlight: None,
-        flat_panels: vec![button_bar_panel(theme, bounds, track)],
+        flat_panels: vec![artwork_panel(theme, bounds)],
         dividers: Vec::new(),
         dots: Vec::new(),
         pointer: None,
         texts: music_texts(theme, bounds, track),
-        icons: music_icons(theme, icons, bounds, track),
+        icons: music_icons(icons, bounds, track),
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -41,7 +54,7 @@ pub fn music_panel_panel(
     }
 }
 
-/// Botón bajo el punto, si hay canción.
+/// Botón bajo el punto, si hay canción (atenuados no responden).
 pub fn music_panel_hit(
     bounds: Rect,
     x: f32,
@@ -61,109 +74,110 @@ pub fn music_panel_hit(
     }
 }
 
-fn button_bar(bounds: Rect) -> Rect {
+fn artwork_rect(bounds: Rect) -> Rect {
     Rect {
         x: bounds.x + measures::PADDING,
-        y: bounds.y + bounds.height - measures::PADDING - measures::BUTTON_BAR_HEIGHT,
-        width: bounds.width - measures::PADDING * 2.0,
-        height: measures::BUTTON_BAR_HEIGHT,
+        y: bounds.y + measures::PADDING,
+        width: measures::ARTWORK_SIDE,
+        height: measures::ARTWORK_SIDE,
     }
 }
 
-fn button_bar_panel(theme: &Theme, bounds: Rect, track: Option<&MusicTrack>) -> Panel {
-    let bar = button_bar(bounds);
-    if track.is_some() {
-        Panel {
-            bounds: bar,
-            corner_radius: measures::BUTTON_BAR_RADIUS,
-            border_width: 0.0,
-            tint: theme.panel.highlight,
-            border: theme.panel.highlight,
-        }
-    } else {
-        Panel {
-            bounds: Rect {
-                x: bar.x,
-                y: bar.y,
-                width: 0.0,
-                height: 0.0,
-            },
-            corner_radius: measures::BUTTON_BAR_RADIUS,
-            border_width: 0.0,
-            tint: theme.panel.highlight,
-            border: theme.panel.highlight,
-        }
+fn artwork_panel(theme: &Theme, bounds: Rect) -> Panel {
+    Panel {
+        bounds: artwork_rect(bounds),
+        corner_radius: measures::ARTWORK_RADIUS.min(measures::ARTWORK_SIDE / 2.0),
+        border_width: 0.0,
+        tint: theme.tray.circle,
+        border: theme.tray.circle,
     }
+}
+
+fn text_left(bounds: Rect) -> f32 {
+    let art = artwork_rect(bounds);
+    art.x + art.width + measures::TEXT_GAP
+}
+
+fn controls_top(bounds: Rect) -> f32 {
+    bounds.y + bounds.height - measures::PADDING - measures::CONTROLS_HEIGHT
 }
 
 fn music_buttons(bounds: Rect) -> [Rect; 3] {
-    let bar = button_bar(bounds);
-    let third = bar.width / 3.0;
+    let total = measures::BUTTON_WIDTH * 3.0;
+    let start = bounds.x + (bounds.width - total) / 2.0;
     [0.0, 1.0, 2.0].map(|index| Rect {
-        x: bar.x + third * index,
-        width: third,
-        ..bar
+        x: start + measures::BUTTON_WIDTH * index,
+        y: controls_top(bounds),
+        width: measures::BUTTON_WIDTH,
+        height: measures::CONTROLS_HEIGHT,
     })
 }
 
 fn music_texts(theme: &Theme, bounds: Rect, track: Option<&MusicTrack>) -> Vec<Text> {
-    let center_x = bounds.x + bounds.width / 2.0;
-    let (title, artist) = match track {
+    let left = text_left(bounds);
+    let art = artwork_rect(bounds);
+    let (title, artist, artist_color) = match track {
         Some(track) => (
             shorten(&track.title, measures::TITLE_CHARACTERS),
             shorten(&track.artist, measures::ARTIST_CHARACTERS),
+            theme.tray.secondary,
         ),
-        None => (measures::EMPTY_TEXT.to_owned(), String::new()),
+        None => (
+            measures::EMPTY_TEXT.to_owned(),
+            String::new(),
+            theme.tray.secondary,
+        ),
     };
     vec![
         Text {
-            x: center_x,
-            center_y: bounds.y + measures::TITLE_CENTER_OFFSET,
+            x: left,
+            center_y: art.y + art.height / 2.0 - 11.0,
             content: title,
-            size: typography::TITLE_SIZE,
+            size: measures::TITLE_SIZE,
             is_bold: true,
-            color: theme.panel.text,
-            align: TextAlign::Center,
+            color: theme.tray.text,
+            align: TextAlign::Left,
         },
         Text {
-            x: center_x,
-            center_y: bounds.y + measures::ARTIST_CENTER_OFFSET,
+            x: left,
+            center_y: art.y + art.height / 2.0 + 11.0,
             content: artist,
-            size: typography::BODY_SIZE,
+            size: measures::SUBTITLE_SIZE,
             is_bold: false,
-            color: theme.panel.text,
-            align: TextAlign::Center,
+            color: artist_color,
+            align: TextAlign::Left,
         },
     ]
 }
 
 fn music_icons(
-    theme: &Theme,
     icons: &MusicPanelIcons,
     bounds: Rect,
     track: Option<&MusicTrack>,
 ) -> Vec<Icon> {
-    let toggle = match track {
-        Some(track) if track.is_playing => &icons.pause,
-        _ => &icons.play,
+    let playing = track.is_some_and(|track| track.is_playing);
+    let dimmed = track.is_none();
+    let drawings: [&Arc<dokka_scene::Drawing>; 3] = if dimmed {
+        match playing {
+            true => [&icons.previous_dim, &icons.pause_dim, &icons.next_dim],
+            false => [&icons.previous_dim, &icons.play_dim, &icons.next_dim],
+        }
+    } else if playing {
+        [&icons.previous, &icons.pause, &icons.next]
+    } else {
+        [&icons.previous, &icons.play, &icons.next]
     };
-    let drawings: [&Arc<dokka_scene::Drawing>; 3] = [&icons.previous, toggle, &icons.next];
-    let visible = track.is_some();
     music_buttons(bounds)
         .iter()
         .zip(drawings)
         .map(|(area, drawing)| {
-            let side = if visible {
-                measures::BUTTON_ICON_SIDE
-            } else {
-                0.0
-            };
+            let side = measures::BUTTON_ICON_SIDE;
             Icon {
                 x: area.x + (area.width - side) / 2.0,
                 y: area.y + (area.height - side) / 2.0,
                 side,
                 image: Some(IconImage::Drawing(Arc::clone(drawing))),
-                placeholder: theme.panel.background,
+                placeholder: Color::rgba(0, 0, 0, 0),
                 placeholder_radius: 0.0,
             }
         })
