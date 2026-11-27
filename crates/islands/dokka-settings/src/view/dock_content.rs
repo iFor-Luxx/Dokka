@@ -71,8 +71,13 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         };
     };
     let second_heights = card_heights(SECTION_DOCK, 1);
-    let (panel, mut card_dividers, mut card_texts) =
-        group_pieces(theme, second_top, second_labels, &second_heights, &[false; 2]);
+    let (panel, mut card_dividers, mut card_texts) = group_pieces(
+        theme,
+        second_top,
+        second_labels,
+        &second_heights,
+        &[false; 2],
+    );
     flats.push(panel);
     dividers.append(&mut card_dividers);
     texts.append(&mut card_texts);

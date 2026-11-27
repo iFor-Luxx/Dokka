@@ -21,10 +21,7 @@ pub(crate) fn menu_rows(text: Color) -> Vec<MenuRow> {
     vec![
         MenuRow::item_with_icon("Preferencias…", Arc::new(menu_preferences_icon(text))),
         MenuRow::Separator,
-        MenuRow::item_with_icon(
-            "Mostrar el escritorio",
-            Arc::new(menu_desktop_icon(text)),
-        ),
+        MenuRow::item_with_icon("Mostrar el escritorio", Arc::new(menu_desktop_icon(text))),
         MenuRow::item_with_icon(
             "Administrador de tareas",
             Arc::new(menu_task_manager_icon(text)),

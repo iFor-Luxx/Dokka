@@ -31,10 +31,7 @@ pub(crate) fn card_heights(section: usize, card: usize) -> Vec<f32> {
                 measures::CONTENT_ROW_HEIGHT,
                 measures::CONTENT_SLIDER_ROW_HEIGHT,
             ],
-            1 => vec![
-                measures::CONTENT_ROW_HEIGHT,
-                measures::CONTENT_ROW_HEIGHT,
-            ],
+            1 => vec![measures::CONTENT_ROW_HEIGHT, measures::CONTENT_ROW_HEIGHT],
             _ => vec![
                 measures::CONTENT_ROW_HEIGHT,
                 measures::CONTENT_ROW_HEIGHT,

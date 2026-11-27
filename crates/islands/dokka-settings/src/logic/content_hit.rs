@@ -3,7 +3,7 @@
 //! Usa la misma geometría que el dibujo para que el clic, el hover y el
 //! arrastre caigan donde se ve cada control.
 
-use super::content::{content_segmented, content_slider_area, content_switch};
+use super::content::{card_tops, content_segmented, content_slider_area, content_switch};
 use super::sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
 
 /// Deslizador arrastrado, si hay alguno a medias.
@@ -28,7 +28,7 @@ pub(crate) fn dock_switch_at(section: usize, x: f32, y: f32) -> Option<DockSwitc
     if section != SECTION_DOCK {
         return None;
     }
-    let tops = super::content::card_tops(section);
+    let tops = card_tops(section);
     let first = tops.first()?;
     let heights = super::content::card_heights(section, 0);
     if in_touch(&content_switch(*first, &heights, 1), x, y) {
@@ -58,7 +58,7 @@ pub(crate) fn menubar_switch_at(section: usize, x: f32, y: f32) -> Option<usize>
     if section != SECTION_MENUBAR {
         return None;
     }
-    let tops = super::content::card_tops(section);
+    let tops = card_tops(section);
     let top = tops.into_iter().next()?;
     let heights = super::content::card_heights(section, 0);
     (0..7).find(|index| {
@@ -72,11 +72,15 @@ pub(crate) fn taskbar_switch_at(section: usize, x: f32, y: f32) -> Option<usize>
     if section != SECTION_TASKBAR {
         return None;
     }
-    let tops = super::content::card_tops(section);
+    let tops = card_tops(section);
     let top = tops.into_iter().next()?;
     let heights = super::content::card_heights(section, 0);
     let touch = content_switch(top, &heights, 0);
-    if in_touch(&touch, x, y) { Some(0) } else { None }
+    if in_touch(&touch, x, y) {
+        Some(0)
+    } else {
+        None
+    }
 }
 
 /// Deslizador bajo el punto en la sección del Dock.
@@ -84,7 +88,7 @@ pub(crate) fn dock_slider_at(section: usize, x: f32, y: f32) -> Option<SliderTar
     if section != SECTION_DOCK {
         return None;
     }
-    let tops = super::content::card_tops(section);
+    let tops = card_tops(section);
     let top = tops.first()?;
     let heights = super::content::card_heights(section, 0);
     let matches = |index: usize| {
@@ -123,6 +127,5 @@ pub(crate) fn content_control_at(section: usize, x: f32, y: f32) -> bool {
 }
 
 fn in_touch(touch: &dokka_scene::Rect, x: f32, y: f32) -> bool {
-    (touch.x..touch.x + touch.width).contains(&x)
-        && (touch.y..touch.y + touch.height).contains(&y)
+    (touch.x..touch.x + touch.width).contains(&x) && (touch.y..touch.y + touch.height).contains(&y)
 }

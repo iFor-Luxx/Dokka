@@ -4,7 +4,9 @@
 
 use dokka_theme::Theme;
 
-use super::super::logic::{SECTION_MENUBAR, SECTION_TASKBAR, card_heights, card_tops, section_cards};
+use super::super::logic::{
+    SECTION_MENUBAR, SECTION_TASKBAR, card_heights, card_tops, section_cards,
+};
 use super::super::pointer::display_preferences;
 use super::super::state::Settings;
 use super::content::{ContentScene, coming_soon, group_pieces, switch_pieces};

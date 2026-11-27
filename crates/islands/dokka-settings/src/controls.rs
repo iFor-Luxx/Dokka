@@ -4,9 +4,8 @@
 use dokka_components::nav_pill::NavHalf;
 
 use super::logic::{
-    DockSwitch, SliderTarget, dock_segment_at, dock_slider_at, dock_switch_at,
-    icon_scale_from, magnification_from, menubar_switch_at, position_from_index,
-    taskbar_switch_at,
+    DockSwitch, SliderTarget, dock_segment_at, dock_slider_at, dock_switch_at, icon_scale_from,
+    magnification_from, menubar_switch_at, position_from_index, taskbar_switch_at,
 };
 use super::pointer::clamped_slider_value;
 use super::state::Settings;

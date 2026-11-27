@@ -65,10 +65,7 @@ pub(crate) fn apply_dock(preferences: &mut Preferences, key: &str, value: &str) 
 /// Líneas del dock en orden estable para escribir el archivo.
 pub(crate) fn render_dock(preferences: &Preferences) -> Vec<(&'static str, String)> {
     vec![
-        (
-            "dock.icon_scale",
-            format_float(preferences.dock.icon_scale),
-        ),
+        ("dock.icon_scale", format_float(preferences.dock.icon_scale)),
         (
             "dock.magnification",
             format_bool(preferences.dock.magnification),
@@ -77,14 +74,8 @@ pub(crate) fn render_dock(preferences: &Preferences) -> Vec<(&'static str, Strin
             "dock.magnification_strength",
             format_float(preferences.dock.magnification_strength),
         ),
-        (
-            "dock.position",
-            format_position(preferences.dock.position),
-        ),
-        (
-            "dock.auto_hide",
-            format_bool(preferences.dock.auto_hide),
-        ),
+        ("dock.position", format_position(preferences.dock.position)),
+        ("dock.auto_hide", format_bool(preferences.dock.auto_hide)),
         (
             "dock.animate_launch",
             format_bool(preferences.dock.animate_launch),

@@ -60,10 +60,7 @@ pub(crate) fn apply_menubar(preferences: &mut Preferences, key: &str, value: &st
 pub(crate) fn render_menubar(preferences: &Preferences) -> Vec<(&'static str, String)> {
     vec![
         ("menubar.volume", format_bool(preferences.menubar.volume)),
-        (
-            "menubar.network",
-            format_bool(preferences.menubar.network),
-        ),
+        ("menubar.network", format_bool(preferences.menubar.network)),
         ("menubar.music", format_bool(preferences.menubar.music)),
         (
             "menubar.language",

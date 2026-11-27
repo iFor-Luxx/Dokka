@@ -87,10 +87,7 @@ fn dock_items_submenu(text: Color) -> SubmenuData {
                 "Añadir acceso del sistema",
                 Arc::new(menu_add_system_icon(text)),
             ),
-            MenuRow::item_with_icon(
-                "Añadir separador",
-                Arc::new(menu_add_separator_icon(text)),
-            ),
+            MenuRow::item_with_icon("Añadir separador", Arc::new(menu_add_separator_icon(text))),
             MenuRow::item_with_icon(
                 "Quitar separador",
                 Arc::new(menu_remove_separator_icon(text)),
@@ -133,10 +130,7 @@ fn taskbar_submenu(text: Color, taskbar_hidden: bool, taskbar_auto: bool) -> Sub
 fn system_submenu(text: Color) -> SubmenuData {
     SubmenuData {
         rows: vec![
-            MenuRow::item_with_icon(
-                "Mostrar el escritorio",
-                Arc::new(menu_desktop_icon(text)),
-            ),
+            MenuRow::item_with_icon("Mostrar el escritorio", Arc::new(menu_desktop_icon(text))),
             MenuRow::item_with_icon(
                 "Administrador de tareas",
                 Arc::new(menu_task_manager_icon(text)),

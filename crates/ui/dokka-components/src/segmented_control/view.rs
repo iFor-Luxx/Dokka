@@ -1,7 +1,10 @@
 use dokka_scene::{Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::{SegmentedProps, layout::{segment_bounds, segmented_touch}};
+use super::{
+    SegmentedProps,
+    layout::{segment_bounds, segmented_touch},
+};
 
 /// Cápsula gris de fondo con el color del tema, extremos redondos.
 fn segment_track_panel(theme: &Theme, touch: Rect) -> Panel {

@@ -200,13 +200,10 @@ impl Dock {
             super::Entry::App(app) | super::Entry::Minimized(app, _) => {
                 Some(super::app_menu::app_menu(app, text))
             }
-            super::Entry::Explorer(app) => {
-                Some(super::system_menus::explorer_menu(app, text))
+            super::Entry::Explorer(app) => Some(super::system_menus::explorer_menu(app, text)),
+            super::Entry::Trash => {
+                Some(super::system_menus::trash_menu(self.icons.trash_size, text))
             }
-            super::Entry::Trash => Some(super::system_menus::trash_menu(
-                self.icons.trash_size,
-                text,
-            )),
             super::Entry::Launchpad => Some(super::system_menus::launchpad_menu(text)),
             super::Entry::Calendar | super::Entry::Clock => None,
         }

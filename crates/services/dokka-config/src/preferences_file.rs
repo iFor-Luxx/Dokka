@@ -67,11 +67,9 @@ fn parse(text: &str) -> Preferences {
 }
 
 fn apply(preferences: &mut Preferences, key: &str, value: &str) {
-    if apply_dock(preferences, key, value) {
-        return;
-    }
-    if apply_menubar(preferences, key, value) {
-        return;
+    // Una clave es de una sola parte: si no es del dock, se prueba la barra.
+    if !apply_dock(preferences, key, value) {
+        apply_menubar(preferences, key, value);
     }
 }
 

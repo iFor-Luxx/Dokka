@@ -133,7 +133,13 @@ pub(crate) fn slider_pieces(
 }
 
 /// Planos de un interruptor en su fila: pista y tirador en cápsula.
-pub(crate) fn switch_pieces(theme: &Theme, top: f32, heights: &[f32], index: usize, on: bool) -> Vec<Panel> {
+pub(crate) fn switch_pieces(
+    theme: &Theme,
+    top: f32,
+    heights: &[f32],
+    index: usize,
+    on: bool,
+) -> Vec<Panel> {
     let row = super::super::logic::content_row(top, heights, index);
     let touch = switch_touch(row);
     let props = SwitchProps { on };
