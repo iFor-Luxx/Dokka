@@ -6,6 +6,7 @@ mod clock;
 mod explorer;
 mod launchpad;
 mod lucide;
+mod network_language;
 mod shapes;
 mod tile_color;
 mod tile_frame;
@@ -28,6 +29,10 @@ pub use lucide::{
     settings_taskbar_icon, submenu_chevron_icon, traffic_circle, traffic_close_button,
     traffic_close_icon, traffic_minimize_button, traffic_minimize_icon, traffic_zoom_button,
     traffic_zoom_icon,
+};
+pub use network_language::{
+    language_check_icon, network_ethernet_icon, network_offline_icon, network_other_icon,
+    network_wifi_icon,
 };
 pub use trash::trash_icon;
 

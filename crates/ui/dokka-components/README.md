@@ -21,6 +21,11 @@ círculo rojo, amarillo o verde —gris sin foco— y su símbolo Lucide oscuro 
 pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
-`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna).
+`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna),
+panel de red (`network_panel`: tarjeta con nombre, tipo e internet y fila de ajustes
+con `NetworkHit::Settings`; el icono blanco de la barra según el tipo sale de
+`NetworkIcons::for_bar`) y panel de idioma (`language_panel`: filas de idiomas
+con marca Lucide en el activo, resaltado y fila de ajustes con
+`LanguageHit::Language(id)` o `Settings`; en la barra el idioma es su código en texto).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.
