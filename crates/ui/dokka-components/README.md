@@ -43,8 +43,7 @@ igual que `music_panel`, Sonido a todo lo ancho de 68 y Pantalla igual
 justo encima solo con brillo DDC): Red con dos círculos blancos,
 música de dos por dos, Preferencias con dos círculos, Pantalla si hay,
 Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal
-translúcido
-por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`; el Sonido
+translúcido con sombra suave bajo cada pieza, por zonas: `capsules`, `music`, `circles`, `slider`, `brightness`; el Sonido
 y la Pantalla usan el componente `slider`, no dibujan el suyo) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado redondeado concéntrico,

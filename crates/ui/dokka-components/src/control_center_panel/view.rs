@@ -50,7 +50,11 @@ pub fn control_center_panel(
         },
         tiles: pieces.tiles,
         panel_shadow: None,
-        tile_shadow: None,
+        tile_shadow: Some(dokka_scene::Shadow {
+            color: theme.tray.shadow,
+            blur: measures::SHADOW_BLUR,
+            offset: (0.0, measures::SHADOW_OFFSET_Y),
+        }),
         pill: None,
         highlight: None,
         flat_panels: pieces.flats,

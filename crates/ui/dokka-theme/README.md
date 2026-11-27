@@ -44,7 +44,8 @@
   la rejilla estricta del Centro de control (celda de 66, hueco de 12,
   cápsula doble de 144 × 66 con círculo de 42, música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual justo encima si hay DDC,
-  alto total 404 sin brillo y 484 con él); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  alto total 404 sin brillo y 484 con él, y sombra suave bajo cada pieza
+  (desenfoque 10 y caída 2, que caben en el aire exterior de 12)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 560 para que quepa el
   centro con brillo (520) además del calendario de 6 semanas;
   la reserva de la franja no cambia); `tooltip.rs` para la

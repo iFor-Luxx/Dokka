@@ -18,7 +18,7 @@ pub struct Overlay {
     /// Piezas de cristal separadas (cápsulas y círculos) sobre el panel.
     pub tiles: Vec<Panel>,
     /// Sombra suave bajo cada pieza (`tiles`), con su forma redondeada.
-    /// Solo el buscador la pide; el resto vale `None` y se ve igual que hoy.
+    /// La piden el buscador y el Centro de control; el resto vale `None`.
     pub tile_shadow: Option<Shadow>,
     /// Fondo de la píldora segmentada de navegación, sobre el panel.
     /// Su hover va en `highlight`.
