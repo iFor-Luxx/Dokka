@@ -3,6 +3,17 @@
 /// Distancia entre el dock y el borde inferior del área de trabajo.
 pub const DOCK_BOTTOM_MARGIN: f32 = 8.0;
 
+/// Margen con el borde en vertical: el mismo que abajo.
+pub const DOCK_EDGE_MARGIN: f32 = DOCK_BOTTOM_MARGIN;
+
+/// Franja fina que queda visible al esconderse, para volver al tocarla.
+pub const HIDE_STRIP: f32 = 3.0;
+/// Espera antes de empezar a esconderse tras perder el cursor.
+pub const HIDE_DELAY_SECONDS: f32 = 0.6;
+/// Cuánto tarda en deslizarse fuera y en volver.
+pub const HIDE_MOVE_SECONDS: f32 = 0.25;
+pub const SHOW_MOVE_SECONDS: f32 = 0.18;
+
 pub const HEIGHT: f32 = 80.0;
 pub const SLOT: f32 = 52.0;
 pub const GAP: f32 = 12.0;

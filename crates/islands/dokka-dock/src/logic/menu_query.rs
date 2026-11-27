@@ -1,6 +1,9 @@
 //! Lo elegido en el menú y dónde dibujarlo.
 
-use dokka_components::menu_panel::{menu_overlay, menu_row_at, menu_row_top, submenu_overlay};
+use dokka_components::menu_panel::{
+    menu_overlay, menu_overlay_side, menu_row_at, menu_row_top, submenu_overlay,
+};
+use dokka_model::DockPosition;
 use dokka_scene::{Overlay, Rect};
 use dokka_theme::menu as measures;
 
@@ -44,12 +47,34 @@ impl Dock {
             return true;
         }
         let panel = menu.panel;
-        if x >= panel.x
-            && x <= panel.x + panel.width
-            && y >= panel.y
-            && y <= panel.y + panel.height + measures::POINTER_HEIGHT
-        {
-            return true;
+        match menu.position {
+            DockPosition::Left => {
+                if x >= panel.x - measures::POINTER_HEIGHT
+                    && x <= panel.x + panel.width
+                    && y >= panel.y
+                    && y <= panel.y + panel.height
+                {
+                    return true;
+                }
+            }
+            DockPosition::Right => {
+                if x >= panel.x
+                    && x <= panel.x + panel.width + measures::POINTER_HEIGHT
+                    && y >= panel.y
+                    && y <= panel.y + panel.height
+                {
+                    return true;
+                }
+            }
+            _ => {
+                if x >= panel.x
+                    && x <= panel.x + panel.width
+                    && y >= panel.y
+                    && y <= panel.y + panel.height + measures::POINTER_HEIGHT
+                {
+                    return true;
+                }
+            }
         }
         let Some(sub) = &menu.submenu else {
             return false;
@@ -64,15 +89,35 @@ impl Dock {
     /// Dibujo del menú abierto.
     pub fn menu_overlay(&self) -> Option<Overlay> {
         let menu = self.menu.as_ref()?;
-        Some(menu_overlay(
-            &self.theme,
-            &self.menu_chevrons,
-            &self.menu_checks,
-            menu.panel,
-            menu.tip_x,
-            &menu.rows,
-            menu.highlighted,
-        ))
+        match menu.position {
+            DockPosition::Left => Some(menu_overlay_side(
+                &self.theme,
+                &self.menu_chevrons,
+                &self.menu_checks,
+                menu.panel,
+                (menu.tip_y, true),
+                &menu.rows,
+                menu.highlighted,
+            )),
+            DockPosition::Right => Some(menu_overlay_side(
+                &self.theme,
+                &self.menu_chevrons,
+                &self.menu_checks,
+                menu.panel,
+                (menu.tip_y, false),
+                &menu.rows,
+                menu.highlighted,
+            )),
+            _ => Some(menu_overlay(
+                &self.theme,
+                &self.menu_chevrons,
+                &self.menu_checks,
+                menu.panel,
+                menu.tip_x,
+                &menu.rows,
+                menu.highlighted,
+            )),
+        }
     }
 
     /// Dibujo del submenú, sin punta.
@@ -91,12 +136,26 @@ impl Dock {
     /// Zona que debe verse y recibir el mouse: el menú y el hueco hasta el dock.
     pub fn menu_area(&self) -> Option<Rect> {
         let menu = self.menu.as_ref()?;
-        Some(Rect {
-            x: menu.panel.x,
-            y: menu.panel.y,
-            width: menu.panel.width,
-            height: (menu.floor - menu.panel.y).max(menu.panel.height),
-        })
+        match menu.position {
+            DockPosition::Left => Some(Rect {
+                x: menu.floor,
+                y: menu.panel.y,
+                width: (menu.panel.x + menu.panel.width - menu.floor).max(menu.panel.width),
+                height: menu.panel.height,
+            }),
+            DockPosition::Right => Some(Rect {
+                x: menu.panel.x,
+                y: menu.panel.y,
+                width: (menu.floor - menu.panel.x).max(menu.panel.width),
+                height: menu.panel.height,
+            }),
+            _ => Some(Rect {
+                x: menu.panel.x,
+                y: menu.panel.y,
+                width: menu.panel.width,
+                height: (menu.floor - menu.panel.y).max(menu.panel.height),
+            }),
+        }
     }
 
     /// Zona del submenú, con el hueco hasta el menú para no perder el mouse.

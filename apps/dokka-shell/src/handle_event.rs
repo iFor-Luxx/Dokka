@@ -56,6 +56,7 @@ pub(crate) fn handle_event(
         | SurfaceEvent::MenubarRightClicked { .. }
         | SurfaceEvent::MenubarDismissed => {}
         SurfaceEvent::PointerMoved { x, y } => {
+            session.dock.note_cursor_inside(true);
             if session.launchpad.is_open() {
                 session.dock.pointer_moved(x, y, session.state.apps());
             } else if session.menubar.is_menu_open()
@@ -76,6 +77,7 @@ pub(crate) fn handle_event(
             }
         }
         SurfaceEvent::PointerLeft => {
+            session.dock.note_cursor_inside(false);
             if session.launchpad.is_open() {
                 session.dock.pointer_left();
             } else if !session.dock.is_menu_open() {
@@ -140,6 +142,19 @@ pub(crate) fn handle_event(
         }
         SurfaceEvent::Frame { seconds } => {
             session.dock.advance(seconds);
+            // El auto-ocultado mueve la ventana: solo mientras anima.
+            if session.dock.is_hide_animating() {
+                if let Err(error) = session.apply_hide(surface) {
+                    eprintln!("Dokka no pudo deslizar el dock: {error}");
+                }
+                // Al volver, el cursor ya está sobre la franja: actualiza la lupa.
+                if let Some((x, y)) = surface.cursor_over_dock()
+                    && !session.dock.is_menu_open()
+                    && !session.previews.has_panel()
+                {
+                    session.dock.pointer_moved(x, y, session.state.apps());
+                }
+            }
             if session.launchpad.is_open() {
                 session.launchpad.advance(seconds);
                 if session.launchpad.close_finished() {

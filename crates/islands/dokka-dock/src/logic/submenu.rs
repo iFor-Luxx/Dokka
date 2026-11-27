@@ -1,6 +1,7 @@
 //! Sitio del submenú y paso seguro entre el menú y él.
 
 use dokka_components::menu_panel::{MenuRow, menu_size};
+use dokka_model::DockPosition;
 use dokka_scene::Rect;
 use dokka_theme::menu as measures;
 
@@ -16,28 +17,65 @@ pub(crate) struct OpenSubmenu {
 
 /// Panel del submenú: a la derecha de su madre, a la izquierda si no cabe,
 /// sin salirse de la ventana por abajo ni por arriba.
+/// En laterales el menú ya está al lado: el submenú sigue a su lado,
+/// hacia dentro si cabe y si no hacia fuera, sin salirse en vertical.
 pub(crate) fn submenu_panel(
     main: Rect,
     mother_top: f32,
     sub_rows: &[MenuRow],
     limit: f32,
     floor: f32,
+    position: DockPosition,
+    cross_limit: f32,
 ) -> Rect {
     let size = menu_size(sub_rows);
-    let mut y = mother_top - measures::PADDING;
-    y = y.clamp(0.0, (floor - size.height).max(0.0));
-    let right = main.x + main.width + measures::SUBMENU_GAP;
-    let x = if right + size.width <= limit {
-        right
-    } else {
-        let left = main.x - measures::SUBMENU_GAP - size.width;
-        left.clamp(0.0, (limit - size.width).max(0.0))
-    };
-    Rect {
-        x,
-        y,
-        width: size.width,
-        height: size.height,
+    match position {
+        DockPosition::Left | DockPosition::Right => {
+            let mut y = mother_top - measures::PADDING;
+            y = y.clamp(0.0, (limit - size.height).max(0.0));
+            // Hacia dentro primero: a la derecha si el menú está a la izquierda.
+            let main_right = main.x + main.width;
+            let (first, second) = if main.x < cross_limit / 2.0 {
+                (
+                    main_right + measures::SUBMENU_GAP,
+                    main.x - measures::SUBMENU_GAP - size.width,
+                )
+            } else {
+                (
+                    main.x - measures::SUBMENU_GAP - size.width,
+                    main_right + measures::SUBMENU_GAP,
+                )
+            };
+            let x = if first + size.width <= cross_limit && first >= 0.0 {
+                first
+            } else {
+                second.clamp(0.0, (cross_limit - size.width).max(0.0))
+            };
+            let _ = floor;
+            Rect {
+                x,
+                y,
+                width: size.width,
+                height: size.height,
+            }
+        }
+        _ => {
+            let mut y = mother_top - measures::PADDING;
+            y = y.clamp(0.0, (floor - size.height).max(0.0));
+            let right = main.x + main.width + measures::SUBMENU_GAP;
+            let x = if right + size.width <= limit {
+                right
+            } else {
+                let left = main.x - measures::SUBMENU_GAP - size.width;
+                left.clamp(0.0, (limit - size.width).max(0.0))
+            };
+            Rect {
+                x,
+                y,
+                width: size.width,
+                height: size.height,
+            }
+        }
     }
 }
 

@@ -8,7 +8,9 @@ del calendario se crean una vez con los colores del tema y se reutilizan al camb
 El panel de una app espera 0,45 s desde cero (0,12 al cambiar entre paneles
 o para el calendario); la vista grande espera 1 s sobre la mini (al instante
 si ya está visible) y se quita al salir de ella; el resaltado y los botones
-siguen al instante y el cierre al salir en 0,25 s. Expone
+siguen al instante y el cierre al salir en 0,25 s. Recibe `DockPosition` en cada
+petición (sin conocer al dock): abajo como hoy, en laterales al lado hacia
+dentro (`view/place.rs`), con origen y rebote laterales. Expone
 `large_preview_window()` (distinta de `hovered_window()`), `has_panel()` y
 `still_inside()` para la red de seguridad del shell.
 

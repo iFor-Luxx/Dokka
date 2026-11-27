@@ -23,6 +23,7 @@ mod surface;
 mod surface_error;
 mod surface_event;
 mod window_procedure;
+mod work_area;
 
 pub use local_time::{LocalTime, local_time};
 pub use surface::{Surface, SurfaceHandle, SurfaceOptions};

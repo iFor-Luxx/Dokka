@@ -5,7 +5,9 @@ etiquetas) y coloca las miniaturas en vivo de Windows (DWM). Solo repinta un ico
 su imagen y solo cambia el pincel de un punto cuando cambia su color. Un fondo con tinte y borde
 transparentes (centro de control y buscador) no crea cristal ni se ve: `matches` lo distingue
 del resto. La etiqueta es una píldora de cristal con punta redondeada de la misma pieza: reutiliza
-sus capas al moverse entre iconos y solo repinta el texto si cambia. En el overlay pinta en orden
+sus capas al moverse entre iconos y solo repinta el texto si cambia (abajo como hoy;
+a los lados la punta señala al icono). La punta del menú nace en el borde hacia
+el dock (abajo, izquierda o derecha). En el overlay pinta en orden
 panel, piezas, píldora, punta, resaltado, líneas, puntos, textos e iconos; las piezas
 (`tiles`: Centro de control y buscador) usan `PanelLayer::add_tile`, con filo de luz
 en diagonal en el trazo (`tile_brushes::edge_brush`) y brillo suave en la parte alta

@@ -13,6 +13,30 @@ pub fn place_above(size: Size, center_x: f32, bottom: f32, limit: f32) -> Rect {
     }
 }
 
+/// Rectángulo a la derecha de `left`, centrado en `center_y`,
+/// sin salirse de un alto `limit`.
+pub fn place_after(size: Size, left: f32, center_y: f32, limit: f32) -> Rect {
+    let maximum_y = (limit - size.height).max(0.0);
+    Rect {
+        x: left,
+        y: (center_y - size.height / 2.0).clamp(0.0, maximum_y),
+        width: size.width,
+        height: size.height,
+    }
+}
+
+/// Rectángulo a la izquierda de `right`, centrado en `center_y`,
+/// sin salirse de un alto `limit`.
+pub fn place_before(size: Size, right: f32, center_y: f32, limit: f32) -> Rect {
+    let maximum_y = (limit - size.height).max(0.0);
+    Rect {
+        x: (right - size.width).max(0.0),
+        y: (center_y - size.height / 2.0).clamp(0.0, maximum_y),
+        width: size.width,
+        height: size.height,
+    }
+}
+
 pub fn popup_panel(theme: &Theme, bounds: Rect) -> Panel {
     Panel {
         bounds,

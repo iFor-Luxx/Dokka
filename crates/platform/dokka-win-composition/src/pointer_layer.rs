@@ -1,6 +1,6 @@
 use std::f32::consts::SQRT_2;
 
-use dokka_scene::{Panel, Pointer};
+use dokka_scene::{Panel, Pointer, PointerSide};
 use windows::UI::Composition::{Compositor, ContainerVisual, Visual};
 use windows::core::{Interface, Result};
 use windows_numerics::{Vector2, Vector3};
@@ -80,15 +80,36 @@ impl PointerLayer {
     }
 }
 
-/// Estilo que obliga a recrear la punta: su altura (tinte y borde salen del panel).
-pub(crate) fn pointer_style_of(pointer: Pointer) -> f32 {
-    pointer.height
+/// Estilo que obliga a recrear la punta: su altura y su lado
+/// (tinte y borde salen del panel).
+pub(crate) fn pointer_style_of(pointer: Pointer) -> (f32, PointerSide) {
+    (pointer.height, pointer.side)
 }
 
 fn container_offset(panel: &Panel, pointer: &Pointer) -> (f32, f32) {
-    let bottom = panel.bounds.y + panel.bounds.height;
     let border = panel.border_width;
-    (pointer.center_x - pointer.height - border, bottom - border)
+    match pointer.side {
+        PointerSide::Bottom => {
+            let bottom = panel.bounds.y + panel.bounds.height;
+            (pointer.center_x - pointer.height - border, bottom - border)
+        }
+        PointerSide::Left => (
+            panel.bounds.x - pointer.height - border,
+            pointer_center_y(panel, pointer) - pointer.height - border,
+        ),
+        PointerSide::Right => {
+            let right = panel.bounds.x + panel.bounds.width;
+            (
+                right - border,
+                pointer_center_y(panel, pointer) - pointer.height - border,
+            )
+        }
+    }
+}
+
+fn pointer_center_y(panel: &Panel, pointer: &Pointer) -> f32 {
+    let _ = panel;
+    pointer.center_y
 }
 
 fn update_container(
@@ -98,10 +119,16 @@ fn update_container(
     pointer: &Pointer,
 ) -> Result<()> {
     let border = panel.border_width;
-    // Ancho visible en el borde = 2 × altura; se deja margen para el trazo.
-    let width = pointer.height * 2.0 + border * 2.0;
-    // Franja del borde que se tapa más el triángulo y margen para el trazo.
-    let height = pointer.height + border * 2.0;
+    let (width, height) = match pointer.side {
+        PointerSide::Bottom => (
+            pointer.height * 2.0 + border * 2.0,
+            pointer.height + border * 2.0,
+        ),
+        PointerSide::Left | PointerSide::Right => (
+            pointer.height + border * 2.0,
+            pointer.height * 2.0 + border * 2.0,
+        ),
+    };
     let (x, y) = container_offset(panel, pointer);
     container.SetOffset(Vector3 { X: x, Y: y, Z: 0.0 })?;
     container.SetSize(Vector2 {
@@ -119,11 +146,19 @@ fn update_container(
 }
 
 fn square_offset(panel: &Panel, pointer: &Pointer, side: f32) -> (f32, f32) {
-    let bottom = panel.bounds.y + panel.bounds.height;
     let (container_x, container_y) = container_offset(panel, pointer);
-    // El centro del cuadrado queda sobre el borde inferior del panel.
-    let square_x = pointer.center_x - side / 2.0;
-    let square_y = bottom - side / 2.0;
+    let (square_x, square_y) = match pointer.side {
+        PointerSide::Bottom => {
+            let bottom = panel.bounds.y + panel.bounds.height;
+            // El centro del cuadrado queda sobre el borde inferior del panel.
+            (pointer.center_x - side / 2.0, bottom - side / 2.0)
+        }
+        PointerSide::Left => (panel.bounds.x - side / 2.0, pointer.center_y - side / 2.0),
+        PointerSide::Right => (
+            panel.bounds.x + panel.bounds.width - side / 2.0,
+            pointer.center_y - side / 2.0,
+        ),
+    };
     (square_x - container_x, square_y - container_y)
 }
 
