@@ -8,13 +8,13 @@ pub const DOCK_EDGE_MARGIN: f32 = DOCK_BOTTOM_MARGIN;
 
 /// Cápsula que queda al borde cuando el dock se oculta con una app
 /// a pantalla completa: como el indicador de inicio del iPhone.
-pub const HOME_LINE_LENGTH: f32 = 220.0;
-pub const HOME_LINE_THICKNESS: f32 = 7.0;
+pub const HOME_LINE_LENGTH: f32 = 280.0;
+pub const HOME_LINE_THICKNESS: f32 = 10.0;
 /// Separación entre la línea y el borde de la pantalla.
 pub const HOME_LINE_EDGE_GAP: f32 = 10.0;
 /// Zona de toque de la línea: 320 a lo largo y desde el borde hasta
 /// 24 hacia dentro, para llegar sin puntería fina hasta el píxel 0.
-pub const HOME_LINE_TOUCH_LENGTH: f32 = 320.0;
+pub const HOME_LINE_TOUCH_LENGTH: f32 = 380.0;
 pub const HOME_LINE_TOUCH_THICKNESS: f32 = 24.0;
 /// Espera corta antes de volver a bajar tras salir del dock.
 pub const HIDE_DELAY_SECONDS: f32 = 0.4;

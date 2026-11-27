@@ -1,6 +1,6 @@
 //! Geometría de la línea que queda al borde con el dock oculto.
-//! Cápsula centrada de 220 × 7 a 10 del borde; en laterales es
-//! vertical. La zona de toque (320 de largo, desde el borde hasta
+//! Cápsula centrada de 280 × 10 a 10 del borde; en laterales es
+//! vertical. La zona de toque (380 de largo, desde el borde hasta
 //! 24 hacia dentro) llega hasta el píxel 0. La banda de retorno
 //! cubre todo el cruce durante la subida para no perder el cursor
 //! a medio camino.

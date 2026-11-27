@@ -34,7 +34,7 @@ horizontal, etiquetas al lado hacia dentro, menús y submenús al lado
 Respeta `auto_hide` (`motion/hide.rs` + `logic/home_line.rs`: solo con una
 app ocupando la pantalla principal se esconde con espera corta de 0,4 s y
 deslizamiento suave; escondido dibuja solo la línea al borde —cápsula de
-220 × 7 a 10 del borde— y vuelve al tocar su zona (320 de largo, desde el
+280 × 10 a 10 del borde— y vuelve al tocar su zona (380 de largo, desde el
 borde hasta 24 hacia dentro, así el píxel 0 basta), sin sondeo en reposo;
 mientras vuelve la zona activa es la banda del borde a la barra para no
 perder el cursor a medio deslizamiento, y la ventana toca el borde

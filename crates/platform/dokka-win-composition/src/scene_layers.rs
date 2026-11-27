@@ -153,6 +153,7 @@ impl SceneLayers {
             root: root.clone(),
             blur: BlurStage::new(),
             panel,
+            panel_style: panel_style_of(&scene.panel),
             panel_shadow,
             panel_shadow_spec,
             panels,
@@ -193,6 +194,7 @@ impl SceneLayers {
         };
         same_overlay
             && same_submenu
+            && self.panel_style == panel_style_of(&scene.panel)
             && self.panel_shadow_spec == scene.panel_shadow
             && self.highlight.is_some() == scene.highlight.is_some()
             && self.highlight_style == scene.highlight.map(highlight_style_of)
