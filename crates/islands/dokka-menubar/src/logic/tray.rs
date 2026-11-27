@@ -5,6 +5,7 @@
 //! Solo los iconos encendidos en Preferencias tienen caja: los apagados no
 //! se dibujan ni reciben clics y los demás se recolocan sin huecos.
 
+use dokka_model::MenubarItem;
 use dokka_scene::{Rect, Size};
 use dokka_theme::{menubar, menubar_tray as measures};
 
@@ -21,16 +22,30 @@ pub enum TrayKind {
 }
 
 impl TrayKind {
-    /// De izquierda a derecha en la barra (al revés del enunciado).
-    pub(crate) fn order() -> [Self; 7] {
+    /// Icono de la barra que es este icono ordenable.
+    pub(crate) fn from_item(item: MenubarItem) -> Self {
+        match item {
+            MenubarItem::Volume => Self::Volume,
+            MenubarItem::Network => Self::Network,
+            MenubarItem::Music => Self::Music,
+            MenubarItem::BackgroundApps => Self::Background,
+            MenubarItem::Language => Self::Language,
+            MenubarItem::Search => Self::Search,
+            MenubarItem::ControlCenter => Self::ControlCenter,
+        }
+    }
+
+    /// Orden guardado en Preferencias, de izquierda a derecha en la barra.
+    pub(crate) fn saved_order(shown: &dokka_model::MenubarPreferences) -> [Self; 7] {
+        let order = shown.order;
         [
-            Self::Volume,
-            Self::Network,
-            Self::Music,
-            Self::Background,
-            Self::Language,
-            Self::Search,
-            Self::ControlCenter,
+            Self::from_item(order[0]),
+            Self::from_item(order[1]),
+            Self::from_item(order[2]),
+            Self::from_item(order[3]),
+            Self::from_item(order[4]),
+            Self::from_item(order[5]),
+            Self::from_item(order[6]),
         ]
     }
 
@@ -81,7 +96,7 @@ fn contains(area: Rect, x: f32, y: f32) -> bool {
 impl crate::Menubar {
     /// Iconos visibles según Preferencias, de izquierda a derecha.
     pub(crate) fn visible_kinds(&self) -> Vec<TrayKind> {
-        TrayKind::order()
+        TrayKind::saved_order(&self.shown)
             .into_iter()
             .filter(|kind| self.is_shown(*kind))
             .collect()

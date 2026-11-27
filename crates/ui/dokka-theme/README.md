@@ -22,7 +22,9 @@
   "Pequeño" y "Grande" en 11 bajo la barra), interruptor de 40 × 22 con
   tirador en cápsula de 24 × 18, deslizador de 168 con pista fina de 4,
   marca de fábrica de 2 × 10 y tirador en cápsula de 22 × 15 con borde fino,
-  y segmentado de 204 × 28 con aire interior de 2 y texto de 12, y tarjeta
+  y segmentado de 204 × 28 con aire interior de 2 y texto de 12, agarre de 16
+  con aire de 8 al nombre, umbral de arrastre de 4, resaltado de radio 8 y
+  ayuda de 12 bajo la tarjeta, y tarjeta
   "Próximamente"), con funciones para filas,
   título y tarjetas. `SettingsColors` trae además interruptor encendido y
   apagado con su tirador y barra, relleno, marca y atenuado del deslizador,

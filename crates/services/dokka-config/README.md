@@ -9,8 +9,11 @@ las preferencias en `%APPDATA%\Dokka\preferences.txt` (`PreferencesFile`,
 (`left`/`bottom`/`right`), `dock.auto_hide`, `dock.animate_launch`,
 `dock.show_indicators`, `dock.previews`, `menubar.volume`, `menubar.network`,
 `menubar.music`, `menubar.language`, `menubar.search`, `menubar.control_center`,
-`menubar.background_apps`); sin archivo devuelve los valores de fábrica, las
-claves desconocidas o los valores mal escritos se ignoran, los números se
+`menubar.background_apps`, `menubar.order` (`volume,network,music,background_apps,language,search,control_center`
+de izquierda a derecha); sin archivo devuelve los valores de fábrica, las
+claves desconocidas o los valores mal escritos se ignoran (el orden incompleto,
+repetido o mal escrito conserva los válidos en su orden y añade los que falten
+en el orden de fábrica, sin fallar), los números se
 limitan a su rango y la escritura es atómica (borrador y renombre). El detalle
 vive dividido: `preferences_dock.rs` (dock) y `preferences_menubar.rs` (barra).
 

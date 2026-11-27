@@ -10,21 +10,26 @@ use dokka_components::settings_group::{
 };
 use dokka_components::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
 use dokka_components::switch::{SwitchProps, switch_panels, switch_touch};
-use dokka_scene::{Divider, Panel, Rect, Text, TextAlign};
+use dokka_scene::{Divider, Icon, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
 use super::super::state::Settings;
 
-/// Todo lo que pinta el contenido: planos, líneas y textos, sin puntos.
+/// Todo lo que pinta el contenido: planos, líneas, iconos y textos.
 pub(crate) struct ContentScene {
     pub flats: Vec<Panel>,
     pub dividers: Vec<Divider>,
+    pub icons: Vec<Icon>,
     pub texts: Vec<Text>,
 }
 
 /// Tarjetas con ajustes o la tarjeta gris "Próximamente".
-pub(crate) fn content_scene(theme: &Theme, settings: &Settings) -> ContentScene {
+pub(crate) fn content_scene(
+    theme: &Theme,
+    settings: &Settings,
+    grip: &std::sync::Arc<dokka_scene::Drawing>,
+) -> ContentScene {
     let selected = settings.selected();
     if !super::super::logic::has_content(selected) {
         return coming_soon(theme);
@@ -32,7 +37,7 @@ pub(crate) fn content_scene(theme: &Theme, settings: &Settings) -> ContentScene 
     if selected == SECTION_DOCK {
         super::dock_content::dock_content(theme, settings)
     } else if selected == SECTION_MENUBAR {
-        super::other_content::menubar_content(theme, settings)
+        super::menubar_content::menubar_content(theme, settings, grip)
     } else if selected == SECTION_TASKBAR {
         super::other_content::taskbar_content(theme, settings)
     } else {
@@ -67,6 +72,7 @@ pub(crate) fn coming_soon(theme: &Theme) -> ContentScene {
     ContentScene {
         flats: vec![panel],
         dividers: Vec::new(),
+        icons: Vec::new(),
         texts: vec![text],
     }
 }

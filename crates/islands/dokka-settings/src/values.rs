@@ -1,6 +1,7 @@
 use dokka_model::Preferences;
 
 use super::logic::SliderTarget;
+use super::menubar_drag::MenubarDrag;
 use super::painted::PaintedControl;
 
 /// Valores reales que muestra el contenido: lo vigente más el arrastre.
@@ -12,6 +13,8 @@ pub(crate) struct ContentValues {
     pub drag: Option<SliderTarget>,
     /// Valor de 0 a 1 del deslizador agarrado.
     pub drag_value: f32,
+    /// Fila de la barra a medias, si hay alguna agarrada.
+    pub reorder: Option<MenubarDrag>,
     /// Control bajo el cursor, para repintar su hover.
     pub control: Option<PaintedControl>,
 }
@@ -23,6 +26,7 @@ impl Default for ContentValues {
             taskbar_auto: false,
             drag: None,
             drag_value: 0.0,
+            reorder: None,
             control: None,
         }
     }
@@ -34,6 +38,7 @@ impl ContentValues {
         self.preferences = preferences;
         self.taskbar_auto = taskbar_auto;
         self.drag = None;
+        self.reorder = None;
         self.control = None;
     }
 }

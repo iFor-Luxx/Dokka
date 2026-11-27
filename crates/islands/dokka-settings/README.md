@@ -17,36 +17,46 @@ con el mismo margen (cristal claro y neutro como hoy). Dock: tamaño,
 ampliación y cantidad en una tarjeta (relleno desde la fábrica con su marca);
 posición en pantalla (segmentado Izquierda | Abajo | Derecha) y ocultar
 automáticamente en otra; animar al abrir, indicadores y vistas previas en la
-última. Barra superior, tras el
-Launchpad: siete interruptores (Volumen, Red, Música, Idioma, Buscar, Centro
-de control y Apps en segundo plano) en una sola tarjeta. Barra de tareas: ocultar automáticamente la
+última. Barra superior: siete filas reordenables (Volumen, Red, Música,
+Idioma, Buscar, Centro de control y Apps en segundo plano) en una sola
+tarjeta, cada una con agarre a la izquierda (seis puntos verticales en color
+secundario), nombre e interruptor; debajo, texto pequeño secundario que
+explica el arrastre. Arrastrar desde cualquier punto de la fila salvo el
+interruptor cambia el orden: tras unos 4 px la fila sigue al cursor en
+vertical, resaltada en plano, sin salirse de la tarjeta y dejando el hueco
+donde caerá; al soltar emite `Changed` una sola vez y solo si cambió. Barra de tareas: ocultar automáticamente la
 barra de Windows (interruptor). El resto sigue con la tarjeta gris muy suave
 "Próximamente". Guarda si está abierta, si tiene el foco, la sección elegida,
 el historial, la búsqueda y su foco, la fila y la mitad de la píldora bajo el
 cursor, el hover de los semáforos, los valores reales (`set_values` los fija al
-abrir) y el deslizador a medias, con los dibujos creados una vez; decide qué
+abrir), el deslizador a medias y la fila a medias, con los dibujos creados una vez
+(agarre incluido); decide qué
 hace cada clic (`SettingsAction`: `Changed` o `TaskbarAuto` solo al soltar, para
 no guardar ni redimensionar a cada píxel) y qué puntos arrastran la ventana
 (`drag_zone`, que nunca incluye un control del contenido), y resume lo dibujado
-(`PaintedSettings` con valores y hover del contenido) para que el shell solo
+(`PaintedSettings` con valores, orden arrastrado y hover del contenido) para que el shell solo
 repinte si cambió algo. Da su `Scene` de 760 × 720 con forma fija: fondo, barra
 flotante y píldora como paneles; tarjeta, buscador, selección, hover de filas,
 resaltado de la píldora, tarjetas del contenido, deslizadores (barra fina,
 relleno desde la fábrica, marca y tirador en cápsula con "Pequeño" y "Grande" debajo),
-segmentado (fondo y pastilla) e interruptores
-(pista y tirador en cápsula) como planos (las tarjetas van planas sobre el
+segmentado (fondo y pastilla), interruptores
+(pista y tirador en cápsula) y agarre con resaltado de la fila como planos (las tarjetas van planas sobre el
 fondo claro y el resaltado como en el calendario, sin cristal); sin
-`highlight` ni puntos en la escena; semáforos como iconos; insignias (como imagen
+`highlight` ni puntos en la escena; semáforos, agarres como iconos; insignias (como imagen
 para que al filtrar repinten su color), glifos, lupa y chevrones como iconos;
-nombres, búsqueda, título, etiquetas y textos del deslizador y del segmentado como textos.
-Pulsar y arrastrar usan la misma pista y la misma cápsula que el dibujo, con el
+nombres, búsqueda, título, etiquetas, ayuda del reorden y textos del deslizador y del segmentado como textos.
+La fila arrastrada se pinta en plano antes que sus iconos y textos para no
+taparlos. Pulsar y arrastrar usan la misma pista y la misma cápsula que el dibujo, con el
 centro del tirador recorriéndola sin salirse y los textos del segmentado sin
 salirse de su tercio. El contenido cambia de tamaño entre secciones:
 `SceneLayers` reconstruye si cambia el estilo o crece la cantidad; los textos
-e iconos sobrantes se ocultan. La lógica vive dividida (`content.rs` geometría,
-`slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
-`content_hit.rs` golpe); la vista vive dividida (`content.rs` ayudantes,
-`dock_content.rs` Dock, `other_content.rs` resto).
+e iconos sobrantes se ocultan. Al reordenar la cantidad y el estilo no cambian:
+solo se mueven, sin reconstruir. La lógica vive dividida (`content.rs` geometría,
+`menubar_order.rs` orden y huecos, `slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
+`content_hit.rs` golpe, `menubar_drag.rs` arrastre, `reorder_pointer.rs` gesto y
+`slider_pointer.rs` pista); la vista vive dividida (`content.rs` ayudantes,
+`dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
+el historial vive en `selection.rs`.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Sin
 animaciones: la ventana aparece, cambia de sección y se arrastra sin
