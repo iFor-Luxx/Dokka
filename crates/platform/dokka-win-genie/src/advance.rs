@@ -120,7 +120,11 @@ impl Flight {
                     );
                     return false;
                 };
-                eprintln!("genio: vuelo {} despega", self.hwnd);
+                eprintln!(
+                    "genio: vuelo {} despega tras {} ms",
+                    self.hwnd,
+                    self.created_at.elapsed().as_millis()
+                );
                 self.phase = Phase::Flying {
                     start: Instant::now(),
                     _drive: drive,
