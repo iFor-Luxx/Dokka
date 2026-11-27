@@ -62,10 +62,7 @@ pub(crate) struct OpenTray {
 
 /// Cajas pulsables de la fila, a la izquierda del hueco de la fecha.
 pub(crate) fn tray_cells(bar_width: f32) -> Vec<(TrayKind, Rect)> {
-    let mut right = bar_width
-        - menubar::SIDE_PADDING
-        - menubar::CLOCK_SLOT
-        - measures::CLOCK_GAP;
+    let mut right = bar_width - menubar::SIDE_PADDING - menubar::CLOCK_SLOT - measures::CLOCK_GAP;
     let mut cells = Vec::with_capacity(6);
     for kind in TrayKind::order().into_iter().rev() {
         let width = kind.cell_width();
@@ -185,9 +182,6 @@ impl crate::Menubar {
         let Some(panel) = self.tray_bounds() else {
             return false;
         };
-        x >= panel.x
-            && x <= panel.x + panel.width
-            && y >= panel.y
-            && y <= panel.y + panel.height
+        x >= panel.x && x <= panel.x + panel.width && y >= panel.y && y <= panel.y + panel.height
     }
 }

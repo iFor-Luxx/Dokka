@@ -11,6 +11,7 @@ name = "dokka-components"
 version = "0.1.0"
 dependencies = [
  "dokka-icons",
+ "dokka-model",
  "dokka-scene",
  "dokka-theme",
 ]
@@ -189,6 +190,8 @@ dependencies = [
 name = "dokka-win-media"
 version = "0.1.0"
 dependencies = [
+ "dokka-contracts",
+ "dokka-model",
  "windows",
 ]
 

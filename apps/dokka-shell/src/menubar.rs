@@ -149,7 +149,10 @@ fn click_menubar(
         surface.menu_closed();
         session.previews.close();
         surface.menubar_menu_opened();
-    } else if was_open && now_open && (was_menu != now_menu || was_calendar != now_calendar || was_tray != now_tray) {
+    } else if was_open
+        && now_open
+        && (was_menu != now_menu || was_calendar != now_calendar || was_tray != now_tray)
+    {
         // Cambio directo entre menú, calendario y fila: ya tenía el foco.
         session.dock.close_menu();
         surface.menu_closed();

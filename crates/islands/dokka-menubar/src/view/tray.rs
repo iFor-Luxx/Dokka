@@ -26,10 +26,7 @@ impl Menubar {
                 super::super::logic::TrayKind::Search,
                 &self.tray_icons.search,
             ),
-            (
-                super::super::logic::TrayKind::Music,
-                &self.tray_icons.music,
-            ),
+            (super::super::logic::TrayKind::Music, &self.tray_icons.music),
             (
                 super::super::logic::TrayKind::Network,
                 &self.tray_icons.network,

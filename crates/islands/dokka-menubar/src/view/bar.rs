@@ -19,7 +19,10 @@ impl Menubar {
         };
         // Planos (sin cristal) y siempre presentes: así no se oscurecen ni se
         // reconstruyen las capas al pasar el cursor (2 fijos + 6 de la fila).
-        let mut flat_panels = vec![self.highlight_panel(), self.clock_highlight_panel(bar_width)];
+        let mut flat_panels = vec![
+            self.highlight_panel(),
+            self.clock_highlight_panel(bar_width),
+        ];
         flat_panels.extend(self.tray_hover_panels(bar_width));
         let mut icons = vec![self.mark_icon()];
         icons.extend(self.tray_bar_icons(bar_width));
