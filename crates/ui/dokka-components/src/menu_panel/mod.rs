@@ -1,9 +1,8 @@
-//! Menú propio del clic derecho: filas de texto con resaltado, punta,
-//! icono por fila en una sola columna y chevrón.
+//! Menú propio del clic derecho: filas de texto con resaltado, punta
+//! e iconos de marca elegida y chevrón.
 
 mod check;
 mod chevron;
-mod leading;
 mod props;
 mod view;
 

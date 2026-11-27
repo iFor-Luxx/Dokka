@@ -1,24 +1,13 @@
 //! Menús de los iconos del sistema: explorador, papelera y Launchpad.
-//!
-//! Cada fila con acción clara lleva su icono Lucide en el color
-//! del texto; los títulos de ventana van sin icono.
-
-use std::sync::Arc;
 
 use dokka_components::menu_panel::MenuRow;
-use dokka_icons::{
-    menu_add_app_icon, menu_desktop_icon, menu_documents_icon, menu_downloads_icon,
-    menu_empty_trash_icon, menu_launchpad_icon, menu_new_window_icon, menu_pictures_icon,
-    menu_trash_open_icon,
-};
 use dokka_model::DockApp;
-use dokka_scene::Color;
 
 use super::dock_menu::{MenuData, SubmenuData};
 use super::menu::MenuAction;
 
 /// Ventanas, nueva ventana, carpetas y cierre. Sin fijar ni administrador.
-pub(crate) fn explorer_menu(app: &DockApp, text: Color) -> MenuData {
+pub(crate) fn explorer_menu(app: &DockApp) -> MenuData {
     let mut rows = Vec::new();
     let mut actions: Vec<Option<MenuAction>> = Vec::new();
     let mut children: Vec<Option<SubmenuData>> = Vec::new();
@@ -29,7 +18,7 @@ pub(crate) fn explorer_menu(app: &DockApp, text: Color) -> MenuData {
         &mut actions,
         &mut children,
         [(
-            MenuRow::item_with_icon("Nueva ventana", Arc::new(menu_new_window_icon(text))),
+            MenuRow::item("Nueva ventana"),
             Some(MenuAction::OpenApp(app.info.clone())),
             None,
         )],
@@ -40,22 +29,22 @@ pub(crate) fn explorer_menu(app: &DockApp, text: Color) -> MenuData {
         &mut children,
         [
             (
-                MenuRow::item_with_icon("Descargas", Arc::new(menu_downloads_icon(text))),
+                MenuRow::item("Descargas"),
                 Some(MenuAction::OpenDownloads),
                 None,
             ),
             (
-                MenuRow::item_with_icon("Documentos", Arc::new(menu_documents_icon(text))),
+                MenuRow::item("Documentos"),
                 Some(MenuAction::OpenDocuments),
                 None,
             ),
             (
-                MenuRow::item_with_icon("Escritorio", Arc::new(menu_desktop_icon(text))),
+                MenuRow::item("Escritorio"),
                 Some(MenuAction::OpenDesktop),
                 None,
             ),
             (
-                MenuRow::item_with_icon("Imágenes", Arc::new(menu_pictures_icon(text))),
+                MenuRow::item("Imágenes"),
                 Some(MenuAction::OpenPictures),
                 None,
             ),
@@ -66,7 +55,7 @@ pub(crate) fn explorer_menu(app: &DockApp, text: Color) -> MenuData {
             &mut rows,
             &mut actions,
             &mut children,
-            super::app_menu::close_rows(app, text),
+            super::app_menu::close_rows(app),
         );
     }
     MenuData {
@@ -77,21 +66,15 @@ pub(crate) fn explorer_menu(app: &DockApp, text: Color) -> MenuData {
 }
 
 /// "Abrir" y, solo con contenido, "Vaciar papelera".
-pub(crate) fn trash_menu(trash_size: Option<u64>, text: Color) -> MenuData {
-    let mut rows = vec![MenuRow::item_with_icon(
-        "Abrir",
-        Arc::new(menu_trash_open_icon(text)),
-    )];
+pub(crate) fn trash_menu(trash_size: Option<u64>) -> MenuData {
+    let mut rows = vec![MenuRow::item("Abrir")];
     let mut actions = vec![Some(MenuAction::OpenTrash)];
     let mut children = vec![None];
     if trash_size.is_some() {
         rows.push(MenuRow::Separator);
         actions.push(None);
         children.push(None);
-        rows.push(MenuRow::item_with_icon(
-            "Vaciar papelera",
-            Arc::new(menu_empty_trash_icon(text)),
-        ));
+        rows.push(MenuRow::item("Vaciar papelera"));
         actions.push(Some(MenuAction::EmptyTrash));
         children.push(None);
     }
@@ -103,11 +86,11 @@ pub(crate) fn trash_menu(trash_size: Option<u64>, text: Color) -> MenuData {
 }
 
 /// "Abrir Launchpad" por el mismo camino que su icono, y "Añadir app…".
-pub(crate) fn launchpad_menu(text: Color) -> MenuData {
+pub(crate) fn launchpad_menu() -> MenuData {
     MenuData {
         rows: vec![
-            MenuRow::item_with_icon("Abrir Launchpad", Arc::new(menu_launchpad_icon(text))),
-            MenuRow::item_with_icon("Añadir app…", Arc::new(menu_add_app_icon(text))),
+            MenuRow::item("Abrir Launchpad"),
+            MenuRow::item("Añadir app…"),
         ],
         actions: vec![Some(MenuAction::OpenLaunchpad), Some(MenuAction::AddApp)],
         children: vec![None, None],

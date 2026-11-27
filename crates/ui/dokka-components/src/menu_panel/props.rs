@@ -1,45 +1,27 @@
-//! Una fila del menú: texto con icono, marcas o línea separadora.
-
-use std::sync::Arc;
-
-use dokka_scene::Drawing;
+//! Una fila del menú: texto con marcas o línea separadora.
 
 /// Texto de una fila, sin significado.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MenuItem {
     pub label: String,
     pub checked: bool,
     pub has_submenu: bool,
-    /// Icono Lucide de la fila, en color del texto. La marca elegida
-    /// usa la misma columna cuando no hay icono.
-    pub icon: Option<Arc<Drawing>>,
 }
 
 /// Fila del menú, sin significado.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MenuRow {
     Item(MenuItem),
     Separator,
 }
 
 impl MenuRow {
-    /// Fila de texto sin marcas ni icono.
+    /// Fila de texto sin marcas.
     pub fn item(label: impl Into<String>) -> Self {
         Self::Item(MenuItem {
             label: label.into(),
             checked: false,
             has_submenu: false,
-            icon: None,
-        })
-    }
-
-    /// Fila de texto con su icono Lucide a la izquierda.
-    pub fn item_with_icon(label: impl Into<String>, icon: Arc<Drawing>) -> Self {
-        Self::Item(MenuItem {
-            label: label.into(),
-            checked: false,
-            has_submenu: false,
-            icon: Some(icon),
         })
     }
 
@@ -49,7 +31,6 @@ impl MenuRow {
             label: label.into(),
             checked: false,
             has_submenu: true,
-            icon: None,
         })
     }
 
@@ -59,18 +40,6 @@ impl MenuRow {
             label: label.into(),
             checked,
             has_submenu: false,
-            icon: None,
         })
-    }
-
-    /// Añade el icono Lucide a una fila ya creada.
-    pub fn with_icon(self, icon: Arc<Drawing>) -> Self {
-        match self {
-            Self::Item(mut item) => {
-                item.icon = Some(icon);
-                Self::Item(item)
-            }
-            Self::Separator => Self::Separator,
-        }
     }
 }

@@ -186,9 +186,8 @@ impl Dock {
         taskbar_hidden: bool,
         taskbar_auto: bool,
     ) -> Option<MenuData> {
-        let text = self.theme.menu.text;
         if self.is_on_divider(x, y, apps) {
-            return Some(dock_menu(text, taskbar_hidden, taskbar_auto));
+            return Some(dock_menu(taskbar_hidden, taskbar_auto));
         }
         let placement = super::place_dock(self, apps);
         match super::decide_click::entry_at(
@@ -198,13 +197,11 @@ impl Dock {
             super::super::view::dock_style::gap(self),
         )? {
             super::Entry::App(app) | super::Entry::Minimized(app, _) => {
-                Some(super::app_menu::app_menu(app, text))
+                Some(super::app_menu::app_menu(app))
             }
-            super::Entry::Explorer(app) => Some(super::system_menus::explorer_menu(app, text)),
-            super::Entry::Trash => {
-                Some(super::system_menus::trash_menu(self.icons.trash_size, text))
-            }
-            super::Entry::Launchpad => Some(super::system_menus::launchpad_menu(text)),
+            super::Entry::Explorer(app) => Some(super::system_menus::explorer_menu(app)),
+            super::Entry::Trash => Some(super::system_menus::trash_menu(self.icons.trash_size)),
+            super::Entry::Launchpad => Some(super::system_menus::launchpad_menu()),
             super::Entry::Calendar | super::Entry::Clock => None,
         }
     }
