@@ -24,11 +24,11 @@ impl Menubar {
     /// mismo lo cierra; fuera o el panel del dock lo cierran.
     /// Soltar tras arrastrar el deslizador no es un clic: el cursor puede haber
     /// quedado sobre el altavoz y silenciaría sin querer.
-    pub fn click(&mut self, x: f32, y: f32, bar_width: f32) -> Option<MenubarAction> {
+    pub fn click(&mut self, x: f32, y: f32, bar_width: f32, screen_height: f32) -> Option<MenubarAction> {
         if std::mem::take(&mut self.dragging_slider) {
             return None;
         }
-        match self.click_inner(x, y, bar_width) {
+        match self.click_inner(x, y, bar_width, screen_height) {
             MenubarClick::Chosen(action) => Some(action),
             MenubarClick::MenuOpened
             | MenubarClick::CalendarOpened
@@ -82,15 +82,21 @@ impl Menubar {
         None
     }
 
-    pub(crate) fn click_inner(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
+    pub(crate) fn click_inner(
+        &mut self,
+        x: f32,
+        y: f32,
+        bar_width: f32,
+        screen_height: f32,
+    ) -> MenubarClick {
         if self.menu.is_some() {
-            return self.click_over_menu(x, y, bar_width);
+            return self.click_over_menu(x, y, bar_width, screen_height);
         }
         if self.calendar.is_some() {
-            return self.click_over_calendar(x, y, bar_width);
+            return self.click_over_calendar(x, y, bar_width, screen_height);
         }
         if self.tray.is_some() {
-            return self.click_over_tray(x, y, bar_width);
+            return self.click_over_tray(x, y, bar_width, screen_height);
         }
         if in_icon(x, y, &self.icon_hit()) {
             self.open_at(bar_width);
@@ -101,13 +107,19 @@ impl Menubar {
             return MenubarClick::CalendarOpened;
         }
         if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
-            self.open_tray(kind, bar_width);
+            self.open_tray(kind, bar_width, screen_height);
             return MenubarClick::TrayOpened;
         }
         MenubarClick::Dismissed
     }
 
-    fn click_over_menu(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
+    fn click_over_menu(
+        &mut self,
+        x: f32,
+        y: f32,
+        bar_width: f32,
+        screen_height: f32,
+    ) -> MenubarClick {
         if let Some(menu) = self.menu.as_ref()
             && let Some(index) = menu_row_at(&menu.rows, menu.panel, x, y)
         {
@@ -128,7 +140,7 @@ impl Menubar {
         }
         if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             self.menu = None;
-            self.open_tray(kind, bar_width);
+            self.open_tray(kind, bar_width, screen_height);
             return MenubarClick::TrayOpened;
         }
         if in_icon(x, y, &self.icon_hit()) {
@@ -142,7 +154,13 @@ impl Menubar {
         MenubarClick::Dismissed
     }
 
-    fn click_over_calendar(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
+    fn click_over_calendar(
+        &mut self,
+        x: f32,
+        y: f32,
+        bar_width: f32,
+        screen_height: f32,
+    ) -> MenubarClick {
         if let Some(bounds) = self.calendar_bounds(bar_width)
             && let Some((offset, weeks)) = calendar_step(
                 self.today,
@@ -175,7 +193,7 @@ impl Menubar {
         if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
             self.calendar = None;
             self.nav_hovered = None;
-            self.open_tray(kind, bar_width);
+            self.open_tray(kind, bar_width, screen_height);
             return MenubarClick::TrayOpened;
         }
         if in_clock(x, y, &self.clock_hit(bar_width)) {
@@ -191,7 +209,13 @@ impl Menubar {
         MenubarClick::Dismissed
     }
 
-    fn click_over_tray(&mut self, x: f32, y: f32, bar_width: f32) -> MenubarClick {
+    fn click_over_tray(
+        &mut self,
+        x: f32,
+        y: f32,
+        bar_width: f32,
+        screen_height: f32,
+    ) -> MenubarClick {
         // Dentro del panel real: su propio golpe decide (o no cierra).
         if self.tray_contains(x, y)
             && let Some(kind) = self.tray_kind()
@@ -221,7 +245,7 @@ impl Menubar {
                 self.tray_hovered = Some(kind);
                 return MenubarClick::Dismissed;
             }
-            self.open_tray(kind, bar_width);
+            self.open_tray(kind, bar_width, screen_height);
             return MenubarClick::TrayOpened;
         }
         if in_icon(x, y, &self.icon_hit()) {

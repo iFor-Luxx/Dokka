@@ -87,9 +87,10 @@ impl crate::Menubar {
     }
 
     /// Abre el panel real del icono dado, cerrando menú y calendario.
-    /// Cada panel mide lo suyo y se coloca bajo su icono.
+    /// Cada panel mide lo suyo y se coloca bajo su icono, salvo el buscador,
+    /// que va centrado a lo ancho y separado de la barra.
     /// Los apagados en Preferencias no se abren.
-    pub(crate) fn open_tray(&mut self, kind: super::TrayKind, bar_width: f32) {
+    pub(crate) fn open_tray(&mut self, kind: super::TrayKind, bar_width: f32, screen_height: f32) {
         if !self.is_shown(kind) || self.tray_anchor(kind, bar_width).is_none() {
             return;
         }
@@ -99,7 +100,7 @@ impl crate::Menubar {
             super::TrayKind::Music => self.open_music(bar_width),
             super::TrayKind::Background => self.open_background(bar_width),
             super::TrayKind::Language => self.open_language(bar_width),
-            super::TrayKind::Search => self.open_search(bar_width),
+            super::TrayKind::Search => self.open_search(bar_width, screen_height),
             super::TrayKind::ControlCenter => self.open_control_center(bar_width),
         }
     }

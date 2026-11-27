@@ -7,7 +7,8 @@ con `foreground_app` + `NameCache` y hora con `local_time` (y el hoy del calenda
 fila derecha a la izquierda de la fecha (de derecha a izquierda: centro de control,
 buscar, idioma como texto con el código real, música, red y volumen con sus
 dibujos según los datos) con su panel real por icono (medido con su `<x>_size`,
-colocado bajo su icono sin salirse salvo el buscador, centrado en lo alto);
+colocado bajo su icono sin salirse salvo el buscador, separado de la barra y
+centrado a lo ancho de la pantalla);
 su menú reutiliza `context_menu.rs` para Preferencias, escritorio, administrador, reiniciar y
 salir, con `menubar_menu_dismissed` antes de Preferencias, administrador, ajustes
 y apps nuevas y `menubar_hide` al salir o reiniciar; su calendario comparte `calendar_panel`
@@ -16,7 +17,8 @@ al repetir la hora, al pulsar fuera, al perder el foco o al abrir el menú, la f
 panel del dock (y al revés; solo uno abierto a la vez, también entre iconos de la fila:
 repetir el mismo lo cierra); mientras la barra está desplegada no se abren
 previas) en su ventana (`menubar_show` con las medidas del tema, ventana de 480 para
-que quepa el buscador y el idioma con una docena de filas, y `draw_menubar`), redibujándola solo si cambia
+que quepa el idioma con una docena de filas y que crece con el monitor para el
+buscador separado, sin tocar la reserva, y `draw_menubar`), redibujándola solo si cambia
 (`MenubarPainted`: mes, hover, idioma, apertura y datos de cada panel incluidos).
 Los paneles viven un archivo por panel en el shell (`menubar_volume.rs`,
 `menubar_network.rs`, `menubar_language.rs`, `menubar_music.rs`,
