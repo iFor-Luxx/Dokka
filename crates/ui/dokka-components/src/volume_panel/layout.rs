@@ -2,9 +2,10 @@
 //! el arrastre.
 //!
 //! Una columna: título con porcentaje, fila del deslizador (altavoz bajo,
-//! barra fina y altavoz con ondas), sección de salidas si hay, dos líneas
-//! finas y dos filas compactas (silenciar y ajustes). El valor siempre sale
-//! de la barra, más corta que la zona de toque por los iconos de sus extremos.
+//! barra fina con tirador en cápsula y altavoz con ondas), sección de salidas
+//! si hay, dos líneas finas y dos filas compactas (silenciar y ajustes). El
+//! deslizador es el componente `slider`: la zona queda entre los dos iconos
+//! con el mismo aire a cada lado para que la barra quede centrada y simétrica.
 
 use dokka_model::AudioOutput;
 use dokka_scene::Rect;
@@ -51,51 +52,20 @@ pub(crate) fn slider_right_icon(touch: Rect) -> Rect {
     }
 }
 
-/// Barra fina entre los dos altavoces, centrada en vertical.
-/// Es la geometría que usan el dibujo, el golpe y el arrastre.
-pub(crate) fn slider_bar(touch: Rect) -> Rect {
+/// Zona del deslizador entre los dos altavoces, con el mismo aire a cada
+/// lado para que la barra quede centrada y simétrica. Es la zona que recibe
+/// el componente `slider`: la pista, el golpe y el arrastre salen de ella.
+pub(crate) fn slider_area(touch: Rect) -> Rect {
     let left = slider_left_icon(touch);
     let right = slider_right_icon(touch);
     let x = left.x + left.width + measures::SLIDER_ICON_GAP;
     let end = right.x - measures::SLIDER_ICON_GAP;
     Rect {
         x,
-        y: touch.y + (touch.height - measures::TRACK_HEIGHT) / 2.0,
+        y: touch.y,
         width: (end - x).max(0.0),
-        height: measures::TRACK_HEIGHT,
+        height: touch.height,
     }
-}
-
-/// Recorrido del centro del tirador: medio diámetro dentro de cada extremo
-/// para que no se salga de la barra ni en 0% ni en 100%.
-fn knob_travel(bar: Rect) -> (f32, f32) {
-    let radius = measures::THUMB_DIAMETER / 2.0;
-    if bar.width <= measures::THUMB_DIAMETER {
-        let middle = bar.x + bar.width / 2.0;
-        return (middle, middle);
-    }
-    (bar.x + radius, bar.x + bar.width - radius)
-}
-
-/// Centro del tirador para el nivel, dentro de la barra.
-/// El relleno llega hasta aquí para que ambos coincidan.
-pub(crate) fn knob_center(bar: Rect, level: f32) -> f32 {
-    let (start, end) = knob_travel(bar);
-    start + level01(level) * (end - start)
-}
-
-/// Nivel que corresponde a `x` sobre la barra: se queda en 0 o en 1 aunque
-/// el cursor se pase. Fuera de la barra no hay recorrido que repartir.
-pub(crate) fn slider_value_at(bar: Rect, x: f32) -> f32 {
-    let (start, end) = knob_travel(bar);
-    if end <= start {
-        return if x < bar.x + bar.width / 2.0 {
-            0.0
-        } else {
-            1.0
-        };
-    }
-    level01((x - start) / (end - start))
 }
 
 /// Recorta el nivel a 0-1: el silencio (`NaN`) queda en 0.

@@ -2,14 +2,13 @@ use dokka_model::AudioOutput;
 use dokka_scene::{Divider, Overlay, Panel, Rect, Size};
 use dokka_theme::{Theme, volume as measures};
 
-use super::knob::slider_knob;
 use super::layout::{
-    mute_row, output_row, separator_rect, settings_row, slider_bar, slider_touch, title_row,
+    mute_row, output_row, separator_rect, settings_row, slider_area, slider_touch, title_row,
     visible_count,
 };
 use super::rows::{Rows, row_icons, row_texts};
-use super::track::track_panels;
 use super::{VolumePanelHit, VolumePanelIcons, VolumePanelProps};
+use crate::slider::{SliderColors, SliderProps, slider_panels, slider_track_bounds};
 
 /// Tamaño del panel para estas salidas (sin ninguna, el compacto de antes).
 pub fn volume_panel_size(output_count: usize) -> Size {
@@ -31,10 +30,16 @@ pub fn volume_panel(
 ) -> Overlay {
     let title = title_row(bounds);
     let touch = slider_touch(bounds);
-    let bar = slider_bar(touch);
+    let area = slider_area(touch);
+    let track = slider_track_bounds(area);
+    let slider = SliderProps {
+        value: props.level,
+        neutral: None,
+        active: !props.is_muted,
+    };
+    let flats: [Panel; 4] = slider_panels(track, &slider, &SliderColors::glass(theme));
     let mute = mute_row(bounds, outputs);
     let settings = settings_row(bounds, outputs);
-    let flats = track_panels(theme, bar, props);
     let rows = Rows {
         bounds,
         title,
@@ -54,12 +59,12 @@ pub fn volume_panel(
             settings,
             props.hovered,
         )),
-        flat_panels: vec![flats[0], flats[1]],
+        flat_panels: flats.into_iter().collect(),
         dividers: vec![
             separator(theme, bounds, outputs, 0),
             separator(theme, bounds, outputs, 1),
         ],
-        dots: vec![slider_knob(theme, bar, props)],
+        dots: Vec::new(),
         pointer: None,
         texts: row_texts(theme, rows, outputs, props),
         icons: row_icons(theme, icons, rows, outputs, props),

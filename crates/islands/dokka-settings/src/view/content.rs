@@ -130,7 +130,7 @@ pub(crate) fn slider_pieces(
     let track = slider_track_bounds(area);
     let props = SliderProps {
         value,
-        neutral,
+        neutral: Some(neutral),
         active,
     };
     let panels = slider_panels(track, &props, &slider_colors(theme));
