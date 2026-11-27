@@ -16,8 +16,8 @@ impl DockSession {
         let position = self.preferences.dock.position;
         // Con una app ocupando, el dock baja hasta el monitor completo para
         // que la línea quede al borde; si no, usa el área de trabajo.
-        let over_taskbar = self.taskbar_hidden
-            || (self.preferences.dock.auto_hide && self.dock.is_occluded());
+        let over_taskbar =
+            self.taskbar_hidden || (self.preferences.dock.auto_hide && self.dock.is_occluded());
         self.fit_to_work_area(surface, position, over_taskbar);
         let size = self.dock.surface_size(self.state.apps());
         let margin = match position {
