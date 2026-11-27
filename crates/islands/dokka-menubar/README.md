@@ -44,7 +44,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `language.rs` | `open_language`, `set_languages`, elección de idioma |
 | `music.rs` | `open_music`, `set_now_playing`, botones anterior/pausa/siguiente |
 | `search.rs` | `open_search` (centrado), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
-| `control_center.rs` | `open_control_center` con los datos combinados; el deslizador delega en volumen, los botones en sus variantes y la tarjeta de red abre el panel de red |
+| `control_center.rs` | `open_control_center` con los datos combinados; el deslizador delega en volumen, los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
 | `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
 | `tray.rs` | `TrayKind`, celdas de la fila y colocación (`tray_place`, `tray_place_centered`) |
 | `click.rs` | `click` (suelta el arrastre), `pressed` (fija el nivel ya) y `pointer_moved` (lo sigue arrastrando) |
@@ -62,4 +62,4 @@ iconos nuevos, en un archivo propio de `dokka-icons` (no en `lucide.rs`, casi ll
 | Música | `NowPlayingInfo` cada `Tick` | `MusicPrevious` / `MusicToggle` / `MusicNext` |
 | Idioma | `Vec<LanguageEntry>` + código (leído antes de tomar el foco) | `ChooseLanguage(id)` / `OpenLanguageSettings` |
 | Buscar | resultados filtrados (`set_search_results`) | `SearchOpen(index)` |
-| Centro de control | combinados de arriba | delega en las variantes de cada panel |
+| Centro de control | combinados de arriba | delega en las variantes de cada panel y en `TaskView` / `Project` / `Calculator` / `ScreenClip` / `Clock` |

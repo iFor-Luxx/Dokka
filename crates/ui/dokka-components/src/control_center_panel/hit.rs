@@ -7,9 +7,9 @@ use super::layout::{
 };
 use super::props::ControlCenterProps;
 
-/// Zona pulsable bajo el punto: primero los círculos blancos y los botones
+/// Zona pulsable bajo el punto: primero los ocho círculos y los botones
 /// de música, luego el silencio y el deslizador (con su valor 0 a 1) y al
-/// final las cápsulas de red y Preferencias. Devuelve lo mismo que antes.
+/// final las cápsulas de red y Preferencias.
 pub fn control_center_hit(
     bounds: Rect,
     x: f32,
@@ -19,6 +19,11 @@ pub fn control_center_hit(
     for (index, hit) in [
         ControlCenterHit::Desktop,
         ControlCenterHit::Lock,
+        ControlCenterHit::TaskView,
+        ControlCenterHit::Project,
+        ControlCenterHit::Calculator,
+        ControlCenterHit::ScreenClip,
+        ControlCenterHit::Clock,
         ControlCenterHit::TaskManager,
     ]
     .iter()

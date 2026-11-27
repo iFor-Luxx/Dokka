@@ -70,7 +70,8 @@ impl Menubar {
     }
 
     /// El resto delega en las variantes de cada panel; la tarjeta de red
-    /// abre el panel de red sin pasar por el shell.
+    /// abre el panel de red sin pasar por el shell. Los círculos nuevos
+    /// devuelven su acción para que el shell los abra con el lanzador.
     pub(crate) fn control_click(
         &mut self,
         x: f32,
@@ -88,6 +89,11 @@ impl Menubar {
             Some(ControlCenterHit::Preferences) => Some(MenubarAction::OpenSettings),
             Some(ControlCenterHit::Desktop) => Some(MenubarAction::ShowDesktop),
             Some(ControlCenterHit::Lock) => Some(MenubarAction::LockScreen),
+            Some(ControlCenterHit::TaskView) => Some(MenubarAction::TaskView),
+            Some(ControlCenterHit::Project) => Some(MenubarAction::Project),
+            Some(ControlCenterHit::Calculator) => Some(MenubarAction::Calculator),
+            Some(ControlCenterHit::ScreenClip) => Some(MenubarAction::ScreenClip),
+            Some(ControlCenterHit::Clock) => Some(MenubarAction::Clock),
             Some(ControlCenterHit::TaskManager) => Some(MenubarAction::TaskManager),
             Some(ControlCenterHit::Network) => {
                 self.open_network(bar_width);
