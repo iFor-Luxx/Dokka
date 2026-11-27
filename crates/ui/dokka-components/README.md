@@ -22,18 +22,18 @@ pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
 `filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna)
-y tarjeta de música (`music_panel`: tamaño fijo, título y artista recortados con "…",
-barra plana con anterior, pausa/reproducir y siguiente con los glifos de música
-existentes, "Nada en reproducción" sin canción y golpe por tercios; con y sin
-canción entrega los mismos textos, iconos y planos —ocultos con tamaño cero—),
+y tarjeta de música Tahoe (`music_panel`: carátula cuadrada con título y artista recortados
+con "…", controles grandes de anterior, pausa/reproducir y siguiente con los glifos Lucide
+en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
+canción entrega los mismos textos e iconos),
 panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
 botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
 tarjeta de estado con nombre, tipo e internet y fila de ajustes), lista de
 idiomas (`language_panel`: marca del activo, resaltado de fila y ajustes),
 centro de control (`control_center_panel`: tarjetas de red, volumen con
-deslizador y música más botones redondos, sin resaltar) y buscador
-(`search_panel`: casilla grande con lupa y texto, hasta siete resultados con
-icono y resaltado, "Sin resultados" y `filter_search_order` con tildes
-ignoradas; con `search_field` para la casilla).
+deslizador y música más botones redondos, sin resaltar) y buscador Spotlight
+de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
+resultados con icono, hasta siete nombres, resaltado en cápsula translúcida,
+"Sin resultados" y `filter_search_order` con tildes ignoradas).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

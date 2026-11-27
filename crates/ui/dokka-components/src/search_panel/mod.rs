@@ -1,5 +1,6 @@
-//! Panel buscador tipo Spotlight: casilla grande con lupa y texto,
-//! hasta siete resultados con icono y resaltado, y "Sin resultados".
+//! Buscador tipo Spotlight de Tahoe: cápsula grande con lupa y texto más
+//! tarjeta de resultados con icono y "Sin resultados"; la fila resaltada
+//! es una cápsula translúcida.
 
 mod content;
 mod filter;

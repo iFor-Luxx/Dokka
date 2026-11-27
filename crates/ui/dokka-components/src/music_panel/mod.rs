@@ -1,5 +1,6 @@
-//! Tarjeta de música sin saber qué es la barra: título y artista recortados
-//! con "…" y botones de anterior, pausa/reproducir y siguiente.
+//! Tarjeta de música Tahoe sin saber qué es la barra: carátula cuadrada,
+//! título y artista recortados con "…" y controles grandes de anterior,
+//! pausa/reproducir y siguiente; sin canción, atenuados.
 
 mod icons;
 mod props;
