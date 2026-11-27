@@ -2,6 +2,7 @@
 
 use dokka_components::volume_panel::{
     VolumePanelHit, VolumePanelProps, volume_panel, volume_panel_hit, volume_panel_size,
+    volume_slider_value,
 };
 use dokka_scene::Overlay;
 use dokka_theme::menubar as bar_measures;
@@ -63,18 +64,14 @@ impl Menubar {
     }
 
     /// Arrastrando desde la barra: el nivel sigue al cursor en vivo.
-    pub(crate) fn volume_drag(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
+    pub(crate) fn volume_drag(&mut self, x: f32) -> Option<MenubarAction> {
         if !self.dragging_slider {
             return None;
         }
         let bounds = self.tray_bounds()?;
-        match volume_panel_hit(bounds, x, y) {
-            Some(VolumePanelHit::Slider(level)) => {
-                self.volume_hovered = Some(VolumePanelHit::Slider(level));
-                Some(MenubarAction::VolumeSetLevel(level))
-            }
-            _ => None,
-        }
+        let level = volume_slider_value(bounds, x);
+        self.volume_hovered = Some(VolumePanelHit::Slider(level));
+        Some(MenubarAction::VolumeSetLevel(level))
     }
 
     pub(crate) fn volume_click(&mut self, x: f32, y: f32) -> Option<MenubarAction> {

@@ -12,7 +12,7 @@ mod layout;
 mod props;
 mod view;
 
-pub use hit::volume_panel_hit;
+pub use hit::{volume_panel_hit, volume_slider_value};
 pub use icons::VolumePanelIcons;
 pub use props::{VolumePanelHit, VolumePanelProps};
 pub use view::{volume_panel, volume_panel_size};

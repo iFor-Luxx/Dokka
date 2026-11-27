@@ -23,9 +23,12 @@ impl Menubar {
     /// Decide el clic. Solo uno abierto a la vez: la hora, el icono y cada
     /// icono de la fila cambian directamente de uno a otro; repetir el
     /// mismo lo cierra; fuera o el panel del dock lo cierran.
-    /// También suelta cualquier arrastre del deslizador.
+    /// Soltar tras arrastrar el deslizador no es un clic: el cursor puede haber
+    /// quedado sobre el altavoz y silenciaría sin querer.
     pub fn click(&mut self, x: f32, y: f32, bar_width: f32) -> Option<MenubarAction> {
-        self.dragging_slider = false;
+        if std::mem::take(&mut self.dragging_slider) {
+            return None;
+        }
         match self.click_inner(x, y, bar_width) {
             MenubarClick::Chosen(action) => Some(action),
             MenubarClick::MenuOpened
@@ -39,6 +42,8 @@ impl Menubar {
 
     /// Botón abajo: el deslizador fija el nivel ya; lo demás espera al clic.
     pub fn pressed(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
+        // Un arrastre anterior sin suelta no debe tragarse este clic.
+        self.dragging_slider = false;
         match self.tray_kind() {
             Some(super::TrayKind::Volume) if self.tray_contains(x, y) => self.volume_press(x, y),
             Some(super::TrayKind::ControlCenter) if self.tray_contains(x, y) => {
@@ -60,8 +65,8 @@ impl Menubar {
         }
         if self.dragging_slider {
             return match self.tray_kind() {
-                Some(super::TrayKind::Volume) => self.volume_drag(x, y),
-                Some(super::TrayKind::ControlCenter) => self.control_drag(x, y),
+                Some(super::TrayKind::Volume) => self.volume_drag(x),
+                Some(super::TrayKind::ControlCenter) => self.control_drag(x),
                 _ => {
                     self.dragging_slider = false;
                     None

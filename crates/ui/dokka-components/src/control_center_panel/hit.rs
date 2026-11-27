@@ -66,3 +66,9 @@ pub fn control_center_hit(
 fn contains(area: Rect, x: f32, y: f32) -> bool {
     x >= area.x && x < area.x + area.width && y >= area.y && y < area.y + area.height
 }
+
+/// Nivel que corresponde a `x` mientras se arrastra, aunque el cursor se
+/// pase de la barra: se queda en 0 o en 1.
+pub fn control_center_slider_value(bounds: Rect, x: f32) -> f32 {
+    slider_value(slider_track(sound_card(bounds)), x)
+}

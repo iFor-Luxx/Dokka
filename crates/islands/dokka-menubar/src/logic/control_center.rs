@@ -2,7 +2,7 @@
 
 use dokka_components::control_center_panel::{
     ControlCenterHit, ControlCenterProps, control_center_hit, control_center_panel,
-    control_center_size,
+    control_center_size, control_center_slider_value,
 };
 use dokka_scene::Overlay;
 
@@ -59,15 +59,14 @@ impl Menubar {
     }
 
     /// Arrastrando desde la barra del centro: el nivel sigue al cursor.
-    pub(crate) fn control_drag(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
+    pub(crate) fn control_drag(&mut self, x: f32) -> Option<MenubarAction> {
         if !self.dragging_slider {
             return None;
         }
         let bounds = self.tray_bounds()?;
-        match control_center_hit(bounds, x, y, &self.control_props()) {
-            Some(ControlCenterHit::Slider(level)) => Some(MenubarAction::VolumeSetLevel(level)),
-            _ => None,
-        }
+        Some(MenubarAction::VolumeSetLevel(control_center_slider_value(
+            bounds, x,
+        )))
     }
 
     /// El resto delega en las variantes de cada panel; la tarjeta de red

@@ -15,7 +15,6 @@ impl Menubar {
         self.volume_hovered = None;
         self.network_hovered = None;
         self.language_hovered = None;
-        self.dragging_slider = false;
         if let Some(menu) = self.menu.as_mut() {
             menu.highlighted = None;
         }
