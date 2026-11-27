@@ -51,8 +51,8 @@ pub(crate) fn handle_event(
         SurfaceEvent::PointerMoved { x, y } => {
             if session.launchpad.is_open() {
                 session.dock.pointer_moved(x, y, session.state.apps());
-            } else if session.menubar.is_menu_open() {
-                // Con el menú de la barra no se abren previas ni se mueve el dock.
+            } else if session.menubar.is_menu_open() || session.menubar.is_calendar_open() {
+                // Con la barra desplegada no se abren previas ni se mueve el dock.
                 session.previews.close();
             } else if session.dock.is_menu_open() {
                 session.dock.move_over_menu(x, y);
