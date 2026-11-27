@@ -3,7 +3,8 @@ use windows::Win32::UI::WindowsAndMessaging::PostQuitMessage;
 
 use crate::SurfaceError;
 use crate::create_window::{
-    create_launchpad_window, create_preview_window, create_settings_window, create_window,
+    create_launchpad_window, create_menubar_window, create_preview_window, create_settings_window,
+    create_window,
 };
 use crate::place_window::{fullscreen_size, place_at_bottom_center, place_fullscreen};
 
@@ -63,6 +64,20 @@ pub struct Surface {
     pub(crate) previous_focus: Option<HWND>,
     /// Foco anterior al abrir el Launchpad.
     pub(crate) launchpad_previous: Option<HWND>,
+    /// Ventana de la barra superior, oculta hasta que se muestra.
+    pub(crate) menubar: HWND,
+    /// `true` mientras la barra está visible (aunque la tape un pantalla completa).
+    pub(crate) menubar_visible: bool,
+    /// `true` si ya se registró como AppBar (nunca dos veces).
+    pub(crate) menubar_registered: bool,
+    /// Escala de la barra; la misma que la del dock en el principal.
+    pub(crate) menubar_scale: f32,
+    /// Zonas activas de la barra en píxeles, para no repetir llamadas iguales.
+    pub(crate) menubar_active: Vec<[i32; 4]>,
+    /// Foco anterior al abrir el menú de la barra.
+    pub(crate) menubar_previous: Option<HWND>,
+    /// `true` mientras una app a pantalla completa oculta la barra.
+    pub(crate) menubar_fullscreen: bool,
 }
 
 impl Surface {
@@ -73,6 +88,7 @@ impl Surface {
         let launchpad_scale = place_fullscreen(launchpad)?;
         let launchpad_size = fullscreen_size(launchpad, launchpad_scale);
         let settings = create_settings_window()?;
+        let menubar = create_menubar_window()?;
         Ok(Self {
             window,
             above: create_window(Some(window))?,
@@ -90,6 +106,14 @@ impl Surface {
             active_areas: Vec::new(),
             previous_focus: None,
             launchpad_previous: None,
+            menubar,
+            menubar_visible: false,
+            menubar_registered: false,
+            // Se actualiza en `menubar_show` con el DPI real de la barra.
+            menubar_scale: scale,
+            menubar_active: Vec::new(),
+            menubar_previous: None,
+            menubar_fullscreen: false,
         })
     }
 

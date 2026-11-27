@@ -49,7 +49,7 @@ pub(crate) fn create_settings_window() -> Result<HWND> {
     )
 }
 
-/// Vista grande: a pantalla completa, sin foco y transparente al mouse.
+/// Ventana grande: a pantalla completa, sin foco y transparente al mouse.
 pub(crate) fn create_preview_window() -> Result<HWND> {
     create_with_style(
         None,
@@ -58,6 +58,17 @@ pub(crate) fn create_preview_window() -> Result<HWND> {
             | WS_EX_TOOLWINDOW
             | WS_EX_NOACTIVATE
             | WS_EX_TRANSPARENT,
+        WS_POPUP,
+        w!("Dokka"),
+    )
+}
+
+/// Barra superior: como el dock (sin activación, siempre encima, cristal),
+/// en archivos propios. Sin dueña para que `WM_ACTIVATE` avise al perder el foco.
+pub(crate) fn create_menubar_window() -> Result<HWND> {
+    create_with_style(
+        None,
+        WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
         WS_POPUP,
         w!("Dokka"),
     )

@@ -4,8 +4,10 @@
 mod describe_window;
 mod filter_window;
 mod find_executable;
+mod foreground_app;
 mod list_windows;
 mod watch_changes;
 
+pub use foreground_app::foreground_app;
 pub use list_windows::SystemWindows;
 pub use watch_changes::{ChangeWatcher, WINDOWS_CHANGED_MESSAGE};
