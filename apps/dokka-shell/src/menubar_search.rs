@@ -76,7 +76,7 @@ pub(crate) fn confirm_search(
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     if let Some(action) = session.menubar.search_confirmed() {
-        return crate::menubar::run_menubar_action(session, surface, action);
+        return crate::menubar_actions::run_menubar_action(session, surface, action);
     }
     Ok(())
 }

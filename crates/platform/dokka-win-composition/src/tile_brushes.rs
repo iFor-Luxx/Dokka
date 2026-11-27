@@ -5,7 +5,7 @@
 //! `MappingMode::Relative`, así que siguen bien al cambiar de tamaño sin
 //! reconstruir capas en `update`.
 
-use windows::UI::Composition::{Compositor, CompositionLinearGradientBrush};
+use windows::UI::Composition::{CompositionLinearGradientBrush, Compositor};
 use windows::core::Result;
 use windows_numerics::Vector2;
 
@@ -26,16 +26,11 @@ pub(crate) fn edge_brush(
     let full = base.A;
     let faint = scaled_alpha(full, 1, 8);
     let soft = scaled_alpha(full, 1, 2);
-    for (offset, alpha) in [
-        (0.0, full),
-        (0.38, faint),
-        (0.62, faint),
-        (1.0, soft),
-    ] {
-        stops.Append(&compositor.CreateColorGradientStopWithOffsetAndColor(
-            offset,
-            with_alpha(base, alpha),
-        )?)?;
+    for (offset, alpha) in [(0.0, full), (0.38, faint), (0.62, faint), (1.0, soft)] {
+        stops.Append(
+            &compositor
+                .CreateColorGradientStopWithOffsetAndColor(offset, with_alpha(base, alpha))?,
+        )?;
     }
     Ok(brush)
 }
@@ -54,10 +49,10 @@ pub(crate) fn sheen_brush(
     let stops = brush.ColorStops()?;
     let top = scaled_alpha(base.A, 1, 4);
     for (offset, alpha) in [(0.0, top), (0.45, 0), (1.0, 0)] {
-        stops.Append(&compositor.CreateColorGradientStopWithOffsetAndColor(
-            offset,
-            with_alpha(base, alpha),
-        )?)?;
+        stops.Append(
+            &compositor
+                .CreateColorGradientStopWithOffsetAndColor(offset, with_alpha(base, alpha))?,
+        )?;
     }
     Ok(brush)
 }

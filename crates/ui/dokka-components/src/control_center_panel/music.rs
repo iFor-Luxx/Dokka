@@ -26,14 +26,14 @@ pub(crate) fn add_music(
     ));
     pieces.texts.push(title(
         theme,
-        card.x + glass::PADDING,
-        card.y + 62.0,
+        card.x + measures::PADDING,
+        card.y + measures::MUSIC_TITLE_TOP,
         music_title(props),
     ));
     pieces.texts.push(subtitle(
         theme,
-        card.x + glass::PADDING,
-        card.y + 76.0,
+        card.x + measures::PADDING,
+        card.y + measures::MUSIC_SUBTITLE_TOP,
         music_artist(props),
     ));
     pieces.icons.push(picture(

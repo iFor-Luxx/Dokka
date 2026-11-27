@@ -1,6 +1,6 @@
 //! Tarjeta ancha de Sonido: título arriba a la izquierda, pista fina con
-//! relleno blanco sin bolita e icono pequeño a cada extremo (el derecho
-//! silencia).
+//! relleno blanco en la parte baja e icono pequeño a cada extremo (el
+//! derecho silencia), alineados con la barra.
 
 use dokka_scene::Rect;
 use dokka_theme::{Theme, control_center as measures, tray_glass as glass};
@@ -37,8 +37,8 @@ pub(crate) fn add_slider(
     ));
     pieces.texts.push(title(
         theme,
-        card.x + glass::PADDING,
-        card.y + 22.0,
+        card.x + measures::PADDING,
+        card.y + measures::SLIDER_TITLE_TOP,
         String::from("Sonido"),
     ));
     pieces.icons.push(picture(
