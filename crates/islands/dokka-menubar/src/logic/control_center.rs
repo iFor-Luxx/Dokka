@@ -97,9 +97,11 @@ impl Menubar {
                 control_center_brightness_value(bounds, x),
             ))
         } else {
-            Some(MenubarAction::VolumeSetLevel(
-                control_center_slider_value(bounds, x, self.brightness),
-            ))
+            Some(MenubarAction::VolumeSetLevel(control_center_slider_value(
+                bounds,
+                x,
+                self.brightness,
+            )))
         }
     }
 

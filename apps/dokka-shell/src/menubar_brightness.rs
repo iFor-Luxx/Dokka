@@ -12,7 +12,9 @@ use crate::dock_session::DockSession;
 /// Último brillo conocido a la isla; sin DDC se oculta la tarjeta.
 /// Barato y sin esperar: el hilo DDC ya hizo el trabajo.
 pub(crate) fn refresh_brightness(session: &mut DockSession) {
-    session.menubar.set_brightness(session.brightness.brightness());
+    session
+        .menubar
+        .set_brightness(session.brightness.brightness());
 }
 
 /// Relee el brillo en el hilo DDC (por si cambió con los botones del monitor).

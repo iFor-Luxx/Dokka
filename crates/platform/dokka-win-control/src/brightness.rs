@@ -87,10 +87,7 @@ impl BrightnessControl for SystemBrightness {
 }
 
 /// Bucle DDC: una orden tras otra, quedándose con la última si se acumulan.
-fn watch(
-    queue: &std::sync::mpsc::Receiver<BrightnessCommand>,
-    shared: &Arc<BrightnessShared>,
-) {
+fn watch(queue: &std::sync::mpsc::Receiver<BrightnessCommand>, shared: &Arc<BrightnessShared>) {
     let mut minimum = 0_u32;
     let mut maximum = 100_u32;
     let mut has_range = false;
@@ -114,9 +111,7 @@ fn watch(
             }
         }
         if let Some(level) = pending_set {
-            if !has_range
-                && let Some((low, _, high)) = read_brightness()
-            {
+            if !has_range && let Some((low, _, high)) = read_brightness() {
                 minimum = low;
                 maximum = high;
                 has_range = true;
@@ -135,9 +130,7 @@ fn watch(
             }
             // Tras escribir, el valor local ya adelanta lo pedido.
         }
-        if pending_refresh
-            && let Some((low, current, high)) = read_brightness()
-        {
+        if pending_refresh && let Some((low, current, high)) = read_brightness() {
             minimum = low;
             maximum = high;
             has_range = true;
@@ -220,7 +213,10 @@ fn write_brightness(level: f32, minimum: u32, maximum: u32) {
             return;
         }
     }
-    let handle: HANDLE = physical.first().map(|entry| entry.hPhysicalMonitor).unwrap_or_default();
+    let handle: HANDLE = physical
+        .first()
+        .map(|entry| entry.hPhysicalMonitor)
+        .unwrap_or_default();
     if handle.is_invalid() {
         // SAFETY: libera los monitores abiertos en este mismo bloque.
         unsafe {

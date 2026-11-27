@@ -18,9 +18,7 @@ mod props;
 mod slider;
 mod view;
 
-pub use hit::{
-    control_center_brightness_value, control_center_hit, control_center_slider_value,
-};
+pub use hit::{control_center_brightness_value, control_center_hit, control_center_slider_value};
 pub use icons::ControlCenterIcons;
 pub use props::{ControlCenterHit, ControlCenterProps};
 pub use view::{control_center_panel, control_center_size};

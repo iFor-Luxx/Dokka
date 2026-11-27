@@ -80,10 +80,7 @@ fn contains(area: Rect, x: f32, y: f32) -> bool {
 /// cursor se pase de la barra: se queda en 0 o en 1.
 pub fn control_center_slider_value(bounds: Rect, x: f32, brightness: Option<f32>) -> f32 {
     let with_brightness = brightness.is_some();
-    slider_value(
-        slider_track(sound_card(bounds, with_brightness)),
-        x,
-    )
+    slider_value(slider_track(sound_card(bounds, with_brightness)), x)
 }
 
 /// Nivel de Pantalla que corresponde a `x` mientras se arrastra, aunque el
