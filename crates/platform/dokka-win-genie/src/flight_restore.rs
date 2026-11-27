@@ -91,6 +91,7 @@ impl Flight {
             foreground,
             overlay,
             stand: None,
+            _stand_target: None,
             _target: target,
             root,
             screen,

@@ -42,6 +42,7 @@ pub fn preview_card(
     let thumbnails = slots()
         .zip(windows)
         .map(|(slot, item)| Thumbnail {
+            opacity: 1.0,
             window: item.window,
             bounds: Rect {
                 x: slot.x + inset,

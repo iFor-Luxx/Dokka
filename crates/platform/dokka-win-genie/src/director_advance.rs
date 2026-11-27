@@ -28,6 +28,13 @@ use std::time::Instant;
 use crate::director::{GenieDirector, MAX_SNAPSHOTS};
 
 impl GenieDirector {
+    /// Ventana en vuelo y cuánto debe verse su miniatura del dock: nada
+    /// mientras vuela, fundida al aterrizar (como Muelle).
+    pub fn landing(&self, now: Instant) -> Option<(isize, f32)> {
+        let flight = self.flight.as_ref()?;
+        Some((flight.hwnd, flight.landing(now)))
+    }
+
     /// Pone el vuelo en curso bajo el dock para pasar tras su cristal.
     /// Solo con el dock oculto: arriba del todo taparía la barrita.
     pub fn tuck_current_if_hidden(&self, hidden: bool) {

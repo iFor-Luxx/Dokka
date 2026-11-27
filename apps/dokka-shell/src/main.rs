@@ -130,7 +130,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
     // La barra siempre vuelve, también si `run` terminó con error.
     // El genio devuelve las transiciones que apago (tambien con "Reiniciar").
-    session.genie.shutdown();
+    session.genie.restore_transitions();
     surface.menubar_hide();
     set_taskbar_visible(true);
     result?;

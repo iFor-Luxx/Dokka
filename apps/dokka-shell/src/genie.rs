@@ -53,6 +53,12 @@ impl GenieBridge {
         self.settings_window = Some(raw);
     }
 
+    /// Ventana en vuelo y opacidad de su miniatura del dock.
+    pub(crate) fn landing(&self) -> Option<(u64, f32)> {
+        let (hwnd, opacity) = self.director.landing(Instant::now())?;
+        Some((hwnd as u64, opacity))
+    }
+
     /// `true` mientras hay un vuelo dibujandose.
     pub(crate) fn is_flying(&self) -> bool {
         self.director.is_flying()
@@ -281,11 +287,6 @@ impl GenieBridge {
             .into_iter()
             .map(|hwnd| WindowId::new(hwnd as u64))
             .collect()
-    }
-
-    /// Al cerrar: devuelve transiciones y olvida vuelos.
-    pub(crate) fn shutdown(&mut self) {
-        self.director.restore_calmed();
     }
 
     /// Devuelve transiciones sin tocar vuelos (al apagar la opción).

@@ -46,7 +46,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 use crate::GenieImage;
 use crate::capture::{capture_win, halved};
 use crate::geometry::{GenieEdge, PixelRect, Turn, to_local};
-use crate::overlay::{create_overlay, create_window, destroy, show_no_activate};
+use crate::overlay::{create_overlay, destroy, show_no_activate};
 use crate::phase::{Captured, Phase};
 use crate::strips::GenieCompositor;
 
@@ -78,6 +78,8 @@ pub struct Flight {
     pub(crate) foreground: isize,
     pub(crate) overlay: HWND,
     pub(crate) stand: Option<HWND>,
+    /// Sin lienzo, DWM no pinta la miniatura en una ventana sin redirección.
+    pub(crate) _stand_target: Option<DesktopWindowTarget>,
     pub(crate) _target: DesktopWindowTarget,
     pub(crate) root: ContainerVisual,
     pub(crate) screen: PixelRect,
@@ -120,7 +122,7 @@ impl Flight {
             );
             return None;
         }
-        let stand = create_window(screen).or_else(|| {
+        let (stand, stand_target, _) = create_overlay(&gfx.compositor, screen).or_else(|| {
             eprintln!("genio: sin vuelo para {hwnd}: no se creo la ventana de la foto fija");
             None
         })?;
@@ -204,6 +206,7 @@ impl Flight {
             foreground,
             overlay,
             stand: Some(stand),
+            _stand_target: Some(stand_target),
             _target: target,
             root,
             screen,
