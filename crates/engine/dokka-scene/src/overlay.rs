@@ -12,6 +12,8 @@ pub struct Controls {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Overlay {
     pub panel: Panel,
+    /// Piezas de cristal separadas (cápsulas y círculos) sobre el panel.
+    pub tiles: Vec<Panel>,
     /// Fondo de la píldora segmentada de navegación, sobre el panel.
     /// Su hover va en `highlight`.
     pub pill: Option<Panel>,

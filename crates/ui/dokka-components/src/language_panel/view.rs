@@ -60,6 +60,7 @@ pub fn language_panel(
             tint: theme.menu.background,
             border: theme.menu.border,
         },
+        tiles: Vec::new(),
         pill: None,
         highlight: Some(highlight_panel(theme, bounds, languages, highlighted)),
         flat_panels: Vec::new(),

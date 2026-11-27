@@ -36,6 +36,7 @@ pub fn volume_panel(
     let flats = slider_panels(theme, track, &slider);
     Overlay {
         panel: popup_panel(theme, bounds),
+        tiles: Vec::new(),
         pill: None,
         highlight: Some(highlight_panel(theme, bounds, props.hovered)),
         flat_panels: vec![flats[0], flats[1]],

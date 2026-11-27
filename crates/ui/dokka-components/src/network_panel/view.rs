@@ -38,6 +38,7 @@ pub fn network_panel(
             tint: theme.menu.background,
             border: theme.menu.border,
         },
+        tiles: Vec::new(),
         pill: None,
         highlight: Some(settings_highlight(theme, settings, highlighted)),
         flat_panels: vec![Panel {

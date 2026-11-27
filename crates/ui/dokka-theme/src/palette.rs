@@ -101,3 +101,12 @@ pub(crate) const LAUNCHPAD_DOT_INACTIVE: Color = Color::rgba(255, 255, 255, 110)
 /// Velo oscuro muy suave de la barra superior: el texto blanco se lee sobre
 /// cualquier fondo, como en macOS Tahoe.
 pub(crate) const MENUBAR_VEIL: Color = Color::rgba(0, 0, 0, 55);
+
+/// Paneles de la barra superior, estilo Tahoe: cristal ahumado y blanco.
+pub(crate) const TRAY_CLEAR: Color = Color::rgba(0, 0, 0, 0);
+pub(crate) const TRAY_TILE: Color = Color::rgba(38, 40, 46, 96);
+pub(crate) const TRAY_TILE_BORDER: Color = Color::rgba(255, 255, 255, 70);
+pub(crate) const TRAY_SECONDARY: Color = Color::rgba(255, 255, 255, 170);
+pub(crate) const TRAY_TRACK: Color = Color::rgba(255, 255, 255, 60);
+pub(crate) const TRAY_CIRCLE: Color = Color::rgba(255, 255, 255, 46);
+pub(crate) const TRAY_HOVER: Color = Color::rgba(255, 255, 255, 34);

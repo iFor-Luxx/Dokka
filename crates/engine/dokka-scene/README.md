@@ -12,6 +12,7 @@
   y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
 - `Overlay` lleva `icons` sobre el resaltado, junto a los textos (el chevrón del menú).
 - `Overlay` lleva `flat_panels`: rectángulos planos (sin cristal) para barras y tarjetas.
+- `Overlay` lleva `tiles`: piezas de cristal separadas, como en el Centro de control de Tahoe.
 - `Overlay` lleva `opacity` y escala con origen (`scale` y `origin`): los paneles
   animados crecen desde el icono; el menú siempre vale 1.
 - `Scene` añade `texts` sueltos, `highlight` opcional para el Launchpad y

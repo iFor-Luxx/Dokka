@@ -13,4 +13,5 @@ pub mod popup;
 pub mod search;
 pub mod settings;
 pub mod tooltip;
+pub mod tray_glass;
 pub mod volume;

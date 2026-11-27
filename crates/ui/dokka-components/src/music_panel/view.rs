@@ -24,6 +24,7 @@ pub fn music_panel_panel(
 ) -> Overlay {
     Overlay {
         panel: popup_panel(theme, bounds),
+        tiles: Vec::new(),
         pill: None,
         highlight: None,
         flat_panels: vec![button_bar_panel(theme, bounds, track)],
