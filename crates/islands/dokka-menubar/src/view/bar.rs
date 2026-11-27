@@ -24,6 +24,8 @@ impl Menubar {
             self.clock_highlight_panel(bar_width),
         ];
         flat_panels.extend(self.tray_hover_panels(bar_width));
+        // El recuadro del idioma va sobre su hover.
+        flat_panels.push(self.tray_language_box(bar_width));
         let mut icons = vec![self.mark_icon()];
         icons.extend(self.tray_bar_icons(bar_width));
         Scene {

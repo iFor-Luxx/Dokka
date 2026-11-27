@@ -5,8 +5,8 @@
 
 use dokka_scene::DRAWING_SIDE;
 
-/// Lado del glifo de cada icono, igual que el de Dokka.
-pub const ICON_SIDE: f32 = 20.0;
+/// Lado del glifo de cada icono, igual que el de Dokka y parejo en toda la barra.
+pub const ICON_SIDE: f32 = 16.0;
 /// Tamaño del glifo Lucide: llena el lienzo de 100, fuente efectiva 20.
 pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Ancho del hueco pulsable de cada icono.
@@ -19,3 +19,13 @@ pub const CLOCK_GAP: f32 = 8.0;
 pub const HOVER_RADIUS: f32 = 8.0;
 /// Aire del hover alrededor del icono.
 pub const HOVER_PADDING: f32 = 4.0;
+/// Recuadro del código de idioma, como una tecla.
+pub const LANG_BOX_WIDTH: f32 = 22.0;
+pub const LANG_BOX_HEIGHT: f32 = 17.0;
+pub const LANG_BOX_RADIUS: f32 = 4.0;
+pub const LANG_TEXT_SIZE: f32 = 11.0;
+/// Interruptores apilados del centro de control: tamaño y centro de cada uno
+/// en el lienzo de 100.
+pub const TOGGLE_GLYPH_SIZE: f32 = 70.0;
+pub const TOGGLE_TOP_Y: f32 = 29.0;
+pub const TOGGLE_BOTTOM_Y: f32 = 71.0;

@@ -11,8 +11,8 @@ pub const HEIGHT: f32 = 30.0;
 /// El panel más alto es el buscador (386 con siete filas); el idioma compacto
 /// queda muy por debajo y el calendario (291) sigue cabiendo igual.
 pub const WINDOW_HEIGHT: f32 = 480.0;
-/// Lado del icono de Dokka, Lucide a 20.
-pub const ICON_SIDE: f32 = 20.0;
+/// Lado del icono de Dokka (Lucide), igual que los de la derecha.
+pub const ICON_SIDE: f32 = 16.0;
 /// Tamaño del glifo: llena el lienzo de 100, fuente efectiva 20 a 20 de lado.
 pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Aire a la izquierda del icono y a la derecha del reloj.

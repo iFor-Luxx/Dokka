@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use dokka_scene::{Icon, IconImage, Overlay, Panel, Rect, Text, TextAlign};
-use dokka_theme::{menubar as bar_measures, menubar_tray as measures, typography};
+use dokka_theme::{menubar as bar_measures, menubar_tray as measures};
 
 use super::super::logic::TrayKind;
 use crate::Menubar;
@@ -83,6 +83,38 @@ impl Menubar {
             .collect()
     }
 
+    /// Recuadro claro tras el código del idioma, como una tecla. Siempre
+    /// existe: de tamaño cero sin idioma.
+    pub(crate) fn tray_language_box(&self, bar_width: f32) -> Panel {
+        let area = self
+            .tray_cells(bar_width)
+            .into_iter()
+            .find(|(kind, _)| *kind == TrayKind::Language)
+            .filter(|_| !self.language_code.is_empty())
+            .map(|(_, area)| area);
+        let bounds = area.map_or(
+            Rect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            },
+            |area| Rect {
+                x: area.x + (area.width - measures::LANG_BOX_WIDTH) / 2.0,
+                y: (bar_measures::HEIGHT - measures::LANG_BOX_HEIGHT) / 2.0,
+                width: measures::LANG_BOX_WIDTH,
+                height: measures::LANG_BOX_HEIGHT,
+            },
+        );
+        Panel {
+            bounds,
+            corner_radius: measures::LANG_BOX_RADIUS,
+            border_width: 0.0,
+            tint: self.theme.menubar.text,
+            border: self.theme.menubar.text,
+        }
+    }
+
     /// Código del idioma centrado en su hueco (como "ES").
     pub(crate) fn tray_language_text(&self, bar_width: f32) -> Option<Text> {
         if self.language_code.is_empty() {
@@ -96,9 +128,9 @@ impl Menubar {
             x: area.x + area.width / 2.0,
             center_y: bar_measures::HEIGHT / 2.0,
             content: self.language_code.clone(),
-            size: typography::MENU_SIZE,
-            is_bold: false,
-            color: self.theme.menubar.text,
+            size: measures::LANG_TEXT_SIZE,
+            is_bold: true,
+            color: self.theme.panel.text,
             align: TextAlign::Center,
         })
     }

@@ -8,7 +8,7 @@
 //! la cápsula activa). El icono de la barra usa la medida de la barra superior.
 
 use dokka_scene::{Color, Drawing, Shape};
-use dokka_theme::{control_center as measures, menubar};
+use dokka_theme::{control_center as measures, menubar_tray};
 
 const CENTER: f32 = 50.0;
 
@@ -26,11 +26,23 @@ fn glyph(icon: lucide_icons::Icon, size: f32, color: Color) -> Drawing {
 
 /// Icono de la barra superior: deslizadores Lucide en blanco, a 20.
 pub fn control_center_bar_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::SlidersHorizontal,
-        menubar::GLYPH_SIZE,
+    // Dos interruptores apilados, como en macOS: son dos glifos de Lucide.
+    let toggle = |icon: lucide_icons::Icon, y: f32| Shape::Glyph {
+        glyph: char::from(icon),
+        x: 50.0,
+        y,
+        size: menubar_tray::TOGGLE_GLYPH_SIZE,
         color,
-    )
+    };
+    Drawing {
+        shapes: vec![
+            toggle(lucide_icons::Icon::ToggleLeft, menubar_tray::TOGGLE_TOP_Y),
+            toggle(
+                lucide_icons::Icon::ToggleRight,
+                menubar_tray::TOGGLE_BOTTOM_Y,
+            ),
+        ],
+    }
 }
 
 /// Red wifi con conexión.
