@@ -26,6 +26,8 @@ pub struct DockPreferences {
     pub show_indicators: bool,
     /// El dock baja con una app a pantalla completa y queda la línea.
     pub auto_hide: bool,
+    /// Efecto genio al minimizar y restaurar hacia el dock.
+    pub genie: bool,
     /// Borde de la pantalla donde vive el dock.
     pub position: DockPosition,
 }
@@ -48,6 +50,7 @@ impl Default for DockPreferences {
             animate_launch: true,
             show_indicators: true,
             auto_hide: false,
+            genie: true,
             position: DockPosition::Bottom,
         }
     }

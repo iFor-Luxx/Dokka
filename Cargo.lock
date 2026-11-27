@@ -139,6 +139,7 @@ dependencies = [
  "dokka-win-audio-output",
  "dokka-win-composition",
  "dokka-win-control",
+ "dokka-win-genie",
  "dokka-win-media",
  "dokka-win-surface",
  "dokka-win-tracking",
@@ -199,6 +200,17 @@ dependencies = [
  "dokka-contracts",
  "dokka-model",
  "windows",
+]
+
+[[package]]
+name = "dokka-win-genie"
+version = "0.1.0"
+dependencies = [
+ "dokka-animation",
+ "dokka-model",
+ "windows",
+ "windows-core",
+ "windows-numerics",
 ]
 
 [[package]]

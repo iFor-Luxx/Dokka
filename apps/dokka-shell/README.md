@@ -60,7 +60,15 @@ incluso con error. Lo ajustado en Preferencias se guarda con `PreferencesFile`
 previas y barra, con `resize`; `set_taskbar_auto` guarda el modo y oculta o muestra
 la barra de Windows ya reutilizando `taskbar_mode.rs`; `load_preferences` lo recupera
 al arrancar antes de dibujar; sin previas no se abre ninguna y se cierra la abierta;
-un error al leer o guardar se registra y se sigue). `preview_safety` recupera la salida del panel con el
+un error al leer o guardar se registra y se sigue). `genie.rs` conecta el efecto
+genio (`dokka-win-genie`): tras sincronizar detecta minimizadas nuevas por
+comparacion, pide el hueco al dock (`minimized_slot` o la barrita si esta
+oculto) y lo pasa a pixeles de pantalla; el clic en la miniatura vuela al
+reves desde su foto y `Frame` restaura al llegar; restauraciones por fuera se
+cancelan. Apaga las transiciones propias al seguir ventanas y las devuelve al
+apagar la opcion, al cerrar (tambien con "Reiniciar") y al arrancar por si un
+cierre brusco las dejo apagadas. Si algo falla, minimizar y restaurar siguen
+como siempre. `preview_safety` recupera la salida del panel con el
 cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
 cierra el panel si otro primer plano llega por `Refresh` sin el cursor
 encima, sin quitarlo de debajo del cursor. `dock_fit.rs` pega la ventana

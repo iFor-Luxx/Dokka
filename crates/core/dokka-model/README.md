@@ -6,3 +6,4 @@
 
 También define las preferencias del usuario (`Preferences`) y un icono de la bandeja (`TrayItem`).
 El volumen trae además la salida activa (`AudioOutput`).
+`DockPreferences.genie` (fábrica `true`) enciende el efecto genio al minimizar.

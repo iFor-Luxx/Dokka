@@ -40,7 +40,14 @@ pub(crate) fn perform_click(
             if session.is_settings_window(window, surface) {
                 crate::settings::open_or_focus_settings(session, surface)?;
             } else {
-                session.control.activate(window)?;
+                let position = session.preferences.dock.position;
+                let used = {
+                    let (genie, dock, state) = (&mut session.genie, &session.dock, &session.state);
+                    genie.on_restore_click(dock, state.apps(), position, &*surface, window)
+                };
+                if !used {
+                    session.control.activate(window)?;
+                }
             }
         }
         DockAction::Launchpad => toggle_launchpad(session, surface)?,

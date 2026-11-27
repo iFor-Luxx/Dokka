@@ -120,7 +120,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         third_top,
         third_labels,
         &third_heights,
-        &[false; 3],
+        &[false; 4],
         width,
     );
     flats.push(panel);
@@ -139,7 +139,7 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         third_top,
         &third_heights,
         1,
-        shown.dock.show_indicators,
+        shown.dock.genie,
         width,
     ));
     flats.append(&mut switch_pieces(
@@ -147,6 +147,14 @@ pub(crate) fn dock_content(theme: &Theme, settings: &Settings) -> ContentScene {
         third_top,
         &third_heights,
         2,
+        shown.dock.show_indicators,
+        width,
+    ));
+    flats.append(&mut switch_pieces(
+        theme,
+        third_top,
+        &third_heights,
+        3,
         shown.dock.previews,
         width,
     ));
