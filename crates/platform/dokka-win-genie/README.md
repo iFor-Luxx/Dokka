@@ -18,5 +18,8 @@ dock oculto. Cada salida temprana escribe una línea `genio: ...` con el
 motivo; al empezar, apuntar, despegar y terminar también. Sin líneas por
 fotograma.
 
+La foto se toma con la gráfica (Desktop Duplication) en un hilo propio; si falla, con GDI como
+respaldo.
+
 A pantalla completa (vídeos, juegos) no hay genio y esas ventanas conservan la animación de
 Windows. El registro anota lo que tarda cada paso (`genio: tiempos`).

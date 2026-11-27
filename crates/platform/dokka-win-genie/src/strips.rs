@@ -46,6 +46,7 @@ use windows::core::{HSTRING, Interface, Result, h};
 use windows_numerics::{Matrix3x2, Vector2};
 
 use crate::GenieImage;
+use crate::capture_worker::CaptureWorker;
 use crate::geometry::Turn;
 use crate::overlay::flight_duration;
 
@@ -54,6 +55,7 @@ pub(crate) struct GenieCompositor {
     pub(crate) compositor: Compositor,
     graphics: CompositionGraphicsDevice,
     _d3d: ID3D11Device,
+    pub(crate) capture: CaptureWorker,
 }
 
 impl GenieCompositor {
@@ -100,6 +102,7 @@ impl GenieCompositor {
             compositor,
             graphics,
             _d3d: d3d,
+            capture: CaptureWorker::start(),
         })
     }
 

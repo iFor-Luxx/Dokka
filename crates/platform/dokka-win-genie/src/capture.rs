@@ -23,13 +23,12 @@
 
 //! Copia de pantalla con GDI y version reducida para restaurar.
 //!
-//! La copia cuesta decenas de milisegundos vaya el tamano que vaya, asi que
-//! quien llama la ejecuta en un hilo aparte y sigue mostrando la foto fija.
+//! Respaldo de la copia con la grafica (`duplication.rs`): cuesta decenas de
+//! milisegundos y corre en el hilo de copia.
 
 use std::ffi::c_void;
 use std::mem::size_of;
 
-use windows::Win32::Foundation::RECT;
 use windows::Win32::Graphics::Gdi::{
     BI_RGB, BITMAPINFO, BITMAPINFOHEADER, BitBlt, CAPTUREBLT, CreateCompatibleDC, CreateDIBSection,
     DIB_RGB_COLORS, DeleteDC, DeleteObject, GetDC, ReleaseDC, SRCCOPY, SelectObject,
@@ -106,11 +105,6 @@ pub(crate) fn capture_rect(rect: PixelRect) -> Option<GenieImage> {
         ReleaseDC(None, screen);
         image
     }
-}
-
-/// Captura con `RECT` de Windows. Envoltorio fino sobre `capture_rect`.
-pub(crate) fn capture_win(rect: RECT) -> Option<GenieImage> {
-    capture_rect(PixelRect::from_win(rect))
 }
 
 /// Promedia cada bloque de 2x2 pixeles en uno solo.
