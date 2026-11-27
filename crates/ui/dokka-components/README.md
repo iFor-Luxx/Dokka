@@ -35,7 +35,8 @@ idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),
 centro de control (`control_center_panel`: rejilla estricta de cuatro
 columnas de 66 con hueco de 12 (círculo 66, cápsula 144 × 66, música
-144 × 144, Sonido a todo lo ancho de 68): Red con dos círculos blancos,
+144 × 144 con la carátula real en píxeles cuando hay —marcador si no—,
+igual que `music_panel`, Sonido a todo lo ancho de 68): Red con dos círculos blancos,
 música de dos por dos, Preferencias con dos círculos, Sonido y cuatro
 círculos; fondo invisible sin cristal y piezas en cristal translúcido
 por zonas: `capsules`, `music`, `circles`, `slider`) y buscador Spotlight
