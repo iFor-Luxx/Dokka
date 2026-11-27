@@ -79,3 +79,6 @@ el margen habitual.
 **No hace:** no contiene lógica. Se cierra con Ctrl+C.
 
 Mientras la barra de Windows deba estar oculta, se vuelve a ocultar en cada aviso y cada segundo.
+
+Traer una ventana al frente pasa siempre por `window_activation.rs`, para que una minimizada
+salga con el genio desde la miniatura, el icono, la vista previa o el menú.

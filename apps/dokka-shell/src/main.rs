@@ -29,6 +29,7 @@ mod preview_safety;
 mod session_render;
 mod settings;
 mod taskbar_mode;
+mod window_activation;
 
 use std::error::Error;
 
