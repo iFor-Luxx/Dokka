@@ -2,8 +2,8 @@
 //! Estadio totalmente redondo con círculo interior, título y subtítulo.
 
 use dokka_model::NetworkKind;
-use dokka_scene::{Color, Rect};
-use dokka_theme::{Theme, tray_glass as glass};
+use dokka_scene::Rect;
+use dokka_theme::{Theme, control_center as measures};
 
 use super::ControlCenterProps;
 use super::icons::ControlCenterIcons;
@@ -27,56 +27,58 @@ pub(crate) fn add_capsules(
     pieces.tiles.push(tile(theme, prefs, prefs.height / 2.0));
     pieces.flats.push(flat(
         capsule_circle(network),
-        glass::CIRCLE / 2.0,
+        measures::CAPSULE_CIRCLE_SIDE / 2.0,
         circle_tint(theme, connected),
     ));
     pieces.flats.push(flat(
         capsule_circle(prefs),
-        glass::CIRCLE / 2.0,
+        measures::CAPSULE_CIRCLE_SIDE / 2.0,
         theme.tray.circle,
     ));
+    let network_middle = network.y + network.height / 2.0;
+    let prefs_middle = prefs.y + prefs.height / 2.0;
     pieces.texts.push(title(
         theme,
         capsule_text_x(network),
-        network.y + 23.0,
+        network_middle - measures::CAPSULE_TEXT_HALF,
         network_name(props),
     ));
     pieces.texts.push(subtitle(
         theme,
         capsule_text_x(network),
-        network.y + 41.0,
+        network_middle + measures::CAPSULE_TEXT_HALF,
         network_status(props),
     ));
     pieces.texts.push(title(
         theme,
         capsule_text_x(prefs),
-        prefs.y + 23.0,
+        prefs_middle - measures::CAPSULE_TEXT_HALF,
         String::from("Preferencias"),
     ));
     pieces.texts.push(subtitle(
         theme,
         capsule_text_x(prefs),
-        prefs.y + 41.0,
+        prefs_middle + measures::CAPSULE_TEXT_HALF,
         String::from("Dokka"),
     ));
     pieces.icons.push(picture(
         theme,
         icons.network_glyph(&props.network, connected),
         capsule_circle(network),
-        glass::CIRCLE_ICON,
+        measures::CIRCLE_ICON_SIDE,
     ));
     pieces.icons.push(picture(
         theme,
         &icons.preferences,
         capsule_circle(prefs),
-        glass::CIRCLE_ICON,
+        measures::CIRCLE_ICON_SIDE,
     ));
 }
 
-/// Tinte del círculo de la cápsula: blanco con icono azul si hay red.
-fn circle_tint(theme: &Theme, connected: bool) -> Color {
+/// Tinte del círculo de la cápsula: blanco si hay red, cristal apagado si no.
+fn circle_tint(theme: &Theme, connected: bool) -> dokka_scene::Color {
     if connected {
-        theme.tray.circle_active
+        theme.tray.fill
     } else {
         theme.tray.circle
     }
