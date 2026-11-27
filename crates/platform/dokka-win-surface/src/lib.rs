@@ -12,6 +12,7 @@ mod menubar_focus;
 mod menubar_loop;
 mod menubar_window;
 mod place_window;
+mod preview_cursor;
 mod preview_window;
 mod read_pointer;
 mod run_loop;

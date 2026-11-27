@@ -12,6 +12,7 @@ mod perform_click;
 mod pinned_apps;
 mod preview_actions;
 mod preview_large;
+mod preview_safety;
 mod session_render;
 mod settings;
 mod taskbar_mode;

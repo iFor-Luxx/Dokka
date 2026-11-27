@@ -94,6 +94,8 @@ pub enum SurfaceEvent {
     Refresh,
     /// Pasó un segundo.
     Tick,
+    /// El cursor debe seguir sobre el panel abierto o pendiente.
+    CursorCheck,
     /// Nuevo fotograma de una animación en curso.
     Frame {
         seconds: f32,

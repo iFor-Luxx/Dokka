@@ -17,10 +17,10 @@ pub fn light() -> Theme {
             running_dot: palette::white(220),
         },
         menubar: MenubarColors {
-            background: palette::white(40),
-            border: palette::white(96),
-            text: palette::INK,
-            hover: palette::SETTINGS_HOVER,
+            background: palette::MENUBAR_VEIL,
+            border: palette::MENUBAR_VEIL,
+            text: palette::white(255),
+            hover: palette::white(45),
         },
         panel: PanelColors {
             background: palette::MIST,
