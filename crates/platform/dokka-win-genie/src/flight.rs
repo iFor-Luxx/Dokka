@@ -44,7 +44,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::GenieImage;
-use crate::capture::{capture_win, halved};
+use crate::capture::halved;
 use crate::geometry::{GenieEdge, PixelRect, Turn, to_local};
 use crate::overlay::{create_overlay, destroy, show_no_activate};
 use crate::phase::{Captured, Phase};
@@ -173,30 +173,28 @@ impl Flight {
             );
             registered
         };
-        let visible_win = visible.to_win();
         let (sender, shot) = channel();
-        let built = std::thread::Builder::new()
-            .name("dokka-genie-capture".into())
-            .spawn(move || {
-                let _permit = _permit;
-                let started = Instant::now();
-                let copied = capture_win(visible_win);
-                let copy = started.elapsed().as_millis();
-                let shot = copied.map(|image| {
-                    let image = turn.turn_image(image);
-                    Captured {
-                        restore: halved(&image),
-                        image,
-                    }
-                });
-                eprintln!(
-                    "genio: tiempos {hwnd}: foto {copy} ms, preparar imagen {} ms",
-                    started.elapsed().as_millis() - copy
-                );
-                let _ = sender.send(shot);
+        let queued = gfx.capture.run(move |capturer| {
+            let _permit = _permit;
+            let started = Instant::now();
+            let copied = capturer.capture(visible);
+            let copy = started.elapsed().as_millis();
+            let method = copied.as_ref().map_or("ninguna", |(_, method)| method);
+            let shot = copied.map(|(image, _)| {
+                let image = turn.turn_image(image);
+                Captured {
+                    restore: halved(&image),
+                    image,
+                }
             });
-        if built.is_err() {
-            eprintln!("genio: sin vuelo para {hwnd}: no se lanzo el hilo de copia");
+            eprintln!(
+                "genio: tiempos {hwnd}: foto ({method}) {copy} ms, preparar imagen {} ms",
+                started.elapsed().as_millis() - copy
+            );
+            let _ = sender.send(shot);
+        });
+        if !queued {
+            eprintln!("genio: sin vuelo para {hwnd}: no esta el hilo de copia");
             // SAFETY: recursos creados para este vuelo fallido.
             unsafe {
                 let _ = DwmUnregisterThumbnail(thumbnail);

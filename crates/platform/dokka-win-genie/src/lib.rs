@@ -7,9 +7,11 @@
 
 mod advance;
 mod capture;
+mod capture_worker;
 mod director;
 mod director_advance;
 mod director_support;
+mod duplication;
 mod flight;
 mod flight_restore;
 mod fullscreen;
