@@ -20,9 +20,17 @@ impl DockSession {
             self.taskbar_hidden || (self.preferences.dock.auto_hide && self.dock.is_occluded());
         self.fit_to_work_area(surface, position, over_taskbar);
         let size = self.dock.surface_size(self.state.apps());
-        let margin = match position {
-            dokka_model::DockPosition::Bottom => DOCK_BOTTOM_MARGIN,
-            _ => DOCK_EDGE_MARGIN,
+        // Con una app ocupando y auto-ocultado, la ventana toca el borde
+        // (margen 0): el píxel 0 sigue dentro de la ventana durante toda
+        // la subida y el cursor no se pierde en el hueco. Sin oclusión,
+        // el margen habitual para despegar el dock del borde.
+        let margin = if self.preferences.dock.auto_hide && self.dock.is_occluded() {
+            0.0
+        } else {
+            match position {
+                dokka_model::DockPosition::Bottom => DOCK_BOTTOM_MARGIN,
+                _ => DOCK_EDGE_MARGIN,
+            }
         };
         let placed = surface.resize(SurfaceOptions {
             width: size.width,

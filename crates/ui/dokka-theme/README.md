@@ -50,8 +50,10 @@
   con icono de 28, resaltado redondeado concéntrico y "Sin resultados"); `launchpad.rs` para la cuadrícula proporcional a la pantalla, la
   baldosa de los iconos, la casilla de búsqueda (lupa a la izquierda, cursor y marcador
   tenue), el mensaje de vacío, el aro del punto actual, los tiempos de las páginas y del zoom y su
-  desenfoque máximo (`ZOOM_BLUR_MAX`); `dock.rs`: margen al borde (8 como abajo),
-línea de 140 × 5 a 6 del borde con toque de 180 × 28, espera de 0,4 s
+  desenfoque máximo (`ZOOM_BLUR_MAX`); `dock.rs`: margen al borde (8 como abajo;
+  0 con auto-ocultado y una app ocupando para que el píxel 0 siga dentro),
+línea de 220 × 7 a 10 del borde con toque de 320 × 24 desde el borde
+y banda de retorno del borde a la barra, espera de 0,4 s
 y deslizamiento de 0,25/0,18 s;
 `popup.rs`: reserva 420 sobre el dock, animación de paneles,
   píldora del calendario de 64 × 28 y glifos de la música y los botones de cerrar/fijar, a 20;

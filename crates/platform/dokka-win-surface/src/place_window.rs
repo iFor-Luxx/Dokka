@@ -14,8 +14,10 @@ use crate::SurfaceOptions;
 
 const BASE_DPI: f32 = 96.0;
 /// Zona de toque de la línea al esconderse, en unidades lógicas.
-/// Como el tema: más generosa que la línea y pegada al borde.
-const HIDE_TOUCH: f32 = 28.0;
+/// Como el tema (`HOME_LINE_TOUCH_THICKNESS`): la ventana deja justo
+/// esa tira al borde para que el píxel 0 siga dentro de ella.
+/// `platform` no puede usar `ui`, así que va duplicada a mano.
+const HIDE_TOUCH: f32 = 24.0;
 
 /// Coloca la ventana en el monitor principal y devuelve la escala usada.
 /// Abajo queda centrada como hoy; en laterales centrada en vertical

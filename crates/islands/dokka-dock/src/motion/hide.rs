@@ -84,6 +84,13 @@ impl Hide {
         self.enabled && self.occluded && self.progress >= 0.999
     }
 
+    /// `true` mientras vuelve con una app ocupando: el cursor ya está
+    /// dentro pero aún no llegó del todo. La zona activa debe seguirlo
+    /// con la banda del borde a la barra hasta posarse en ella.
+    pub(crate) fn is_returning(&self) -> bool {
+        self.enabled && self.occluded && (self.cursor_inside || self.busy) && self.progress > 0.001
+    }
+
     pub(crate) fn is_animating(&self) -> bool {
         if !self.enabled {
             return false;

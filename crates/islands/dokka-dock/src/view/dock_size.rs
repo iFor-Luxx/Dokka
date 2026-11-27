@@ -3,7 +3,9 @@ use dokka_scene::{Rect, Size};
 
 use super::dock_style as style;
 use crate::Dock;
-use crate::logic::{home_touch, is_vertical, list_entries, place_dock, position_or_bottom};
+use crate::logic::{
+    home_touch, is_vertical, list_entries, place_dock, position_or_bottom, return_band,
+};
 
 impl Dock {
     /// Tamaño de la ventana: barra, espacio para crecer y sitio para paneles.
@@ -28,12 +30,18 @@ impl Dock {
     /// Parte del dock que se ve y recibe el mouse. El resto deja pasar los clics:
     /// solo la barra más lo que crece con la lupa, sin el margen del submenú.
     /// Escondido es solo la zona de toque de la línea, pegada al borde.
+    /// Mientras vuelve con una app ocupando es la banda del borde a la
+    /// barra, para no perder el cursor a medio deslizamiento.
     /// Con una app ocupando, la zona visible se alarga hasta el borde para
     /// que el cursor suba desde la línea sin salirse.
     pub fn active_area(&self, apps: &[DockApp]) -> Rect {
         if self.hide.is_hidden() {
             let size = self.surface_size(apps);
             return home_touch(size, position_or_bottom(self));
+        }
+        if self.hide.is_returning() {
+            let size = self.surface_size(apps);
+            return return_band(size, position_or_bottom(self));
         }
         let bar = self.visible_area(apps);
         if self.hide.is_occluded() && self.preferences.auto_hide {
