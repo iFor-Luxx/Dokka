@@ -21,6 +21,9 @@ círculo rojo, amarillo o verde —gris sin foco— y su símbolo Lucide oscuro 
 pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
-`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna).
+`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna)
+y centro de control (`control_center_panel`: tamaño fijo, `Overlay` con tarjetas planas de red,
+volumen con su deslizador mínimo y música, fila de botones redondos, iconos oscuros ya
+construidos con el tema más el blanco de la barra, y zona pulsada con el valor del deslizador).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.
