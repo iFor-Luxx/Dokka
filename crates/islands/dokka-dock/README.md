@@ -21,6 +21,10 @@ y se reutilizan. `set_preferences(DockPreferences)` aplica la escala de iconos
 desde `view/dock_style.rs`, sin medidas nuevas fuera del tema), apaga la lupa
 (`magnification`) y cuánto amplía (`magnification_strength`: efectiva
 1 + (MAX-1) * fuerza); con valores de fábrica el resultado es el de hoy.
+Sin rebote (`animate_launch`) no se guardan saltos nuevos y se olvidan los
+en curso para que el icono vuelva a su sitio sin pedir fotogramas
+(el hueco sobre la barra se mantiene). Sin indicadores (`show_indicators`)
+la lista de puntos queda vacía.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Todavía no tiene miniaturas ni arrastre.
 
