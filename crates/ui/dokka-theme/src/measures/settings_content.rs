@@ -22,8 +22,6 @@ pub const CONTENT_SLIDER_ROW_HEIGHT: f32 = 56.0;
 pub const CONTENT_PADDING: f32 = 16.0;
 /// Tamaño del texto de cada fila de ajustes.
 pub const CONTENT_LABEL_SIZE: f32 = 13.0;
-/// Tamaño del texto atenuado (fila con el control apagado).
-pub const CONTENT_DIM_SIZE: f32 = 13.0;
 /// Ancho del interruptor Tahoe.
 pub const SWITCH_WIDTH: f32 = 40.0;
 /// Alto del interruptor Tahoe.

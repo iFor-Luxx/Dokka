@@ -25,7 +25,7 @@
 //! embudo. El compositor mueve las tiras en su propio hilo a la tasa del
 //! monitor; el hilo de interfaz solo avanza el estado y pide restaurar.
 
-use dokka_animation::{GENIE_MAX_STRIPS, GENIE_OVERLAP_ROWS, GENIE_STRIP_ROWS, Genie};
+use dokka_animation::{GENIE_OVERLAP_ROWS, Genie, strip_count};
 use windows::Foundation::Size;
 use windows::Graphics::DirectX::{DirectXAlphaMode, DirectXPixelFormat};
 use windows::UI::Composition::{
@@ -145,7 +145,7 @@ pub(crate) fn cut(
     window_height: u32,
 ) -> Result<Vec<Piece>> {
     let surface = gfx.image_surface(image)?;
-    let count = (window_height / GENIE_STRIP_ROWS).clamp(1, GENIE_MAX_STRIPS);
+    let count = strip_count(window_height);
     let exact = image.height == window_height;
     let row = |index: u32| {
         let row = index as f32 * image.height as f32 / count as f32;

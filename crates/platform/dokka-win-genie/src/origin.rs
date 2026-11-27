@@ -35,8 +35,7 @@ use windows::Win32::Graphics::Gdi::{
 };
 use windows::Win32::UI::WindowsAndMessaging::{
     GWL_STYLE, GetSystemMetrics, GetWindowLongW, GetWindowPlacement, GetWindowRect, IsIconic,
-    IsZoomed, SM_CXPADDEDBORDER, SM_CXSIZEFRAME, WINDOWPLACEMENT, WPF_RESTORETOMAXIMIZED,
-    WS_THICKFRAME,
+    SM_CXPADDEDBORDER, SM_CXSIZEFRAME, WINDOWPLACEMENT, WPF_RESTORETOMAXIMIZED, WS_THICKFRAME,
 };
 
 use crate::geometry::PixelRect;
@@ -194,10 +193,4 @@ pub fn rect_before_minimize(
 pub fn is_iconic_now(hwnd: isize) -> bool {
     // SAFETY: consulta de solo lectura; un handle destruido dice que no.
     unsafe { IsIconic(HWND(hwnd as *mut core::ffi::c_void)).as_bool() }
-}
-
-/// `true` si la ventana está maximizada ahora mismo.
-pub fn is_maximized_now(hwnd: isize) -> bool {
-    // SAFETY: consulta de solo lectura.
-    unsafe { IsZoomed(HWND(hwnd as *mut core::ffi::c_void)).as_bool() }
 }

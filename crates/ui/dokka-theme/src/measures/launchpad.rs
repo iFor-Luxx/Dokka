@@ -55,8 +55,6 @@ pub const SEARCH_GLYPH_SIZE: f32 = 100.0;
 pub const SEARCH_ICON_INSET: f32 = 14.0;
 /// Texto que se muestra cuando no se ha escrito nada.
 pub const SEARCH_PLACEHOLDER: &str = "Buscar";
-/// Mitad del ancho aproximado de "Buscar" a su tamaño nuevo: centra el grupo de lupa y texto.
-pub const SEARCH_PLACEHOLDER_HALF_WIDTH: f32 = 24.0;
 /// Aire entre la lupa y el texto de la casilla.
 pub const SEARCH_MAGNIFIER_GAP: f32 = 10.0;
 /// Distancia del borde izquierdo al texto escrito: lupa más aire a ambos lados.

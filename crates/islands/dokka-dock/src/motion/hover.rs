@@ -60,10 +60,6 @@ impl Dock {
         self.hide.set_busy(busy);
     }
 
-    pub fn hide_progress(&self) -> f32 {
-        self.hide.progress()
-    }
-
     pub fn hide_eased(&self) -> f32 {
         self.hide.eased()
     }

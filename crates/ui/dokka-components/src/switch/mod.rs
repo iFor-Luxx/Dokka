@@ -7,4 +7,4 @@ mod props;
 mod view;
 
 pub use props::SwitchProps;
-pub use view::{switch_hit, switch_knob_bounds, switch_panels, switch_touch};
+pub use view::{switch_knob_bounds, switch_panels, switch_touch};

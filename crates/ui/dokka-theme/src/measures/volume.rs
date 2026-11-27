@@ -46,9 +46,6 @@ pub const HIGHLIGHT_RADIUS: f32 = tray_glass::HIGHLIGHT_RADIUS;
 
 /// Tamaño del glifo Lucide del altavoz: llena el lienzo de 100.
 pub const SPEAKER_GLYPH_SIZE: f32 = DRAWING_SIDE;
-/// Tamaño del glifo Lucide del botón de silencio anterior: se conserva
-/// para no romper usos externos; el panel Tahoe usa el altavoz en su fila.
-pub const MUTE_GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Tamaño del glifo Lucide del chevrón de ajustes.
 pub const SETTINGS_GLYPH_SIZE: f32 = DRAWING_SIDE;
 

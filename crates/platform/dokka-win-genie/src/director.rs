@@ -94,10 +94,6 @@ impl GenieDirector {
         }
     }
 
-    pub fn is_enabled(&self) -> bool {
-        self.enabled
-    }
-
     /// `true` mientras hay un vuelo dibujandose.
     pub fn is_flying(&self) -> bool {
         self.flight.is_some()

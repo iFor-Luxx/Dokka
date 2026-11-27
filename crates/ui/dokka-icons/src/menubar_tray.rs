@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use dokka_scene::{Color, DRAWING_SIDE, Drawing, Shape};
+use dokka_scene::{Color, Drawing, Shape};
 use dokka_theme::{Theme, menubar_tray as measures};
 
 fn glyph(icon: lucide_icons::Icon, color: Color) -> Drawing {
@@ -43,6 +43,3 @@ impl TrayIcons {
         }
     }
 }
-
-/// Lado efectivo del lienzo Lucide (para medidas que lo necesiten).
-pub const TRAY_GLYPH_SIDE: f32 = DRAWING_SIDE;

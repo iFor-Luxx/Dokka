@@ -146,12 +146,6 @@ impl Menubar {
         self.today = (year, month, day);
     }
 
-    /// Código corto del idioma ("ES"): el shell lo rellena con
-    /// `KeyboardLanguage.code` cada pocos `Tick`.
-    pub fn set_language_code(&mut self, code: String) {
-        self.language_code = code;
-    }
-
     pub fn app_name(&self) -> &str {
         &self.app_name
     }
@@ -174,10 +168,6 @@ impl Menubar {
 
     pub fn tray_kind(&self) -> Option<TrayKind> {
         self.tray.map(|open| open.kind)
-    }
-
-    pub fn is_icon_hovered(&self) -> bool {
-        self.icon_hovered
     }
 
     pub(crate) fn calendar_month_offset(&self) -> i32 {

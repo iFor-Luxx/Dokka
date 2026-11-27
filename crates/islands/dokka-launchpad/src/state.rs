@@ -121,15 +121,6 @@ impl Launchpad {
         drawing
     }
 
-    /// Baldosas uniformes para el redibujado, calculadas una sola vez por app.
-    pub fn tiled_images(
-        &mut self,
-        images: &HashMap<AppId, Arc<Bitmap>>,
-        theme: &Theme,
-    ) -> HashMap<AppId, Arc<Bitmap>> {
-        self.tiles.tiled(&self.apps, images, theme)
-    }
-
     /// Baldosas solo para estas apps (la página visible), sin podar el resto.
     pub fn tiled_images_for(
         &mut self,
