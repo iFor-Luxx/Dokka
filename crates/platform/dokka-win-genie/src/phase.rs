@@ -21,21 +21,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Fases del vuelo: tiras quietas, volando y reposo.
+//! Fases del vuelo: foto fija esperando la copia, tiras volando y reposo.
 
+use std::sync::mpsc::Receiver;
 use std::time::Instant;
 
 use windows::UI::Composition::CompositionPropertySet;
 
-use crate::strips::Piece;
+use crate::GenieImage;
+
+/// Copia de pantalla y su versión reducida para volver.
+pub(crate) struct Captured {
+    pub(crate) image: GenieImage,
+    pub(crate) restore: GenieImage,
+}
 
 pub(crate) enum Phase {
-    /// Las tiras tapan el sitio de la ventana mientras llega el hueco.
-    Waiting { pieces: Vec<Piece>, frames: u32 },
+    /// La miniatura fija está en pantalla mientras un hilo copia la pantalla.
+    Standing {
+        thumbnail: isize,
+        frames: u32,
+        shot: Receiver<Option<Captured>>,
+        started: Instant,
+    },
     Flying {
         start: Instant,
         /// Se guarda: las tiras lo leen en sus animaciones.
         _drive: CompositionPropertySet,
+        /// La foto fija de un minimizar y los fotogramas que lleva sobre las tiras.
+        stand_in: Option<(isize, u32)>,
     },
     /// Un restaurar llegó a tamaño completo y espera a la ventana real.
     Settling { until: Instant },

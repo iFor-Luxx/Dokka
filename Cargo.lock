@@ -208,7 +208,6 @@ version = "0.1.0"
 dependencies = [
  "dokka-animation",
  "dokka-model",
- "dokka-win-thumbnail",
  "windows",
  "windows-core",
  "windows-numerics",
@@ -237,15 +236,6 @@ name = "dokka-win-text"
 version = "0.1.0"
 dependencies = [
  "windows",
-]
-
-[[package]]
-name = "dokka-win-thumbnail"
-version = "0.1.0"
-dependencies = [
- "windows",
- "windows-core",
- "windows-numerics",
 ]
 
 [[package]]

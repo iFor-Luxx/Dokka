@@ -63,6 +63,10 @@ pub const GENIE_MAX_STRIPS: u32 = 400;
 pub const GENIE_OVERLAP_ROWS: f32 = 1.0;
 /// Fotogramas que se espera el hueco antes de rendirse.
 pub const GENIE_AIM_FRAMES: u32 = 2;
+/// Fotogramas que conviven la foto fija y las tiras antes de soltar la foto.
+pub const GENIE_HANDOVER_FRAMES: u32 = 2;
+/// Se abandona una copia de pantalla que tarda mas que esto.
+pub const GENIE_CAPTURE_TIMEOUT_SECONDS: f32 = 0.75;
 /// Se abandona un vuelo que tarda mas que esto.
 pub const GENIE_FLIGHT_TIMEOUT_SECONDS: f32 = 2.0;
 

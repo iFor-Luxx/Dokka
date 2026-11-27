@@ -21,24 +21,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! De dónde salió una ventana minimizada, para volar de vuelta. La imagen no se
-//! guarda: Windows la conserva viva.
+//! Foto reducida de una ventana minimizada para volar de vuelta.
+//!
+//! A mitad de resolucion en cada eje: un cuarto de memoria, y la suavidad no
+//! se nota en medio segundo de vuelo.
 
+use crate::GenieImage;
 use crate::geometry::{GenieEdge, PixelRect};
 
-#[derive(Debug, Clone, Copy)]
-pub(crate) struct Departure {
-    /// La ventana entera, con sus bordes invisibles.
-    pub(crate) whole: PixelRect,
-    /// Lo que se veía en pantalla: lo que vuela.
-    pub(crate) visible: PixelRect,
-    /// Borde del dock de entonces.
+/// Lo que parecia una ventana minimizada, para restaurarla con genio.
+#[derive(Debug, Clone)]
+pub(crate) struct Snapshot {
+    /// Girada segun el borde del dock de entonces.
+    pub(crate) image: GenieImage,
+    /// Donde estaba la ventana, en pixeles de pantalla.
+    pub(crate) window: PixelRect,
     pub(crate) edge: GenieEdge,
 }
 
-impl Departure {
+impl Snapshot {
+    /// La copia reducida ya viene a mitad de resolución del hilo de captura:
+    /// se guarda tal cual para volar de vuelta.
+    pub(crate) fn from_capture(image: GenieImage, window: PixelRect, edge: GenieEdge) -> Self {
+        Self {
+            image,
+            window,
+            edge,
+        }
+    }
+
     /// Ancho entre alto en pantalla.
     pub(crate) fn aspect(&self) -> f32 {
-        self.visible.width() as f32 / self.visible.height().max(1) as f32
+        self.window.width() as f32 / self.window.height().max(1) as f32
     }
 }
