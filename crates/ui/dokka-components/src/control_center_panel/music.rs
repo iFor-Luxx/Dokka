@@ -1,7 +1,12 @@
 //! Tarjeta de música: dos columnas por dos filas con carátula, título,
 //! artista y controles grandes de anterior, pausa y siguiente.
+//! La carátula es un icono con píxeles cuando hay foto; sin ella, un
+//! marcador transparente sobre el plano de detrás. Siempre hay icono,
+//! con o sin imagen: la cantidad de elementos no cambia.
 
-use dokka_scene::Rect;
+use std::sync::Arc;
+
+use dokka_scene::{Bitmap, Icon, IconImage, Rect};
 use dokka_theme::{Theme, control_center as measures, tray_glass as glass};
 
 use super::ControlCenterProps;
@@ -18,12 +23,14 @@ pub(crate) fn add_music(
     icons: &ControlCenterIcons,
 ) {
     let card = music_tile(bounds);
+    let art = music_art(card);
     pieces.tiles.push(tile(theme, card, glass::TILE_RADIUS));
-    pieces.flats.push(flat(
-        music_art(card),
-        measures::ART_RADIUS,
-        theme.tray.circle,
-    ));
+    pieces
+        .flats
+        .push(flat(art, measures::ART_RADIUS, theme.tray.circle));
+    pieces
+        .icons
+        .push(artwork_icon(theme, art, props.artwork.as_ref()));
     pieces.texts.push(title(
         theme,
         card.x + measures::PADDING,
@@ -66,4 +73,18 @@ fn music_title(props: &ControlCenterProps) -> String {
 
 fn music_artist(props: &ControlCenterProps) -> String {
     shorten(&props.now_playing.artist)
+}
+
+/// La foto en el sitio del cuadro; sin foto, un marcador transparente
+/// sobre el plano redondeado de detrás. Siempre hay icono, con o sin
+/// imagen: la plataforma solo reconstruye la capa al pasar de una a otra.
+fn artwork_icon(theme: &Theme, art: Rect, artwork: Option<&Arc<Bitmap>>) -> Icon {
+    Icon {
+        x: art.x,
+        y: art.y,
+        side: art.width,
+        image: artwork.map(|bitmap| IconImage::Pixels(Arc::clone(bitmap))),
+        placeholder: theme.tray.clear,
+        placeholder_radius: 0.0,
+    }
 }

@@ -1,13 +1,18 @@
 //! Lo que muestra el Centro de control, sin saber de dónde sale.
 
-use dokka_model::{NetworkState, NowPlayingInfo, VolumeState};
+use std::sync::Arc;
 
-/// Estado que pinta el panel: red, volumen y reproducción en curso.
+use dokka_model::{NetworkState, NowPlayingInfo, VolumeState};
+use dokka_scene::Bitmap;
+
+/// Estado que pinta el panel: red, volumen, reproducción en curso y carátula.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ControlCenterProps {
     pub network: NetworkState,
     pub volume: VolumeState,
     pub now_playing: NowPlayingInfo,
+    /// Carátula real; sin ella la tarjeta muestra su marcador.
+    pub artwork: Option<Arc<Bitmap>>,
 }
 
 /// Zona pulsable del panel.

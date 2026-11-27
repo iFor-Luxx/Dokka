@@ -1,4 +1,4 @@
-//! Centro de control: combina red, volumen y música con sus botones.
+//! Centro de control: combina red, volumen y música con sus botones y carátula.
 
 use dokka_components::control_center_panel::{
     ControlCenterHit, ControlCenterProps, control_center_hit, control_center_panel,
@@ -27,6 +27,7 @@ impl Menubar {
             network: self.network.clone(),
             volume: self.volume,
             now_playing: self.now_playing.clone(),
+            artwork: self.artwork(),
         }
     }
 
