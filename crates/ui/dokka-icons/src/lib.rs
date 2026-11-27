@@ -13,6 +13,7 @@ mod tile_paint;
 mod tile_pixels;
 mod tile_square;
 mod trash;
+mod volume;
 
 pub use app_tile::app_tile;
 
@@ -30,5 +31,9 @@ pub use lucide::{
     traffic_zoom_icon,
 };
 pub use trash::trash_icon;
+pub use volume::{
+    volume_high_icon, volume_low_icon, volume_mute_icon, volume_muted_icon, volume_off_icon,
+    volume_settings_icon,
+};
 
 pub use lucide_icons::LUCIDE_FONT_BYTES;

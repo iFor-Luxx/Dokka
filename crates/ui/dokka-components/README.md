@@ -21,6 +21,11 @@ círculo rojo, amarillo o verde —gris sin foco— y su símbolo Lucide oscuro 
 pasar el cursor, y botón bajo un punto)
 y filas de la barra de Preferencias (`settings_list`: fondo translúcido, casilla, cuadrados de color
 con glifo blanco, nombres, selección azul, hover suave, fila bajo un punto y variantes
-`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna).
+`filtered_*` que listan seguidas las coincidentes con "Sin resultados" si no hay ninguna),
+deslizador (`slider`: barra gris con relleno azul si responde o gris si está atenuado
+y tirador blanco, con planos, punto y valor bajo un punto; sin saber qué ajusta)
+y panel de volumen (`volume_panel`: título "Sonido", deslizador con altavoz según
+nivel y silencio, botón de silencio, separador y fila "Configuración de sonido…",
+con su icono blanco para la barra).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.
