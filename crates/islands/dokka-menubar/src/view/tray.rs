@@ -55,25 +55,26 @@ impl Menubar {
         ]
     }
 
-    /// Hovers planos de la fila, uno por icono. Siempre 6 (cero si no se ve).
+    /// Hovers en cápsula de la fila, uno por icono. Siempre 6 (cero si no se ve).
     pub(crate) fn tray_hover_panels(&self, bar_width: f32) -> Vec<Panel> {
         self.tray_cells(bar_width)
             .into_iter()
             .map(|(kind, _)| {
                 let open = self.tray_kind() == Some(kind);
                 let visible = self.tray_hovered == Some(kind) || open;
+                let bounds = if visible {
+                    self.tray_hover_bounds(kind, bar_width)
+                } else {
+                    Rect {
+                        x: 0.0,
+                        y: 0.0,
+                        width: 0.0,
+                        height: 0.0,
+                    }
+                };
                 Panel {
-                    bounds: if visible {
-                        self.tray_hover_bounds(kind, bar_width)
-                    } else {
-                        Rect {
-                            x: 0.0,
-                            y: 0.0,
-                            width: 0.0,
-                            height: 0.0,
-                        }
-                    },
-                    corner_radius: measures::HOVER_RADIUS,
+                    bounds,
+                    corner_radius: capsule_radius(bounds),
                     border_width: 0.0,
                     tint: self.theme.menubar.hover,
                     border: self.theme.menubar.hover,
@@ -114,4 +115,13 @@ impl Menubar {
             TrayKind::ControlCenter => self.control_overlay(),
         })
     }
+}
+
+/// Cápsula translúcida como en Tahoe: extremos totalmente redondos.
+/// Con tamaño cero, el radio es cero para no superar la mitad del lado.
+fn capsule_radius(bounds: Rect) -> f32 {
+    if bounds.width <= 0.0 || bounds.height <= 0.0 {
+        return 0.0;
+    }
+    (bounds.width / 2.0).min(bounds.height / 2.0)
 }

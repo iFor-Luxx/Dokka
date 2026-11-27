@@ -27,9 +27,10 @@ con "…", controles grandes de anterior, pausa/reproducir y siguiente con los g
 en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
 canción entrega los mismos textos e iconos),
 panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
-botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
-tarjeta de estado con nombre, tipo e internet y fila de ajustes), lista de
-idiomas (`language_panel`: marca del activo, resaltado de fila y ajustes),
+botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
+idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
+"Activa", resaltado suave y ajustes aparte, sin marca),
 centro de control (`control_center_panel`: tarjetas de red, volumen con
 deslizador y música más botones redondos, sin resaltar) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de

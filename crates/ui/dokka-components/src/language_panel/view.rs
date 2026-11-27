@@ -1,5 +1,7 @@
-use dokka_scene::{Divider, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
-use dokka_theme::{Theme, network_language as measures, typography};
+use std::sync::Arc;
+
+use dokka_scene::{Dot, Icon, IconImage, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_theme::{Theme, network_language as measures};
 
 use super::{LanguageEntry, LanguageHit, LanguageIcons};
 
@@ -11,7 +13,9 @@ pub fn language_size(languages: &[LanguageEntry]) -> Size {
     }
 }
 
-/// Panel con la lista de idiomas y la fila de ajustes.
+/// Menú Tahoe: título, una cápsula por idioma con círculo y ajustes aparte.
+/// El `panel` es invisible; cada pieza va en `tiles` con cristal ahumado.
+/// Sin marca de verificación: el círculo activo ya indica el idioma en uso.
 pub fn language_panel(
     theme: &Theme,
     icons: &LanguageIcons,
@@ -19,59 +23,127 @@ pub fn language_panel(
     languages: &[LanguageEntry],
     highlighted: Option<LanguageHit>,
 ) -> Overlay {
-    let label_x = bounds.x + measures::PADDING + measures::TEXT_INSET + measures::CHECK_WIDTH;
-    let mut texts = Vec::with_capacity(languages.len() + 1);
+    let title = title_tile(bounds);
+    let mut tiles = Vec::with_capacity(languages.len() + 2);
+    tiles.push(glass(theme, title, measures::TILE_RADIUS));
+    for index in 0..languages.len() {
+        let row = row_tile(bounds, index);
+        tiles.push(glass(theme, row, row.height / 2.0));
+    }
+    let settings = settings_tile(bounds, languages.len());
+    tiles.push(glass(theme, settings, measures::TILE_RADIUS));
+
+    let mut dots = Vec::with_capacity(languages.len() + 1);
     for (index, language) in languages.iter().enumerate() {
-        let is_highlighted = highlighted == Some(LanguageHit::Language(language.id));
-        texts.push(Text {
-            x: label_x,
-            center_y: row_top(bounds, index) + measures::ROW_HEIGHT / 2.0,
-            content: short(&language.name),
-            size: typography::MENU_SIZE,
-            is_bold: false,
-            color: if is_highlighted {
-                theme.menu.highlighted_text
+        let circle = circle_in(row_tile(bounds, index));
+        dots.push(Dot {
+            x: circle.x,
+            y: circle.y,
+            diameter: circle.width,
+            color: if language.is_active {
+                theme.tray.circle_active
             } else {
-                theme.menu.text
+                theme.tray.circle
             },
+        });
+    }
+    let settings_circle = circle_in(settings);
+    dots.push(Dot {
+        x: settings_circle.x,
+        y: settings_circle.y,
+        diameter: settings_circle.width,
+        color: theme.tray.circle,
+    });
+
+    let mut texts = Vec::with_capacity(languages.len() * 2 + 2);
+    texts.push(Text {
+        x: title.x + measures::PADDING,
+        center_y: title.y + title.height / 2.0,
+        content: measures::LANGUAGE_TITLE.to_owned(),
+        size: measures::TITLE_SIZE,
+        is_bold: true,
+        color: theme.tray.text,
+        align: TextAlign::Left,
+    });
+    for (index, language) in languages.iter().enumerate() {
+        let row = row_tile(bounds, index);
+        let text_x = row.x + measures::PADDING + measures::CIRCLE + measures::ICON_GAP;
+        texts.push(Text {
+            x: text_x,
+            center_y: row.y + row.height / 2.0 - 11.0,
+            content: short(&language.name),
+            size: measures::TITLE_SIZE,
+            is_bold: true,
+            color: theme.tray.text,
+            align: TextAlign::Left,
+        });
+        texts.push(Text {
+            x: text_x,
+            center_y: row.y + row.height / 2.0 + 11.0,
+            content: active_subtitle(language),
+            size: measures::SUBTITLE_SIZE,
+            is_bold: false,
+            color: theme.tray.secondary,
             align: TextAlign::Left,
         });
     }
-    let settings_top = settings_row_top(bounds, languages.len());
     texts.push(Text {
-        x: label_x,
-        center_y: settings_top + measures::ROW_HEIGHT / 2.0,
+        x: settings_circle.x + settings_circle.width + measures::ICON_GAP,
+        center_y: settings.y + settings.height / 2.0,
         content: measures::LANGUAGE_SETTINGS_LABEL.to_owned(),
-        size: typography::MENU_SIZE,
+        size: measures::TITLE_SIZE,
         is_bold: false,
-        color: if highlighted == Some(LanguageHit::Settings) {
-            theme.menu.highlighted_text
-        } else {
-            theme.menu.text
-        },
+        color: theme.tray.text,
         align: TextAlign::Left,
+    });
+
+    let mut panel_icons = Vec::with_capacity(languages.len() + 2);
+    for (index, language) in languages.iter().enumerate() {
+        let circle = circle_in(row_tile(bounds, index));
+        panel_icons.push(Icon {
+            x: circle.x + (circle.width - measures::CIRCLE_ICON) / 2.0,
+            y: circle.y + (circle.height - measures::CIRCLE_ICON) / 2.0,
+            side: measures::CIRCLE_ICON,
+            image: Some(IconImage::Drawing(icons.for_row(language.is_active))),
+            placeholder: theme.tray.tile,
+            placeholder_radius: 0.0,
+        });
+    }
+    panel_icons.push(Icon {
+        x: settings_circle.x + (settings_circle.width - measures::CIRCLE_ICON) / 2.0,
+        y: settings_circle.y + (settings_circle.height - measures::CIRCLE_ICON) / 2.0,
+        side: measures::CIRCLE_ICON,
+        image: Some(IconImage::Drawing(Arc::clone(icons.settings()))),
+        placeholder: theme.tray.tile,
+        placeholder_radius: 0.0,
+    });
+    let chevron_side = measures::CHEVRON_SIDE;
+    panel_icons.push(Icon {
+        x: settings.x + settings.width - measures::PADDING - chevron_side,
+        y: settings.y + (settings.height - chevron_side) / 2.0,
+        side: chevron_side,
+        image: Some(IconImage::Drawing(Arc::clone(icons.chevron()))),
+        placeholder: theme.tray.tile,
+        placeholder_radius: 0.0,
     });
 
     Overlay {
         panel: Panel {
             bounds,
-            corner_radius: measures::CORNER_RADIUS,
-            border_width: measures::BORDER_WIDTH,
-            tint: theme.menu.background,
-            border: theme.menu.border,
+            corner_radius: measures::TILE_RADIUS,
+            border_width: 0.0,
+            tint: theme.tray.clear,
+            border: theme.tray.clear,
         },
-        tiles: Vec::new(),
+        tiles,
         pill: None,
         highlight: Some(highlight_panel(theme, bounds, languages, highlighted)),
         flat_panels: Vec::new(),
-        dividers: vec![Divider {
-            bounds: separator(bounds, languages.len()),
-            color: theme.menu.separator,
-        }],
-        dots: Vec::new(),
+        dividers: Vec::new(),
+        dots,
         pointer: None,
         texts,
-        icons: check_icons(theme, icons, bounds, languages, highlighted),
+        icons: panel_icons,
         thumbnails: Vec::new(),
         controls: None,
         opacity: 1.0,
@@ -87,36 +159,71 @@ pub fn language_hit(
     y: f32,
     languages: &[LanguageEntry],
 ) -> Option<LanguageHit> {
-    if x < bounds.x + measures::PADDING || x >= bounds.x + bounds.width - measures::PADDING {
+    if x < bounds.x + measures::GAP || x >= bounds.x + bounds.width - measures::GAP {
         return None;
     }
     for (index, language) in languages.iter().enumerate() {
-        let top = row_top(bounds, index);
-        if y >= top && y < top + measures::ROW_HEIGHT {
+        let row = row_tile(bounds, index);
+        if y >= row.y && y < row.y + row.height {
             return Some(LanguageHit::Language(language.id));
         }
     }
-    let top = settings_row_top(bounds, languages.len());
-    if y >= top && y < top + measures::ROW_HEIGHT {
+    let settings = settings_tile(bounds, languages.len());
+    if y >= settings.y && y < settings.y + settings.height {
         return Some(LanguageHit::Settings);
     }
     None
 }
 
-fn row_top(bounds: Rect, index: usize) -> f32 {
-    bounds.y + measures::PADDING + index as f32 * measures::ROW_HEIGHT
-}
-
-fn settings_row_top(bounds: Rect, count: usize) -> f32 {
-    bounds.y + measures::PADDING + count as f32 * measures::ROW_HEIGHT + measures::SEPARATOR_HEIGHT
-}
-
-fn row_bounds(bounds: Rect, top: f32) -> Rect {
+fn title_tile(bounds: Rect) -> Rect {
     Rect {
-        x: bounds.x + measures::PADDING,
-        y: top,
-        width: bounds.width - measures::PADDING * 2.0,
+        x: bounds.x + measures::GAP,
+        y: bounds.y + measures::GAP,
+        width: bounds.width - measures::GAP * 2.0,
+        height: measures::TITLE_HEIGHT,
+    }
+}
+
+fn row_tile(bounds: Rect, index: usize) -> Rect {
+    Rect {
+        x: bounds.x + measures::GAP,
+        y: bounds.y
+            + measures::GAP * 2.0
+            + measures::TITLE_HEIGHT
+            + index as f32 * (measures::ROW_HEIGHT + measures::GAP),
+        width: bounds.width - measures::GAP * 2.0,
         height: measures::ROW_HEIGHT,
+    }
+}
+
+fn settings_tile(bounds: Rect, count: usize) -> Rect {
+    Rect {
+        x: bounds.x + measures::GAP,
+        y: bounds.y
+            + measures::GAP * 2.0
+            + measures::TITLE_HEIGHT
+            + count as f32 * (measures::ROW_HEIGHT + measures::GAP),
+        width: bounds.width - measures::GAP * 2.0,
+        height: measures::SETTINGS_HEIGHT,
+    }
+}
+
+fn glass(theme: &Theme, bounds: Rect, radius: f32) -> Panel {
+    Panel {
+        bounds,
+        corner_radius: radius.min(bounds.height / 2.0),
+        border_width: measures::TILE_BORDER_WIDTH,
+        tint: theme.tray.tile,
+        border: theme.tray.tile_border,
+    }
+}
+
+fn circle_in(tile: Rect) -> Rect {
+    Rect {
+        x: tile.x + measures::PADDING,
+        y: tile.y + (tile.height - measures::CIRCLE) / 2.0,
+        width: measures::CIRCLE,
+        height: measures::CIRCLE,
     }
 }
 
@@ -135,72 +242,41 @@ fn highlight_panel(
         },
         corner_radius: measures::HIGHLIGHT_RADIUS,
         border_width: 0.0,
-        tint: theme.menu.highlight,
-        border: theme.menu.highlight,
+        tint: theme.tray.hover,
+        border: theme.tray.hover,
     };
-    let top = match highlighted {
-        Some(LanguageHit::Settings) => settings_row_top(bounds, languages.len()),
+    let row = match highlighted {
+        Some(LanguageHit::Settings) => settings_tile(bounds, languages.len()),
         Some(LanguageHit::Language(id)) => {
             let Some(index) = languages.iter().position(|entry| entry.id == id) else {
                 return hidden;
             };
-            row_top(bounds, index)
+            row_tile(bounds, index)
         }
         None => return hidden,
     };
     Panel {
-        bounds: row_bounds(bounds, top),
-        ..hidden
+        bounds: row,
+        corner_radius: glass_radius(row),
+        border_width: 0.0,
+        tint: theme.tray.hover,
+        border: theme.tray.hover,
     }
 }
 
-fn check_icons(
-    theme: &Theme,
-    icons: &LanguageIcons,
-    bounds: Rect,
-    languages: &[LanguageEntry],
-    highlighted: Option<LanguageHit>,
-) -> Vec<Icon> {
-    languages
-        .iter()
-        .enumerate()
-        .map(|(index, language)| {
-            if !language.is_active {
-                return Icon {
-                    x: bounds.x + measures::PADDING + measures::TEXT_INSET,
-                    y: row_top(bounds, index),
-                    side: 0.0,
-                    image: None,
-                    placeholder: theme.menu.background,
-                    placeholder_radius: 0.0,
-                };
-            }
-            let is_highlighted = highlighted == Some(LanguageHit::Language(language.id));
-            Icon {
-                x: bounds.x
-                    + measures::PADDING
-                    + measures::TEXT_INSET
-                    + (measures::CHECK_WIDTH - measures::CHECK_SIDE) / 2.0,
-                y: row_top(bounds, index) + (measures::ROW_HEIGHT - measures::CHECK_SIDE) / 2.0,
-                side: measures::CHECK_SIDE,
-                image: Some(IconImage::Drawing(icons.for_row(is_highlighted))),
-                placeholder: theme.menu.background,
-                placeholder_radius: 0.0,
-            }
-        })
-        .collect()
+fn glass_radius(row: Rect) -> f32 {
+    if (row.height - measures::ROW_HEIGHT).abs() < 0.01 {
+        row.height / 2.0
+    } else {
+        measures::TILE_RADIUS.min(row.height / 2.0)
+    }
 }
 
-fn separator(bounds: Rect, count: usize) -> Rect {
-    let middle = bounds.y
-        + measures::PADDING
-        + count as f32 * measures::ROW_HEIGHT
-        + measures::SEPARATOR_HEIGHT / 2.0;
-    Rect {
-        x: bounds.x + measures::PADDING + measures::TEXT_INSET,
-        y: middle - measures::DIVIDER_HEIGHT / 2.0,
-        width: bounds.width - (measures::PADDING + measures::TEXT_INSET) * 2.0,
-        height: measures::DIVIDER_HEIGHT,
+fn active_subtitle(language: &LanguageEntry) -> String {
+    if language.is_active {
+        measures::ACTIVE_SUBTITLE.to_owned()
+    } else {
+        String::new()
     }
 }
 
