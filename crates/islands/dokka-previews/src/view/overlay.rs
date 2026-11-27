@@ -102,7 +102,7 @@ impl Previews {
             PreviewContent::Calendar => {
                 let month = calendar_month(self.today, self.month_offset);
                 let pill = calendar_pill_props(drawn, self.nav_hovered);
-                calendar_panel(&self.theme, &self.nav_pill, drawn, &month, &pill, false)
+                calendar_panel(&self.theme, &self.nav_pill, drawn, &month, &pill)
             }
             PreviewContent::Windows(windows) => {
                 let shown = visible_windows(windows.len(), request.limit);

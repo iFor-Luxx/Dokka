@@ -102,22 +102,12 @@ pub(crate) const LAUNCHPAD_DOT_INACTIVE: Color = Color::rgba(255, 255, 255, 110)
 /// cualquier fondo, como en macOS Tahoe.
 pub(crate) const MENUBAR_VEIL: Color = Color::rgba(0, 0, 0, 55);
 
-/// Paneles de la barra superior, estilo Tahoe: cristal ahumado y blanco.
+/// Paneles de la barra superior: piezas sobre el mismo cristal claro del dock.
 pub(crate) const TRAY_CLEAR: Color = Color::rgba(0, 0, 0, 0);
-pub(crate) const TRAY_TILE: Color = Color::rgba(38, 40, 46, 96);
-pub(crate) const TRAY_TILE_BORDER: Color = Color::rgba(255, 255, 255, 70);
-/// Cristal casi sin tinte del Centro de control: se ve el fondo con claridad.
-pub(crate) const TRAY_TILE_TRANSLUCENT: Color = Color::rgba(28, 30, 36, 40);
-pub(crate) const TRAY_SECONDARY: Color = Color::rgba(255, 255, 255, 170);
-pub(crate) const TRAY_TRACK: Color = Color::rgba(255, 255, 255, 60);
-pub(crate) const TRAY_CIRCLE: Color = Color::rgba(255, 255, 255, 46);
-pub(crate) const TRAY_HOVER: Color = Color::rgba(255, 255, 255, 34);
-/// Cristal único de los menús de la barra: azulado ahumado oscuro y
-/// translúcido (el desenfoque pone el color del fondo).
-pub(crate) const TRAY_PANEL: Color = Color::rgba(28, 32, 42, 215);
-/// Borde fino del cristal único, con filo claro.
-pub(crate) const TRAY_PANEL_BORDER: Color = Color::rgba(255, 255, 255, 70);
-/// Línea fina que separa secciones dentro del cristal único.
-pub(crate) const TRAY_SEPARATOR: Color = Color::rgba(255, 255, 255, 28);
+pub(crate) const TRAY_SECONDARY: Color = Color::rgba(30, 32, 36, 150);
+pub(crate) const TRAY_TRACK: Color = Color::rgba(0, 0, 0, 40);
+pub(crate) const TRAY_CIRCLE: Color = Color::rgba(0, 0, 0, 22);
+/// Línea fina entre secciones de un menú.
+pub(crate) const TRAY_SEPARATOR: Color = Color::rgba(0, 0, 0, 28);
 /// Número del volumen dentro del relleno blanco: gris oscuro.
 pub(crate) const TRAY_PERCENT: Color = Color::rgba(30, 32, 36, 170);

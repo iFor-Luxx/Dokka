@@ -1,4 +1,4 @@
-use dokka_scene::{Color, Dot, Overlay, Panel, Rect, Size, Text, TextAlign};
+use dokka_scene::{Color, Dot, Overlay, Rect, Size, Text, TextAlign};
 use dokka_theme::{Theme, popup as measures, typography};
 
 use super::CalendarMonth;
@@ -40,16 +40,13 @@ pub fn calendar_nav_pill(bounds: Rect) -> Rect {
     }
 }
 
-/// Mes con su píldora. En la barra (`dark`) usa el cristal oscuro con
-/// texto blanco y el hoy en círculo blanco con número oscuro; en el
-/// dock sigue claro. La píldora clara se lee sobre ambos.
+/// Mes con su píldora de navegación, igual en el dock y en la barra.
 pub fn calendar_panel(
     theme: &Theme,
     drawings: &NavPillIcons,
     bounds: Rect,
     month: &CalendarMonth,
     pill: &NavPillProps,
-    dark: bool,
 ) -> Overlay {
     let column_x = |column: u16| {
         bounds.x + measures::PADDING + (f32::from(column) + 0.5) * measures::CALENDAR_CELL_WIDTH
@@ -60,26 +57,6 @@ pub fn calendar_panel(
             + (f32::from(row) + 0.5) * measures::CALENDAR_CELL_HEIGHT
     };
 
-    let main = if dark {
-        theme.tray.text
-    } else {
-        theme.panel.text
-    };
-    let faint = if dark {
-        theme.tray.secondary
-    } else {
-        theme.panel.text
-    };
-    let today_bg = if dark {
-        theme.tray.fill
-    } else {
-        theme.panel.highlight
-    };
-    let today_ink = if dark {
-        theme.tray.percent
-    } else {
-        theme.panel.text
-    };
     let header_y = bounds.y + measures::CALENDAR_HEADER / 2.0 + measures::CALENDAR_HEADER_DROP;
     let title_x = bounds.x + measures::PADDING + measures::CALENDAR_CELL_WIDTH * 2.5;
     let mut texts = vec![centered(
@@ -87,25 +64,30 @@ pub fn calendar_panel(
         (title_x, header_y),
         typography::TITLE_SIZE,
         true,
-        main,
+        theme.panel.text,
     )];
     texts.extend((0..7).zip(WEEKDAYS).map(|(column, name)| {
         let center = (column_x(column), row_y(0));
-        centered(name.to_owned(), center, typography::BODY_SIZE, true, faint)
+        centered(
+            name.to_owned(),
+            center,
+            typography::BODY_SIZE,
+            true,
+            theme.panel.text,
+        )
     }));
 
     let mut dots = Vec::new();
     for day in 1..=month.days {
         let cell = month.first_column + day - 1;
         let (x, y) = (column_x(cell % 7), row_y(cell / 7 + 1));
-        let is_today = month.today == Some(day);
-        if is_today {
+        if month.today == Some(day) {
             let diameter = measures::CALENDAR_CELL_HEIGHT - measures::CALENDAR_TODAY_INSET;
             dots.push(Dot {
                 x: x - diameter / 2.0,
                 y: y - diameter / 2.0,
                 diameter,
-                color: today_bg,
+                color: theme.panel.highlight,
             });
         }
         texts.push(centered(
@@ -113,12 +95,12 @@ pub fn calendar_panel(
             (x, y),
             typography::BODY_SIZE,
             false,
-            if is_today { today_ink } else { main },
+            theme.panel.text,
         ));
     }
 
     Overlay {
-        panel: glass(theme, bounds, dark),
+        panel: popup_panel(theme, bounds),
         tiles: Vec::new(),
         pill: Some(nav_pill_panel(theme, pill)),
         highlight: Some(nav_pill_highlight(theme, pill)),
@@ -134,30 +116,6 @@ pub fn calendar_panel(
         scale: 1.0,
         origin: (0.0, 0.0),
     }
-}
-
-fn glass(theme: &Theme, bounds: Rect, dark: bool) -> Panel {
-    if dark {
-        Panel {
-            bounds,
-            corner_radius: capped(bounds, dokka_theme::tray_glass::PANEL_RADIUS),
-            border_width: dokka_theme::tray_glass::PANEL_BORDER_WIDTH,
-            tint: theme.tray.panel,
-            border: theme.tray.panel_border,
-        }
-    } else {
-        popup_panel(theme, bounds)
-    }
-}
-
-fn capped(bounds: Rect, maximum: f32) -> f32 {
-    if bounds.width <= 0.0 || bounds.height <= 0.0 {
-        return 0.0;
-    }
-    maximum
-        .min(bounds.width / 2.0)
-        .min(bounds.height / 2.0)
-        .max(0.0)
 }
 
 fn centered(content: String, center: (f32, f32), size: f32, is_bold: bool, color: Color) -> Text {

@@ -3,7 +3,7 @@
 **Hace:** componentes reutilizables de interfaz: etiqueta flotante de cristal (`tooltip`),
 fondo de paneles (`popup_panel`), calendario con su píldora de navegación (`calendar_panel`:
 mes ya calculado, semanas, tamaño, píldora y paso entre meses compartidos por
-el dock (claro) y la barra (cristal oscuro con texto blanco y hoy en blanco);
+el dock y en la barra, con el mismo cristal claro;
 la tarjeta nunca se encoge al navegar), píldora
 segmentada (`nav_pill`: cápsula con dos chevrones Lucide y línea central, a partir
 de su rectángulo, qué lados están disponibles y el hover; sin saber qué navega),

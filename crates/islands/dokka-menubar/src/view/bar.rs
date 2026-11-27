@@ -192,7 +192,6 @@ impl Menubar {
             bounds,
             &month,
             &pill,
-            true,
         ))
     }
 }
