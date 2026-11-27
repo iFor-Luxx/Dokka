@@ -96,6 +96,18 @@ pub(crate) const SETTINGS_HOVER: Color = Color::rgba(0, 0, 0, 22);
 pub(crate) const SETTINGS_CARD: Color = Color::rgba(0, 0, 0, 12);
 /// Línea bajo la cabecera del contenido.
 pub(crate) const SETTINGS_DIVIDER: Color = Color::rgba(0, 0, 0, 28);
+/// Pista apagada del interruptor Tahoe.
+pub(crate) const SETTINGS_SWITCH_OFF: Color = Color::rgba(0, 0, 0, 40);
+/// Pista encendida del interruptor Tahoe: azul de selección.
+pub(crate) const SETTINGS_SWITCH_ON: Color = Color::rgba(10, 100, 215, 255);
+/// Tirador blanco del interruptor.
+pub(crate) const SETTINGS_SWITCH_KNOB: Color = Color::rgba(255, 255, 255, 255);
+/// Barra de fondo del deslizador de Preferencias.
+pub(crate) const SETTINGS_SLIDER_TRACK: Color = Color::rgba(0, 0, 0, 30);
+/// Relleno del deslizador cuando responde.
+pub(crate) const SETTINGS_SLIDER_FILL: Color = Color::rgba(10, 100, 215, 255);
+/// Relleno del deslizador cuando está atenuado.
+pub(crate) const SETTINGS_SLIDER_MUTED: Color = Color::rgba(0, 0, 0, 30);
 /// Semáforos apagados cuando Preferencias no es la ventana activa.
 pub(crate) const SETTINGS_TRAFFIC_INACTIVE: Color = Color::rgba(206, 206, 210, 255);
 /// Símbolo oscuro sobre el semáforo rojo al pasar el cursor.

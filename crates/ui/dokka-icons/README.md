@@ -3,7 +3,7 @@
 **Hace:** describe los iconos de color propios de Dokka (explorador, launchpad, calendario, reloj y
 papelera) como dibujos, y expone los de interfaz desde la librería `lucide-icons` (chevrón del
 submenú, marca elegida, marca de la barra, chevrones de la píldora de navegación, lupa, botones de música y de cerrar/fijar, nota musical de la barra en `music.rs`; iconos blancos de
-las siete secciones de Preferencias y símbolos de cerrar, minimizar y zoom de sus semáforos) como glifos,
+las ocho secciones de Preferencias y símbolos de cerrar, minimizar y zoom de sus semáforos) como glifos,
 más la lupa del buscador (`search`: `search_bar_icon` blanca para la barra superior y
 `search_field_icon` oscura para la casilla clara, ambas Lucide `Search`),
 más el círculo liso y los tres botones completos (círculo con símbolo) de los semáforos, más los bytes

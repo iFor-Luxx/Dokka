@@ -3,6 +3,8 @@
 //! La isla decide la sección y qué hace cada clic; aquí solo se conecta con la
 //! ventana: el semáforo rojo oculta (Dokka sigue en marcha), el amarillo
 //! minimiza y la franja superior arrastra con el movimiento nativo de Windows.
+//! Los deslizadores se arrastran con el ratón capturado: la isla redibuja a
+//! cada movimiento y solo al soltar emite `Changed` o `TaskbarAuto`.
 
 use std::error::Error;
 use std::sync::Arc;
@@ -19,6 +21,9 @@ pub(crate) fn open_or_focus_settings(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
+    session
+        .settings
+        .set_values(session.preferences, session.taskbar_auto());
     session.settings.open();
     surface.settings_place(measures::WIDTH, measures::HEIGHT)?;
     surface.settings_show()?;
@@ -35,9 +40,10 @@ pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
     surface.settings_hide();
 }
 
-/// Botón abajo: si es en la zona arrastrable, Windows mueve la ventana hasta
-/// soltar el botón (bucle modal nativo, con captura incluida). El botón que
-/// termina el arrastre se lo queda Windows, así que se marca como soltado.
+/// Botón abajo: si agarra un deslizador, la isla lo sigue hasta soltar; si es
+/// en la zona arrastrable, Windows mueve la ventana hasta soltar el botón
+/// (bucle modal nativo, con captura incluida). El botón que termina el
+/// arrastre se lo queda Windows, así que se marca como soltado.
 pub(crate) fn press_over_settings(
     session: &mut DockSession,
     surface: &mut Surface,
@@ -45,31 +51,41 @@ pub(crate) fn press_over_settings(
     y: f32,
 ) {
     session.settings_pressed = true;
-    if drag_zone(x, y) {
+    if session.settings.press(x, y) {
+        return;
+    }
+    if drag_zone(x, y, session.settings.selected()) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
     }
 }
 
-/// Movimiento: solo resalta la fila bajo el cursor; mover ya lo hace Windows.
+/// Movimiento: resalta lo que hay bajo el cursor y sigue el deslizador
+/// agarrado; mover la ventana ya lo hace Windows.
 pub(crate) fn move_over_settings(session: &mut DockSession, x: f32, y: f32) {
-    session.settings.pointer_moved(x, y);
+    if session.settings_pressed {
+        session.settings.drag_to(x, y);
+    } else {
+        session.settings.pointer_moved(x, y);
+    }
 }
 
-/// El cursor sale: se apaga el resaltado y se olvida el botón a medias.
+/// El cursor sale: se apaga el resaltado y se olvida el botón a medias, salvo
+/// que haya un deslizador agarrado (con captura sigue llegando el movimiento).
 pub(crate) fn leave_settings(session: &mut DockSession) {
     session.settings_pressed = false;
     session.settings.pointer_left();
 }
 
-/// Clic: cerrar, minimizar, foco de la casilla, píldora o elegir sección.
+/// Suelta el botón: si había un deslizador agarrado, guarda una sola vez; si
+/// no, resuelve el clic (cerrar, minimizar, foco, píldora, sección o control).
 pub(crate) fn click_settings(
     session: &mut DockSession,
     surface: &mut Surface,
     x: f32,
     y: f32,
 ) -> Result<(), Box<dyn Error>> {
-    match session.settings.click(x, y) {
+    match session.settings.release(x, y) {
         SettingsAction::Close => close_settings(session, surface),
         SettingsAction::Minimize => surface.settings_minimize(),
         SettingsAction::Stay => {}
@@ -130,7 +146,7 @@ pub(crate) fn handle_settings_event(
         SurfaceEvent::SettingsPressed { x, y } => press_over_settings(session, surface, x, y),
         SurfaceEvent::SettingsClicked { x, y } => {
             // Sin botón abajo previo no hay clic (p. ej. soltar dentro lo
-            // pulsado fuera); el arrastre ya marcó el suyo como soltado.
+            // pulsado fuera); el arrastre nativo ya marcó el suyo como soltado.
             if std::mem::take(&mut session.settings_pressed) {
                 click_settings(session, surface, x, y)?;
             }
@@ -154,7 +170,7 @@ pub(crate) fn handle_settings_event(
 /// cada evento (pasar el ratón, hacer clic, arrastrar) lo hacía parpadear.
 /// La isla reutiliza los mismos dibujos y las capas solo repintan lo que
 /// cambia, así que basta con dibujar al abrir, elegir, resaltar, enfocar,
-/// escribir o cambiar el foco de la ventana.
+/// escribir, cambiar el foco o mover un deslizador.
 pub(crate) fn render_settings(
     session: &mut DockSession,
     surface: &mut Surface,

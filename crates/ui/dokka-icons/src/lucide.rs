@@ -170,6 +170,15 @@ pub fn settings_launchpad_icon(color: Color) -> Drawing {
     )
 }
 
+/// Icono blanco de la sección Barra superior sobre su cuadrado de color.
+pub fn settings_menubar_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::PanelTop,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
 /// Icono blanco de la sección Apariencia sobre su cuadrado de color.
 pub fn settings_appearance_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Palette, settings::ROW_GLYPH_SIZE, color)

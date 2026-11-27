@@ -5,8 +5,10 @@ use dokka_components::window_controls::traffic_at;
 use dokka_scene::Rect;
 use dokka_theme::settings as measures;
 
+use super::content::content_control_at;
+use super::sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
+
 /// `true` si el punto cae en la píldora de la cabecera.
-/// Hoy no navega (ambos lados atenuados), pero tampoco arrastra la ventana.
 fn nav_at(x: f32, y: f32) -> bool {
     nav_pill_contains(
         Rect {
@@ -21,8 +23,19 @@ fn nav_at(x: f32, y: f32) -> bool {
 }
 
 /// `true` si desde el punto se puede arrastrar la ventana: la franja superior
-/// quitando los semáforos, la píldora, la casilla y las filas.
-pub fn drag_zone(x: f32, y: f32) -> bool {
+/// quitando los semáforos, la píldora, la casilla, las filas y los controles
+/// del contenido (deslizadores e interruptores nunca mueven la ventana).
+pub fn drag_zone(x: f32, y: f32, selected: usize) -> bool {
+    if content_control_at(selected, x, y) {
+        return false;
+    }
+    // Los controles de las demás secciones no se ven, pero se comprueban
+    // igual por si la sección cambia a mitad de un arrastre.
+    for section in [SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR] {
+        if section != selected && content_control_at(section, x, y) {
+            return false;
+        }
+    }
     if !(0.0..measures::DRAG_HEIGHT).contains(&y) {
         return false;
     }

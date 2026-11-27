@@ -18,7 +18,11 @@
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
   glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
-  72 × 34 y tarjeta), con funciones para filas, título y tarjeta.
+  72 × 34, tarjetas de contenido con filas de 48, interruptor de 46 × 26 y
+  deslizador de 168, y tarjeta "Próximamente"), con funciones para filas,
+  título y tarjetas. `SettingsColors` trae además interruptor encendido y
+  apagado con su tirador y barra, relleno y atenuado del deslizador, con ocho
+  cuadrados de color (el nuevo de la barra superior en rosa).
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
   a 20; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de
