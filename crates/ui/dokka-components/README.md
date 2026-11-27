@@ -31,8 +31,10 @@ botón de silencio, separador y fila de ajustes), panel de red (`network_panel`:
 con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
 idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),
-centro de control (`control_center_panel`: tarjetas de red, volumen con
-deslizador y música más botones redondos, sin resaltar) y buscador Spotlight
+centro de control (`control_center_panel`: rejilla Tahoe de cuatro columnas
+con cápsula de red y dos círculos blancos, música de dos por dos, cápsula de
+Preferencias con un círculo y Sonido a todo lo ancho, en cristal translúcido
+por zonas: `capsules`, `music`, `circles`, `slider`) y buscador Spotlight
 de Tahoe (`search_panel`: cápsula grande con lupa y texto más tarjeta de
 resultados con icono, hasta siete nombres, resaltado en cápsula translúcida,
 "Sin resultados" y `filter_search_order` con tildes ignoradas).

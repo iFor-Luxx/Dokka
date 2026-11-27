@@ -106,6 +106,8 @@ pub(crate) const MENUBAR_VEIL: Color = Color::rgba(0, 0, 0, 55);
 pub(crate) const TRAY_CLEAR: Color = Color::rgba(0, 0, 0, 0);
 pub(crate) const TRAY_TILE: Color = Color::rgba(38, 40, 46, 96);
 pub(crate) const TRAY_TILE_BORDER: Color = Color::rgba(255, 255, 255, 70);
+/// Cristal casi sin tinte del Centro de control: se ve el fondo con claridad.
+pub(crate) const TRAY_TILE_TRANSLUCENT: Color = Color::rgba(28, 30, 36, 40);
 pub(crate) const TRAY_SECONDARY: Color = Color::rgba(255, 255, 255, 170);
 pub(crate) const TRAY_TRACK: Color = Color::rgba(255, 255, 255, 60);
 pub(crate) const TRAY_CIRCLE: Color = Color::rgba(255, 255, 255, 46);

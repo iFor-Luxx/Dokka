@@ -12,14 +12,18 @@
   (`theme.settings`: ventana, barra, casilla, selección y hover de filas, título, tarjeta,
   cuadrados de color, semáforos con sus símbolos oscuros de hover, su gris sin foco y
   `TrayColors` (`theme.tray`: cristal ahumado de la barra, texto blanco, pista,
-  relleno y hover).
+  relleno, hover y tinte translúcido propio del Centro de control).
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
   glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
   72 × 34 y tarjeta), con funciones para filas, título y tarjeta.
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
-  a 20; `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  a 20; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de
+  cristal separadas de 320 de ancho con hueco de 10, aire de 12, cápsula de 60
+  con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
+  la rejilla del Centro de control (cuatro columnas de 66.5, cápsula doble de 143 × 60, música de dos por dos,
+  tres círculos blancos y Sonido de 296 × 84, alto total 324.5); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 300 para que quepa el
   calendario de 6 semanas; la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora; `search.rs` para el buscador Spotlight de Tahoe (panel de 560,
