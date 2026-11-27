@@ -13,6 +13,7 @@ use windows::Win32::System::DataExchange::COPYDATASTRUCT;
 use windows::Win32::UI::WindowsAndMessaging::HICON;
 
 use crate::notify;
+use crate::owner;
 use crate::state::{IconUpdate, Shared};
 
 /// Registra el icono si el mensaje es `Shell_NotifyIcon` válido.
@@ -21,8 +22,16 @@ pub(crate) fn note_shell_icon(shared: &Arc<Mutex<Shared>>, lparam: LPARAM) {
         return;
     };
     let icon = convert_icon(&parsed);
+    // Solo si el icono aún no se conoce, llegue como alta o como cambio: hay
+    // apps que mandan `MODIFY` sin parar.
+    let unknown = shared.lock().is_ok_and(|state| !state.knows(&parsed));
+    let owner = if unknown {
+        owner::executable_of(parsed.hwnd_raw)
+    } else {
+        None
+    };
     if let Ok(mut state) = shared.lock() {
-        state.apply(&parsed, icon);
+        state.apply(&parsed, icon, owner.as_deref());
     }
 }
 

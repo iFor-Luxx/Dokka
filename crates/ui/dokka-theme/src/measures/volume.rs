@@ -1,10 +1,11 @@
 //! Medidas del panel de volumen estilo Tahoe: un solo cristal oscuro con
-//! título, cápsula ancha del deslizador, silenciar y ajustes separados
-//! por líneas finas. El deslizador es el componente `slider` reutilizable:
-//! solo recibe sus colores.
+//! título y porcentaje, barra fina con tirador redondo entre dos altavoces,
+//! silenciar y ajustes separados por líneas finas.
 //!
-//! Todo sale de `tray_glass` (ancho, aire, radio del cristal, filas y
-//! cápsula). Radios concéntricos: el resaltado recorta el radio del panel.
+//! El deslizador usa su propia geometría fina: no reutiliza el componente
+//! `slider` ni las medidas globales de `tray_glass` (las usan el centro de
+//! control y Preferencias). Radios concéntricos: el resaltado recorta el
+//! radio del panel.
 
 use dokka_scene::DRAWING_SIDE;
 
@@ -18,28 +19,32 @@ pub const PADDING: f32 = tray_glass::PADDING;
 pub const PANEL_RADIUS: f32 = tray_glass::PANEL_RADIUS;
 pub const PANEL_BORDER_WIDTH: f32 = tray_glass::PANEL_BORDER_WIDTH;
 
-/// Alto de la fila del título.
+/// Alto de la fila del título ("Sonido" y porcentaje).
 pub const TITLE_HEIGHT: f32 = tray_glass::TITLE_HEIGHT;
-/// Separación entre el título y la cápsula del deslizador.
+/// Separación entre la fila del título y la del deslizador.
 pub const TITLE_GAP: f32 = 6.0;
 
-/// Alto del área de pulsación del deslizador: cómoda, más alta que él.
+/// Alto de la fila del deslizador: cómoda al pulsar, con aire para que el
+/// tirador (mayor que la barra) quede centrado sin salirse de ella.
 pub const SLIDER_ROW_HEIGHT: f32 = 28.0;
-/// Alto de la cápsula ancha (relleno blanco, tirador redondo).
-pub const SLIDER_HEIGHT: f32 = tray_glass::SLIDER_HEIGHT;
-/// Diámetro del tirador blanco.
-pub const THUMB_DIAMETER: f32 = tray_glass::THUMB_DIAMETER;
-/// Aire del número dentro de la cápsula, a la izquierda.
-pub const PERCENT_INSET: f32 = 10.0;
-/// Ancho mínimo del relleno para leer el número en oscuro sobre blanco.
-pub const PERCENT_FILL_MIN: f32 = 48.0;
+/// Grosor de la barra fina, de extremos totalmente redondos.
+pub const TRACK_HEIGHT: f32 = 6.0;
+/// Diámetro del tirador redondo, claramente mayor que la barra.
+pub const THUMB_DIAMETER: f32 = 16.0;
+/// Lado de cada altavoz a los extremos de la barra.
+pub const SLIDER_ICON_SIDE: f32 = 16.0;
+/// Aire entre cada altavoz y la barra.
+pub const SLIDER_ICON_GAP: f32 = 8.0;
+/// Ancho reservado al porcentaje a la derecha del título: cabe "100%" y,
+/// al ir centrado en él, no salta al cambiar de dígitos.
+pub const PERCENT_BOX_WIDTH: f32 = 44.0;
 /// Lado del glifo del altavoz de la fila de silencio.
 pub const ICON_SIDE: f32 = 16.0;
 /// Aire entre el icono y el texto de la fila de silencio.
 pub const ICON_GAP: f32 = 10.0;
 /// Alto de cada fila compacta (silenciar y ajustes).
 pub const ROW_HEIGHT: f32 = tray_glass::ROW_HEIGHT;
-/// Separación entre la cápsula o una fila y su línea.
+/// Separación entre la fila del deslizador o una fila y su línea.
 pub const SECTION_GAP: f32 = 8.0;
 /// Radio del resaltado suave de cada fila, concéntrico.
 pub const HIGHLIGHT_RADIUS: f32 = tray_glass::HIGHLIGHT_RADIUS;
@@ -65,7 +70,7 @@ pub const SETTINGS_LABEL: &str = "Configuración de sonido…";
 /// Tamaños de texto del panel Tahoe.
 pub const TITLE_SIZE: f32 = tray_glass::TITLE_SIZE;
 
-/// Alto del panel: título, cápsula, dos líneas y dos filas con sus aires.
+/// Alto del panel: título, deslizador, dos líneas y dos filas con sus aires.
 pub fn panel_height() -> f32 {
     PADDING
         + TITLE_HEIGHT

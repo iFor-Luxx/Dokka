@@ -28,8 +28,9 @@ real en píxeles cuando hay (marcador si no), título y artista recortados
 con "…", controles grandes de anterior, pausa/reproducir y siguiente con los glifos Lucide
 en blanco, "Nada en reproducción" con controles atenuados sin responder al golpe; con y sin
 canción entrega los mismos textos e iconos),
-panel de volumen (`volume_panel`: título, deslizador con altavoz según nivel,
-botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
+panel de volumen (`volume_panel`: título con porcentaje a la derecha en texto
+secundario, barra fina con tirador redondo entre dos altavoces —atenuados
+con silencio—, botón de silencio, separador y fila de ajustes), panel de red (`network_panel`: menú Tahoe con título, cápsula de estado
 con círculo, nombre, tipo e internet y ajustes en su zona propia), lista de
 idiomas (`language_panel`: menú Tahoe con título, cápsulas con círculo y
 "Activa", resaltado suave y ajustes aparte, sin marca),

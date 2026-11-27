@@ -10,6 +10,7 @@ mod click;
 mod forward;
 mod intake;
 mod notify;
+mod owner;
 mod state;
 mod tray_host;
 mod window;

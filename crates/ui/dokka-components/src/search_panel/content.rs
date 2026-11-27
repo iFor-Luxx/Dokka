@@ -39,7 +39,11 @@ pub(super) fn panel_texts(
             .map(|result| short_name(&result.name))
             .unwrap_or_default();
         texts.push(Text {
-            x: results.x + glass::ROW_MARGIN + glass::ROW_INSET + measures::ROW_ICON_SIDE + measures::ROW_TEXT_GAP,
+            x: results.x
+                + glass::ROW_MARGIN
+                + glass::ROW_INSET
+                + measures::ROW_ICON_SIDE
+                + measures::ROW_TEXT_GAP,
             center_y: measures::row_top(bounds, slot) + measures::ROW_HEIGHT / 2.0,
             content,
             size: measures::ROW_TEXT_SIZE,
