@@ -154,7 +154,9 @@ pub const CONTENT_WIDTH: f32 = HEADER_DIVIDER_RIGHT - HEADER_DIVIDER_LEFT;
 /// Borde superior del contenido, como la tarjeta antigua.
 pub const CONTENT_TOP: f32 = CARD_TOP;
 /// Alto de cada fila de ajustes dentro de su tarjeta.
-pub const CONTENT_ROW_HEIGHT: f32 = 48.0;
+pub const CONTENT_ROW_HEIGHT: f32 = 44.0;
+/// Alto de la fila del deslizador, con sus textos bajo la barra.
+pub const CONTENT_SLIDER_ROW_HEIGHT: f32 = 56.0;
 /// Aire interior de la tarjeta de contenido a izquierda y derecha.
 pub const CONTENT_PADDING: f32 = 16.0;
 /// Tamaño del texto de cada fila de ajustes.
@@ -162,17 +164,35 @@ pub const CONTENT_LABEL_SIZE: f32 = 13.0;
 /// Tamaño del texto atenuado (fila con el control apagado).
 pub const CONTENT_DIM_SIZE: f32 = 13.0;
 /// Ancho del interruptor Tahoe.
-pub const SWITCH_WIDTH: f32 = 46.0;
+pub const SWITCH_WIDTH: f32 = 40.0;
 /// Alto del interruptor Tahoe.
-pub const SWITCH_HEIGHT: f32 = 26.0;
-/// Diámetro del tirador redondo del interruptor.
-pub const SWITCH_KNOB: f32 = 22.0;
+pub const SWITCH_HEIGHT: f32 = 22.0;
+/// Tirador alargado del interruptor, en cápsula blanca.
+pub const SWITCH_KNOB_WIDTH: f32 = 24.0;
+/// Alto del tirador alargado del interruptor.
+pub const SWITCH_KNOB_HEIGHT: f32 = 18.0;
 /// Aire del tirador al borde de la pista.
 pub const SWITCH_INSET: f32 = 2.0;
 /// Ancho del deslizador de Preferencias, a la derecha de su fila.
 pub const SLIDER_WIDTH: f32 = 168.0;
 /// Alto de la zona de toque del deslizador, más alta que la barra.
 pub const SLIDER_TOUCH_HEIGHT: f32 = 28.0;
+/// Grosor de la pista fina del deslizador Tahoe.
+pub const SLIDER_TRACK_HEIGHT: f32 = 4.0;
+/// Tirador alargado del deslizador, en cápsula blanca.
+pub const SLIDER_KNOB_WIDTH: f32 = 22.0;
+/// Alto del tirador alargado del deslizador.
+pub const SLIDER_KNOB_HEIGHT: f32 = 15.0;
+/// Borde muy fino del tirador para verlo sobre la tarjeta.
+pub const SLIDER_KNOB_BORDER_WIDTH: f32 = 1.0;
+/// Margen superior del área del deslizador dentro de su fila alta.
+pub const SLIDER_AREA_TOP: f32 = 12.0;
+/// Tamaño de "Pequeño" y "Grande" bajo la barra.
+pub const SLIDER_CAPTION_SIZE: f32 = 11.0;
+/// Ancho aproximado de "Grande" para alinearlo al borde derecho.
+pub const SLIDER_CAPTION_RIGHT_WIDTH: f32 = 34.0;
+/// Aire entre la barra y los textos bajo ella.
+pub const SLIDER_CAPTION_GAP: f32 = 4.0;
 /// Separación entre tarjetas de contenido apiladas.
 pub const GROUP_GAP: f32 = 16.0;
 

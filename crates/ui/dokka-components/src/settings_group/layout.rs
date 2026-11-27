@@ -1,35 +1,41 @@
 use dokka_scene::Rect;
 use dokka_theme::settings as measures;
 
-/// Alto de la tarjeta para estas filas.
-pub fn group_height(rows: usize) -> f32 {
-    rows as f32 * measures::CONTENT_ROW_HEIGHT
+/// Alto de la tarjeta: suma de sus filas.
+pub fn group_height(heights: &[f32]) -> f32 {
+    heights.iter().sum()
 }
 
-/// Límites de la tarjeta que empieza en `top` con estas filas.
-pub fn group_panel_bounds(top: f32, rows: usize) -> Rect {
+/// Borde superior de la fila `index` con estas alturas.
+fn row_top(top: f32, heights: &[f32], index: usize) -> f32 {
+    top + heights.iter().take(index).sum::<f32>()
+}
+
+/// Límites de la tarjeta que empieza en `top` con esta altura total.
+pub fn group_panel_bounds(top: f32, total: f32) -> Rect {
     Rect {
         x: measures::CONTENT_LEFT,
         y: top,
         width: measures::CONTENT_WIDTH,
-        height: group_height(rows),
+        height: total,
     }
 }
 
 /// Fila `index` dentro de la tarjeta que empieza en `top`.
-pub fn row_bounds(top: f32, index: usize) -> Rect {
+pub fn row_bounds(top: f32, heights: &[f32], index: usize) -> Rect {
+    let height = heights.get(index).copied().unwrap_or(0.0);
     Rect {
         x: measures::CONTENT_LEFT,
-        y: top + index as f32 * measures::CONTENT_ROW_HEIGHT,
+        y: row_top(top, heights, index),
         width: measures::CONTENT_WIDTH,
-        height: measures::CONTENT_ROW_HEIGHT,
+        height,
     }
 }
 
-/// Línea fina entre la fila `index` y la siguiente, con el mismo aire a
-/// izquierda y derecha que las etiquetas y los controles.
-pub fn divider_rect(top: f32, index: usize) -> Rect {
-    let row = row_bounds(top, index);
+/// Línea fina entre la fila `index` y la siguiente: empieza en la columna
+/// del texto y acaba en el margen derecho, nunca de borde a borde.
+pub fn divider_rect(top: f32, heights: &[f32], index: usize) -> Rect {
+    let row = row_bounds(top, heights, index);
     Rect {
         x: row.x + measures::CONTENT_PADDING,
         y: row.y + row.height - 1.0,

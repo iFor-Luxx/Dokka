@@ -9,8 +9,7 @@ pub struct SliderProps {
     pub active: bool,
 }
 
-/// Colores del deslizador, para reutilizarlo fuera del cristal Tahoe
-/// (Preferencias le pasará los suyos).
+/// Colores del deslizador de Preferencias: tarjeta clara con pista fina.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SliderColors {
     /// Barra de fondo.
@@ -19,4 +18,8 @@ pub struct SliderColors {
     pub fill: Color,
     /// Relleno hasta el valor cuando está atenuado.
     pub muted: Color,
+    /// Tirador blanco en cápsula.
+    pub knob: Color,
+    /// Borde fino del tirador sobre la tarjeta.
+    pub knob_border: Color,
 }

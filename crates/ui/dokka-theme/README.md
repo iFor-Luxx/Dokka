@@ -18,8 +18,10 @@
 - `themes/`: un archivo por tema (hoy solo `light`).
 - `measures/settings.rs`: ventana de Preferencias (760 × 720, barra de 260, semáforos con
   glifos Lucide de 10, filas, búsqueda con cursor y límite, cabecera con su píldora de
-  72 × 34, tarjetas de contenido con filas de 48, interruptor de 46 × 26 y
-  deslizador de 168, y tarjeta "Próximamente"), con funciones para filas,
+  72 × 34, tarjetas de contenido con filas de 44 (56 la del deslizador, con
+  "Pequeño" y "Grande" en 11 bajo la barra), interruptor de 40 × 22 con
+  tirador en cápsula de 24 × 18 y deslizador de 168 con pista fina de 4 y
+  tirador en cápsula de 22 × 15 con borde fino, y tarjeta "Próximamente"), con funciones para filas,
   título y tarjetas. `SettingsColors` trae además interruptor encendido y
   apagado con su tirador y barra, relleno y atenuado del deslizador, con ocho
   cuadrados de color (el nuevo de la barra superior en rosa).

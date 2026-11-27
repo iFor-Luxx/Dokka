@@ -2,12 +2,14 @@
 //!
 //! Los deslizadores se agarran al pulsar y siguen al cursor hasta soltar:
 //! mientras tanto la isla solo redibuja. Al soltar emite `Changed` una vez.
+//! El valor al pulsar y al arrastrar sale de la misma pista que el dibujo.
 
 use dokka_model::Preferences;
 
 use super::logic::{
-    SliderTarget, content_slider_track, dock_slider_at, dock_switch_at, icon_scale_from,
-    icon_scale_to, magnification_from, magnification_to, menubar_switch_at, taskbar_switch_at,
+    DockSwitch, SliderTarget, card_heights, content_slider_track, dock_slider_at, dock_switch_at,
+    icon_scale_from, icon_scale_to, magnification_from, magnification_to, menubar_switch_at,
+    taskbar_switch_at,
 };
 use super::painted::PaintedControl;
 use super::state::Settings;
@@ -33,7 +35,11 @@ pub(crate) fn display_preferences(values: &ContentValues) -> Preferences {
 
 /// Control bajo el punto en la sección elegida, si hay alguno.
 pub(crate) fn control_at(selected: usize, x: f32, y: f32) -> Option<PaintedControl> {
-    if let Some(card) = dock_switch_at(selected, x, y) {
+    if let Some(switch) = dock_switch_at(selected, x, y) {
+        let card = match switch {
+            DockSwitch::Magnification => 0,
+            DockSwitch::Previews => 1,
+        };
         return Some(PaintedControl::DockSwitch(card));
     }
     if let Some(row) = menubar_switch_at(selected, x, y) {
@@ -49,20 +55,21 @@ pub(crate) fn control_at(selected: usize, x: f32, y: f32) -> Option<PaintedContr
     }
 }
 
+/// Pista del deslizador agarrado: la misma que pinta el contenido.
+fn drag_track(target: SliderTarget) -> Option<dokka_scene::Rect> {
+    let tops = super::logic::card_tops(super::logic::SECTION_DOCK);
+    let top = tops.first()?;
+    let heights = card_heights(super::logic::SECTION_DOCK, 0);
+    match target {
+        SliderTarget::DockScale => Some(content_slider_track(*top, &heights, 0)),
+        SliderTarget::DockStrength => Some(content_slider_track(*top, &heights, 2)),
+    }
+}
+
 /// Valor de 0 a 1 del deslizador agarrado bajo este `x`, aunque el cursor se
 /// pase de la barra: se queda en 0 o en 1.
 pub(crate) fn clamped_slider_value(target: SliderTarget, values: &ContentValues, x: f32) -> f32 {
-    let track = match target {
-        SliderTarget::DockScale => {
-            let tops = super::logic::card_tops(super::logic::SECTION_DOCK);
-            tops.first().map(|top| content_slider_track(*top, 0))
-        }
-        SliderTarget::DockStrength => {
-            let tops = super::logic::card_tops(super::logic::SECTION_DOCK);
-            tops.get(2).map(|top| content_slider_track(*top, 0))
-        }
-    };
-    let Some(track) = track else {
+    let Some(track) = drag_track(target) else {
         return values.drag_value;
     };
     let inside = x.clamp(track.x, track.x + track.width);
@@ -135,13 +142,8 @@ impl Settings {
                 magnification_to(self.values().preferences.dock.magnification_strength)
             }
         };
-        let tops = super::logic::card_tops(super::logic::SECTION_DOCK);
-        let track = match target {
-            SliderTarget::DockScale => tops.first().map(|top| content_slider_track(*top, 0)),
-            SliderTarget::DockStrength => tops.get(2).map(|top| content_slider_track(*top, 0)),
-        };
         let mut value = start;
-        if let Some(track) = track {
+        if let Some(track) = drag_track(target) {
             let inside = x.clamp(track.x, track.x + track.width);
             value = slider_value_at_x_for(track, inside, start);
         }
