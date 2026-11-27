@@ -59,7 +59,7 @@ impl crate::Menubar {
     }
 
     pub(crate) fn open_at(&mut self, bar_width: f32) {
-        let rows = menu_rows();
+        let rows = menu_rows(self.theme.menu.text);
         let panel = menu_panel_for(&rows, bar_width);
         self.menu = Some(OpenMenu {
             rows,

@@ -10,6 +10,9 @@ fijar/quitar, y si está abierta «Cerrar ventana»/«Salir»); los iconos del s
 tienen el suyo (`logic/system_menus.rs`: explorador con carpetas, papelera con vaciado
 solo con contenido, Launchpad con abrir y añadir). Reloj y calendario no tienen menú.
 «Preferencias» abre la ventana de ajustes (`MenuAction::OpenSettings`, en `settings.rs`).
+Cada fila con acción clara lleva su icono Lucide de `dokka-icons` en el color
+del texto (una sola columna; la marca ✓ usa la misma); las madres y las filas
+sin acción clara van sin icono.
 La ventana reserva a cada lado sitio para el menú con su submenú a la derecha
 (`menu::WIDTH + menu::SUBMENU_GAP`, o la lupa si pide más); la zona activa sigue
 cubriendo solo la barra más la lupa para no tapar clics a otras apps.

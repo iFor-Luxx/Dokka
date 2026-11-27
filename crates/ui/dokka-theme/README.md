@@ -26,8 +26,10 @@
   apagado con su tirador y barra, relleno y atenuado del deslizador, con ocho
   cuadrados de color (el nuevo de la barra superior en rosa).
 - `typography.rs`: fuente y tamaños.
-- `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
-  a 20; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de
+- `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, de 280
+  de ancho con filas de 26, columna única de icono o marca de 26 a 15 de lado
+  y chevrón de 15 a la derecha con el mismo aire; con sus glifos Lucide
+  a lienzo completo; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de
   cristal separadas de 320 de ancho con hueco de 10, aire de 12, resaltado con margen de 6
   e inset de 10 y radio concéntrico de 10, cápsula de 60
   con círculo de 38, barra de 6 y títulos de 13/12); `control_center.rs` para
