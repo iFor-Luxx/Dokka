@@ -46,8 +46,13 @@ pub(crate) fn general_row_drawing(row: usize, color: Color) -> Drawing {
     }
 }
 
-/// Texto de ayuda de la cabecera de General.
-pub(crate) const GENERAL_HEADER_HELP: &str = "Ajustes generales de tu equipo y de Dokka: actualizaciones, almacenamiento, fecha, idioma y más.";
+/// Texto de ayuda de la cabecera de General, en dos líneas centradas.
+/// Cada línea cabe en el ancho de contenido más estrecho (468) con aire a
+/// los lados: la primera (~59 caracteres a 13) ocupa ~383 y deja ~42 por lado.
+pub(crate) const GENERAL_HEADER_HELP_FIRST: &str =
+    "Ajustes generales de tu equipo y de Dokka: actualizaciones,";
+/// Segunda línea de la ayuda de la cabecera de General.
+pub(crate) const GENERAL_HEADER_HELP_SECOND: &str = "almacenamiento, fecha, idioma y más.";
 
 fn header_top(scroll: f32) -> f32 {
     measures::CONTENT_TOP - scroll

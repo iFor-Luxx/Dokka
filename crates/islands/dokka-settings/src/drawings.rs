@@ -187,9 +187,10 @@ impl CachedDrawings {
         }
     }
 
-    /// Engranaje grande de la cabecera de General, creado una vez.
+    /// Engranaje grande de la cabecera de General, creado una vez: glifo
+    /// blanco sobre la baldosa gris, como el icono de la barra lateral.
     pub(crate) fn gear(&mut self, theme: &Theme) -> Arc<Drawing> {
-        let color = theme.settings.card_text;
+        let color = theme.settings.row_text_selected;
         if self.gear.as_ref().is_none_or(|(known, _)| *known != color) {
             self.gear = Some((color, Arc::new(dokka_icons::settings_general_icon(color))));
         }

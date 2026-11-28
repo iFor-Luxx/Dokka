@@ -16,9 +16,9 @@ sin reconstruir; el texto se repinta si cambia su contenido,
 estilo, color o alineación (izquierda o centro). Cada pieza lleva lo suyo en su
 mismo contenedor (`overlay_dismiss.rs`: lo que cae dentro de una pieza se mueve con
 ella alrededor de su centro); el overlay se escala sobre el icono sin reconstruir
-capas y la salida del centro la animan por piezas Composition una sola vez
+capas y la salida del centro la animan en bloque Composition una sola vez
 (`start_control_dismiss`: cada grupo vuela a su icono encogiéndose y
-desvaneciéndose, primero el más cercano); las miniaturas del panel usan la misma transformación y la vista grande
+desvaneciéndose, todas a la vez); las miniaturas del panel usan la misma transformación y la vista grande
 estilo, color o alineación (izquierda, centro o derecha). El overlay se escala sobre el icono sin reconstruir
 capas; las miniaturas del panel usan la misma transformación y la vista grande
 muestra una ventana en su sitio real por debajo del dock. El submenú reutiliza `OverlayLayers`
