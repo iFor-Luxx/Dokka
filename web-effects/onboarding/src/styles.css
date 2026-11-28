@@ -1,0 +1,69 @@
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, sans-serif;
+  user-select: none;
+}
+.hello {
+  position: relative;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+}
+.hello__desktop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hello__veil {
+  position: absolute;
+  inset: 0;
+  background: rgb(24 34 52 / 0.34);
+}
+.hello__window {
+  position: absolute;
+  width: 38%;
+  height: 46%;
+  border-radius: 14px;
+  background: linear-gradient(#e6e6e8 0 38px, #ffffff 38px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.28);
+}
+.hello__window--left {
+  left: 10%;
+  top: 14%;
+}
+.hello__window--right {
+  right: 9%;
+  top: 32%;
+}
+.greeting {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 180px);
+  height: 320px;
+}
+.greeting__flip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.replay {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.35);
+  color: #ffffff;
+  cursor: pointer;
+}

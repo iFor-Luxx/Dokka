@@ -1,0 +1,42 @@
+/* Estilos de GlassText (en el original son clases de Tailwind). */
+.gt {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.gt-text {
+  position: relative;
+}
+.gt-text--hidden {
+  color: transparent;
+}
+.gt-text--loading {
+  opacity: 0.4;
+}
+.gt-layer {
+  position: absolute;
+  pointer-events: none;
+}
+.gt-sheen {
+  background-image: linear-gradient(110deg, transparent 42%, oklch(1 0 0 / 0.4) 50%, transparent 58%);
+  background-size: 260% 100%;
+  animation: opaline-sheen 5s ease-in-out infinite;
+}
+.gt-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+@keyframes opaline-sheen {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gt-sheen {
+    display: none;
+  }
+}

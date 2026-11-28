@@ -1,0 +1,23 @@
+{
+  "name": "dokka-onboarding",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --bun x vite",
+    "build": "bun --bun x vite build",
+    "check": "bun --bun x tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@fontsource/pacifico": "5.3.0",
+    "motion": "14.14.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.3",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "typescript": "7.0.2",
+    "vite": "8.4.0"
+  }
+}
