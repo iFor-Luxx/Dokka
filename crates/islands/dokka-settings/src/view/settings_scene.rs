@@ -14,11 +14,14 @@ use dokka_theme::{Theme, settings as measures};
 
 use super::super::logic::section_names;
 use super::content::content_scene;
+use super::header_veil::{HeaderRequest, header_veil as veil_of};
 use crate::Settings;
 
-/// Escena fija de la ventana: fondo, barra lateral, filas visibles, cabecera
-/// y contenido. Cada capa visual se crea arriba, en orden de pintado: fondo,
-/// paneles, planos, resaltado, líneas, iconos, puntos y textos. Cambiar de
+/// Escena fija de la ventana: fondo, barra lateral, filas visibles, franja
+/// de la cabecera y contenido. Cada capa visual se crea arriba, en orden de
+/// pintado: fondo, paneles, planos, resaltado, líneas, iconos, puntos, textos
+/// y, entre el contenido y la cabecera, la franja difuminada con la píldora
+/// y el título por encima y nítidos. Cambiar de
 /// sección, filtrar o mover el cursor no cambia la forma salvo el contenido:
 /// las tarjetas traen planos, líneas, puntos y textos de más o de menos según
 /// la sección y `SceneLayers` reconstruye entonces (si el estilo cambia o
@@ -67,7 +70,6 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         measures::SEARCH_ICON_SIDE,
         &search_drawing,
     ));
-    icons.extend(nav_pill_icons(theme, &nav, &pill));
     icons.extend(traffic_icons(theme, &traffic, focused, hovered));
     icons.extend(content.icons);
     let names = section_names();
@@ -80,7 +82,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     if order.is_empty() {
         texts.push(filtered_empty(theme));
     }
-    texts.push(Text {
+    let title = Text {
         x: measures::title_left(),
         center_y: measures::header_middle(),
         content: settings.title(),
@@ -88,7 +90,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         is_bold: true,
         color: theme.settings.title,
         align: TextAlign::Left,
-    });
+    };
     texts.extend(content.texts);
     let mut flats = vec![
         search_panel_at(
@@ -100,28 +102,41 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         ),
         filtered_selection(theme, selected, &order),
         filtered_hover(theme, selected, settings.hovered(), &order),
-        nav_pill_highlight(theme, &pill),
     ];
     flats.extend(content.flats);
-    let mut dividers: Vec<Divider> = vec![
-        Divider {
-            bounds: dokka_scene::Rect {
-                x: measures::HEADER_DIVIDER_LEFT,
-                y: measures::HEADER_DIVIDER_TOP,
-                width: header_right - measures::HEADER_DIVIDER_LEFT,
-                height: measures::HEADER_DIVIDER_HEIGHT,
-            },
-            color: theme.settings.divider,
+    let header_divider = Divider {
+        bounds: dokka_scene::Rect {
+            x: measures::HEADER_DIVIDER_LEFT,
+            y: measures::HEADER_DIVIDER_TOP,
+            width: header_right - measures::HEADER_DIVIDER_LEFT,
+            height: measures::HEADER_DIVIDER_HEIGHT,
         },
-        nav_pill_divider(theme, &pill),
-    ];
+        color: theme.settings.divider,
+    };
     let cursors = vec![settings_search_cursor(
         theme.settings.search_text,
         search,
         settings.query(),
         settings.search_focused(),
     )];
+    let mut dividers: Vec<Divider> = Vec::new();
     dividers.extend(content.dividers);
+    // La cabecera va sobre la franja difuminada: la píldora, su resaltado,
+    // sus líneas, sus iconos y el título quedan nítidos por encima. Sin
+    // desplazar la franja es invisible y se ve como hoy.
+    let veil = veil_of(
+        theme,
+        HeaderRequest {
+            pill_panel: nav_pill_panel(theme, &pill),
+            pill_flat: nav_pill_highlight(theme, &pill),
+            header_divider,
+            pill_divider: nav_pill_divider(theme, &pill),
+            pill_icons: nav_pill_icons(theme, &nav, &pill),
+            title,
+            scroll: settings.scroll_offset(),
+            window_width,
+        },
+    );
     let mut scene = Scene {
         panel: dokka_scene::Panel {
             bounds: dokka_scene::Rect {
@@ -142,14 +157,13 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         }),
         panels: vec![
             sidebar_panel_for(theme, window_height),
-            // Cada capa se inserta arriba: la píldora queda sobre el fondo.
-            nav_pill_panel(theme, &pill),
         ],
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
         // y taparía su tinte. Las tarjetas, los deslizadores (barra, relleno
         // desde la fábrica, marca y tirador en cápsula), el segmentado (fondo
-        // y pastilla), los interruptores (pista y tirador), el agarre
-        // reordenable y su resaltado y el resaltado de la píldora van aquí.
+        // y pastilla), los interruptores (pista y tirador) y el agarre
+        // reordenable con su resaltado van aquí. El resaltado de la píldora
+        // va sobre la franja, con su cristal: lo lleva la propia franja.
         // Los tiradores son planos porque los puntos son círculos. El contenido
         // cambia de tamaño entre secciones: `SceneLayers` reconstruye si crece
         // o cambia el estilo; al arrastrar la barra solo se mueven, sin
@@ -167,6 +181,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         opacity: 1.0,
         scale: 1.0,
         blur: 0.0,
+        header_veil: Some(veil),
         overlay: None,
         submenu: None,
     };
@@ -214,5 +229,25 @@ fn shift_scene(scene: &mut Scene, dx: f32, dy: f32) {
     for text in &mut scene.texts {
         text.x += dx;
         text.center_y += dy;
+    }
+    if let Some(veil) = &mut scene.header_veil {
+        veil.bounds.x += dx;
+        veil.bounds.y += dy;
+        for panel in veil.panels.iter_mut().chain(veil.flats.iter_mut()) {
+            panel.bounds.x += dx;
+            panel.bounds.y += dy;
+        }
+        for divider in &mut veil.dividers {
+            divider.bounds.x += dx;
+            divider.bounds.y += dy;
+        }
+        for icon in &mut veil.icons {
+            icon.x += dx;
+            icon.y += dy;
+        }
+        for text in &mut veil.texts {
+            text.x += dx;
+            text.center_y += dy;
+        }
     }
 }

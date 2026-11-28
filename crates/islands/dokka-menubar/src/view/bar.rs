@@ -56,6 +56,7 @@ impl Menubar {
             opacity: 1.0,
             scale: 1.0,
             blur: 0.0,
+            header_veil: None,
         }
     }
 

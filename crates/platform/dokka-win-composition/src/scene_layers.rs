@@ -6,6 +6,7 @@ use crate::blur_stage::BlurStage;
 use crate::cursor_layer::CursorLayer;
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
+use crate::header_veil_layer::HeaderVeilLayer;
 use crate::icon_layer::IconLayer;
 use crate::label_layer::LabelLayer;
 use crate::overlay_layers::OverlayLayers;
@@ -50,10 +51,12 @@ pub(crate) struct SceneLayers {
     pub(crate) labels: Vec<LabelLayer>,
     pub(crate) overlay: Option<OverlayLayers>,
     pub(crate) submenu: Option<OverlayLayers>,
+    /// Franja difuminada bajo la cabecera, solo Preferencias. Falla sola.
+    pub(crate) veil: Option<HeaderVeilLayer>,
 }
 
 /// Lo que fija el aspecto de un panel extra al crearse: `update` no lo reconstruye.
-type PanelStyle = (Color, Color, f32, f32);
+pub(crate) type PanelStyle = (Color, Color, f32, f32);
 
 pub(crate) fn panel_style_of(panel: &Panel) -> PanelStyle {
     (
@@ -152,6 +155,13 @@ impl SceneLayers {
             .iter()
             .map(|_| LabelLayer::add(compositor, &content))
             .collect::<Result<_>>()?;
+        // La franja va entre el contenido y la cabecera: su contenedor se
+        // inserta arriba del contenido y el suyo propio aún más arriba.
+        let veil = scene
+            .header_veil
+            .as_ref()
+            .map(|veil| HeaderVeilLayer::add(compositor, painter, &holder, &content, &scene.panel, veil))
+            .transpose()?;
         let mut layers = Self {
             backdrop,
             holder,
@@ -176,6 +186,7 @@ impl SceneLayers {
             labels,
             overlay,
             submenu,
+            veil,
         };
         layers.apply_stage(compositor, scene)?;
         Ok(layers)

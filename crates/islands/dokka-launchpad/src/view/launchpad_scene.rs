@@ -117,5 +117,6 @@ pub fn launchpad_scene(
         opacity: launchpad.zoom.opacity(),
         scale: launchpad.zoom.scale(),
         blur: launchpad.zoom.blur(),
+        header_veil: None,
     }
 }

@@ -32,8 +32,10 @@
   y segmentado de 204 × 28 con aire interior de 2 y texto de 12, agarre de 16
   con aire de 8 al nombre, umbral de arrastre de 4, resaltado de radio 8 y
   ayuda de 12 bajo la tarjeta, y tarjeta
-  "Próximamente"), con funciones para filas,
-  título y tarjetas. `measures/control_gallery.rs` para la galería del modo
+  "Próximamente"), franja de la cabecera (del borde superior a 96 solo en
+  la zona de contenido, desenfoque de 24 e intensidad plena a los 32 de
+  desplazamiento), con funciones para filas,
+  título, tarjetas y franja. `measures/control_gallery.rs` para la galería del modo
   editar (ventana de 760 × 900 con radio 26 que se encoge en pantallas bajas,
   columna de 245, casilla de 36 con lupa a 16 y cursor, filas de 44 con
   cuadrito de 28 y radio 8, títulos de sección en 12, nombres en 12/14, pie

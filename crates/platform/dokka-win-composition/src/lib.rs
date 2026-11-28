@@ -11,6 +11,7 @@ mod dot_layer;
 mod fill_triangle;
 mod fit_thumbnail;
 mod graphics_device;
+mod header_veil_layer;
 mod icon_layer;
 mod label_layer;
 mod label_pointer;

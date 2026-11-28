@@ -7,6 +7,7 @@ mod datetime_content;
 mod dock_content;
 mod general_content;
 mod general_rows;
+mod header_veil;
 mod language_content;
 mod menubar_content;
 mod other_content;
