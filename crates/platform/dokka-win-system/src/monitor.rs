@@ -10,8 +10,9 @@ use std::sync::mpsc::{Sender, channel};
 use std::thread;
 
 use dokka_contracts::{ContractError, SystemInfo, SystemPage};
-use dokka_model::SystemSummary;
+use dokka_model::{StorageBreakdown, SystemSummary};
 
+use super::breakdown::StorageWorker;
 use super::open;
 use super::summary::read_all;
 
@@ -26,6 +27,7 @@ enum SystemCommand {
 pub struct SystemSystemInfo {
     commands: Sender<SystemCommand>,
     shared: Arc<Mutex<Option<SystemSummary>>>,
+    storage: StorageWorker,
 }
 
 impl SystemSystemInfo {
@@ -34,12 +36,26 @@ impl SystemSystemInfo {
         let shared = Arc::new(Mutex::new(None));
         let worker_shared = Arc::clone(&shared);
         thread::spawn(move || watch(&queue, &worker_shared));
-        Self { commands, shared }
+        Self {
+            commands,
+            shared,
+            storage: StorageWorker::start(),
+        }
     }
 
     /// Pide releer el equipo en el hilo (al abrir "Acerca de este PC").
     pub fn request_refresh(&self) {
         let _ = self.commands.send(SystemCommand::Refresh);
+    }
+
+    /// Pide calcular el desglose (al abrir "Almacenamiento").
+    pub fn request_storage(&self) {
+        self.storage.request();
+    }
+
+    /// Detiene el cálculo (al salir de "Almacenamiento").
+    pub fn cancel_storage(&self) {
+        self.storage.cancel();
     }
 }
 
@@ -60,6 +76,18 @@ impl SystemInfo for SystemSystemInfo {
 
     fn request_refresh(&self) {
         Self::request_refresh(self);
+    }
+
+    fn storage(&self) -> Option<StorageBreakdown> {
+        self.storage.storage()
+    }
+
+    fn request_storage(&self) {
+        Self::request_storage(self);
+    }
+
+    fn cancel_storage(&self) {
+        Self::cancel_storage(self);
     }
 
     fn open_page(&self, page: SystemPage) -> Result<(), ContractError> {

@@ -42,8 +42,10 @@ pub use lucide::{
     preview_pin_icon, preview_pinned_icon, search_icon, settings_about_icon,
     settings_appearance_icon, settings_dock_icon, settings_general_icon, settings_grip_icon,
     settings_launchpad_icon, settings_menubar_icon, settings_shortcuts_icon, settings_taskbar_icon,
-    submenu_chevron_icon, traffic_circle, traffic_close_button, traffic_minimize_button,
-    traffic_zoom_button,
+    storage_apps_icon, storage_documents_icon, storage_downloads_icon, storage_images_icon,
+    storage_music_icon, storage_other_icon, storage_trash_icon, storage_videos_icon,
+    storage_windows_icon, submenu_chevron_icon, traffic_circle, traffic_close_button,
+    traffic_minimize_button, traffic_zoom_button,
 };
 pub use menubar_tray::TrayIcons;
 pub use network_language::{

@@ -149,6 +149,24 @@ pub(crate) fn about_button_at(
     about_hit(width, scroll, x, y)
 }
 
+/// Botón de "Almacenamiento" bajo el punto, con su desplazamiento aplicado:
+/// 0 vaciar papelera, 1 ajustes. `disks` dice cuántos otros discos hay.
+pub(crate) fn storage_button_at(
+    section: usize,
+    general: crate::general::GeneralPage,
+    width: f32,
+    scroll: f32,
+    disks: usize,
+    x: f32,
+    y: f32,
+) -> Option<u8> {
+    use crate::general::GeneralPage as Page;
+    if section != SECTION_GENERAL || general != Page::Storage {
+        return None;
+    }
+    super::storage::storage_button_at(width, scroll, disks, x, y)
+}
+
 /// `true` si el punto cae en algún control del contenido (para no arrastrar
 /// la ventana desde ahí).
 pub(crate) fn content_control_at(section: usize, width: f32, x: f32, y: f32) -> bool {

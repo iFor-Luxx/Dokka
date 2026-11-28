@@ -68,6 +68,20 @@ fn general_scene(theme: &Theme, settings: &mut Settings) -> ContentScene {
             let pc = std::sync::Arc::new(super::about_pc::pc_drawing(theme));
             super::about_content::about_content(theme, settings, &pc)
         }
+        Page::Storage => {
+            let mut badges = Vec::new();
+            let mut glyphs = Vec::new();
+            for index in 0..super::super::storage_state::STORAGE_CATEGORIES {
+                badges.push(settings.storage_badge_drawing(theme, index));
+                glyphs.push(settings.storage_row_drawing(theme, index));
+            }
+            super::storage_content::storage_content(theme, settings, &badges, &glyphs)
+        }
+        Page::Update => {
+            let badge = settings.general_badge_drawing(theme, 1);
+            let glyph = settings.general_row_drawing(theme, 1);
+            super::update_content::update_content(theme, settings, &badge, &glyph)
+        }
         _ => coming_soon(theme, settings.content_width()),
     }
 }

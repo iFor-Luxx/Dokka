@@ -22,7 +22,7 @@ pub use preferences::{
     DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPosition, DockPreferences, MenubarItem,
     MenubarPreferences, Preferences,
 };
-pub use system_info::{SystemSummary, bytes_in_gb};
+pub use system_info::{OtherDisk, StorageBreakdown, SystemSummary, bytes_in_gb};
 pub use system_status::{
     AudioOutput, KeyboardLanguage, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
 };

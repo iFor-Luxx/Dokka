@@ -18,7 +18,9 @@ pub use settings::{
     general_about_icon, general_datetime_icon, general_language_icon, general_storage_icon,
     general_update_icon, settings_about_icon, settings_appearance_icon, settings_dock_icon,
     settings_general_icon, settings_grip_icon, settings_launchpad_icon, settings_menubar_icon,
-    settings_shortcuts_icon, settings_taskbar_icon,
+    settings_shortcuts_icon, settings_taskbar_icon, storage_apps_icon, storage_documents_icon,
+    storage_downloads_icon, storage_images_icon, storage_music_icon, storage_other_icon,
+    storage_trash_icon, storage_videos_icon, storage_windows_icon,
 };
 pub use traffic::{
     traffic_circle, traffic_close_button, traffic_minimize_button, traffic_zoom_button,

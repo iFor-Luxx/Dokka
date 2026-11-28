@@ -14,6 +14,7 @@ mod reorder_pointer;
 mod selection;
 mod slider_pointer;
 mod state;
+mod storage_state;
 mod values;
 mod view;
 

@@ -136,3 +136,12 @@ pub const ABOUT_HERO_LINE_GAP: f32 = 12.0;
 pub const ABOUT_HERO_LINE_HALF: f32 = 60.0;
 /// Ancho de la línea gris bajo el modelo.
 pub const ABOUT_HERO_LINE_WIDTH: f32 = 120.0;
+
+/// Alto de la barra de almacenamiento con sus tramos por categoría.
+pub const STORAGE_BAR_HEIGHT: f32 = 12.0;
+/// Radio de la pista de la barra de almacenamiento, concéntrico.
+pub const STORAGE_BAR_RADIUS: f32 = 6.0;
+/// Alto de la fila que trae la barra dentro de su tarjeta.
+pub const STORAGE_BAR_ROW_HEIGHT: f32 = 48.0;
+/// Aire sobre la barra dentro de su fila.
+pub const STORAGE_BAR_TOP_GAP: f32 = 18.0;

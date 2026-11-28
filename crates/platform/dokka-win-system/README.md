@@ -8,6 +8,11 @@ registro diga 10), resolución de la pantalla principal y disco del sistema.
 Todo en un hilo propio: la isla solo lee el último valor y pide refresco.
 También abre páginas del sistema (`ms-settings:display`,
 `ms-settings:storagesense`, `msinfo32`).
+También calcula el desglose de almacenamiento para su apartado (`breakdown`):
+papelera (`SHQueryRecycleBinW`), programas instalados (`EstimatedSize` del
+registro), carpetas del usuario con sus rutas conocidas (sin seguir enlaces
+ni uniones, ignorando lo ilegible) y otros discos fijos. Todo en su propio
+hilo con progreso parcial y cancelable; la isla lee el último valor.
 
 **No hace:** no cambia nada del equipo, solo lee y abre páginas.
 Los textos de relleno de los PC montados a mano ("System Product Name",

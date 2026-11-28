@@ -15,6 +15,8 @@ pub(crate) struct CachedDrawings {
     rows: Vec<Option<(Color, Arc<Drawing>)>>,
     general_badges: Vec<Option<(Color, Arc<Drawing>)>>,
     general_rows: Vec<Option<(Color, Arc<Drawing>)>>,
+    storage_badges: Vec<Option<(Color, Arc<Drawing>)>>,
+    storage_rows: Vec<Option<(Color, Arc<Drawing>)>>,
     search: Option<(Color, Arc<Drawing>)>,
     grip: Option<(Color, Arc<Drawing>)>,
     chevron: Option<(Color, Arc<Drawing>)>,
@@ -30,6 +32,8 @@ impl CachedDrawings {
             rows: vec![None; measures::SECTIONS],
             general_badges: vec![None; super::logic::GENERAL_ROWS],
             general_rows: vec![None; super::logic::GENERAL_ROWS],
+            storage_badges: vec![None; super::storage_state::STORAGE_CATEGORIES],
+            storage_rows: vec![None; super::storage_state::STORAGE_CATEGORIES],
             search: None,
             grip: None,
             chevron: None,
@@ -145,6 +149,41 @@ impl CachedDrawings {
         match &self.chevron {
             Some((_, drawing)) => Arc::clone(drawing),
             None => Arc::new(dokka_icons::submenu_chevron_icon(color)),
+        }
+    }
+
+    /// Cuadrado de color de una categoría de almacenamiento, creado una vez.
+    pub(crate) fn storage_badge(&mut self, theme: &Theme, index: usize) -> Arc<Drawing> {
+        let color = super::logic::storage_category_color(theme, index);
+        let slot = self.storage_badges.get_mut(index);
+        let Some(entry) = slot else {
+            return Arc::new(super::logic::badge_drawing(color));
+        };
+        if entry.as_ref().is_none_or(|(known, _)| *known != color) {
+            *entry = Some((color, Arc::new(super::logic::badge_drawing(color))));
+        }
+        match entry {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(super::logic::badge_drawing(color)),
+        }
+    }
+
+    /// Glifo blanco de una categoría de almacenamiento, creado una vez.
+    pub(crate) fn storage_row(&mut self, theme: &Theme, index: usize) -> Arc<Drawing> {
+        let color = theme.settings.row_text_selected;
+        let slot = self.storage_rows.get_mut(index);
+        let Some(entry) = slot else {
+            return Arc::new(super::logic::storage_category_drawing(index, color));
+        };
+        if entry.as_ref().is_none_or(|(known, _)| *known != color) {
+            *entry = Some((
+                color,
+                Arc::new(super::logic::storage_category_drawing(index, color)),
+            ));
+        }
+        match entry {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(super::logic::storage_category_drawing(index, color)),
         }
     }
 

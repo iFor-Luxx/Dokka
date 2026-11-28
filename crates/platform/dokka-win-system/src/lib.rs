@@ -1,8 +1,13 @@
 //! Resumen del equipo para "Acerca de este PC", en un hilo propio.
 #![allow(unsafe_code)]
 
+mod apps_size;
+mod breakdown;
+mod disks;
 mod display;
+mod folder_size;
 mod graphics;
+mod known_folders;
 mod machine;
 mod monitor;
 mod open;

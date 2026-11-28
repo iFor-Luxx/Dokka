@@ -39,6 +39,7 @@ pub(crate) fn read_all() -> SystemSummary {
         storage_drive: drive,
         storage_free_bytes: free,
         storage_total_bytes: total,
+        storage: None,
     }
 }
 
