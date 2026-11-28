@@ -1,7 +1,7 @@
-//! Ficha "Acerca de este PC": héroe con el modelo y tarjetas con datos reales.
+//! Ficha "Acerca de este Mac": héroe con el iMac y tarjetas con datos reales.
 //!
 //! Reutiliza `settings_group` para tarjetas; los botones y sus piezas viven
-//! en `about_buttons`, las tarjetas en `about_cards` y el dibujo en
+//! en `about_buttons`, las tarjetas en `about_cards` y los dibujos en
 //! `about_pc`. Lo que queda fuera de la vista no se pinta: se lleva a tamaño
 //! cero para no reconstruir capas al bajar con la rueda.
 
@@ -9,13 +9,13 @@ use std::sync::Arc;
 
 use dokka_model::{SystemSummary, bytes_in_gb};
 use dokka_scene::{Divider, Drawing, Icon, Text, TextAlign};
-use dokka_theme::{Theme, settings as measures};
+use dokka_theme::{Theme, branding, settings as measures};
 
 use super::super::logic::{about_main_rows, about_top};
 use super::super::state::Settings;
 use super::about_buttons::{button_hover, button_pieces};
-use super::about_cards::{section_header, value_card};
-use super::about_pc::hidden_icon;
+use super::about_cards::{macos_card, section_header, value_card};
+use super::about_pc::{hidden_icon, macos_drawing};
 use super::content::ContentScene;
 
 /// Ficha completa; `pc` es el dibujo propio del equipo.
@@ -30,7 +30,7 @@ pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing
     let mut icons = Vec::new();
     let mut texts = Vec::new();
 
-    // Héroe: PC, modelo y línea gris.
+    // Héroe: iMac, título de apariencia y resolución real.
     let (hero_dividers, hero_icons, hero_texts) =
         hero_pieces(theme, top, width, window_height, &summary, pc);
     dividers.extend(hero_dividers);
@@ -54,8 +54,26 @@ pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing
     dividers.append(&mut card_dividers);
     texts.append(&mut card_texts);
 
-    // Secciones con su cabecera y su tarjeta.
+    // Sección macOS: cabecera y tarjeta de una fila con su icono.
+    let macos = Arc::new(macos_drawing(theme));
     let mut cursor = main_top + 5.0 * measures::CONTENT_ROW_HEIGHT + measures::GROUP_GAP;
+    let header = section_header(
+        theme,
+        cursor,
+        branding::ABOUT_OS_SECTION_TITLE,
+        width,
+        window_height,
+    );
+    texts.extend(header);
+    cursor += measures::ABOUT_SECTION_TITLE_HEIGHT;
+    let (panel, mut card_icons, mut card_texts) =
+        macos_card(theme, cursor, width, window_height, &macos);
+    flats.push(panel);
+    icons.append(&mut card_icons);
+    texts.append(&mut card_texts);
+    cursor += measures::CONTENT_ROW_HEIGHT + measures::GROUP_GAP;
+
+    // Secciones con su cabecera y su tarjeta.
     for section in about_sections(&summary) {
         let header = section_header(theme, cursor, section.title, width, window_height);
         texts.extend(header);
@@ -120,15 +138,6 @@ fn about_sections(summary: &SystemSummary) -> Vec<AboutSection> {
     };
     vec![
         AboutSection {
-            title: "Windows",
-            labels: vec!["Edición", "Versión"],
-            values: vec![
-                SystemSummary::display(&summary.windows_edition).to_owned(),
-                SystemSummary::display(&summary.windows_version).to_owned(),
-            ],
-            button: None,
-        },
-        AboutSection {
             title: "Pantalla",
             labels: vec!["Nombre", "Resolución"],
             values: vec![
@@ -160,7 +169,7 @@ fn main_values(summary: &SystemSummary) -> Vec<String> {
     ]
 }
 
-/// Héroe: dibujo del PC, modelo en grande y línea gris.
+/// Héroe: iMac, título de apariencia y resolución real en gris.
 fn hero_pieces(
     theme: &Theme,
     top: f32,
@@ -175,7 +184,10 @@ fn hero_pieces(
         + measures::ABOUT_PC_SIDE
         + measures::ABOUT_HERO_MODEL_GAP
         + measures::ABOUT_MODEL_SIZE / 2.0;
-    let line_y = model_y + measures::ABOUT_MODEL_SIZE / 2.0 + measures::ABOUT_HERO_LINE_GAP;
+    let sub_y = model_y
+        + measures::ABOUT_MODEL_SIZE / 2.0
+        + measures::ABOUT_HERO_LINE_GAP
+        + measures::CONTENT_LABEL_SIZE / 2.0;
     let visible = |y: f32| y >= measures::CONTENT_TOP && y <= window_height;
     let mut icons = Vec::new();
     if visible(pc_y + measures::ABOUT_PC_SIDE / 2.0) {
@@ -195,24 +207,23 @@ fn hero_pieces(
         texts.push(Text {
             x: center,
             center_y: model_y,
-            content: SystemSummary::display(&summary.model).to_owned(),
+            content: branding::ABOUT_MODEL_NAME.to_owned(),
             size: measures::ABOUT_MODEL_SIZE,
             is_bold: true,
             color: theme.settings.row_text,
             align: TextAlign::Center,
         });
     }
-    let mut dividers = Vec::new();
-    if visible(line_y) {
-        dividers.push(Divider {
-            bounds: dokka_scene::Rect {
-                x: center - measures::ABOUT_HERO_LINE_HALF,
-                y: line_y,
-                width: measures::ABOUT_HERO_LINE_WIDTH,
-                height: measures::HEADER_DIVIDER_HEIGHT,
-            },
-            color: theme.settings.divider,
+    if visible(sub_y) {
+        texts.push(Text {
+            x: center,
+            center_y: sub_y,
+            content: SystemSummary::display(&summary.display_size).to_owned(),
+            size: measures::CONTENT_LABEL_SIZE,
+            is_bold: false,
+            color: theme.settings.card_text,
+            align: TextAlign::Center,
         });
     }
-    (dividers, icons, texts)
+    (Vec::new(), icons, texts)
 }
