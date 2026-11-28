@@ -18,8 +18,9 @@ pub(crate) use content_hit::{
 };
 pub(crate) use dock_position::{position_from_index, position_options, position_to_index};
 pub(crate) use general::{
-    GENERAL_HEADER_HELP, GENERAL_ROWS, about_main_rows, about_top, general_badge_color,
-    general_card_top, general_row_drawing, general_rows, general_scroll_max,
+    GENERAL_HEADER_HELP_FIRST, GENERAL_HEADER_HELP_SECOND, GENERAL_ROWS, about_main_rows,
+    about_top, general_badge_color, general_card_top, general_row_drawing, general_rows,
+    general_scroll_max,
 };
 pub use hit::drag_zone;
 pub(crate) use menubar_order::{
