@@ -113,7 +113,8 @@ impl Settings {
                 control_at(self.selected(), general, width, scroll, disks, x, y)
             };
         } else {
-            self.values_mut().control = control_at(self.selected(), general, width, scroll, disks, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, disks, x, y);
         }
     }
 

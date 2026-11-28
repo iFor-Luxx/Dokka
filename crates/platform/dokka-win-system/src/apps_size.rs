@@ -67,10 +67,10 @@ fn subkey_names(hive: HKEY, path: &str) -> Option<Vec<String>> {
             RegEnumKeyExW(
                 key,
                 index,
-                PWSTR(name.as_mut_ptr()),
+                Some(PWSTR(name.as_mut_ptr())),
                 &mut length as *mut u32,
                 None,
-                PWSTR::null(),
+                Some(PWSTR::null()),
                 None,
                 None,
             )

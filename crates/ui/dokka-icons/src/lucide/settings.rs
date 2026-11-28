@@ -156,20 +156,12 @@ pub fn storage_downloads_icon(color: Color) -> Drawing {
 
 /// Icono de la categoría Papelera del almacenamiento: papelera.
 pub fn storage_trash_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::Trash2,
-        settings::ROW_GLYPH_SIZE,
-        color,
-    )
+    glyph(lucide_icons::Icon::Trash2, settings::ROW_GLYPH_SIZE, color)
 }
 
 /// Icono de la categoría Windows del almacenamiento: carpeta.
 pub fn storage_windows_icon(color: Color) -> Drawing {
-    glyph(
-        lucide_icons::Icon::Folder,
-        settings::ROW_GLYPH_SIZE,
-        color,
-    )
+    glyph(lucide_icons::Icon::Folder, settings::ROW_GLYPH_SIZE, color)
 }
 
 /// Icono de "Datos del sistema y otros": base de datos.

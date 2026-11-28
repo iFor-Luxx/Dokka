@@ -6,8 +6,9 @@
 
 use dokka_model::OtherDisk;
 use windows::Win32::Storage::FileSystem::{
-    DRIVE_FIXED, GetDiskFreeSpaceExW, GetDriveTypeW, GetLogicalDriveStringsW,
+    GetDiskFreeSpaceExW, GetDriveTypeW, GetLogicalDriveStringsW,
 };
+use windows::Win32::System::WindowsProgramming::DRIVE_FIXED;
 use windows::Win32::UI::Shell::{SHQUERYRBINFO, SHQueryRecycleBinW};
 use windows::core::{HSTRING, PCWSTR};
 

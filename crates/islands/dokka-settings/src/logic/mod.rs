@@ -30,11 +30,6 @@ pub(crate) use menubar_order::{
     reorder_target, reordered, toggle_menubar,
 };
 pub(crate) use search_filter::filter_sections;
-pub(crate) use storage::{
-    storage_category_color, storage_category_drawing, storage_content_height, storage_layout,
-    storage_list_rows,
-};
-pub(crate) use update::{update_content_height, update_top};
 pub use sections::SECTION_NAMES;
 pub(crate) use sections::{SECTION_DOCK, SECTION_GENERAL, SECTION_MENUBAR, SECTION_TASKBAR};
 pub(crate) use sections::{badge_drawing, section_drawing, section_names};
@@ -42,3 +37,8 @@ pub(crate) use slider_map::{
     icon_scale_from, icon_scale_neutral, icon_scale_to, magnification_from, magnification_neutral,
     magnification_to,
 };
+pub(crate) use storage::{
+    StorageLayout, storage_category_color, storage_category_drawing, storage_header_rows,
+    storage_layout, storage_list_rows,
+};
+pub(crate) use update::update_top;

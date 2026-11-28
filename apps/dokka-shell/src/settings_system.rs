@@ -6,13 +6,13 @@
 //! hilos los leen y abre las páginas de los botones. Falla sola: si no se
 //! lee, el campo queda en "No disponible" o "Calculando…".
 
+use dokka_contracts::SystemInfo as _;
 use dokka_settings::{AboutButton, GeneralPage};
 
 use super::dock_session::DockSession;
 
 /// Pide el resumen del equipo una vez y pasa lo que ya haya al abrir "Acerca".
 pub(crate) fn request_about(session: &mut DockSession) {
-    use dokka_contracts::SystemInfo as _;
     if let Some(summary) = session.system_info.summary() {
         session.settings.set_system_info(Some(summary));
     } else {
@@ -25,7 +25,6 @@ pub(crate) fn poll_about(session: &mut DockSession) {
     if session.settings.general() != GeneralPage::About {
         return;
     }
-    use dokka_contracts::SystemInfo as _;
     if let Some(summary) = session.system_info.summary()
         && session.settings.system_summary() != Some(summary.clone())
     {
@@ -37,7 +36,6 @@ pub(crate) fn poll_about(session: &mut DockSession) {
 /// abrir el apartado, nunca en bucle: mientras tanto la isla sigue mostrando
 /// el último resultado en memoria.
 pub(crate) fn request_storage(session: &mut DockSession) {
-    use dokka_contracts::SystemInfo as _;
     if let Some(breakdown) = session.system_info.storage() {
         session.settings.set_storage(Some(breakdown));
     }
@@ -50,7 +48,6 @@ pub(crate) fn poll_storage(session: &mut DockSession) {
     if session.settings.general() != GeneralPage::Storage {
         return;
     }
-    use dokka_contracts::SystemInfo as _;
     if let Some(breakdown) = session.system_info.storage()
         && session.settings.storage_breakdown() != Some(breakdown.clone())
     {
@@ -60,13 +57,12 @@ pub(crate) fn poll_storage(session: &mut DockSession) {
 
 /// Detiene el cálculo al salir del apartado; conserva lo ya calculado.
 pub(crate) fn cancel_storage(session: &DockSession) {
-    use dokka_contracts::SystemInfo as _;
     session.system_info.cancel_storage();
 }
 
 /// Vacía la papelera con su confirmación y recalcula el apartado.
 pub(crate) fn empty_trash(session: &mut DockSession) {
-    use dokka_contracts::{RecycleBin as _, SystemInfo as _};
+    use dokka_contracts::RecycleBin as _;
     if session.recycle_bin.empty().is_err() {
         return;
     }
@@ -75,7 +71,7 @@ pub(crate) fn empty_trash(session: &mut DockSession) {
 
 /// Abre la página del sistema del botón pulsado. Falla sola.
 pub(crate) fn open_about_page(session: &DockSession, button: AboutButton) {
-    use dokka_contracts::{SystemInfo as _, SystemPage};
+    use dokka_contracts::SystemPage;
     let page = match button {
         AboutButton::DisplaySettings => SystemPage::Display,
         AboutButton::StorageSettings => SystemPage::Storage,

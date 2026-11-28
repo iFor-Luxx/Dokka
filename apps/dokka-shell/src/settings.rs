@@ -13,6 +13,10 @@ use dokka_settings::{GeneralPage, SettingsAction, drag_zone, settings_scene};
 use dokka_win_surface::{Surface, SurfaceEvent};
 
 use crate::dock_session::DockSession;
+use crate::settings_keyboard::{
+    confirm_over_settings, erase_over_settings, escape_over_settings, focus_over_settings,
+    type_over_settings,
+};
 
 /// Abre la ventana o la trae al frente si ya estaba abierta.
 /// Si estaba minimizada, `SW_SHOWNORMAL` la restaura.
@@ -207,41 +211,6 @@ pub(crate) fn click_settings(
         crate::settings_system::request_storage(session);
     }
     Ok(())
-}
-
-/// Foco ganado o perdido: sin foco los semáforos se ven grises.
-pub(crate) fn focus_over_settings(session: &mut DockSession, focused: bool) {
-    if session.settings.is_open() {
-        session.settings.set_window_focused(focused);
-    }
-}
-
-/// Letra escrita con la casilla enfocada: filtra las filas.
-pub(crate) fn type_over_settings(session: &mut DockSession, character: char) {
-    if session.settings.is_open() {
-        session.settings.type_character(character);
-    }
-}
-
-/// Retroceso con la casilla enfocada: borra la última letra.
-pub(crate) fn erase_over_settings(session: &mut DockSession) {
-    if session.settings.is_open() {
-        session.settings.erase_character();
-    }
-}
-
-/// Enter con búsqueda: elige la primera coincidencia.
-pub(crate) fn confirm_over_settings(session: &mut DockSession) {
-    if session.settings.is_open() {
-        session.settings.confirm_search();
-    }
-}
-
-/// Esc: limpia lo escrito y quita el foco.
-pub(crate) fn escape_over_settings(session: &mut DockSession) {
-    if session.settings.is_open() {
-        session.settings.escape_search();
-    }
 }
 
 /// Atiende un evento de la ventana si es suyo. Devuelve si lo consumió.

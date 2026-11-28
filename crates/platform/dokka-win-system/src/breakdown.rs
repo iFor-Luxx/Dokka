@@ -26,14 +26,14 @@ struct StorageJob(u64);
 
 /// Cálculo del desglose en su propio hilo.
 #[derive(Debug)]
-pub struct StorageWorker {
+pub(crate) struct StorageWorker {
     commands: Sender<StorageJob>,
     shared: Arc<Mutex<Option<StorageBreakdown>>>,
     generation: Arc<AtomicU64>,
 }
 
 impl StorageWorker {
-    pub fn start() -> Self {
+    pub(crate) fn start() -> Self {
         let (commands, queue) = channel();
         let shared = Arc::new(Mutex::new(None));
         let generation = Arc::new(AtomicU64::new(0));
@@ -48,7 +48,7 @@ impl StorageWorker {
     }
 
     /// Último desglose calculado, aunque sea parcial.
-    pub fn storage(&self) -> Option<StorageBreakdown> {
+    pub(crate) fn storage(&self) -> Option<StorageBreakdown> {
         if let Ok(known) = self.shared.lock() {
             known.clone()
         } else {
@@ -57,13 +57,13 @@ impl StorageWorker {
     }
 
     /// Calcula el desglose en el hilo; solo al abrir el apartado.
-    pub fn request(&self) {
+    pub(crate) fn request(&self) {
         let job = StorageJob(self.generation.fetch_add(1, Ordering::Relaxed) + 1);
         let _ = self.commands.send(job);
     }
 
     /// Detiene el cálculo en curso; conserva lo ya calculado.
-    pub fn cancel(&self) {
+    pub(crate) fn cancel(&self) {
         self.generation.fetch_add(1, Ordering::Relaxed);
     }
 }
@@ -107,10 +107,7 @@ fn compute(
     let live = || generation.load(Ordering::Relaxed) == job.0;
     // Si no hay nada, se empieza de cero para mostrar "Calculando…"; si hay
     // un resultado anterior, se conserva y se reescribe por encima.
-    let fresh = shared
-        .lock()
-        .map(|known| known.is_none())
-        .unwrap_or(false);
+    let fresh = shared.lock().map(|known| known.is_none()).unwrap_or(false);
     if fresh {
         publish(shared, StorageBreakdown::default());
     }
@@ -149,9 +146,9 @@ fn compute(
         if !live() {
             return;
         }
-        let size = folder.as_deref().map(|root| {
-            folder_size::folder_size(root, &live).unwrap_or(0)
-        });
+        let size = folder
+            .as_deref()
+            .map(|root| folder_size::folder_size(root, &live).unwrap_or(0));
         publish_category(shared, slot, size);
     }
     if !live() {
@@ -187,10 +184,10 @@ fn publish(shared: &Arc<Mutex<Option<StorageBreakdown>>>, breakdown: StorageBrea
 }
 
 fn update(shared: &Arc<Mutex<Option<StorageBreakdown>>>, set: impl FnOnce(&mut StorageBreakdown)) {
-    if let Ok(mut known) = shared.lock() {
-        if let Some(breakdown) = known.as_mut() {
-            set(breakdown);
-        }
+    if let Ok(mut known) = shared.lock()
+        && let Some(breakdown) = known.as_mut()
+    {
+        set(breakdown);
     }
 }
 
@@ -206,11 +203,15 @@ fn publish_free_total(
 }
 
 fn publish_recycle(shared: &Arc<Mutex<Option<StorageBreakdown>>>, size: Option<u64>) {
-    update(shared, |breakdown| breakdown.recycle_bytes = Some(size.unwrap_or(0)));
+    update(shared, |breakdown| {
+        breakdown.recycle_bytes = Some(size.unwrap_or(0))
+    });
 }
 
 fn publish_apps(shared: &Arc<Mutex<Option<StorageBreakdown>>>, size: Option<u64>) {
-    update(shared, |breakdown| breakdown.apps_bytes = Some(size.unwrap_or(0)));
+    update(shared, |breakdown| {
+        breakdown.apps_bytes = Some(size.unwrap_or(0))
+    });
 }
 
 fn publish_disks(

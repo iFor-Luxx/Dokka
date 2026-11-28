@@ -32,14 +32,14 @@ pub(crate) fn storage_list_rows() -> usize {
 
 /// Posiciones de cada tramo del apartado con el desplazamiento aplicado.
 pub(crate) struct StorageLayout {
-    pub header: f32,
-    pub hint: f32,
-    pub list: f32,
-    pub disks_title: f32,
-    pub disks: f32,
-    pub empty: f32,
-    pub settings: f32,
-    pub height: f32,
+    pub(crate) header: f32,
+    pub(crate) hint: f32,
+    pub(crate) list: f32,
+    pub(crate) disks_title: f32,
+    pub(crate) disks: f32,
+    pub(crate) empty: f32,
+    pub(crate) settings: f32,
+    pub(crate) height: f32,
 }
 
 /// Calcula dónde empieza cada tramo; con 0 discos ese tramo no ocupa nada.
@@ -53,7 +53,11 @@ pub(crate) fn storage_layout(scroll: f32, disks: usize) -> StorageLayout {
     } else {
         let title = after_list + measures::GROUP_GAP;
         let card = title + measures::ABOUT_SECTION_TITLE_HEIGHT;
-        (title, card, card + disks as f32 * measures::CONTENT_ROW_HEIGHT)
+        (
+            title,
+            card,
+            card + disks as f32 * measures::CONTENT_ROW_HEIGHT,
+        )
     };
     let empty = after_disks + measures::GROUP_GAP;
     let settings = empty + measures::ABOUT_BUTTON_HEIGHT + measures::ABOUT_BUTTON_GAP;

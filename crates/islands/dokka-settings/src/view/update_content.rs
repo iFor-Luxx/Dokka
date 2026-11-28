@@ -56,7 +56,7 @@ pub(crate) fn update_content(
             align: TextAlign::Right,
         });
     }
-    let mut flats = vec![panel];
+    let flats = vec![panel];
     let middle = top + measures::CONTENT_ROW_HEIGHT / 2.0;
     let mut icons = Vec::new();
     if middle >= measures::CONTENT_TOP && middle <= window_height {

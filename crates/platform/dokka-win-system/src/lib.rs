@@ -3,8 +3,8 @@
 
 mod apps_size;
 mod breakdown;
-mod display;
 mod disks;
+mod display;
 mod folder_size;
 mod graphics;
 mod known_folders;

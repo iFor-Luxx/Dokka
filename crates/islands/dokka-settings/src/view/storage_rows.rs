@@ -54,8 +54,14 @@ pub(crate) fn category_card(
             continue;
         }
         let color = storage_category_color(theme, index);
-        let badge = badges.get(index).cloned().unwrap_or_else(|| badges[0].clone());
-        let glyph = glyphs.get(index).cloned().unwrap_or_else(|| glyphs[0].clone());
+        let badge = badges
+            .get(index)
+            .cloned()
+            .unwrap_or_else(|| badges[0].clone());
+        let glyph = glyphs
+            .get(index)
+            .cloned()
+            .unwrap_or_else(|| glyphs[0].clone());
         let badge_x = measures::CONTENT_LEFT + measures::CONTENT_PADDING;
         let badge_y = row_top + (measures::CONTENT_ROW_HEIGHT - measures::BADGE_SIDE) / 2.0;
         let inset = (measures::BADGE_SIDE - measures::ROW_ICON_SIDE) / 2.0;

@@ -7,9 +7,7 @@
 
 use std::path::PathBuf;
 
-use windows::Win32::Storage::FileSystem::{
-    FILE_ATTRIBUTE_REPARSE_POINT, GetFileAttributesW,
-};
+use windows::Win32::Storage::FileSystem::{FILE_ATTRIBUTE_REPARSE_POINT, GetFileAttributesW};
 use windows::core::HSTRING;
 
 /// Cuántas entradas se visitan antes de mirar si se canceló.
@@ -17,10 +15,7 @@ const CANCEL_CHECK_EVERY: usize = 512;
 
 /// Suma los tamaños de la carpeta; `None` si no se pudo ni abrir.
 /// Devuelve lo sumado aunque se cancele a medias.
-pub(crate) fn folder_size(
-    root: &std::path::Path,
-    should_stop: &dyn Fn() -> bool,
-) -> Option<u64> {
+pub(crate) fn folder_size(root: &std::path::Path, should_stop: &dyn Fn() -> bool) -> Option<u64> {
     if is_link(root) {
         return Some(0);
     }
@@ -38,7 +33,7 @@ pub(crate) fn folder_size(
         };
         for entry in entries.flatten() {
             visited += 1;
-            if visited % CANCEL_CHECK_EVERY == 0 && should_stop() {
+            if visited.is_multiple_of(CANCEL_CHECK_EVERY) && should_stop() {
                 return Some(total);
             }
             push_entry(&entry.path(), &mut pending, &mut total);
