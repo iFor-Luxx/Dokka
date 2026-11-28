@@ -69,8 +69,7 @@ pub(crate) const GENERAL_HEADER_TITLE: f32 = 20.0;
 pub(crate) const GENERAL_HEADER_SUBTITLE: f32 = 13.0;
 
 /// Texto de ayuda de la cabecera de General.
-pub(crate) const GENERAL_HEADER_HELP: &str =
-    "Ajustes generales de tu equipo y de Dokka: actualizaciones, almacenamiento, fecha, idioma y más.";
+pub(crate) const GENERAL_HEADER_HELP: &str = "Ajustes generales de tu equipo y de Dokka: actualizaciones, almacenamiento, fecha, idioma y más.";
 
 fn header_top(scroll: f32) -> f32 {
     measures::CONTENT_TOP - scroll
@@ -82,7 +81,12 @@ pub(crate) fn general_card_top(card: usize, scroll: f32) -> f32 {
     match card {
         0 => top,
         1 => top + GENERAL_HEADER_HEIGHT + measures::GROUP_GAP,
-        _ => top + GENERAL_HEADER_HEIGHT + measures::GROUP_GAP + 3.0 * measures::CONTENT_ROW_HEIGHT + measures::GROUP_GAP,
+        _ => {
+            top + GENERAL_HEADER_HEIGHT
+                + measures::GROUP_GAP
+                + 3.0 * measures::CONTENT_ROW_HEIGHT
+                + measures::GROUP_GAP
+        }
     }
 }
 
@@ -106,7 +110,13 @@ pub(crate) fn general_row_at(width: f32, scroll: f32, x: f32, y: f32) -> Option<
 }
 
 /// `true` si el punto cae en algún control de General (filas o botones).
-pub(crate) fn general_control_at(width: f32, scroll: f32, general: crate::general::GeneralPage, x: f32, y: f32) -> bool {
+pub(crate) fn general_control_at(
+    width: f32,
+    scroll: f32,
+    general: crate::general::GeneralPage,
+    x: f32,
+    y: f32,
+) -> bool {
     use crate::general::GeneralPage as Page;
     match general {
         Page::Root => general_row_at(width, scroll, x, y).is_some(),
@@ -143,7 +153,13 @@ pub(crate) const ABOUT_BUTTON_GAP: f32 = 8.0;
 
 /// Filas de la tarjeta principal: Nombre, Procesador, Gráfica, Memoria y Serie.
 pub(crate) fn about_main_rows() -> [&'static str; 5] {
-    ["Nombre", "Procesador", "Gráfica", "Memoria", "Número de serie"]
+    [
+        "Nombre",
+        "Procesador",
+        "Gráfica",
+        "Memoria",
+        "Número de serie",
+    ]
 }
 
 /// Altura total del contenido de la ficha, sin recortar.

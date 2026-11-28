@@ -60,7 +60,9 @@ fn general_scene(theme: &Theme, settings: &mut Settings) -> ContentScene {
             }
             let chevron = settings.chevron_drawing(theme);
             let gear = settings.gear_drawing(theme);
-            super::general_content::general_content(theme, settings, &badges, &glyphs, &chevron, &gear)
+            super::general_content::general_content(
+                theme, settings, &badges, &glyphs, &chevron, &gear,
+            )
         }
         Page::About => {
             let pc = std::sync::Arc::new(super::about_content::pc_drawing(theme));

@@ -21,11 +21,7 @@ use super::about_pc::hidden_icon;
 use super::content::ContentScene;
 
 /// Ficha completa; `pc` es el dibujo propio del equipo.
-pub(crate) fn about_content(
-    theme: &Theme,
-    settings: &Settings,
-    pc: &Arc<Drawing>,
-) -> ContentScene {
+pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing>) -> ContentScene {
     let width = settings.content_width();
     let scroll = settings.scroll_offset();
     let window_height = settings.window_height();
@@ -86,13 +82,7 @@ pub(crate) fn about_content(
     }
 
     // Informe del sistema, centrado abajo.
-    let (panel, text) = button_pieces(
-        theme,
-        cursor,
-        "Informe del sistema…",
-        width,
-        window_height,
-    );
+    let (panel, text) = button_pieces(theme, cursor, "Informe del sistema…", width, window_height);
     flats.push(panel);
     texts.push(text);
 

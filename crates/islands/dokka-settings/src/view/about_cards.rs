@@ -59,7 +59,8 @@ pub(crate) fn value_card(
     } else {
         // Valores a la derecha, en gris.
         for (index, value) in values.iter().enumerate() {
-            let y = top + index as f32 * measures::CONTENT_ROW_HEIGHT
+            let y = top
+                + index as f32 * measures::CONTENT_ROW_HEIGHT
                 + measures::CONTENT_ROW_HEIGHT / 2.0;
             if y < measures::CONTENT_TOP || y > window_height {
                 continue;

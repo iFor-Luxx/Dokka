@@ -14,15 +14,7 @@ pub(crate) fn read_registry_string(path: &str, value: &str) -> Option<String> {
     let subkey = HSTRING::from(path);
     let mut key = HKEY(std::ptr::null_mut());
     // SAFETY: abre una clave existente solo para leer; se cierra abajo.
-    let opened = unsafe {
-        RegOpenKeyExW(
-            HKEY_LOCAL_MACHINE,
-            &subkey,
-            None,
-            KEY_READ,
-            &mut key,
-        )
-    };
+    let opened = unsafe { RegOpenKeyExW(HKEY_LOCAL_MACHINE, &subkey, None, KEY_READ, &mut key) };
     if opened != ERROR_SUCCESS {
         return None;
     }
@@ -30,16 +22,8 @@ pub(crate) fn read_registry_string(path: &str, value: &str) -> Option<String> {
     let mut kind = REG_VALUE_TYPE(0);
     let mut size: u32 = 0;
     // SAFETY: primera llamada solo para saber el tamaño, sin buffer.
-    let sized = unsafe {
-        RegQueryValueExW(
-            key,
-            &name,
-            None,
-            Some(&mut kind),
-            None,
-            Some(&mut size),
-        )
-    };
+    let sized =
+        unsafe { RegQueryValueExW(key, &name, None, Some(&mut kind), None, Some(&mut size)) };
     if sized != ERROR_SUCCESS || size == 0 || size > 8192 {
         // SAFETY: la clave se abrió arriba y sigue válida.
         unsafe {
@@ -71,7 +55,10 @@ pub(crate) fn read_registry_string(path: &str, value: &str) -> Option<String> {
     }
     let used = (actual as usize / 2).min(buffer.len());
     let slice = &buffer[..used];
-    let end = slice.iter().position(|unit| *unit == 0).unwrap_or(slice.len());
+    let end = slice
+        .iter()
+        .position(|unit| *unit == 0)
+        .unwrap_or(slice.len());
     String::from_utf16(&slice[..end]).ok()
 }
 
@@ -80,15 +67,7 @@ pub(crate) fn read_registry_dword(path: &str, value: &str) -> Option<u32> {
     let subkey = HSTRING::from(path);
     let mut key = HKEY(std::ptr::null_mut());
     // SAFETY: abre una clave existente solo para leer; se cierra abajo.
-    let opened = unsafe {
-        RegOpenKeyExW(
-            HKEY_LOCAL_MACHINE,
-            &subkey,
-            None,
-            KEY_READ,
-            &mut key,
-        )
-    };
+    let opened = unsafe { RegOpenKeyExW(HKEY_LOCAL_MACHINE, &subkey, None, KEY_READ, &mut key) };
     if opened != ERROR_SUCCESS {
         return None;
     }

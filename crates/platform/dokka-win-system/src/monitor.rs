@@ -68,7 +68,10 @@ impl SystemInfo for SystemSystemInfo {
 }
 
 /// Bucle lector: una lectura por orden, sin acumular trabajo.
-fn watch(queue: &std::sync::mpsc::Receiver<SystemCommand>, shared: &Arc<Mutex<Option<SystemSummary>>>) {
+fn watch(
+    queue: &std::sync::mpsc::Receiver<SystemCommand>,
+    shared: &Arc<Mutex<Option<SystemSummary>>>,
+) {
     loop {
         let command = match queue.recv() {
             Ok(command) => command,

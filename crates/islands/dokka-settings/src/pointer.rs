@@ -105,8 +105,7 @@ impl Settings {
                 control_at(self.selected(), general, width, scroll, x, y)
             };
         } else {
-            self.values_mut().control =
-                control_at(self.selected(), general, width, scroll, x, y);
+            self.values_mut().control = control_at(self.selected(), general, width, scroll, x, y);
         }
     }
 
@@ -185,8 +184,7 @@ impl Settings {
             // Suelta fuera de la barra: se queda en el extremo más cercano.
             let value = clamped_slider_value(target, self.values(), width, x);
             self.values_mut().drag = None;
-            self.values_mut().control =
-                control_at(self.selected(), general, width, scroll, x, y);
+            self.values_mut().control = control_at(self.selected(), general, width, scroll, x, y);
             let mut preferences = self.values().preferences;
             match target {
                 SliderTarget::DockScale => {
@@ -202,8 +200,7 @@ impl Settings {
         if self.values().reorder.is_some() {
             let was_active = self.reorder_active();
             let action = self.finish_reorder();
-            self.values_mut().control =
-                control_at(self.selected(), general, width, scroll, x, y);
+            self.values_mut().control = control_at(self.selected(), general, width, scroll, x, y);
             if was_active {
                 // Hubo arrastre: una sola vez y solo si cambió el orden.
                 return action.unwrap_or(SettingsAction::Stay);

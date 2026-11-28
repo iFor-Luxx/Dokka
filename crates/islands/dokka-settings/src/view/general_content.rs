@@ -14,7 +14,9 @@ use super::super::logic::{
 };
 use super::super::state::Settings;
 use super::content::{ContentScene, coming_soon};
-use super::general_rows::{hidden_icon, hidden_panel, hide_above, hover_panel, row_badges, row_labels};
+use super::general_rows::{
+    hidden_icon, hidden_panel, hide_above, hover_panel, row_badges, row_labels,
+};
 
 /// Cabecera + dos tarjetas de General; `badges`, `glyphs` y `chevron` ya
 /// vienen en orden visible, como el lateral.
@@ -37,8 +39,7 @@ pub(crate) fn general_content(
     let second_top = general_card_top(2, scroll);
     let heights_first = vec![measures::CONTENT_ROW_HEIGHT; 3];
     let heights_second = vec![measures::CONTENT_ROW_HEIGHT; 2];
-    let (header, header_texts, header_icons) =
-        header_pieces(theme, scroll, width, gear, settings);
+    let (header, header_texts, header_icons) = header_pieces(theme, scroll, width, gear, settings);
     // Tarjetas y líneas con el componente; las etiquetas van aparte con el
     // aire del cuadrito, como en la barra lateral.
     let (first_panel, first_dividers, _) = super::content::group_pieces(
@@ -62,8 +63,20 @@ pub(crate) fn general_content(
     dividers.extend(hide_above(first_dividers, window_height));
     dividers.extend(hide_above(second_dividers, window_height));
     let mut texts = header_texts;
-    texts.extend(row_labels(theme, first_top, &rows[..3], width, window_height));
-    texts.extend(row_labels(theme, second_top, &rows[3..], width, window_height));
+    texts.extend(row_labels(
+        theme,
+        first_top,
+        &rows[..3],
+        width,
+        window_height,
+    ));
+    texts.extend(row_labels(
+        theme,
+        second_top,
+        &rows[3..],
+        width,
+        window_height,
+    ));
     let mut icons = header_icons;
     icons.extend(row_badges(
         theme,
@@ -124,20 +137,19 @@ fn header_pieces(
     };
     let center = measures::CONTENT_LEFT + width / 2.0;
     let gear_top = top + 16.0;
-    let gear_icon = if gear_top + GENERAL_GEAR_SIDE < measures::CONTENT_TOP
-        || gear_top > window_height
-    {
-        hidden_icon()
-    } else {
-        Icon {
-            x: center - GENERAL_GEAR_SIDE / 2.0,
-            y: gear_top,
-            side: GENERAL_GEAR_SIDE,
-            image: Some(dokka_scene::IconImage::Drawing(Arc::clone(gear))),
-            placeholder: theme.settings.card_text,
-            placeholder_radius: 0.0,
-        }
-    };
+    let gear_icon =
+        if gear_top + GENERAL_GEAR_SIDE < measures::CONTENT_TOP || gear_top > window_height {
+            hidden_icon()
+        } else {
+            Icon {
+                x: center - GENERAL_GEAR_SIDE / 2.0,
+                y: gear_top,
+                side: GENERAL_GEAR_SIDE,
+                image: Some(dokka_scene::IconImage::Drawing(Arc::clone(gear))),
+                placeholder: theme.settings.card_text,
+                placeholder_radius: 0.0,
+            }
+        };
     let title_y = gear_top + GENERAL_GEAR_SIDE + GENERAL_HEADER_GAP + GENERAL_HEADER_TITLE / 2.0;
     let help_y =
         title_y + GENERAL_HEADER_TITLE / 2.0 + GENERAL_HEADER_GAP + GENERAL_HEADER_SUBTITLE / 2.0;

@@ -79,7 +79,10 @@ pub(crate) fn windows_edition_and_version() -> (Option<String>, Option<String>) 
     let display = clean(read_registry_string(path, "DisplayVersion"));
     let build = read_registry_string(path, "CurrentBuildNumber");
     let ubr = read_registry_dword(path, "UBR");
-    let build_number: u32 = build.as_deref().and_then(|text| text.parse().ok()).unwrap_or(0);
+    let build_number: u32 = build
+        .as_deref()
+        .and_then(|text| text.parse().ok())
+        .unwrap_or(0);
 
     let edition = product.map(|name| {
         // El registro aún dice 10 en Windows 11: a partir de la 22000 es 11.

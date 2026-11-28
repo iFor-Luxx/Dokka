@@ -121,7 +121,10 @@ impl CachedDrawings {
             return Arc::new(super::logic::general_row_drawing(row, color));
         };
         if entry.as_ref().is_none_or(|(known, _)| *known != color) {
-            *entry = Some((color, Arc::new(super::logic::general_row_drawing(row, color))));
+            *entry = Some((
+                color,
+                Arc::new(super::logic::general_row_drawing(row, color)),
+            ));
         }
         match entry {
             Some((_, drawing)) => Arc::clone(drawing),
@@ -132,11 +135,12 @@ impl CachedDrawings {
     /// Chevrón derecho de las filas de General, creado una vez.
     pub(crate) fn chevron(&mut self, theme: &Theme) -> Arc<Drawing> {
         let color = theme.settings.card_text;
-        if self.chevron.as_ref().is_none_or(|(known, _)| *known != color) {
-            self.chevron = Some((
-                color,
-                Arc::new(dokka_icons::submenu_chevron_icon(color)),
-            ));
+        if self
+            .chevron
+            .as_ref()
+            .is_none_or(|(known, _)| *known != color)
+        {
+            self.chevron = Some((color, Arc::new(dokka_icons::submenu_chevron_icon(color))));
         }
         match &self.chevron {
             Some((_, drawing)) => Arc::clone(drawing),

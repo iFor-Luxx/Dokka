@@ -8,8 +8,7 @@ pub(crate) fn is_placeholder(text: &str) -> bool {
     let folded = text.trim().to_ascii_lowercase();
     matches!(
         folded.as_str(),
-        ""
-            | "unknown"
+        "" | "unknown"
             | "none"
             | "not specified"
             | "not available"

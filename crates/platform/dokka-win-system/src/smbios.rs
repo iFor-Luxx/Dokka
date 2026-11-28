@@ -116,7 +116,7 @@ fn read_strings(table: &[u8], mut at: usize) -> Vec<String> {
 
 /// Índice 1-based a la cadena, o `None`.
 fn string_at(strings: &[String], index: Option<&u8>) -> Option<String> {
-    let position = usize::from(*index?) ;
+    let position = usize::from(*index?);
     if position == 0 {
         return None;
     }

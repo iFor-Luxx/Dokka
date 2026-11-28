@@ -38,9 +38,7 @@ pub fn drag_zone(
     if content_control_at(selected, width, x, y) {
         return false;
     }
-    if selected == SECTION_GENERAL
-        && general_control_at(width, scroll, general, x, y)
-    {
+    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, x, y) {
         return false;
     }
     // Los controles de las demás secciones no se ven, pero se comprueban

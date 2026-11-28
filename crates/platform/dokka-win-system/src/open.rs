@@ -33,6 +33,8 @@ pub(crate) fn open_address(page: SystemPage) -> Result<(), ContractError> {
     if result.0 as usize >= 33 {
         Ok(())
     } else {
-        Err(ContractError::Failed("no se pudo abrir la página".to_owned()))
+        Err(ContractError::Failed(
+            "no se pudo abrir la página".to_owned(),
+        ))
     }
 }

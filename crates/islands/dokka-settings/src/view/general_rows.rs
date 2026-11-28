@@ -26,7 +26,8 @@ pub(crate) fn row_labels(
         .iter()
         .enumerate()
         .filter_map(|(index, name)| {
-            let y = top + index as f32 * measures::CONTENT_ROW_HEIGHT
+            let y = top
+                + index as f32 * measures::CONTENT_ROW_HEIGHT
                 + measures::CONTENT_ROW_HEIGHT / 2.0;
             if y < measures::CONTENT_TOP || y > window_height {
                 return None;
@@ -70,8 +71,14 @@ pub(crate) fn row_badges(
         }
         let badge_x = measures::CONTENT_LEFT + measures::CONTENT_PADDING;
         let badge_y = y + (measures::CONTENT_ROW_HEIGHT - measures::BADGE_SIDE) / 2.0;
-        let badge = badges.get(row).cloned().unwrap_or_else(|| badges[0].clone());
-        let glyph = glyphs.get(row).cloned().unwrap_or_else(|| glyphs[0].clone());
+        let badge = badges
+            .get(row)
+            .cloned()
+            .unwrap_or_else(|| badges[0].clone());
+        let glyph = glyphs
+            .get(row)
+            .cloned()
+            .unwrap_or_else(|| glyphs[0].clone());
         let inset = (measures::BADGE_SIDE - measures::ROW_ICON_SIDE) / 2.0;
         icons.push(Icon {
             x: badge_x,

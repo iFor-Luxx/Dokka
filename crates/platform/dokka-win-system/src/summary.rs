@@ -74,11 +74,12 @@ fn model_and_serial() -> (Option<String>, Option<String>) {
             (Some(maker), None) => clean(Some(maker)),
             (None, None) => None,
         };
-    } else if let (Some(maker), Some(product)) =
-        (system_manufacturer.clone(), model.clone())
-    {
+    } else if let (Some(maker), Some(product)) = (system_manufacturer.clone(), model.clone()) {
         // Si el producto ya trae al fabricante, no lo duplica.
-        if !product.to_ascii_lowercase().contains(&maker.to_ascii_lowercase()) {
+        if !product
+            .to_ascii_lowercase()
+            .contains(&maker.to_ascii_lowercase())
+        {
             model = clean(Some(format!("{maker} {product}")));
         }
     }
