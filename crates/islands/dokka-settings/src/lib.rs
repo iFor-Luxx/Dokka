@@ -18,6 +18,7 @@ mod selection;
 mod slider_pointer;
 mod state;
 mod storage_state;
+mod uninstall_state;
 mod values;
 mod view;
 

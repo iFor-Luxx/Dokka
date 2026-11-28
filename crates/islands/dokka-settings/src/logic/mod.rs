@@ -13,6 +13,7 @@ mod search_filter;
 mod sections;
 mod slider_map;
 mod storage;
+mod uninstall;
 mod update;
 
 pub(crate) use content::{
@@ -57,4 +58,5 @@ pub(crate) use storage::{
     StorageLayout, storage_category_color, storage_category_drawing, storage_header_rows,
     storage_layout, storage_list_rows,
 };
+pub(crate) use uninstall::{uninstall_button_at, uninstall_note_top, uninstall_top};
 pub(crate) use update::update_top;

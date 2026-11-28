@@ -138,6 +138,7 @@ fn settings_colors(border: dokka_scene::Color) -> SettingsColors {
         switch_on: palette::SETTINGS_SWITCH_ON,
         switch_off: palette::SETTINGS_SWITCH_OFF,
         switch_knob: palette::SETTINGS_SWITCH_KNOB,
+        danger: palette::INSTALLER_RED,
         slider_track: palette::SETTINGS_SLIDER_TRACK,
         slider_fill: palette::SETTINGS_SLIDER_FILL,
         slider_muted: palette::SETTINGS_SLIDER_MUTED,

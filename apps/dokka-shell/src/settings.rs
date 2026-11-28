@@ -30,6 +30,7 @@ pub(crate) fn open_or_focus_settings(
     session
         .settings
         .set_dokka_version(env!("CARGO_PKG_VERSION").to_owned());
+    crate::settings_uninstall::sync_uninstall(session);
     session.settings.open();
     // Primera apertura: centra el contenido una vez con el aire alrededor;
     // luego conserva su sitio al moverla. El zoom aplica su tamaño aparte.
@@ -190,6 +191,9 @@ pub(crate) fn click_settings(
         }
         SettingsAction::EmptyTrash => {
             crate::settings_system::empty_trash(session);
+        }
+        SettingsAction::Uninstall => {
+            crate::settings_uninstall::open_uninstaller(session);
         }
         SettingsAction::DateTimeAutoTime(enabled) => {
             crate::settings_system::apply_datetime_auto_time(session, enabled);

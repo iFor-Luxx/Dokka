@@ -1,9 +1,9 @@
-//! Apartado "Actualización de Dokka": versión instalada y aviso.
+//! Apartado "Actualización de Dokka": versión, aviso y desinstalar.
 //!
 //! Una tarjeta con el icono, "Dokka" y la versión instalada (la del paquete,
-//! que pasa el shell como dato), y el texto de que aún no hay de dónde
-//! descargar versiones nuevas. Sin botones ni interruptores que no hagan
-//! nada, y sin red. Cabe sin bajar con la rueda.
+//! que pasa el shell como dato), el texto de que aún no hay de dónde
+//! descargar versiones nuevas y, separada abajo, la fila de desinstalar en
+//! rojo (atenuada sin instalar, con su nota). Cabe sin bajar con la rueda.
 
 use std::sync::Arc;
 
@@ -15,6 +15,7 @@ use super::super::state::Settings;
 use super::about_cards::section_header;
 use super::content::{ContentScene, group_pieces};
 use super::general_rows::hidden_icon;
+use super::uninstall_button::uninstall_pieces;
 
 /// Ficha completa del apartado; `badge` y `glyph` son el icono de la fila.
 pub(crate) fn update_content(
@@ -56,7 +57,7 @@ pub(crate) fn update_content(
             align: TextAlign::Right,
         });
     }
-    let flats = vec![panel];
+    let mut flats = vec![panel];
     let middle = top + measures::CONTENT_ROW_HEIGHT / 2.0;
     let mut icons = Vec::new();
     if middle >= measures::CONTENT_TOP && middle <= window_height {
@@ -91,6 +92,10 @@ pub(crate) fn update_content(
         width,
         window_height,
     ));
+    let uninstall = uninstall_pieces(theme, settings, width, window_height, scroll);
+    flats.extend(uninstall.flats);
+    icons.extend(uninstall.icons);
+    texts.extend(uninstall.texts);
     ContentScene {
         flats,
         dividers,

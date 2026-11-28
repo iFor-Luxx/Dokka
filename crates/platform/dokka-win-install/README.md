@@ -13,3 +13,9 @@ el acceso denegado se devuelven como tales.
 elevado), no toca la ventana, la composición ni las islas, y no borra nada
 fuera de la carpeta de Dokka salvo su valor de arranque, su entrada de
 desinstalación y sus accesos directos (más `%APPDATA%\Dokka` si se pide).
+
+`InstalledDokka` (`uninstall_control.rs`) cumple `UninstallControl` para
+Preferencias: `can_uninstall` dice si el ejecutable actual está en la
+carpeta de instalación y existe `Desinstalar.exe`; `open_uninstaller` lo
+abre con `ShellExecuteW` (`open` + `--uninstall`) en su hilo, con COM
+propia, sin cerrar Dokka y registrando el fallo.

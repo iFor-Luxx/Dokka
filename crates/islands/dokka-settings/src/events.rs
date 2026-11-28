@@ -28,6 +28,8 @@ pub enum SettingsAction {
     OpenGeneral(GeneralButton),
     /// Botón "Vaciar papelera": el shell la vacía con su confirmación.
     EmptyTrash,
+    /// Botón "Desinstalar Dokka…": el shell abre el desinstalador.
+    Uninstall,
     /// Automáticas de Windows (`NTP` o `NoSync`).
     DateTimeAutoTime(bool),
     /// Servidor NTP validado.

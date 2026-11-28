@@ -18,6 +18,7 @@ use dokka_win_apps::{
 };
 use dokka_win_composition::SceneRenderer;
 use dokka_win_control::{SystemBrightness, SystemWindowControl, foreground_window};
+use dokka_win_install::InstalledDokka;
 use dokka_win_media::MediaMonitor;
 use dokka_win_surface::{Surface, local_time};
 use dokka_win_system::SystemSystemInfo;
@@ -68,6 +69,8 @@ pub(crate) struct DockSession {
     pub(crate) media: MediaMonitor,
     /// Brillo DDC del monitor principal, en su propio hilo.
     pub(crate) brightness: SystemBrightness,
+    /// Desinstalador propio para Preferencias, sin bloquear a la isla.
+    pub(crate) uninstall: InstalledDokka,
     /// Resumen del equipo para "Acerca de este PC", en su propio hilo.
     pub(crate) system_info: SystemSystemInfo,
     pub(crate) picker: AppPicker,
@@ -112,6 +115,7 @@ impl DockSession {
             recycle_bin: SystemRecycleBin,
             media: MediaMonitor::start(),
             brightness: SystemBrightness::start(),
+            uninstall: InstalledDokka,
             system_info: SystemSystemInfo::start(),
             picker: AppPicker::new(),
             taskbar_hidden: false,

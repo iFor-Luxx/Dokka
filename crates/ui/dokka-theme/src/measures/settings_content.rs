@@ -154,3 +154,16 @@ pub const DATETIME_STEP_SIDE: f32 = 22.0;
 pub const DATETIME_STEP_GAP: f32 = 2.0;
 /// Distancia del valor al centro de su campo en el editor de fecha.
 pub const DATETIME_FIELD_OFFSET: f32 = 14.0;
+
+/// Botón "Desinstalar Dokka…": fila propia separada bajo el aviso.
+pub const UNINSTALL_ROW_HEIGHT: f32 = CONTENT_ROW_HEIGHT;
+/// Aire entre la tarjeta de desinstalar y su aviso.
+pub const UNINSTALL_NOTE_GAP: f32 = 8.0;
+/// Alto del aviso bajo el botón de desinstalar.
+pub const UNINSTALL_NOTE_HEIGHT: f32 = ABOUT_SECTION_TITLE_HEIGHT;
+/// Tamaño del aviso bajo el botón de desinstalar.
+pub const UNINSTALL_NOTE_SIZE: f32 = REORDER_HINT_SIZE;
+/// Texto del botón de desinstalar.
+pub const UNINSTALL_LABEL: &str = "Desinstalar Dokka…";
+/// Aviso cuando Dokka no está instalado.
+pub const UNINSTALL_DISABLED_NOTE: &str = "Solo disponible en la versión instalada";

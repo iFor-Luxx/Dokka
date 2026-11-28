@@ -12,5 +12,8 @@ mod registry_run;
 mod registry_uninstall;
 mod shortcuts;
 mod uninstall_cleanup;
+mod uninstall_control;
+
+pub use uninstall_control::InstalledDokka;
 
 pub use installer::WindowsInstaller;

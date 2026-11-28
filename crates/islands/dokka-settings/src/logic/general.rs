@@ -114,7 +114,7 @@ pub(crate) fn general_control_at(
         Page::Storage => {
             super::storage::storage_button_at(width, scroll, counts.disks, x, y).is_some()
         }
-        Page::Update => false,
+        Page::Update => super::uninstall::uninstall_control_at(width, scroll, x, y),
     }
 }
 

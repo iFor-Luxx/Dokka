@@ -12,6 +12,7 @@ mod recycle_bin;
 mod system_info;
 mod system_status;
 mod system_tray;
+mod uninstall_control;
 mod window_control;
 mod window_source;
 
@@ -29,5 +30,6 @@ pub use system_status::{
     AudioOutputs, BrightnessControl, KeyboardLanguages, NetworkStatus, VolumeControl,
 };
 pub use system_tray::SystemTray;
+pub use uninstall_control::UninstallControl;
 pub use window_control::WindowControl;
 pub use window_source::WindowSource;
