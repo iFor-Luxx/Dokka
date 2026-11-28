@@ -87,6 +87,26 @@ pub const CHECK_TEXT_SIZE: f32 = 14.0;
 /// Cuánto tarda el fundido del contenido al cambiar de pantalla, en segundos.
 pub const FADE_SECONDS: f32 = 0.18;
 
+/// Entrada inicial: las montañas entran desde los lados desenfocadas.
+pub const ENTRY_TRAVEL: f32 = 240.0;
+/// Desenfoque gaussiano suave inicial de las montañas.
+pub const ENTRY_BLUR_MAX: f32 = 3.0;
+/// Viaje de las montañas, a ritmo parejo, en segundos.
+pub const ENTRY_MOUNTAINS_SECONDS: f32 = 2.4;
+/// Fundido de `playa.jpg` encima al llegar, en segundos.
+pub const ENTRY_PHOTO_FADE_SECONDS: f32 = 0.35;
+/// El contenido aparece en bloque desde este segundo.
+pub const ENTRY_CONTENT_DELAY_SECONDS: f32 = 1.9;
+/// Fundido y subida del contenido en bloque, en segundos.
+pub const ENTRY_CONTENT_SECONDS: f32 = 0.7;
+/// Cuánto sube el contenido al aparecer.
+pub const ENTRY_CONTENT_RISE: f32 = 14.0;
+/// Curva del viaje (cubic-bezier 0.35,0.45,0.35,1).
+pub const ENTRY_EASE_X1: f32 = 0.35;
+pub const ENTRY_EASE_Y1: f32 = 0.45;
+pub const ENTRY_EASE_X2: f32 = 0.35;
+pub const ENTRY_EASE_Y2: f32 = 1.0;
+
 /// Centro horizontal del contenido.
 pub fn center_x() -> f32 {
     WIDTH / 2.0

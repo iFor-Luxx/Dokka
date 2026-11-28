@@ -30,6 +30,8 @@ pub struct PaintedSetup {
     pub error_detail: String,
     pub hovered: Option<super::Control>,
     pub pressed: Option<super::Control>,
+    /// Sin él los fotogramas del fundido no se repintan y queda invisible.
+    pub fade: PaintedF32,
 }
 
 /// Fracción del avance con comparación exacta para el repintado.
@@ -70,7 +72,10 @@ impl Setup {
             error_detail: String::new(),
             hovered: None,
             pressed: None,
-            fade: 0.0,
+            // La entrada inicial la anima el compositor (montañas,
+            // desenfoque y contenido en bloque): la escena nace visible
+            // para que la base quede en el estado final.
+            fade: 1.0,
         }
     }
 
@@ -221,6 +226,7 @@ impl Setup {
             error_detail: self.error_detail.clone(),
             hovered: self.hovered,
             pressed: self.pressed,
+            fade: PaintedF32(self.fade),
         }
     }
 

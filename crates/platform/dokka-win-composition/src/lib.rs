@@ -15,6 +15,9 @@ mod header_veil_layer;
 mod header_veil_paint;
 mod icon_layer;
 mod installer_background;
+mod installer_entry;
+mod installer_entry_layers;
+mod installer_entry_paint;
 mod installer_renderer;
 mod label_layer;
 mod label_pointer;
@@ -44,5 +47,6 @@ mod window_thumbnails;
 mod windows_color;
 
 pub use composition_error::CompositionError;
+pub use installer_entry::InstallerEntryData;
 pub use installer_renderer::{InstallerPhoto, InstallerRenderer};
 pub use scene_renderer::{SceneRenderer, WindowHandles};

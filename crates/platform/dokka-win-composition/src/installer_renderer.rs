@@ -3,7 +3,9 @@
 //! Reutiliza `Painter` y `SceneLayers` como el resto de Dokka: la foto de
 //! fondo va colgada al fondo del contenido (debajo de tarjetas y textos,
 //! encima del cristal) y recortada a las esquinas. `SceneRenderer` pide seis
-//! ventanas y no sirve aquí.
+//! ventanas y no sirve aquí. La entrada inicial (fondo y montañas que viajan
+//! desenfocadas, fundido de la foto y subida del contenido) la animan los
+//! visuales de `installer_entry_layers` con el compositor.
 
 use std::sync::Arc;
 
@@ -20,6 +22,8 @@ use windows_numerics::{Vector2, Vector3};
 
 use crate::CompositionError;
 use crate::installer_background::decode_background;
+use crate::installer_entry::{EntryTiming, InstallerEntryData, animations_disabled};
+use crate::installer_entry_layers::InstallerEntryLayers;
 use crate::painter::Painter;
 use crate::scene_layers::SceneLayers;
 use crate::windows_color::windows_color;
@@ -38,6 +42,8 @@ pub struct InstallerPhoto<'a> {
 pub struct InstallerRenderer {
     photo: SpriteVisual,
     photo_placed: bool,
+    entry: Option<InstallerEntryLayers>,
+    timing: Option<EntryTiming>,
     layers: Option<SceneLayers>,
     content: ContainerVisual,
     painter: Painter,
@@ -54,8 +60,16 @@ impl InstallerRenderer {
         font_family: &str,
         icon_bytes: &'static [u8],
         photo: &InstallerPhoto<'_>,
+        entry: &InstallerEntryData<'_>,
     ) -> std::result::Result<Self, CompositionError> {
-        Ok(Self::build(window, scale, font_family, icon_bytes, photo)?)
+        Ok(Self::build(
+            window,
+            scale,
+            font_family,
+            icon_bytes,
+            photo,
+            entry,
+        )?)
     }
 
     /// Muestra una escena: reutiliza las capas si la forma coincide.
@@ -78,11 +92,68 @@ impl InstallerRenderer {
         if !self.photo_placed
             && let Some(layers) = &self.layers
         {
-            layers
-                .content_root()
-                .Children()?
-                .InsertAtBottom(&self.photo)?;
+            let content = layers.content_root();
+            content.Children()?.InsertAtBottom(&self.photo)?;
             self.photo_placed = true;
+            if let (Some(entry), Some(timing)) = (&mut self.entry, &self.timing)
+                && (entry.place(&content).is_err()
+                    || Self::start_entry(&self.compositor, &*entry, timing, &self.photo, &content)
+                        .is_err())
+            {
+                let _ = Self::drop_entry(&mut self.entry, &content, &self.photo, &content);
+                self.timing = None;
+                let _ = self.photo.SetOpacity(1.0);
+                let _ = content.SetOpacity(1.0);
+            }
+        }
+        Ok(())
+    }
+
+    /// `true` mientras la entrada sigue montada (aunque ya terminara de
+    /// animar): la app la retira al pasar el tiempo total.
+    pub fn entry_running(&self) -> bool {
+        self.entry.is_some()
+    }
+
+    /// Detiene las animaciones, quita fondo y montañas y deja el estado final
+    /// sin efectos activos. Sin entrada, no hace nada.
+    pub fn finish_entry(&mut self) -> std::result::Result<(), CompositionError> {
+        let Some(layers) = &self.layers else {
+            self.entry = None;
+            self.timing = None;
+            return Ok(());
+        };
+        let content = layers.content_root();
+        if let Some(entry) = self.entry.take()
+            && let Err(error) = entry.finish(&content, &self.photo, &content)
+        {
+            self.timing = None;
+            return Err(CompositionError::from(error));
+        }
+        self.timing = None;
+        Ok(())
+    }
+
+    /// Arranca la entrada una sola vez tras colgar las capas.
+    fn start_entry(
+        compositor: &Compositor,
+        entry: &InstallerEntryLayers,
+        timing: &EntryTiming,
+        photo: &SpriteVisual,
+        content: &ContainerVisual,
+    ) -> windows::core::Result<()> {
+        entry.start(compositor, photo, content, timing)
+    }
+
+    /// Quita la entrada que no pudo arrancar y restaura lo visible.
+    fn drop_entry(
+        entry: &mut Option<InstallerEntryLayers>,
+        parent: &ContainerVisual,
+        photo: &SpriteVisual,
+        content: &ContainerVisual,
+    ) -> windows::core::Result<()> {
+        if let Some(layers) = entry.take() {
+            let _ = layers.finish(parent, photo, content);
         }
         Ok(())
     }
@@ -93,6 +164,7 @@ impl InstallerRenderer {
         font_family: &str,
         icon_bytes: &'static [u8],
         photo: &InstallerPhoto<'_>,
+        entry: &InstallerEntryData<'_>,
     ) -> windows::core::Result<Self> {
         let queue = create_queue()?;
         let compositor = Compositor::new()?;
@@ -109,11 +181,32 @@ impl InstallerRenderer {
         let content = compositor.CreateContainerVisual()?;
         root.Children()?.InsertAtTop(&content)?;
         let painter = Painter::new(&compositor, font_family, icon_bytes, scale)?;
-        let photo = make_photo(&compositor, &painter, photo)?;
-        content.Children()?.InsertAtBottom(&photo)?;
+        let visual = make_photo(&compositor, &painter, photo)?;
+        content.Children()?.InsertAtBottom(&visual)?;
+        let (entry, timing) = if animations_disabled() {
+            (None, None)
+        } else {
+            match InstallerEntryLayers::build(
+                &compositor,
+                &painter,
+                entry,
+                photo.width,
+                photo.height,
+                photo.margin,
+                photo.radius,
+            ) {
+                Ok(layers) => match layers {
+                    Some(layers) => (Some(layers), Some(EntryTiming::from(entry))),
+                    None => (None, None),
+                },
+                Err(_) => (None, None),
+            }
+        };
         Ok(Self {
-            photo,
+            photo: visual,
             photo_placed: true,
+            entry,
+            timing,
             layers: None,
             content,
             painter,
