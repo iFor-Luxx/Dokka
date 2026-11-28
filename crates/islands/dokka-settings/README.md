@@ -28,7 +28,7 @@ engranaje grande y dos tarjetas con filas (Acerca de este PC, Actualización de
 Dokka, Almacenamiento; Fecha y hora, Idioma y región) con cuadrito, chevrón y
 resaltado; la píldora va y viene entre la lista y sus apartados y el título
 cambia. "Acerca de este PC" trae el dibujo del PC, el modelo, la tarjeta con
-Nombre, Procesador, Gráfica, Memoria y Número de serie, las secciones Windows,
+Nombre, Procesador, Gráfica, Memoria y Número de serie, las secciones macOS,
 Pantalla y Almacenamiento con sus botones y el informe abajo; los datos los da
 el shell (`set_system_info`) y los botones avisan (`OpenAbout`); si no cabe, la
 rueda baja la ficha sin pintar fuera. "Fecha y hora" trae si las automáticas
@@ -79,7 +79,9 @@ fondo claro y el resaltado como en el calendario, sin cristal); sin
 para que al filtrar repinten su color), glifos, lupa y chevrones como iconos;
 nombres, búsqueda, título, etiquetas, ayuda del reorden y textos del deslizador y del segmentado como textos.
 La fila arrastrada se pinta en plano antes que sus iconos y textos para no
-taparlos. Pulsar y arrastrar usan la misma pista y la misma cápsula que el dibujo, con el
+taparlos; la píldora, su resaltado, sus líneas, sus iconos y el título van
+nítidos sobre la franja difuminada de la zona de contenido (invisible arriba
+del todo) y el contenido queda recortado a la ventana redondeada. Pulsar y arrastrar usan la misma pista y la misma cápsula que el dibujo, con el
 centro del tirador recorriéndola sin salirse y los textos del segmentado sin
 salirse de su tercio. El contenido cambia de tamaño entre secciones:
 `SceneLayers` reconstruye si cambia el estilo o crece la cantidad; los textos

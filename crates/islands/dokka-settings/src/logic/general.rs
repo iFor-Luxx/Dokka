@@ -138,7 +138,7 @@ pub(crate) fn about_content_height() -> f32 {
         + 5.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + measures::ABOUT_SECTION_TITLE_HEIGHT
-        + 2.0 * measures::CONTENT_ROW_HEIGHT
+        + measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
@@ -195,14 +195,14 @@ pub(crate) fn about_button_at(width: f32, scroll: f32, x: f32, y: f32) -> Option
         return None;
     }
     let top = about_top(scroll);
-    // Botón "Ajustes de pantalla…": bajo su tarjeta de 2 filas.
+    // Botón "Ajustes de pantalla…": bajo la tarjeta macOS de 1 fila y la suya de 2.
     let display_button = top
         + measures::ABOUT_HERO_HEIGHT
         + measures::GROUP_GAP
         + 5.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + measures::ABOUT_SECTION_TITLE_HEIGHT
-        + 2.0 * measures::CONTENT_ROW_HEIGHT
+        + measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
@@ -219,10 +219,7 @@ pub(crate) fn about_button_at(width: f32, scroll: f32, x: f32, y: f32) -> Option
     if (storage_button..storage_button + measures::ABOUT_BUTTON_HEIGHT).contains(&y) {
         return Some(1);
     }
-    let report_button = storage_button
-        + measures::ABOUT_BUTTON_HEIGHT
-        + measures::GROUP_GAP
-        + measures::ABOUT_BUTTON_HEIGHT;
+    let report_button = storage_button + measures::ABOUT_BUTTON_HEIGHT + measures::GROUP_GAP;
     // El informe va centrado abajo: ocupa el centro de la tarjeta.
     let center = left + width / 2.0;
     let half = measures::ABOUT_BUTTON_WIDTH / 2.0;

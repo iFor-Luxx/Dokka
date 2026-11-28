@@ -31,7 +31,9 @@ una sola cola sirven a todas las ventanas del hilo. La barra superior usa un qui
 sus capas igual que los anteriores. Durante su zoom, `blur_stage` captura el contenido con un `CompositionVisualSurface`
 y lo muestra desenfocado con un pincel gaussiano (`blur_effect`, propiedad animable `Blur.BlurAmount`); con desenfoque
 activo el `holder` se oculta y solo se ve la copia (sin doble imagen), y en reposo la
-copia se oculta y no hay efectos activos. Si el efecto no se puede crear, se sigue con zoom y desvanecido. Los dibujos (incluidos los glifos Lucide, con la fuente en
+copia se oculta y no hay efectos activos. Si el efecto no se puede crear, se sigue con zoom y desvanecido. La franja
+de Preferencias (`header_veil`) combina ese desenfoque sobre el fondo de la propia ventana
+con un degradado de su tinte y la cabecera por encima; si no se puede crear, queda el degradado. Los dibujos (incluidos los glifos Lucide, con la fuente en
 memoria de `dokka-win-text`) se pintan al doble de su lado en pantalla, con un mínimo de 128
 para que los iconos grandes del dock no pierdan al crecer con la lupa; solo se repintan si
 cambia su imagen, nunca al moverse o escalarse. La sombra es del compositor

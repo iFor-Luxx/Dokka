@@ -66,7 +66,7 @@ fn with_alpha(color: windows::UI::Color, alpha: u8) -> windows::UI::Color {
     }
 }
 
-fn scaled_alpha(alpha: u8, num: u16, den: u16) -> u8 {
+pub(crate) fn scaled_alpha(alpha: u8, num: u16, den: u16) -> u8 {
     if den == 0 {
         return alpha;
     }
