@@ -11,7 +11,7 @@ use super::chrome::{link_text, primary_button, round_button};
 const TITLE_TOP: f32 = 200.0;
 
 /// Error al instalar o desinstalar, con su frase y botón Reintentar.
-pub fn scene(theme: &Theme, setup: &Setup, uninstall: bool) -> Scene {
+pub(super) fn scene(theme: &Theme, setup: &Setup, uninstall: bool) -> Scene {
     let mut scene = base_scene(theme);
     warn_scene(theme, &mut scene);
     let title = if setup.error_title().is_empty() {

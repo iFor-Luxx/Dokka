@@ -5,7 +5,7 @@
 //! en su propio árbol visual. La ventana exterior es el contenido más el
 //! margen transparente donde cabe la sombra dibujada por la plataforma.
 
-use windows::Win32::Foundation::{HWND, WPARAM};
+use windows::Win32::Foundation::{ERROR_CLASS_ALREADY_EXISTS, GetLastError, HWND, WPARAM};
 use windows::Win32::Graphics::Dwm::{DWMWA_USE_HOSTBACKDROPBRUSH, DwmSetWindowAttribute};
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::UI::HiDpi::{
@@ -18,7 +18,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
     SetWindowPos, ShowWindow, WM_NCLBUTTONDOWN, WS_EX_APPWINDOW, WS_EX_NOREDIRECTIONBITMAP,
     WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU,
 };
-use windows::core::{BOOL, Result, w};
+use windows::core::{BOOL, Error, w};
 
 use crate::SurfaceError;
 use crate::window_procedure::window_procedure;
@@ -36,7 +36,7 @@ pub struct InstallerWindow {
 
 impl InstallerWindow {
     /// Crea la ventana oculta y sin tamaño, con icono en la barra de tareas.
-    pub fn create() -> Result<Self, SurfaceError> {
+    pub fn create() -> std::result::Result<Self, SurfaceError> {
         Ok(Self {
             window: create_installer_window().map_err(SurfaceError::from)?,
             placed: false,
@@ -51,7 +51,7 @@ impl InstallerWindow {
         content_width: f32,
         content_height: f32,
         margin: f32,
-    ) -> Result<(), SurfaceError> {
+    ) -> std::result::Result<(), SurfaceError> {
         if self.placed {
             return Ok(());
         }
@@ -63,7 +63,7 @@ impl InstallerWindow {
     }
 
     /// Muestra la ventana; si ya estaba visible, la trae al frente.
-    pub fn show(&mut self) -> Result<(), SurfaceError> {
+    pub fn show(&mut self) -> std::result::Result<(), SurfaceError> {
         // SAFETY: la ventana es propia y sigue viva mientras sea visible u oculta.
         unsafe {
             let _ = ShowWindow(self.window, SW_SHOWNORMAL);
@@ -125,21 +125,24 @@ impl InstallerWindow {
 }
 
 /// Crea la ventana del instalador: normal y activable, sin borde ni título.
-fn create_installer_window() -> Result<HWND> {
-    let class_name = w!("DokkaSurface");
+fn create_installer_window() -> windows::core::Result<HWND> {
+    let class_name = w!("DokkaInstaller");
     // SAFETY: las cadenas son estáticas y `window_procedure` cumple su firma.
     unsafe {
         let _ = SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
         let instance = GetModuleHandleW(None)?;
-        let class = RegisterClassExW(&windows::Win32::UI::WindowsAndMessaging::WNDCLASSEXW {
+        let class = windows::Win32::UI::WindowsAndMessaging::WNDCLASSEXW {
             cbSize: size_of::<windows::Win32::UI::WindowsAndMessaging::WNDCLASSEXW>() as u32,
             lpfnWndProc: Some(window_procedure),
             hInstance: instance.into(),
             hCursor: LoadCursorW(None, IDC_ARROW)?,
             lpszClassName: class_name,
             ..Default::default()
-        });
-        let _ = class;
+        };
+        // La segunda ventana reutiliza la clase ya registrada.
+        if RegisterClassExW(&class) == 0 && GetLastError() != ERROR_CLASS_ALREADY_EXISTS {
+            return Err(Error::from_thread());
+        }
         let window = CreateWindowExW(
             WS_EX_NOREDIRECTIONBITMAP | WS_EX_APPWINDOW,
             class_name,
@@ -171,7 +174,7 @@ fn place_centered(
     content_width: f32,
     content_height: f32,
     margin: f32,
-) -> Result<f32> {
+) -> windows::core::Result<f32> {
     use windows::Win32::Foundation::RECT;
     use windows::Win32::UI::WindowsAndMessaging::{
         SPI_GETWORKAREA, SWP_NOACTIVATE, SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS, SetWindowPos,

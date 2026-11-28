@@ -8,7 +8,7 @@ use dokka_theme::Theme;
 use super::chrome::{badge, check_drawing};
 
 /// Círculo verde con check dibujado.
-pub fn badge_scene(theme: &Theme, scene: &mut Scene) {
+pub(super) fn badge_scene(theme: &Theme, scene: &mut Scene) {
     let drawing = check_drawing(theme.menu.highlighted_text);
     let (dot, icon) = badge(theme, theme.installer.switch_on, drawing);
     scene.dots.push(dot);
@@ -16,7 +16,7 @@ pub fn badge_scene(theme: &Theme, scene: &mut Scene) {
 }
 
 /// Círculo naranja con "!" dibujado (raya y punto, nunca texto).
-pub fn warn_scene(theme: &Theme, scene: &mut Scene) {
+pub(super) fn warn_scene(theme: &Theme, scene: &mut Scene) {
     let white = theme.menu.highlighted_text;
     let drawing = Arc::new(Drawing {
         shapes: vec![

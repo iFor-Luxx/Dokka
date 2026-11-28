@@ -8,7 +8,7 @@ use dokka_theme::{Theme, installer as measures};
 use super::super::{Control, Setup};
 
 /// Dibujo de la X de cerrar, centrada en el lienzo de 100.
-pub fn close_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
+pub(super) fn close_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
     Arc::new(Drawing {
         shapes: vec![
             Shape::Line {
@@ -28,7 +28,7 @@ pub fn close_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
 }
 
 /// Dibujo del chevrón de volver (<), centrado en el lienzo.
-pub fn back_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
+pub(super) fn back_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
     Arc::new(Drawing {
         shapes: vec![
             Shape::Line {
@@ -48,7 +48,7 @@ pub fn back_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
 }
 
 /// Botón redondo translúcido de cerrar (X) o volver (chevrón).
-pub fn round_button(theme: &Theme, setup: &Setup, back: bool) -> (Panel, Icon) {
+pub(super) fn round_button(theme: &Theme, setup: &Setup, back: bool) -> (Panel, Icon) {
     let (x, y, w, h) = measures::round_rect();
     let bounds = Rect {
         x,
@@ -90,7 +90,12 @@ pub fn round_button(theme: &Theme, setup: &Setup, back: bool) -> (Panel, Icon) {
 }
 
 /// Píldora principal (`accent` o `danger`), con respuesta al pasar y pulsar.
-pub fn primary_button(theme: &Theme, setup: &Setup, label: &str, danger: bool) -> (Panel, Text) {
+pub(super) fn primary_button(
+    theme: &Theme,
+    setup: &Setup,
+    label: &str,
+    danger: bool,
+) -> (Panel, Text) {
     let (x, y, w, h) = measures::button_rect();
     let hovered = setup.hovered() == Some(Control::Primary);
     let pressed = setup.pressed() == Some(Control::Primary);
@@ -134,7 +139,7 @@ pub fn primary_button(theme: &Theme, setup: &Setup, label: &str, danger: bool) -
 }
 
 /// Enlace discreto bajo el botón (`Close` o `ShowOptions`).
-pub fn link_text(theme: &Theme, label: &str) -> Text {
+pub(super) fn link_text(theme: &Theme, label: &str) -> Text {
     let (_, top, _, height) = measures::button_rect();
     Text {
         x: measures::center_x(),
@@ -148,7 +153,7 @@ pub fn link_text(theme: &Theme, label: &str) -> Text {
 }
 
 /// Hueco del logo con el texto "Tu logo".
-pub fn logo_placeholder(theme: &Theme, top: f32, side: f32) -> (Panel, Text) {
+pub(super) fn logo_placeholder(theme: &Theme, top: f32, side: f32) -> (Panel, Text) {
     let x = measures::center_x() - side / 2.0;
     let panel = Panel {
         bounds: Rect {
@@ -175,7 +180,7 @@ pub fn logo_placeholder(theme: &Theme, top: f32, side: f32) -> (Panel, Text) {
 }
 
 /// Título grande centrado y subtítulo secundario.
-pub fn title_texts(theme: &Theme, title: &str, subtitle: &str, top: f32) -> [Text; 2] {
+pub(super) fn title_texts(theme: &Theme, title: &str, subtitle: &str, top: f32) -> [Text; 2] {
     [
         Text {
             x: measures::center_x(),
@@ -202,7 +207,11 @@ pub fn title_texts(theme: &Theme, title: &str, subtitle: &str, top: f32) -> [Tex
 }
 
 /// Círculo de estado con su dibujo (check verde o aviso naranja).
-pub fn badge(theme: &Theme, color: dokka_scene::Color, drawing: Arc<Drawing>) -> (Dot, Icon) {
+pub(super) fn badge(
+    theme: &Theme,
+    color: dokka_scene::Color,
+    drawing: Arc<Drawing>,
+) -> (Dot, Icon) {
     let x = measures::center_x() - measures::BADGE_SIDE / 2.0;
     let dot = Dot {
         x,
@@ -223,7 +232,7 @@ pub fn badge(theme: &Theme, color: dokka_scene::Color, drawing: Arc<Drawing>) ->
 }
 
 /// Dibujo del check, en el lienzo de 100.
-pub fn check_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
+pub(super) fn check_drawing(color: dokka_scene::Color) -> Arc<Drawing> {
     Arc::new(Drawing {
         shapes: vec![
             Shape::Line {

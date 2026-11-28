@@ -71,7 +71,6 @@ dependencies = [
  "dokka-win-composition",
  "dokka-win-install",
  "dokka-win-surface",
- "windows",
 ]
 
 [[package]]

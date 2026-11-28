@@ -12,10 +12,6 @@ dokka-theme.workspace = true
 dokka-win-composition.workspace = true
 dokka-win-install.workspace = true
 dokka-win-surface.workspace = true
-windows = { workspace = true, features = [
-    "Win32_Foundation",
-    "Win32_UI_WindowsAndMessaging",
-] }
 
 [lints]
 workspace = true

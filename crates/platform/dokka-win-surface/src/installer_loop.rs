@@ -8,7 +8,7 @@ use std::time::Instant;
 
 use windows::Win32::Graphics::Dwm::DwmFlush;
 use windows::Win32::UI::WindowsAndMessaging::{
-    DispatchMessageW, GetMessageW, KillTimer, MSG, PM_REMOVE, PeekMessageW, SW_SHOWNOACTIVATE,
+    DispatchMessageW, GetMessageW, KillTimer, MSG, PM_REMOVE, PeekMessageW, SW_SHOWNORMAL,
     SetTimer, ShowWindow, TranslateMessage, WM_QUIT, WM_TIMER,
 };
 
@@ -40,8 +40,8 @@ impl InstallerWindow {
         let mut pending: Option<usize> = None;
         let mut is_pressed = false;
         let mut last_frame: Option<Instant> = None;
-        // SAFETY: la ventana pertenece a este hilo.
-        let _ = unsafe { ShowWindow(self.window(), SW_SHOWNOACTIVATE) };
+        // SAFETY: la ventana pertenece a este hilo y se activa al mostrarse.
+        let _ = unsafe { ShowWindow(self.window(), SW_SHOWNORMAL) };
         let mut is_animating = true;
 
         loop {
@@ -106,7 +106,7 @@ impl InstallerWindow {
         pending: &mut Option<usize>,
         is_pressed: &mut bool,
     ) -> Option<InstallerEvent> {
-        if message.hwnd.is_invalid() && message.message == progress_message {
+        if message.message == progress_message {
             if pending.is_none() {
                 // SAFETY: temporizador del hilo, sin callback.
                 let timer = unsafe { SetTimer(None, 0, SETTLE_MILLISECONDS, None) };

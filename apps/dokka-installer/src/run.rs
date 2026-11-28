@@ -18,7 +18,7 @@ use crate::worker::{WorkerMsg, spawn_install, spawn_uninstall};
 const WAKE_MESSAGE: u32 = 0x8101;
 
 /// Foto de fondo embebida en el binario.
-static BEACH: &[u8] = include_bytes!("../../assets/installer/playa.jpg");
+static BEACH: &[u8] = include_bytes!("../../../assets/installer/playa.jpg");
 
 /// Todo lo que la ventana necesita para atender un evento.
 struct Ui {
@@ -31,7 +31,7 @@ struct Ui {
 }
 
 /// Arranca la ventana y la atiende hasta que se cierre.
-pub fn run() -> Result<(), Box<dyn Error>> {
+pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     let uninstall = std::env::args().any(|arg| arg == "--uninstall");
     let mut window = InstallerWindow::create()?;
     window.place(measures::WIDTH, measures::HEIGHT, measures::SHADOW_MARGIN)?;
@@ -109,10 +109,13 @@ fn handle(window: &mut InstallerWindow, event: InstallerEvent, ui: &mut Ui) -> b
         InstallerEvent::Dismissed => {
             if !ui.setup.is_working() {
                 window.close();
+            } else if window.show().is_err() {
+                // Windows ya la ocultó (Alt+F4): sin poder volver, sigue el trabajo.
+                eprintln!("El instalador no pudo volver a mostrarse");
             }
         }
-        InstallerEvent::Tick => {}
-        InstallerEvent::Refresh => {
+        // El segundo a segundo recupera avisos perdidos durante un arrastre.
+        InstallerEvent::Tick | InstallerEvent::Refresh => {
             while let Ok(message) = ui.receiver.try_recv() {
                 match message {
                     WorkerMsg::Progress { step, fraction } => {
@@ -213,16 +216,14 @@ fn launch_work(window: &mut InstallerWindow, ui: &mut Ui) {
         spawn_uninstall(
             ui.setup.remove_settings(),
             ui.sender.clone(),
-            window.raw(),
-            WAKE_MESSAGE,
+            window.waker(WAKE_MESSAGE),
         );
     } else {
         spawn_install(
             ui.setup.start_with_windows(),
             ui.setup.desktop_shortcut(),
             ui.sender.clone(),
-            window.raw(),
-            WAKE_MESSAGE,
+            window.waker(WAKE_MESSAGE),
         );
     }
 }

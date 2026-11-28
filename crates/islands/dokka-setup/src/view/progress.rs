@@ -8,7 +8,7 @@ use super::base_scene;
 use super::chrome::{logo_placeholder, title_texts};
 
 /// Instalando o desinstalando: sin botón de cerrar y misma barra.
-pub fn scene(theme: &Theme, setup: &Setup, uninstall: bool) -> Scene {
+pub(super) fn scene(theme: &Theme, setup: &Setup, uninstall: bool) -> Scene {
     let mut scene = base_scene(theme);
     let (logo, logo_text) = logo_placeholder(theme, measures::LOGO_TOP, measures::LOGO_SIDE);
     scene.flat_panels.push(logo);

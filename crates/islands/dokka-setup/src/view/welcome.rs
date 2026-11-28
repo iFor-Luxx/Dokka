@@ -10,7 +10,7 @@ use super::chrome::{link_text, logo_placeholder, primary_button, round_button, t
 const TITLE_TOP: f32 = 200.0;
 
 /// Bienvenida: logo, título, botón Instalar y enlace Opciones.
-pub fn scene(theme: &Theme, setup: &Setup) -> Scene {
+pub(super) fn scene(theme: &Theme, setup: &Setup) -> Scene {
     let mut scene = base_scene(theme);
     let (logo, logo_text) = logo_placeholder(theme, measures::LOGO_TOP, measures::LOGO_SIDE);
     scene.flat_panels.push(logo);
@@ -32,7 +32,7 @@ pub fn scene(theme: &Theme, setup: &Setup) -> Scene {
 }
 
 /// Confirmación de desinstalar: logo menor, casilla y botón rojo.
-pub fn uninstall_scene(theme: &Theme, setup: &Setup) -> Scene {
+pub(super) fn uninstall_scene(theme: &Theme, setup: &Setup) -> Scene {
     let mut scene = base_scene(theme);
     let (logo, logo_text) = logo_placeholder(theme, 70.0, measures::UNINSTALL_LOGO_SIDE);
     scene.flat_panels.push(logo);

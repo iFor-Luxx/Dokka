@@ -79,7 +79,7 @@ fn check_hit() -> Rect {
 }
 
 /// Control bajo el punto en la pantalla actual, si hay alguno.
-pub fn control_at(screen: Screen, x: f32, y: f32) -> Option<Control> {
+pub(crate) fn control_at(screen: Screen, x: f32, y: f32) -> Option<Control> {
     match screen {
         Screen::Installing | Screen::Uninstalling => None,
         Screen::Options => {
@@ -174,10 +174,10 @@ impl Setup {
         let pressed = self.pressed();
         self.set_pressed(None);
         let hit = control_at(self.screen(), x, y);
-        if pressed == hit {
-            if let Some(control) = hit {
-                return action_of(self.screen(), control);
-            }
+        if pressed == hit
+            && let Some(control) = hit
+        {
+            return action_of(self.screen(), control);
         }
         None
     }

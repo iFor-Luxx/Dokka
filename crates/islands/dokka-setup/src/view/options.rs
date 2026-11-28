@@ -11,7 +11,7 @@ use super::chrome::{primary_button, round_button};
 const TITLE_TOP: f32 = 96.0;
 
 /// Opciones: flecha de volver, tarjeta con dos filas e interruptor verde.
-pub fn scene(theme: &Theme, setup: &Setup) -> Scene {
+pub(super) fn scene(theme: &Theme, setup: &Setup) -> Scene {
     let mut scene = base_scene(theme);
     let (round, icon) = round_button(theme, setup, true);
     scene.flat_panels.push(round);
@@ -84,7 +84,7 @@ fn card(theme: &Theme, setup: &Setup, scene: &mut Scene) {
 }
 
 /// Una fila con su etiqueta y su interruptor a la derecha.
-fn row(theme: &Theme, setup: &Setup, scene: &mut Scene, index: usize, label: &str, on: bool) {
+fn row(theme: &Theme, _setup: &Setup, scene: &mut Scene, index: usize, label: &str, on: bool) {
     let (x, y, w, _) = measures::card_rect();
     let row = Rect {
         x,

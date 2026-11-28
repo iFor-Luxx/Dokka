@@ -11,7 +11,7 @@ use super::chrome::{primary_button, title_texts};
 const TITLE_TOP: f32 = 200.0;
 
 /// Todo listo o desinstalado: check y un solo botón.
-pub fn scene(theme: &Theme, setup: &Setup, uninstall: bool) -> Scene {
+pub(super) fn scene(theme: &Theme, setup: &Setup, uninstall: bool) -> Scene {
     let mut scene = base_scene(theme);
     badge_scene(theme, &mut scene);
     if uninstall {

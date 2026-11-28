@@ -6,6 +6,7 @@ mod foreground;
 mod installer;
 mod installer_event;
 mod installer_loop;
+mod installer_waker;
 mod installer_window;
 mod launchpad_window;
 mod local_time;
@@ -30,6 +31,7 @@ mod window_procedure;
 mod work_area;
 
 pub use installer_event::InstallerEvent;
+pub use installer_waker::InstallerWaker;
 pub use installer_window::InstallerWindow;
 pub use local_time::{LocalTime, local_time};
 pub use surface::{Surface, SurfaceHandle, SurfaceOptions};
