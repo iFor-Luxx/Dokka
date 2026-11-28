@@ -20,6 +20,7 @@ mod storage_cards;
 mod storage_content;
 mod storage_disks;
 mod storage_rows;
+mod uninstall_button;
 mod update_content;
 
 pub use settings_scene::settings_scene;

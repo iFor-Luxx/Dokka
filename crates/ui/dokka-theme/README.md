@@ -44,7 +44,8 @@
   tapar el centro, con radios concéntricos). `SettingsColors` trae además interruptor encendido y
   apagado con su tirador y barra, relleno, marca y atenuado del deslizador,
   con cápsula y pastilla del segmentado, con ocho
-  cuadrados de color (el nuevo de la barra superior en rosa).
+  cuadrados de color (el nuevo de la barra superior en rosa) y el rojo del
+  botón de desinstalar (`danger`, el mismo del instalador).
 - `typography.rs`: fuente y tamaños.
 - `measures/`: medidas visuales (`menu.rs` para el menú del clic derecho, con sus glifos Lucide
   a 20; `tray_glass.rs` para los paneles de la barra estilo Tahoe (piezas de

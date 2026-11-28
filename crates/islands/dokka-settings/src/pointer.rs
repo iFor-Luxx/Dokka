@@ -125,6 +125,7 @@ impl Settings {
         } else {
             self.values_mut().control =
                 control_at(self.selected(), general, width, scroll, counts, x, y);
+            self.refresh_uninstall_hover(width, scroll, x, y);
         }
         if self.values().control.is_none() {
             self.values_mut().control = datetime_hover(self, x, y);

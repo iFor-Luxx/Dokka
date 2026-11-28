@@ -40,6 +40,8 @@ pub enum PaintedControl {
     GeneralButton(u8),
     /// Botón de "Almacenamiento": 0 vaciar papelera, 1 ajustes.
     StorageButton(u8),
+    /// Fila de desinstalar en "Actualización de Dokka".
+    Uninstall,
 }
 
 /// Todo lo que cambia lo que se ve: si no cambió, el shell no repinta.
@@ -75,6 +77,8 @@ pub struct PaintedSettings {
     pub storage: Option<dokka_model::StorageBreakdown>,
     /// Versión instalada de Dokka para su apartado.
     pub dokka_version: Option<String>,
+    /// Si el botón de desinstalar responde (instalado).
+    pub uninstall_available: bool,
     /// Si lo protegido de fecha responde (elevado).
     pub datetime_can_change: bool,
     /// Cuántas zonas trae el desplegable.

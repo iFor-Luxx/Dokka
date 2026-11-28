@@ -29,6 +29,7 @@ pub struct Settings {
     pub(crate) system: Option<dokka_model::SystemSummary>,
     pub(crate) storage: Option<dokka_model::StorageBreakdown>,
     pub(crate) dokka_version: Option<String>,
+    pub(crate) uninstall_available: bool,
     pub(crate) scroll: f32,
     pub(crate) datetime_edit: crate::datetime_edit::DateTimeEdit,
 }
@@ -48,6 +49,7 @@ impl Default for Settings {
             system: None,
             storage: None,
             dokka_version: None,
+            uninstall_available: false,
             scroll: 0.0,
             datetime_edit: crate::datetime_edit::DateTimeEdit::default(),
         }
@@ -224,6 +226,7 @@ impl Settings {
             now: self.values.now,
             storage: self.storage.clone(),
             dokka_version: self.dokka_version.clone(),
+            uninstall_available: self.uninstall_available,
             datetime_can_change: self.datetime_edit.can_change,
             datetime_zones: self.datetime_edit.zones.len(),
             server_editing: self.datetime_edit.server_editing,

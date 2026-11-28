@@ -9,7 +9,7 @@ use super::logic::{
     DockSwitch, SliderTarget, about_button_at, datetime_button_at, dock_segment_at, dock_slider_at,
     dock_switch_at, general_row_at, icon_scale_from, language_button_at, language_segment_at,
     magnification_from, menubar_switch_at, position_from_index, storage_button_at,
-    taskbar_switch_at, toggle_menubar,
+    taskbar_switch_at, toggle_menubar, uninstall_button_at,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
@@ -154,6 +154,13 @@ impl Settings {
                 return SettingsAction::EmptyTrash;
             }
             return SettingsAction::OpenAbout(AboutButton::StorageSettings);
+        }
+        // Fila de desinstalar: solo responde si Dokka está instalado.
+        if general == GeneralPage::Update && uninstall_button_at(width, scroll, x, y).is_some() {
+            if self.can_uninstall() {
+                return SettingsAction::Uninstall;
+            }
+            return SettingsAction::Stay;
         }
         if let Some(index) = self.filtered_at(x, y) {
             self.select_section(index);

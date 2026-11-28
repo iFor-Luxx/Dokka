@@ -36,3 +36,8 @@ la pantalla muestra el valor real.
 `InstallStep` avisa del paso y del avance total de 0.0 a 1.0;
 `InstallFailure`: sin espacio, Dokka no se pudo cerrar, falta el contenido,
 acceso denegado u otro motivo). Lo cumple `dokka-win-install`.
+
+`UninstallControl` abre el desinstalador desde Preferencias
+(`can_uninstall` dice si está instalado; `open_uninstaller` abre
+`Desinstalar.exe --uninstall` en su hilo, sin cerrar Dokka). Lo cumple
+`InstalledDokka` en `dokka-win-install`.

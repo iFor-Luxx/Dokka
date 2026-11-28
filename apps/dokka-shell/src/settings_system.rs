@@ -200,7 +200,10 @@ pub(crate) fn request_for_page(session: &mut DockSession, page: GeneralPage) {
         GeneralPage::Storage => {
             request_storage(session);
         }
-        GeneralPage::Root | GeneralPage::Update => {}
+        GeneralPage::Update => {
+            crate::settings_uninstall::request_uninstall(session);
+        }
+        GeneralPage::Root => {}
     }
 }
 
@@ -213,6 +216,9 @@ pub(crate) fn refresh_after_navigation(session: &mut DockSession) {
         && session.settings.storage_breakdown().is_none()
     {
         request_storage(session);
+    }
+    if session.settings.general() == GeneralPage::Update {
+        crate::settings_uninstall::request_uninstall(session);
     }
 }
 

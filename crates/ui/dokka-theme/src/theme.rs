@@ -165,6 +165,8 @@ pub struct SettingsColors {
     pub switch_off: Color,
     /// Tirador del interruptor.
     pub switch_knob: Color,
+    /// Texto rojo del botón de desinstalar en Preferencias.
+    pub danger: Color,
     /// Barra del deslizador.
     pub slider_track: Color,
     /// Relleno del deslizador cuando responde.

@@ -32,6 +32,7 @@ mod session_render;
 mod settings;
 mod settings_keyboard;
 mod settings_system;
+mod settings_uninstall;
 mod taskbar_mode;
 mod window_activation;
 

@@ -161,6 +161,7 @@ dependencies = [
  "dokka-win-audio-output",
  "dokka-win-composition",
  "dokka-win-control",
+ "dokka-win-install",
  "dokka-win-media",
  "dokka-win-surface",
  "dokka-win-system",
