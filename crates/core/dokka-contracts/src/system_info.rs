@@ -2,7 +2,8 @@ use dokka_model::{StorageBreakdown, SystemSummary};
 
 use crate::ContractError;
 
-/// Página del sistema que se abre desde "Acerca de este PC".
+/// Página del sistema que se abre desde "Acerca de este PC" o desde
+/// "Fecha y hora" e "Idioma y región".
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SystemPage {
     /// `ms-settings:display`.
@@ -11,6 +12,10 @@ pub enum SystemPage {
     Storage,
     /// `msinfo32`.
     Report,
+    /// `ms-settings:dateandtime`.
+    DateTime,
+    /// `ms-settings:regionformatting`.
+    Region,
 }
 
 /// Resumen del equipo sin bloquear, como `BrightnessControl`.

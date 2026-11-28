@@ -19,8 +19,8 @@ mod values;
 mod view;
 
 pub use events::{AboutButtonAction, SettingsAction};
-pub use general::{AboutButton, GeneralPage};
-pub use logic::{SECTION_NAMES, drag_zone};
+pub use general::{AboutButton, GeneralButton, GeneralPage, PageNow};
+pub use logic::{ListCounts, SECTION_NAMES, drag_zone};
 pub use painted::{OrderedF32, PaintedControl, PaintedSettings};
 pub use state::Settings;
 pub use view::settings_scene;

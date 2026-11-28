@@ -3,11 +3,13 @@
 
 mod apps_size;
 mod breakdown;
+mod datetime;
 mod disks;
 mod display;
 mod folder_size;
 mod graphics;
 mod known_folders;
+mod locale;
 mod machine;
 mod monitor;
 mod open;

@@ -6,8 +6,10 @@
 
 use dokka_model::SystemSummary;
 
+use super::datetime::read_datetime;
 use super::display;
 use super::graphics;
+use super::locale::read_locale;
 use super::machine;
 use super::placeholders::clean;
 use super::smbios;
@@ -39,6 +41,8 @@ pub(crate) fn read_all() -> SystemSummary {
         storage_drive: drive,
         storage_free_bytes: free,
         storage_total_bytes: total,
+        datetime: read_datetime(),
+        locale: read_locale(),
         storage: None,
     }
 }

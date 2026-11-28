@@ -35,6 +35,8 @@ pub struct Previews {
     pub(crate) month_offset: i32,
     /// Año, mes y día de hoy.
     pub(crate) today: (u16, u16, u16),
+    /// La semana del calendario empieza en lunes; si no, en domingo.
+    pub(crate) week_monday: bool,
     /// Cuánto se ve el panel abierto.
     pub(crate) reveal: Reveal,
 }
@@ -57,12 +59,18 @@ impl Previews {
             nav_hovered: None,
             month_offset: 0,
             today: (0, 1, 1),
+            week_monday: false,
             reveal: Reveal::hidden(),
         }
     }
 
     pub fn set_today(&mut self, year: u16, month: u16, day: u16) {
         self.today = (year, month, day);
+    }
+
+    /// Guarda si la semana del calendario empieza en lunes (Dokka).
+    pub fn set_week_start(&mut self, monday_first: bool) {
+        self.week_monday = monday_first;
     }
 
     /// App cuyas ventanas se están mostrando.

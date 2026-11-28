@@ -1,5 +1,6 @@
 use dokka_model::Preferences;
 
+use super::general::PageNow;
 use super::logic::SliderTarget;
 use super::menubar_drag::MenubarDrag;
 use super::painted::PaintedControl;
@@ -17,6 +18,8 @@ pub(crate) struct ContentValues {
     pub reorder: Option<MenubarDrag>,
     /// Control bajo el cursor, para repintar su hover.
     pub control: Option<PaintedControl>,
+    /// Fecha y hora que muestra "Fecha y hora", si el shell ya la pasó.
+    pub now: Option<PageNow>,
 }
 
 impl Default for ContentValues {
@@ -28,6 +31,7 @@ impl Default for ContentValues {
             drag_value: 0.0,
             reorder: None,
             control: None,
+            now: None,
         }
     }
 }
@@ -40,5 +44,6 @@ impl ContentValues {
         self.drag = None;
         self.reorder = None;
         self.control = None;
+        self.now = None;
     }
 }

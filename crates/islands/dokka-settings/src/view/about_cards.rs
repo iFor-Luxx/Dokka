@@ -4,6 +4,9 @@
 //! van a la derecha en gris. Lo que queda fuera de la vista se lleva a
 //! tamaño cero para no reconstruir capas al bajar con la rueda.
 
+use dokka_components::settings_group::{
+    SettingsGroupProps, group_dividers, group_labels, group_panel,
+};
 use dokka_scene::{Divider, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
@@ -43,9 +46,66 @@ pub(crate) fn value_card(
     window_height: f32,
 ) -> (Panel, Vec<Divider>, Vec<Text>) {
     let heights = vec![measures::CONTENT_ROW_HEIGHT; labels.len()];
-    let (mut panel, mut dividers, mut texts) =
-        group_pieces(theme, top, labels, &heights, &[false; 0], width);
-    if top + heights.iter().sum::<f32>() < measures::CONTENT_TOP || top > window_height {
+    let card = group_pieces(theme, top, labels, &heights, &[false; 0], width);
+    with_values(
+        theme,
+        card,
+        top,
+        height_of(&heights),
+        values,
+        width,
+        window_height,
+    )
+}
+
+/// Tarjeta con etiquetas dinámicas a la izquierda y valores a la derecha.
+/// Igual que `value_card` pero con nombres que llegan de Windows.
+pub(crate) fn value_card_owned(
+    theme: &Theme,
+    top: f32,
+    labels: &[String],
+    values: &[&str],
+    width: f32,
+    window_height: f32,
+) -> (Panel, Vec<Divider>, Vec<Text>) {
+    let heights = vec![measures::CONTENT_ROW_HEIGHT; labels.len()];
+    let props = SettingsGroupProps {
+        top,
+        rows: labels.to_vec(),
+        heights: heights.clone(),
+        width,
+    };
+    let panel = group_panel(theme, &props);
+    let dividers = group_dividers(theme, &props);
+    let texts = group_labels(theme, &props, &[false; 0]);
+    with_values(
+        theme,
+        (panel, dividers, texts),
+        top,
+        height_of(&heights),
+        values,
+        width,
+        window_height,
+    )
+}
+
+fn height_of(heights: &[f32]) -> f32 {
+    heights.iter().sum()
+}
+
+/// Esconde lo que queda fuera de la vista y añade los valores a la derecha.
+/// Los paneles escondidos quedan a tamaño cero para no reconstruir capas.
+fn with_values(
+    theme: &Theme,
+    card: (Panel, Vec<Divider>, Vec<Text>),
+    top: f32,
+    height: f32,
+    values: &[&str],
+    width: f32,
+    window_height: f32,
+) -> (Panel, Vec<Divider>, Vec<Text>) {
+    let (mut panel, mut dividers, mut texts) = card;
+    if top + height < measures::CONTENT_TOP || top > window_height {
         panel.bounds = Rect {
             x: 0.0,
             y: 0.0,

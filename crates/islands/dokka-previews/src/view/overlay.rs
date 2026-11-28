@@ -27,7 +27,7 @@ impl Previews {
         let request = self.open.as_ref()?;
         let mut overlay = match &request.content {
             PreviewContent::Calendar => {
-                let month = calendar_month(self.today, self.month_offset);
+                let month = calendar_month(self.today, self.month_offset, self.week_monday);
                 let pill = calendar_pill_props(drawn, self.nav_hovered);
                 calendar_panel(&self.theme, &self.nav_pill, drawn, &month, &pill)
             }

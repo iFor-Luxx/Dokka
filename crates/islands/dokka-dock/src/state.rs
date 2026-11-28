@@ -34,6 +34,8 @@ pub struct Dock {
     pub(crate) bounces: HashMap<AppId, LaunchBounce>,
     pub(crate) menu: Option<OpenMenu>,
     pub(crate) preferences: DockPreferences,
+    /// Reloj y hora del dock en 24 horas; si no, en 12 (Dokka).
+    pub(crate) clock_24: bool,
 }
 
 impl Dock {
@@ -54,6 +56,7 @@ impl Dock {
             bounces: HashMap::new(),
             menu: None,
             preferences: DockPreferences::default(),
+            clock_24: true,
         }
     }
 
@@ -70,6 +73,11 @@ impl Dock {
         if !preferences.auto_hide {
             self.hide.show_now();
         }
+    }
+
+    /// Guarda si el reloj y la hora del dock van en 24 horas (Dokka).
+    pub fn set_clock_24(&mut self, hour_24: bool) {
+        self.clock_24 = hour_24;
     }
 
     /// Guarda si una app ocupa la pantalla principal.

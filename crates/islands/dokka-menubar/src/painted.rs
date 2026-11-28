@@ -67,6 +67,8 @@ pub struct MenubarPainted {
     pub search_results: Vec<String>,
     pub search_highlighted: Option<usize>,
     pub search_cursor: bool,
+    /// La semana del calendario empieza en lunes.
+    pub week_monday: bool,
 }
 
 impl PartialEq for MenubarPainted {
@@ -113,6 +115,7 @@ impl PartialEq for MenubarPainted {
             && self.search_results == other.search_results
             && self.search_highlighted == other.search_highlighted
             && self.search_cursor == other.search_cursor
+            && self.week_monday == other.week_monday
     }
 }
 
@@ -195,6 +198,7 @@ impl crate::Menubar {
                 .collect(),
             search_highlighted: self.search_highlighted,
             search_cursor: self.search_cursor,
+            week_monday: self.week_monday,
         }
     }
 }

@@ -46,6 +46,7 @@ pub(crate) fn refresh_clock(session: &mut DockSession) {
         now.month,
         now.hour,
         now.minute,
+        session.preferences.general.hour_24,
     ));
     session.menubar.set_today(now.year, now.month, now.day);
 }

@@ -1,8 +1,11 @@
 mod content;
 mod content_hit;
+mod datetime;
 mod dock_position;
 mod general;
 mod hit;
+mod language;
+mod list_counts;
 mod menubar_order;
 mod search_filter;
 mod sections;
@@ -18,6 +21,10 @@ pub(crate) use content_hit::{
     DockSwitch, SliderTarget, about_button_at, dock_segment_at, dock_slider_at, dock_switch_at,
     general_row_at, menubar_switch_at, storage_button_at, taskbar_switch_at,
 };
+pub(crate) use datetime::{
+    datetime_button_at, datetime_button_top, datetime_card_top, datetime_labels, datetime_row,
+    datetime_switch_at,
+};
 pub(crate) use dock_position::{position_from_index, position_options, position_to_index};
 pub(crate) use general::{
     GENERAL_HEADER_HELP_FIRST, GENERAL_HEADER_HELP_SECOND, GENERAL_ROWS, about_main_rows,
@@ -25,6 +32,11 @@ pub(crate) use general::{
     general_scroll_max,
 };
 pub use hit::drag_zone;
+pub(crate) use language::{
+    language_button_at, language_button_top, language_card_top, language_example_top,
+    language_format_rows, language_row, language_segment_at,
+};
+pub use list_counts::ListCounts;
 pub(crate) use menubar_order::{
     float_top, menubar_bottom, menubar_label, menubar_on, menubar_row_at, menubar_top,
     reorder_target, reordered, toggle_menubar,

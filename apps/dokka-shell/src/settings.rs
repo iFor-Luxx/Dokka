@@ -9,7 +9,7 @@
 use std::error::Error;
 use std::sync::Arc;
 
-use dokka_settings::{GeneralPage, SettingsAction, drag_zone, settings_scene};
+use dokka_settings::{SettingsAction, drag_zone, settings_scene};
 use dokka_win_surface::{Surface, SurfaceEvent};
 
 use crate::dock_session::DockSession;
@@ -115,11 +115,6 @@ pub(crate) fn press_over_settings(
     if session.settings.press(cx, cy) {
         return;
     }
-    let disks = session
-        .settings
-        .storage_breakdown()
-        .map(|known| known.other_disks.len())
-        .unwrap_or(0);
     if drag_zone(
         cx,
         cy,
@@ -127,7 +122,7 @@ pub(crate) fn press_over_settings(
         session.settings.content_width(),
         session.settings.general(),
         session.settings.scroll_offset(),
-        disks,
+        crate::settings_system::list_counts(session),
     ) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
@@ -185,31 +180,20 @@ pub(crate) fn click_settings(
             crate::apply_preferences::set_taskbar_auto(session, surface, auto);
         }
         SettingsAction::EnterGeneral(page) => {
-            if page == GeneralPage::About {
-                crate::settings_system::request_about(session);
-            } else if page == GeneralPage::Storage {
-                crate::settings_system::request_storage(session);
-            }
+            crate::settings_system::request_for_page(session, page);
         }
         SettingsAction::OpenAbout(button) => {
             crate::settings_system::open_about_page(session, button);
+        }
+        SettingsAction::OpenGeneral(button) => {
+            crate::settings_system::open_general_page(session, button);
         }
         SettingsAction::EmptyTrash => {
             crate::settings_system::empty_trash(session);
         }
     }
-    // Volver con la píldora a "Acerca" también pide los datos una vez.
-    if session.settings.general() == GeneralPage::About
-        && session.settings.system_summary().is_none()
-    {
-        crate::settings_system::request_about(session);
-    }
-    // Volver con la píldora a "Almacenamiento" también calcula una vez.
-    if session.settings.general() == GeneralPage::Storage
-        && session.settings.storage_breakdown().is_none()
-    {
-        crate::settings_system::request_storage(session);
-    }
+    // Volver con la píldora a un apartado con datos también los pide una vez.
+    crate::settings_system::refresh_after_navigation(session);
     Ok(())
 }
 
@@ -260,16 +244,10 @@ pub(crate) fn render_settings(
     if !session.settings.is_open() {
         return Ok(());
     }
-    // El hilo ya leyó el equipo: pasa el último valor a la isla para que
-    // repinte "Acerca" sin pedir en bucle.
-    crate::settings_system::poll_about(session);
-    // El hilo del desglose avanza: si se está en "Almacenamiento" se pasa lo
-    // nuevo; si no, se detiene al salir del apartado.
-    if session.settings.general() == GeneralPage::Storage {
-        crate::settings_system::poll_storage(session);
-    } else {
-        crate::settings_system::cancel_storage(session);
-    }
+    // Los hilos ya leyeron el equipo: se pasa lo último a la isla para que
+    // repinte sus apartados sin pedir en bucle (fuera de "Almacenamiento"
+    // se detiene su cálculo).
+    crate::settings_system::poll_settings(session);
     let painted = session.settings.painted();
     if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());
