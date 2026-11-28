@@ -10,6 +10,9 @@ papelera con la confirmación de Windows.
 `AudioOutputs` lista las salidas activas y cambia la predeterminada.
 `BrightnessControl` da el brillo del monitor principal por DDC/CI
 (`brightness` de 0 a 1, `None` sin DDC) y lo cambia sin esperar.
+`SystemInfo` da el resumen del equipo para "Acerca de este PC" sin bloquear
+(último valor + pedir refresco, como el brillo) y abre sus páginas
+(`SystemPage`: pantalla, almacenamiento e informe).
 
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 

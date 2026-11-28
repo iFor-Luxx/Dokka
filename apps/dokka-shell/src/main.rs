@@ -28,6 +28,7 @@ mod preview_large;
 mod preview_safety;
 mod session_render;
 mod settings;
+mod settings_system;
 mod taskbar_mode;
 mod window_activation;
 

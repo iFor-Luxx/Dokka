@@ -63,6 +63,7 @@ impl TextLayer {
         let left = match text.align {
             TextAlign::Center => text.x - self.size.X / 2.0,
             TextAlign::Left => text.x,
+            TextAlign::Right => text.x - self.size.X,
         };
         self.visual.SetOffset(Vector3 {
             X: left,

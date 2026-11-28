@@ -271,7 +271,11 @@ impl SceneLayers {
     }
 
     /// Salida del centro por piezas en su overlay, una sola vez.
-    pub(crate) fn start_control_dismiss(&self, compositor: &Compositor, dismiss: &dokka_scene::ControlDismiss) -> Result<()> {
+    pub(crate) fn start_control_dismiss(
+        &self,
+        compositor: &Compositor,
+        dismiss: &dokka_scene::ControlDismiss,
+    ) -> Result<()> {
         let Some(overlay) = &self.overlay else {
             return Err(windows::core::Error::from_thread());
         };

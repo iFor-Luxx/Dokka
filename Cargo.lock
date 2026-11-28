@@ -142,6 +142,7 @@ dependencies = [
  "dokka-win-control",
  "dokka-win-media",
  "dokka-win-surface",
+ "dokka-win-system",
  "dokka-win-tracking",
  "dokka-win-tray",
 ]
@@ -216,6 +217,15 @@ dependencies = [
 name = "dokka-win-surface"
 version = "0.1.0"
 dependencies = [
+ "dokka-model",
+ "windows",
+]
+
+[[package]]
+name = "dokka-win-system"
+version = "0.1.0"
+dependencies = [
+ "dokka-contracts",
  "dokka-model",
  "windows",
 ]

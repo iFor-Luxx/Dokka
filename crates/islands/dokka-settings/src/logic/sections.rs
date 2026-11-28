@@ -14,6 +14,7 @@ pub const SECTION_NAMES: [&str; 8] = [
 ];
 
 /// Índice de cada sección con contenido real.
+pub(crate) const SECTION_GENERAL: usize = 0;
 pub(crate) const SECTION_DOCK: usize = 1;
 pub(crate) const SECTION_MENUBAR: usize = 3;
 pub(crate) const SECTION_TASKBAR: usize = 5;

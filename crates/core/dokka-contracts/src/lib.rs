@@ -7,6 +7,7 @@ mod contract_error;
 mod pinned_apps_store;
 mod preferences_store;
 mod recycle_bin;
+mod system_info;
 mod system_status;
 mod system_tray;
 mod window_control;
@@ -19,6 +20,7 @@ pub use contract_error::ContractError;
 pub use pinned_apps_store::PinnedAppsStore;
 pub use preferences_store::PreferencesStore;
 pub use recycle_bin::RecycleBin;
+pub use system_info::{SystemInfo, SystemPage};
 pub use system_status::{
     AudioOutputs, BrightnessControl, KeyboardLanguages, NetworkStatus, VolumeControl,
 };

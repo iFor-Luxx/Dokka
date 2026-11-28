@@ -5,10 +5,11 @@ use crate::Color;
 pub enum TextAlign {
     Center,
     Left,
+    Right,
 }
 
 /// Texto de una línea. Con `Center` va centrado en `x`;
-/// con `Left` empieza en `x`.
+/// con `Left` empieza en `x`; con `Right` termina en `x`.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Text {
     pub x: f32,

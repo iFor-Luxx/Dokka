@@ -23,7 +23,16 @@ con el mismo margen (cristal claro y neutro como hoy). Dock: tamaño,
 ampliación y cantidad en una tarjeta (relleno desde la fábrica con su marca);
 posición en pantalla (segmentado Izquierda | Abajo | Derecha) y ocultar con
 apps a pantalla completa en otra; animar al abrir, 
-indicadores y vistas previas en la última. Barra superior: siete filas reordenables (Volumen, Red, Música,
+indicadores y vistas previas en la última. General: cabecera centrada con el
+engranaje grande y dos tarjetas con filas (Acerca de este PC, Actualización de
+Dokka, Almacenamiento; Fecha y hora, Idioma y región) con cuadrito, chevrón y
+resaltado; la píldora va y viene entre la lista y sus apartados y el título
+cambia. "Acerca de este PC" trae el dibujo del PC, el modelo, la tarjeta con
+Nombre, Procesador, Gráfica, Memoria y Número de serie, las secciones Windows,
+Pantalla y Almacenamiento con sus botones y el informe abajo; los datos los da
+el shell (`set_system_info`) y los botones avisan (`OpenAbout`); si no cabe, la
+rueda baja la ficha sin pintar fuera. Los demás apartados siguen con la tarjeta
+gris "Próximamente". Barra superior: siete filas reordenables (Volumen, Red, Música,
 Idioma, Buscar, Centro de control y Apps en segundo plano) en una sola
 tarjeta, cada una con agarre a la izquierda (seis puntos verticales en color
 secundario), nombre e interruptor; debajo, texto pequeño secundario que
@@ -31,8 +40,7 @@ explica el arrastre. Arrastrar desde cualquier punto de la fila salvo el
 interruptor cambia el orden: tras unos 4 px la fila sigue al cursor en
 vertical, resaltada en plano, sin salirse de la tarjeta y dejando el hueco
 donde caerá; al soltar emite `Changed` una sola vez y solo si cambió. Barra de tareas: ocultar automáticamente la
-barra de Windows (interruptor). El resto sigue con la tarjeta gris muy suave
-"Próximamente". Guarda si está abierta, si tiene el foco, la sección elegida,
+barra de Windows (interruptor). Guarda si está abierta, si tiene el foco, la sección elegida,
 el historial, la búsqueda y su foco, la fila y la mitad de la píldora bajo el
 cursor, el hover de los semáforos, los valores reales (`set_values` los fija al
 abrir), el deslizador a medias y la fila a medias, con los dibujos creados una vez
@@ -60,11 +68,12 @@ salirse de su tercio. El contenido cambia de tamaño entre secciones:
 `SceneLayers` reconstruye si cambia el estilo o crece la cantidad; los textos
 e iconos sobrantes se ocultan. Al reordenar la cantidad y el estilo no cambian:
 solo se mueven, sin reconstruir. La lógica vive dividida (`content.rs` geometría,
-`menubar_order.rs` orden y huecos, `slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
+`general.rs` lista y ficha, `menubar_order.rs` orden y huecos, `slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
 `content_hit.rs` golpe, `menubar_drag.rs` arrastre, `reorder_pointer.rs` gesto y
 `slider_pointer.rs` pista); la vista vive dividida (`content.rs` ayudantes,
-`dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
-el historial vive en `selection.rs`.
+`general_content.rs` y `general_rows.rs` lista, `about_content.rs`, `about_cards.rs`,
+`about_buttons.rs` y `about_pc.rs` ficha, `dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
+el historial vive en `selection.rs` y el apartado en `general.rs`.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Sin
 animaciones: la ventana aparece, cambia de sección y se arrastra sin

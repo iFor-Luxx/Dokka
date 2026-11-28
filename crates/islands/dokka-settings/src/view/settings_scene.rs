@@ -57,7 +57,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         badge_drawings.push(settings.badge_drawing(theme, *index));
         glyphs.push(settings.row_drawing(theme, *index));
     }
-    let content = content_scene(theme, settings, &grip_drawing);
+    let content = content_scene(theme, &mut *settings, &grip_drawing);
     let mut icons = filtered_badges(theme, &order, &badge_drawings);
     icons.extend(filtered_icons(theme, &order, &glyphs));
     icons.push(search_magnifier_at(
@@ -83,7 +83,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
     texts.push(Text {
         x: measures::title_left(),
         center_y: measures::header_middle(),
-        content: names[selected].clone(),
+        content: settings.title(),
         size: measures::TITLE_SIZE,
         is_bold: true,
         color: theme.settings.title,

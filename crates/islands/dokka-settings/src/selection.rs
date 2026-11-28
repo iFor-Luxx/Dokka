@@ -3,6 +3,8 @@
 //! Elegir una sección nueva borra lo de adelante; la búsqueda filtra las
 //! filas sin cambiar la sección elegida.
 
+use super::general::GeneralPage;
+use super::logic::SECTION_NAMES;
 use super::state::Settings;
 
 impl Settings {
@@ -21,6 +23,20 @@ impl Settings {
         super::logic::filter_sections(self.query())
     }
 
+    /// Apartado actual dentro de General.
+    pub fn general(&self) -> GeneralPage {
+        self.navigation_general()
+    }
+
+    /// Título de la cabecera: el apartado si está en General, si no la sección.
+    pub fn title(&self) -> String {
+        if self.selected() == 0 {
+            self.general().title().to_owned()
+        } else {
+            SECTION_NAMES[self.selected()].to_owned()
+        }
+    }
+
     pub(crate) fn navigation_can_previous(&self) -> bool {
         self.position() > 0
     }
@@ -30,22 +46,29 @@ impl Settings {
     }
 
     pub(crate) fn select_section(&mut self, index: usize) {
-        let selected = self.selected();
-        if index != selected {
-            self.push_history(index);
-        }
+        // Elegir General desde un apartado vuelve a la lista.
+        self.push_history(index);
         self.set_hovered(Some(index));
+        self.clear_scroll();
+    }
+
+    /// Entra en un apartado de General desde su lista.
+    pub(crate) fn enter_general(&mut self, page: GeneralPage) {
+        self.push_general(page);
+        self.clear_scroll();
     }
 
     pub(crate) fn go_back(&mut self) {
         if self.navigation_can_previous() {
             self.step_back();
+            self.clear_scroll();
         }
     }
 
     pub(crate) fn go_forward(&mut self) {
         if self.navigation_can_next() {
             self.step_forward();
+            self.clear_scroll();
         }
     }
 

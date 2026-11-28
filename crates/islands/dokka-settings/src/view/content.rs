@@ -13,7 +13,7 @@ use dokka_components::switch::{SwitchProps, switch_panels, switch_touch};
 use dokka_scene::{Divider, Icon, Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::super::logic::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
+use super::super::logic::{SECTION_DOCK, SECTION_GENERAL, SECTION_MENUBAR, SECTION_TASKBAR};
 use super::super::state::Settings;
 
 /// Todo lo que pinta el contenido: planos, líneas, iconos y textos.
@@ -27,7 +27,7 @@ pub(crate) struct ContentScene {
 /// Tarjetas con ajustes o la tarjeta gris "Próximamente".
 pub(crate) fn content_scene(
     theme: &Theme,
-    settings: &Settings,
+    settings: &mut Settings,
     grip: &std::sync::Arc<dokka_scene::Drawing>,
 ) -> ContentScene {
     let selected = settings.selected();
@@ -40,8 +40,35 @@ pub(crate) fn content_scene(
         super::menubar_content::menubar_content(theme, settings, grip)
     } else if selected == SECTION_TASKBAR {
         super::other_content::taskbar_content(theme, settings)
+    } else if selected == SECTION_GENERAL {
+        general_scene(theme, settings)
     } else {
         coming_soon(theme, settings.content_width())
+    }
+}
+
+/// Contenido de General según su apartado: lista, ficha o próximamente.
+fn general_scene(theme: &Theme, settings: &mut Settings) -> ContentScene {
+    use super::super::general::GeneralPage as Page;
+    match settings.general() {
+        Page::Root => {
+            let mut badges = Vec::new();
+            let mut glyphs = Vec::new();
+            for row in 0..super::super::logic::GENERAL_ROWS {
+                badges.push(settings.general_badge_drawing(theme, row));
+                glyphs.push(settings.general_row_drawing(theme, row));
+            }
+            let chevron = settings.chevron_drawing(theme);
+            let gear = settings.gear_drawing(theme);
+            super::general_content::general_content(
+                theme, settings, &badges, &glyphs, &chevron, &gear,
+            )
+        }
+        Page::About => {
+            let pc = std::sync::Arc::new(super::about_pc::pc_drawing(theme));
+            super::about_content::about_content(theme, settings, &pc)
+        }
+        _ => coming_soon(theme, settings.content_width()),
     }
 }
 

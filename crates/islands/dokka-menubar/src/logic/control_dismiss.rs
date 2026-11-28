@@ -35,12 +35,13 @@ impl Menubar {
     /// Orden de salida para la plataforma, una sola vez: destino y tiempos.
     /// `None` sin cierre en curso.
     pub fn dismiss_order(&self) -> Option<dokka_scene::ControlDismiss> {
-        self.control_dismiss.map(|closing| dokka_scene::ControlDismiss {
-            target: closing.target,
-            stagger: measures::DISMISS_STAGGER_SECONDS,
-            duration: measures::DISMISS_PIECE_SECONDS,
-            end_scale: measures::DISMISS_END_SCALE,
-        })
+        self.control_dismiss
+            .map(|closing| dokka_scene::ControlDismiss {
+                target: closing.target,
+                stagger: measures::DISMISS_STAGGER_SECONDS,
+                duration: measures::DISMISS_PIECE_SECONDS,
+                end_scale: measures::DISMISS_END_SCALE,
+            })
     }
 
     /// Empieza a cerrar el centro: por piezas si está abierto sin galería,

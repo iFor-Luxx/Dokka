@@ -8,9 +8,9 @@
 //! una vez, con animaciones de Composition por fotogramas clave.
 
 use dokka_scene::{ControlDismiss, Overlay, Panel};
+use windows::Foundation::TimeSpan;
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::{HSTRING, Result};
-use windows::Foundation::TimeSpan;
 use windows_numerics::Vector3;
 
 /// Suavizado a mitad de camino (salida cubicada al 55%): llegada blanda.
@@ -52,16 +52,36 @@ impl PieceGroups {
         }
         let at = |point| tile_of(&overlay.tiles, point);
         let map = GroupMap {
-            flats: overlay.flat_panels.iter().map(|panel| at(rect_center(&panel.bounds))).collect(),
-            dividers: overlay.dividers.iter().map(|divider| at(rect_center(&divider.bounds))).collect(),
-            cursors: overlay.cursors.iter().map(|cursor| at((cursor.text_x, cursor.center_y))).collect(),
-            dots: overlay.dots.iter().map(|dot| {
-                at((dot.x + dot.diameter / 2.0, dot.y + dot.diameter / 2.0))
-            }).collect(),
-            texts: overlay.texts.iter().map(|text| at((text.x, text.center_y))).collect(),
-            icons: overlay.icons.iter().map(|icon| {
-                at((icon.x + icon.side / 2.0, icon.y + icon.side / 2.0))
-            }).collect(),
+            flats: overlay
+                .flat_panels
+                .iter()
+                .map(|panel| at(rect_center(&panel.bounds)))
+                .collect(),
+            dividers: overlay
+                .dividers
+                .iter()
+                .map(|divider| at(rect_center(&divider.bounds)))
+                .collect(),
+            cursors: overlay
+                .cursors
+                .iter()
+                .map(|cursor| at((cursor.text_x, cursor.center_y)))
+                .collect(),
+            dots: overlay
+                .dots
+                .iter()
+                .map(|dot| at((dot.x + dot.diameter / 2.0, dot.y + dot.diameter / 2.0)))
+                .collect(),
+            texts: overlay
+                .texts
+                .iter()
+                .map(|text| at((text.x, text.center_y)))
+                .collect(),
+            icons: overlay
+                .icons
+                .iter()
+                .map(|icon| at((icon.x + icon.side / 2.0, icon.y + icon.side / 2.0)))
+                .collect(),
         };
         Ok((Self { groups }, map))
     }
@@ -206,8 +226,22 @@ fn start_piece(
 
     let shift = compositor.CreateVector3KeyFrameAnimation()?;
     shift.InsertKeyFrame(0.0, Vector3::default())?;
-    shift.InsertKeyFrame(EASE_MID_PROGRESS, Vector3 { X: dx * EASE_MID_VALUE, Y: dy * EASE_MID_VALUE, Z: 0.0 })?;
-    shift.InsertKeyFrame(1.0, Vector3 { X: dx, Y: dy, Z: 0.0 })?;
+    shift.InsertKeyFrame(
+        EASE_MID_PROGRESS,
+        Vector3 {
+            X: dx * EASE_MID_VALUE,
+            Y: dy * EASE_MID_VALUE,
+            Z: 0.0,
+        },
+    )?;
+    shift.InsertKeyFrame(
+        1.0,
+        Vector3 {
+            X: dx,
+            Y: dy,
+            Z: 0.0,
+        },
+    )?;
     shift.SetDelayTime(span(delay))?;
     shift.SetDuration(span(dismiss.duration))?;
     group.StartAnimation(&HSTRING::from("Offset"), &shift)?;
@@ -215,9 +249,30 @@ fn start_piece(
     let end = dismiss.end_scale;
     let middle = 1.0 + (end - 1.0) * EASE_MID_VALUE;
     let scale = compositor.CreateVector3KeyFrameAnimation()?;
-    scale.InsertKeyFrame(0.0, Vector3 { X: 1.0, Y: 1.0, Z: 1.0 })?;
-    scale.InsertKeyFrame(EASE_MID_PROGRESS, Vector3 { X: middle, Y: middle, Z: 1.0 })?;
-    scale.InsertKeyFrame(1.0, Vector3 { X: end, Y: end, Z: 1.0 })?;
+    scale.InsertKeyFrame(
+        0.0,
+        Vector3 {
+            X: 1.0,
+            Y: 1.0,
+            Z: 1.0,
+        },
+    )?;
+    scale.InsertKeyFrame(
+        EASE_MID_PROGRESS,
+        Vector3 {
+            X: middle,
+            Y: middle,
+            Z: 1.0,
+        },
+    )?;
+    scale.InsertKeyFrame(
+        1.0,
+        Vector3 {
+            X: end,
+            Y: end,
+            Z: 1.0,
+        },
+    )?;
     scale.SetDelayTime(span(delay))?;
     scale.SetDuration(span(dismiss.duration))?;
     group.StartAnimation(&HSTRING::from("Scale"), &scale)
