@@ -1,0 +1,6 @@
+# La cache de descargas queda dentro de esta carpeta: borrarla lo quita todo.
+[install]
+exact = true
+
+[install.cache]
+dir = ".bun-cache"
