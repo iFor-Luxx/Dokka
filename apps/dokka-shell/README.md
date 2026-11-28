@@ -38,7 +38,10 @@ en su hilo, último valor cada `Tick`, relectura solo al abrir el centro y
 `BrightnessSetLevel` con valor adelantado; sin DDC no hay tarjeta y el panel
 es el de antes); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
-adelantada al instante por el monitor. El buscador filtra el catálogo del
+adelantada al instante por el monitor. El `Tick` además cierra solo el centro
+de control tras 6 s sin uso con el cursor fuera (`tick_control_idle`, por el
+mismo camino que `MenubarDismissed`: devuelve el foco igual, sin robarlo);
+los demás paneles no cambian. El buscador filtra el catálogo del
 Escritorio más las fijadas (como el Launchpad) con `filter_search_order` e
 iconos de `IconCache`; flechas, Enter, clic y Esc. Con la galería del modo
 editar la ventana pasa a todo el alto del monitor (como el buscador) y vuelve

@@ -15,6 +15,10 @@ impl Menubar {
         self.network_hovered = None;
         self.language_hovered = None;
         self.background_hovered = None;
+        // La ventana está recortada a sus zonas activas: fuera no llegan
+        // movimientos, solo este aviso. Sin limpiarlo, la cuenta creería
+        // que el cursor sigue encima y nunca cerraría solo.
+        self.control_cursor_inside = false;
         if let Some(menu) = self.menu.as_mut() {
             menu.highlighted = None;
         }

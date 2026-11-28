@@ -53,8 +53,9 @@
   cápsula doble de 144 × 66 con círculo de 42 y textos en 12/11 recortados
   a 12 con "…" (la música sigue en 16), música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual; el alto lo calcula el reparto según
-  los visibles, y sombra suave bajo cada pieza
-  (desenfoque 10 y caída 2, que caben en el aire exterior de 12); más la
+  los visibles, la inactividad antes de cerrar solo el centro
+  (`IDLE_CLOSE_SECONDS` = 6 s) y sombra suave bajo cada pieza
+  (desenfoque 10 y caída 2, que caben en el aire exterior de 12; más la
   burbuja de editar (hueco de 12, 168 × 28 con texto en 12) y el botón "−"
   (22 con línea de 10 × 2 en la esquina de cada pieza)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 560 para que quepa el

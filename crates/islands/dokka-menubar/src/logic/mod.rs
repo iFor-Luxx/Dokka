@@ -5,6 +5,7 @@ mod clock;
 mod control_center;
 mod control_center_edit;
 mod control_gallery;
+mod control_idle;
 mod language;
 mod menu;
 mod music;

@@ -72,6 +72,10 @@ pub struct Menubar {
     pub(crate) dragging_slider: bool,
     /// `true` si lo arrastrado es el brillo (si no, el volumen del centro).
     pub(crate) dragging_brightness: bool,
+    /// `Tick` seguidos sin uso con el cursor fuera del centro.
+    pub(crate) control_idle_ticks: u32,
+    /// `true` si el cursor está sobre el panel del centro.
+    pub(crate) control_cursor_inside: bool,
     /// Brillo DDC de 0 a 1; `None` sin DDC: sin tarjeta de Pantalla.
     pub(crate) brightness: Option<f32>,
     /// `true` en modo editar: cada pieza lleva su "−" y no hace su acción;
@@ -163,6 +167,8 @@ impl Menubar {
             search_cursor: false,
             dragging_slider: false,
             dragging_brightness: false,
+            control_idle_ticks: 0,
+            control_cursor_inside: false,
             brightness: None,
             control_editing: false,
             gallery_badges,
@@ -239,6 +245,8 @@ impl Menubar {
         self.background_hovered = None;
         self.dragging_slider = false;
         self.dragging_brightness = false;
+        self.control_idle_ticks = 0;
+        self.control_cursor_inside = false;
         // Cerrar sale del modo editar: al reabrir no hay "−" ni burbuja a medias.
         self.control_editing = false;
     }

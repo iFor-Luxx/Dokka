@@ -141,6 +141,11 @@ pub(crate) fn handle_menubar_event(
             refresh_foreground(session);
             refresh_clock(session);
             refresh_panels(session);
+            // Solo el centro se cierra solo: por el mismo camino que al
+            // perder el foco (devuelve el foco igual, sin robarlo).
+            if session.menubar.tick_control_idle() {
+                dismiss_menubar(session, surface);
+            }
             return Ok(false);
         }
         SurfaceEvent::MenubarMoved { x, y } => {
@@ -148,56 +153,49 @@ pub(crate) fn handle_menubar_event(
             if let Some(action) = session.menubar.pointer_moved(x, y, width) {
                 run_menubar_action(session, surface, action)?;
             }
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarPressed { x, y } => {
             if let Some(action) = session.menubar.pressed(x, y) {
                 run_menubar_action(session, surface, action)?;
             }
+            session.menubar.note_control_used();
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarLeft => {
             session.menubar.pointer_left();
         }
         SurfaceEvent::MenubarClicked { x, y } => {
             click_menubar(session, surface, x, y)?;
+            session.menubar.note_control_used();
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarRightClicked { x, y } => {
             right_click_menubar(session, surface, x, y)?;
+            session.menubar.note_control_used();
         }
         SurfaceEvent::MenubarTyped { character } => {
-            // Con la galería se filtra ella; si no, el buscador como antes.
-            if session.menubar.is_gallery_open() {
-                let width = surface.menubar_width();
-                let screen_height = surface.menubar_monitor_height();
-                session
-                    .menubar
-                    .gallery_typed(character, width, screen_height);
-            } else {
-                crate::menubar_search::type_search(session, surface, character);
-            }
+            session.menubar.note_control_used();
+            crate::menubar_gallery::typed(session, surface, character);
         }
         SurfaceEvent::MenubarBackspace => {
-            if session.menubar.is_gallery_open() {
-                let width = surface.menubar_width();
-                let screen_height = surface.menubar_monitor_height();
-                session.menubar.gallery_erased(width, screen_height);
-            } else {
-                crate::menubar_search::erase_search(session, surface);
-            }
+            session.menubar.note_control_used();
+            crate::menubar_gallery::erased(session, surface);
         }
         SurfaceEvent::MenubarWheel { x, y, delta } => {
-            let width = surface.menubar_width();
-            let screen_height = surface.menubar_monitor_height();
-            session
-                .menubar
-                .gallery_scroll(x, y, delta, width, screen_height);
+            session.menubar.note_control_used();
+            crate::menubar_gallery::scrolled(session, surface, x, y, delta);
         }
         SurfaceEvent::MenubarEnter => {
+            session.menubar.note_control_used();
             crate::menubar_search::confirm_search(session, surface)?;
         }
         SurfaceEvent::MenubarUp => {
+            session.menubar.note_control_used();
             crate::menubar_search::step_search_up(session);
         }
         SurfaceEvent::MenubarDown => {
+            session.menubar.note_control_used();
             crate::menubar_search::step_search_down(session);
         }
         SurfaceEvent::MenubarDismissed => {
