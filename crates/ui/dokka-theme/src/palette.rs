@@ -164,3 +164,32 @@ pub(crate) const HOME_LINE_BORDER: Color = Color::rgba(0, 0, 0, 90);
 /// Sombra negra suave bajo las piezas del buscador: se distingue sobre
 /// fondos claros sin teñir el cristal (opacidad ~30%).
 pub(crate) const SHADOW: Color = Color::rgba(0, 0, 0, 77);
+
+/// Texto oscuro del instalador, casi negro cálido.
+pub(crate) const INSTALLER_TEXT: Color = Color::rgba(29, 29, 31, 255);
+/// Texto secundario del instalador, gris cálido.
+pub(crate) const INSTALLER_SECONDARY: Color = Color::rgba(92, 84, 77, 255);
+/// Azul del botón principal del instalador.
+pub(crate) const INSTALLER_BLUE: Color = Color::rgba(0, 113, 227, 255);
+/// Azul del botón al pasar el cursor: algo más claro.
+pub(crate) const INSTALLER_BLUE_HOVER: Color = Color::rgba(28, 133, 235, 255);
+/// Azul del botón al pulsar: algo más oscuro.
+pub(crate) const INSTALLER_BLUE_PRESSED: Color = Color::rgba(0, 95, 195, 255);
+/// Rojo del botón de desinstalar.
+pub(crate) const INSTALLER_RED: Color = Color::rgba(196, 38, 29, 255);
+/// Rojo al pasar el cursor.
+pub(crate) const INSTALLER_RED_HOVER: Color = Color::rgba(212, 58, 48, 255);
+/// Rojo al pulsar.
+pub(crate) const INSTALLER_RED_PRESSED: Color = Color::rgba(168, 30, 24, 255);
+/// Verde del interruptor encendido del instalador.
+pub(crate) const INSTALLER_GREEN: Color = Color::rgba(48, 190, 80, 255);
+/// Crema de respaldo si la foto de fondo no se puede decodificar.
+pub(crate) const INSTALLER_FALLBACK: Color = Color::rgba(245, 236, 220, 255);
+/// Tarjeta translúcida de opciones, blanca suave.
+pub(crate) const INSTALLER_CARD: Color = Color::rgba(255, 255, 255, 150);
+/// Borde fino y luminoso de la tarjeta.
+pub(crate) const INSTALLER_CARD_BORDER: Color = white(130);
+/// Botón redondo translúcido de cerrar y volver.
+pub(crate) const INSTALLER_CLOSE: Color = Color::rgba(255, 255, 255, 110);
+/// Borde del botón redondo.
+pub(crate) const INSTALLER_CLOSE_BORDER: Color = white(140);

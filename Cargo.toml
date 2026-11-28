@@ -30,12 +30,14 @@ dokka-model = { path = "crates/core/dokka-model" }
 dokka-previews = { path = "crates/islands/dokka-previews" }
 dokka-scene = { path = "crates/engine/dokka-scene" }
 dokka-settings = { path = "crates/islands/dokka-settings" }
+dokka-setup = { path = "crates/islands/dokka-setup" }
 dokka-state = { path = "crates/core/dokka-state" }
 dokka-theme = { path = "crates/ui/dokka-theme" }
 dokka-win-apps = { path = "crates/platform/dokka-win-apps" }
 dokka-win-audio-output = { path = "crates/platform/dokka-win-audio-output" }
 dokka-win-composition = { path = "crates/platform/dokka-win-composition" }
 dokka-win-control = { path = "crates/platform/dokka-win-control" }
+dokka-win-install = { path = "crates/platform/dokka-win-install" }
 dokka-win-media = { path = "crates/platform/dokka-win-media" }
 dokka-win-surface = { path = "crates/platform/dokka-win-surface" }
 dokka-win-system = { path = "crates/platform/dokka-win-system" }

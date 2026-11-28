@@ -1,0 +1,13 @@
+[package]
+name = "dokka-setup"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dokka-components.workspace = true
+dokka-scene.workspace = true
+dokka-theme.workspace = true
+
+[lints]
+workspace = true

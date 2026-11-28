@@ -68,6 +68,12 @@ pub(crate) fn panel_style_of(panel: &Panel) -> PanelStyle {
 }
 
 impl SceneLayers {
+    /// Contenedor del contenido, para colgar la foto del instalador debajo.
+    /// Solo la usa el dibujador de una sola ventana; no cambia nada del dock.
+    pub(crate) fn content_root(&self) -> ContainerVisual {
+        self.content.clone()
+    }
+
     pub(crate) fn build(
         compositor: &Compositor,
         painter: &Painter,

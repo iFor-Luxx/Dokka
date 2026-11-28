@@ -12,11 +12,12 @@ pub use branding::{
 };
 
 pub use measures::{
-    background, control_center, control_gallery, dock, launchpad, menu, menubar, menubar_tray,
-    music_panel, nav_pill, network_language, popup, search, settings, tooltip, tray_glass, volume,
+    background, control_center, control_gallery, dock, installer, launchpad, menu, menubar,
+    menubar_tray, music_panel, nav_pill, network_language, popup, search, settings, tooltip,
+    tray_glass, volume,
 };
 pub use theme::{
-    DockColors, IconColors, LaunchpadColors, MediaColors, MenuColors, MenubarColors, NavPillColors,
-    PanelColors, SettingsColors, Theme, TooltipColors, TrayColors,
+    DockColors, IconColors, InstallerColors, LaunchpadColors, MediaColors, MenuColors,
+    MenubarColors, NavPillColors, PanelColors, SettingsColors, Theme, TooltipColors, TrayColors,
 };
 pub use themes::light;
