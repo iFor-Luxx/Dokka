@@ -104,9 +104,11 @@ impl PanelLayer {
         }
         self.tint.SetOffset(offset)?;
         self.tint.SetSize(size)?;
+        // Un panel escondido mide cero: restarle el borde daría un tamaño negativo,
+        // que Windows rechaza y corta el resto del dibujo.
         self.tint_outline.SetSize(Vector2 {
-            X: bounds.width - panel.border_width,
-            Y: bounds.height - panel.border_width,
+            X: (bounds.width - panel.border_width).max(0.0),
+            Y: (bounds.height - panel.border_width).max(0.0),
         })
     }
 }
