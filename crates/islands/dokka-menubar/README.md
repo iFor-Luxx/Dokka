@@ -28,7 +28,11 @@ el calendario o la fila están abiertos, el desfase de mes,
 los resaltados y los datos de cada panel (volumen, brillo DDC, red, idiomas, segundo plano con iconos
 por identidad, canción y
 carátula, texto y resultados de búsqueda); decide el clic, el botón abajo y el arrastre
-del deslizador y devuelve `MenubarAction`. Da su `Scene` (con el menú, el
+del deslizador y devuelve `MenubarAction`. El centro se cierra solo tras 6 s
+sin uso con el cursor fuera de su panel y sin clics, arrastres ni teclas
+(`logic/control_idle.rs`: cuenta un `Tick` de 1 s; con el cursor encima o
+arrastrando no se cierra y cualquier uso reinicia; el shell lo cierra por el
+camino normal). Da su `Scene` (con el menú, el
 calendario o el panel real como `overlay`) y sus zonas activas (la franja y,
 abierto, lo desplegado con su hueco; el buscador la casilla y la tarjeta con el
 aire de la sombra para no recortarla, sin los huecos vacíos; el clic en ese
@@ -57,6 +61,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `music.rs` | `open_music`, `set_now_playing` (canción y carátula), botón anterior/pausa/siguiente; expone `artwork` para reutilizarla |
 | `search.rs` | `open_search` (separado de la barra, centrado a lo ancho), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
 | `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula, los ocultos de `shown` y el brillo en sus props, con `set_brightness` que recoloca el alto y `set_shown` que lo recoloca si cambian los ocultos); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
+| `control_idle.rs` | cierre solo del centro tras 6 s (`IDLE_CLOSE_SECONDS` del tema) con el cursor fuera y sin clics, arrastres ni teclas: cuenta un `Tick` de 1 s, decide en `control_should_auto_close` (el modo editar se excluirá ahí) y el shell cierra por el camino normal |
 | `background.rs` | `open_background`, `set_background_apps` (recoloca el alto si está abierto), clic izquierdo `TrayActivate`, clic derecho `TrayMenu` y hover |
 | `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
 | `tray.rs` | `TrayKind`, celdas de la fila y colocación (`tray_place`, `tray_place_centered` del buscador estilo Spotlight con el alto del monitor) |

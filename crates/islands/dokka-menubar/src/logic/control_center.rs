@@ -12,6 +12,7 @@ use crate::{Menubar, MenubarAction};
 impl Menubar {
     /// Mide con su tamaño real (según ocultos y brillo) y lo coloca bajo su icono.
     /// Reutiliza los datos de volumen, brillo, red y música ya guardados.
+    /// Empieza la cuenta de inactividad: el clic cayó en el icono, fuera del panel.
     pub fn open_control_center(&mut self, bar_width: f32) {
         let Some(anchor) = self.tray_anchor(super::TrayKind::ControlCenter, bar_width) else {
             return;
@@ -24,6 +25,8 @@ impl Menubar {
                 bar_width,
             ),
         );
+        self.control_idle_ticks = 0;
+        self.control_cursor_inside = false;
     }
 
     /// Brillo DDC de 0 a 1 (`None` sin DDC); recoloca el alto si el centro

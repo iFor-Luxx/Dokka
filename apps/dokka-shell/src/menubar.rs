@@ -131,6 +131,11 @@ pub(crate) fn handle_menubar_event(
             refresh_foreground(session);
             refresh_clock(session);
             refresh_panels(session);
+            // Solo el centro se cierra solo: por el mismo camino que al
+            // perder el foco (devuelve el foco igual, sin robarlo).
+            if session.menubar.tick_control_idle() {
+                dismiss_menubar(session, surface);
+            }
             return Ok(false);
         }
         SurfaceEvent::MenubarMoved { x, y } => {
@@ -138,34 +143,45 @@ pub(crate) fn handle_menubar_event(
             if let Some(action) = session.menubar.pointer_moved(x, y, width) {
                 run_menubar_action(session, surface, action)?;
             }
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarPressed { x, y } => {
             if let Some(action) = session.menubar.pressed(x, y) {
                 run_menubar_action(session, surface, action)?;
             }
+            session.menubar.note_control_used();
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarLeft => {
             session.menubar.pointer_left();
         }
         SurfaceEvent::MenubarClicked { x, y } => {
             click_menubar(session, surface, x, y)?;
+            session.menubar.note_control_used();
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarRightClicked { x, y } => {
             right_click_menubar(session, surface, x, y)?;
+            session.menubar.note_control_used();
         }
         SurfaceEvent::MenubarTyped { character } => {
+            session.menubar.note_control_used();
             crate::menubar_search::type_search(session, surface, character);
         }
         SurfaceEvent::MenubarBackspace => {
+            session.menubar.note_control_used();
             crate::menubar_search::erase_search(session, surface);
         }
         SurfaceEvent::MenubarEnter => {
+            session.menubar.note_control_used();
             crate::menubar_search::confirm_search(session, surface)?;
         }
         SurfaceEvent::MenubarUp => {
+            session.menubar.note_control_used();
             crate::menubar_search::step_search_up(session);
         }
         SurfaceEvent::MenubarDown => {
+            session.menubar.note_control_used();
             crate::menubar_search::step_search_down(session);
         }
         SurfaceEvent::MenubarDismissed => {

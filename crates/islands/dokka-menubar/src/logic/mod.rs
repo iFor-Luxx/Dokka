@@ -3,6 +3,7 @@ mod calendar;
 mod click;
 mod clock;
 mod control_center;
+mod control_idle;
 mod language;
 mod menu;
 mod music;

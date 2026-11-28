@@ -18,6 +18,9 @@ pub const GAP: f32 = 12.0;
 pub const PADDING: f32 = 12.0;
 /// Ancho fijo del panel: rejilla más aire exterior.
 pub const WIDTH: f32 = CELL * 4.0 + GAP * 3.0 + PADDING * 2.0;
+/// Segundos sin uso con el cursor fuera antes de cerrar solo el centro.
+/// El shell cuenta un `Tick` de 1 s por segundo; la isla decide.
+pub const IDLE_CLOSE_SECONDS: u32 = 6;
 /// Alto de la tarjeta de Sonido a todo lo ancho (≈ 68).
 pub const SOUND_HEIGHT: f32 = 68.0;
 /// Alto de la tarjeta de Pantalla: exactamente igual que la de Sonido.
