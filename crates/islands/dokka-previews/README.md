@@ -1,7 +1,7 @@
 # dokka-previews
 
 **Hace:** decide qué panel flotante mostrar (calendario o vistas de ventanas), cuándo abrirlo y cerrarlo,
-qué hace un clic en él (activar, cerrar o fijar una ventana) y con qué estilo entra y sale (crece desde el icono con un rebote leve;
+qué hace un clic en él (activar, cerrar o fijar una ventana) y con qué estilo entra y sale (crece desde el icono con un rebote leve, con el progreso `Reveal` que vive en `dokka-animation` y comparte con la barra;
 si el cursor vuelve a mitad de salida, retoma desde donde está). El calendario usa el mes
 (con los días del mes anterior), la píldora y el paso entre meses compartidos de `calendar_panel`,
 siempre con 6 filas y los vecinos atenuados. Los chevrones de la píldora

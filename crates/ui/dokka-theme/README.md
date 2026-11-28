@@ -54,7 +54,8 @@
   a 12 con "…" (la música sigue en 16), música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual; el alto lo calcula el reparto según
   los visibles, la inactividad antes de cerrar solo el centro
-  (`IDLE_CLOSE_SECONDS` = 6 s) y sombra suave bajo cada pieza
+  (`IDLE_CLOSE_SECONDS` = 6 s, fundido al cerrarse de `DISMISS_SECONDS` =
+   0,2 s hasta `DISMISS_END_SCALE` con `DISMISS_OPACITY_SPAN`) y sombra suave bajo cada pieza
   (desenfoque 10 y caída 2, que caben en el aire exterior de 12; más la
   burbuja de editar (hueco de 12, 168 × 28 con texto en 12) y el botón "−"
   (22 con línea de 10 × 2 en la esquina de cada pieza)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del

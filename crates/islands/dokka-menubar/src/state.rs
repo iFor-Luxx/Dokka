@@ -92,6 +92,9 @@ pub struct Menubar {
     pub(crate) gallery_grid_scroll: f32,
     pub(crate) gallery_cursor: bool,
     pub(crate) shown: MenubarPreferences,
+    /// Fundido de salida del centro en curso, si lo hay: guarda el progreso.
+    /// Mientras existe el panel sigue abierto y se repinta en cada fotograma.
+    pub(crate) control_dismiss: Option<dokka_animation::Reveal>,
 }
 
 impl Menubar {
@@ -178,6 +181,7 @@ impl Menubar {
             gallery_grid_scroll: 0.0,
             gallery_cursor: false,
             shown: MenubarPreferences::default(),
+            control_dismiss: None,
         }
     }
 
@@ -238,6 +242,7 @@ impl Menubar {
 
     pub fn close_tray(&mut self) {
         self.tray = None;
+        self.control_dismiss = None;
         self.tray_hovered = None;
         self.volume_hovered = None;
         self.network_hovered = None;

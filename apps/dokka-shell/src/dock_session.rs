@@ -176,6 +176,7 @@ impl DockSession {
     pub(crate) fn is_animating(&self) -> bool {
         self.dock.is_animating()
             || self.previews.is_waiting()
+            || self.menubar.is_control_closing()
             || (self.launchpad.is_open() && self.launchpad.is_moving())
             || (self.launchpad.is_open() && self.launchpad.is_zooming())
     }

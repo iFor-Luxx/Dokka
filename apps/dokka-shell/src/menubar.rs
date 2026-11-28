@@ -73,24 +73,15 @@ pub(crate) fn render_menubar(
     Ok(())
 }
 
-/// Cierra el menú, el calendario o la fila si hay algo abierto, devolviendo el foco.
+/// Cierra el menú, el calendario o la fila. El centro se desvanece con su
+/// fundido (`menubar_dismiss.rs`); lo demás se cierra al instante como hoy.
 pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) {
-    if session.menubar.is_menu_open() {
-        session.menubar.close_menu();
-        surface.menubar_menu_closed();
-    } else if session.menubar.is_calendar_open() {
-        session.menubar.close_calendar();
-        surface.menubar_menu_closed();
-    } else if session.menubar.is_tray_open() {
-        session.menubar.close_tray();
-        surface.menubar_menu_closed();
-    }
-    reset_menubar_window(session, surface);
+    crate::menubar_dismiss::dismiss_menubar(session, surface);
 }
 
 /// Con la galería abierta la ventana necesita todo el alto de la pantalla
 /// (como el buscador); al cerrar vuelve a su alto para los demás paneles.
-fn reset_menubar_window(session: &DockSession, surface: &mut Surface) {
+pub(crate) fn reset_menubar_window(session: &DockSession, surface: &mut Surface) {
     if session.menubar.is_gallery_open() {
         let height = session
             .menubar
@@ -236,9 +227,16 @@ fn click_menubar(
     let was_menu = session.menubar.is_menu_open();
     let was_calendar = session.menubar.is_calendar_open();
     let was_tray = session.menubar.is_tray_open();
+    let was_closing = session.menubar.is_control_closing();
     let chosen = session.menubar.click(x, y, width, screen_height);
     if let Some(action) = chosen {
         return run_menubar_action(session, surface, action);
+    }
+    if session.menubar.is_control_closing() {
+        // Fundido en curso (empezado o seguido): el foco vuelve ya; la
+        // ventana y las zonas se mantienen hasta el cierre real.
+        surface.menubar_menu_closed();
+        return Ok(());
     }
     if !was_tray && session.menubar.is_tray_open() {
         match session.menubar.tray_kind() {
@@ -275,10 +273,14 @@ fn click_menubar(
         && now_open
         && (was_menu != now_menu || was_calendar != now_calendar || was_tray != now_tray)
     {
-        // Cambio directo entre menú, calendario y fila: ya tenía el foco.
+        // Cambio directo entre menú, calendario y fila: ya tenía el foco,
+        // salvo que venga de cancelar el fundido (ya se había devuelto).
         session.dock.close_menu();
         surface.menu_closed();
         session.previews.close();
+        if was_closing {
+            surface.menubar_menu_opened();
+        }
     } else if was_open && !now_open {
         surface.menubar_menu_closed();
     }

@@ -218,6 +218,9 @@ impl Menubar {
         if let Some(click) = self.gallery_press(x, y, bar_width, screen_height) {
             return click;
         }
+        if let Some(click) = self.control_closing_click(x, y, bar_width) {
+            return click;
+        }
         // Dentro del panel real: su propio golpe decide (o no cierra).
         if self.tray_contains(x, y)
             && let Some(kind) = self.tray_kind()
@@ -243,30 +246,7 @@ impl Menubar {
         if self.search_margin_contains(x, y) {
             return MenubarClick::TrayKept;
         }
-        // Repetir el mismo icono lo cierra; otro cambia de panel.
-        if let Some(kind) = self.tray_kind_at(bar_width, x, y) {
-            if self.tray_kind() == Some(kind) {
-                self.close_tray();
-                self.tray_hovered = Some(kind);
-                return MenubarClick::Dismissed;
-            }
-            self.open_tray(kind, bar_width, screen_height);
-            return MenubarClick::TrayOpened;
-        }
-        if in_icon(x, y, &self.icon_hit()) {
-            self.close_tray();
-            self.open_at(bar_width);
-            return MenubarClick::MenuOpened;
-        }
-        if in_clock(x, y, &self.clock_hit(bar_width)) {
-            self.close_tray();
-            self.open_calendar();
-            return MenubarClick::CalendarOpened;
-        }
-        self.close_tray();
-        self.icon_hovered = false;
-        self.clock_hovered = false;
-        MenubarClick::Dismissed
+        self.click_tray_tail(x, y, bar_width, screen_height)
     }
 
     /// `true` si el punto cae en el menú abierto.

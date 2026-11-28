@@ -36,6 +36,9 @@ impl Menubar {
     /// por el camino normal (`dismiss_menubar`, que devuelve el foco igual).
     /// No pinta nada: la cuenta no entra en la huella para no repintar cada segundo.
     pub fn tick_control_idle(&mut self) -> bool {
+        if self.is_control_closing() {
+            return false;
+        }
         if self.tray_kind() != Some(TrayKind::ControlCenter) {
             return false;
         }

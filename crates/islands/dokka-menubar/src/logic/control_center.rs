@@ -83,20 +83,22 @@ impl Menubar {
             width: size.width,
             height: size.height,
         });
-        control_center_panel(
+        let mut overlay = control_center_panel(
             &self.theme,
             &self.control_icons,
             bounds,
             &props,
             self.control_editing,
-        )
+        );
+        self.apply_control_dismiss(&mut overlay);
+        overlay
     }
 
     /// Botón abajo en un deslizador: fija el nivel ya, como en volumen.
     /// Recuerda cuál se arrastra para que el movimiento siga al mismo.
     /// Al editar no hay arrastre: las piezas no hacen su acción.
     pub(crate) fn control_press(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
-        if self.control_editing {
+        if self.control_editing || self.is_control_closing() {
             return None;
         }
         let bounds = self.tray_bounds()?;

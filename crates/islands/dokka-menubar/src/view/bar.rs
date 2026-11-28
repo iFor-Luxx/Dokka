@@ -85,6 +85,8 @@ impl Menubar {
                 height: bounds.y - measures::HEIGHT + bounds.height,
             });
         } else if let Some(bounds) = self.tray_bounds() {
+            // Con el fundido en curso la fila sigue abierta: su zona se
+            // mantiene hasta el cierre real para que no se recorte.
             if self.tray_kind() == Some(crate::TrayKind::Search) {
                 // La región incluye el aire de la sombra para no recortarla.
                 let margin = dokka_theme::search::SHADOW_MARGIN;
