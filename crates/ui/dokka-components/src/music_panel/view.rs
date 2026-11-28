@@ -43,6 +43,7 @@ pub fn music_panel_panel(
         highlight: None,
         flat_panels: vec![artwork_panel(theme, bounds)],
         dividers: Vec::new(),
+        cursors: Vec::new(),
         dots: Vec::new(),
         pointer: None,
         texts: music_texts(theme, bounds, track),

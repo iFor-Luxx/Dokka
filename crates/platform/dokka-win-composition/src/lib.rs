@@ -5,6 +5,7 @@ mod blur_effect;
 mod blur_stage;
 mod composition_error;
 mod controls_layer;
+mod cursor_layer;
 mod divider_layer;
 mod dot_layer;
 mod fill_triangle;

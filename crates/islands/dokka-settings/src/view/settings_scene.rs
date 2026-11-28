@@ -114,13 +114,13 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             color: theme.settings.divider,
         },
         nav_pill_divider(theme, &pill),
-        settings_search_cursor(
-            theme.settings.search_text,
-            search,
-            settings.query(),
-            settings.search_focused(),
-        ),
     ];
+    let cursors = vec![settings_search_cursor(
+        theme.settings.search_text,
+        search,
+        settings.query(),
+        settings.search_focused(),
+    )];
     dividers.extend(content.dividers);
     let mut scene = Scene {
         panel: dokka_scene::Panel {
@@ -158,6 +158,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
         flat_panels: flats,
         highlight: None,
         dividers,
+        cursors,
         icons,
         dots: Vec::new(),
         texts,
@@ -196,6 +197,11 @@ fn shift_scene(scene: &mut Scene, dx: f32, dy: f32) {
     for divider in &mut scene.dividers {
         divider.bounds.x += dx;
         divider.bounds.y += dy;
+    }
+    for cursor in &mut scene.cursors {
+        cursor.text_x += dx;
+        cursor.max_x += dx;
+        cursor.center_y += dy;
     }
     for icon in &mut scene.icons {
         icon.x += dx;

@@ -19,4 +19,4 @@ escala y desenfoque, y reabrir a mitad del cierre continúa desde donde está. L
 y el clic en `logic/`.
 
 **No hace:** no crea ventanas, no habla con Windows, no guarda en disco ni usa otras islas.
-Sin arrastre ni carpetas. No mide la fuente: el cursor usa un avance aproximado por letra.
+Sin arrastre ni carpetas. No mide la fuente: la plataforma mide el texto y coloca el cursor.

@@ -61,6 +61,7 @@ pub fn control_center_panel(
         highlight: None,
         flat_panels: pieces.flats,
         dividers: Vec::new(),
+        cursors: Vec::new(),
         dots: Vec::new(),
         pointer: None,
         texts: pieces.texts,

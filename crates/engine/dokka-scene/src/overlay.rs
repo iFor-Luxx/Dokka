@@ -1,4 +1,4 @@
-use crate::{Divider, Dot, Icon, Panel, Pointer, Shadow, Text, Thumbnail};
+use crate::{Divider, Dot, Icon, Panel, Pointer, Shadow, Text, TextCursor, Thumbnail};
 
 /// Botones que deben verse por encima de una miniatura.
 #[derive(Debug, Clone, PartialEq)]
@@ -28,6 +28,8 @@ pub struct Overlay {
     /// de deslizadores y tarjetas. Se pintan tras el resaltado.
     pub flat_panels: Vec<Panel>,
     pub dividers: Vec<Divider>,
+    /// Cursores tras un texto: la plataforma mide ese texto y los coloca.
+    pub cursors: Vec<TextCursor>,
     /// Se dibujan debajo de los textos.
     pub dots: Vec<Dot>,
     pub pointer: Option<Pointer>,

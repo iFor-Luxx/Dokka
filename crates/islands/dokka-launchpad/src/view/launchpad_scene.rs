@@ -85,7 +85,7 @@ pub fn launchpad_scene(
         }
     }
     texts.push(search_label(theme, &search));
-    let dividers = vec![search_cursor(theme, &search)];
+    let cursors = vec![search_cursor(theme, &search)];
     let mut highlight = app_highlight(theme, &grid);
     highlight.bounds.x += offset;
     Scene {
@@ -105,7 +105,8 @@ pub fn launchpad_scene(
         flat_panels: Vec::new(),
         icons,
         dots: page_dots(theme, &dots),
-        dividers,
+        dividers: Vec::new(),
+        cursors,
         thumbnails: Vec::new(),
         labels: Vec::new(),
         texts,

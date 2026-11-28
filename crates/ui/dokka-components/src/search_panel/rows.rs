@@ -1,7 +1,8 @@
-use dokka_scene::{Divider, Panel, Rect};
+use dokka_scene::{Panel, Rect, TextCursor};
 use dokka_theme::{Theme, search as measures};
 
 use super::SearchPanelProps;
+use crate::search_field::text_cursor;
 
 /// Fila visible que hay en el punto, siguiendo lo mostrado.
 pub(super) fn row_at(bounds: Rect, x: f32, y: f32, visible: usize) -> Option<usize> {
@@ -55,37 +56,19 @@ pub(super) fn result_highlight(
     }
 }
 
-/// Cursor tras lo escrito; de ancho cero cuando no parpadea.
-pub(super) fn field_cursor(theme: &Theme, search: &Rect, props: &SearchPanelProps) -> Divider {
-    if !props.cursor_visible {
-        return Divider {
-            bounds: Rect {
-                x: 0.0,
-                y: 0.0,
-                width: 0.0,
-                height: 0.0,
-            },
-            color: theme.tray.text,
-        };
-    }
-    Divider {
-        bounds: Rect {
-            x: text_end(search, &props.query),
-            y: search.y + (search.height - measures::SEARCH_CURSOR_HEIGHT) / 2.0,
-            width: measures::SEARCH_CURSOR_WIDTH,
-            height: measures::SEARCH_CURSOR_HEIGHT,
-        },
+/// Cursor tras lo escrito medido; oculto cuando no parpadea.
+pub(super) fn field_cursor(theme: &Theme, search: &Rect, props: &SearchPanelProps) -> TextCursor {
+    text_cursor(TextCursor {
+        text_x: search.x + measures::SEARCH_TEXT_INSET,
+        center_y: search.y + search.height / 2.0,
+        content: props.query.clone(),
+        size: measures::SEARCH_TEXT_SIZE,
+        is_bold: false,
+        max_x: search.x + search.width - measures::SEARCH_TEXT_INSET,
+        gap: measures::SEARCH_CURSOR_GAP,
+        width: measures::SEARCH_CURSOR_WIDTH,
+        height: measures::SEARCH_CURSOR_HEIGHT,
         color: theme.tray.text,
-    }
-}
-
-/// Borde derecho de lo escrito, con aire antes del cursor.
-fn text_end(search: &Rect, query: &str) -> f32 {
-    let advance = query.chars().count() as f32 * measures::SEARCH_CHAR_ADVANCE;
-    let gap = if query.is_empty() {
-        0.0
-    } else {
-        measures::SEARCH_CURSOR_GAP
-    };
-    search.x + measures::SEARCH_TEXT_INSET + advance + gap
+        visible: props.cursor_visible,
+    })
 }

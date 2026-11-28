@@ -3,11 +3,14 @@ use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
 use crate::blur_stage::BlurStage;
+use crate::cursor_layer::CursorLayer;
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
 use crate::label_layer::LabelLayer;
-use crate::layer_sync::{sync_dividers, sync_dots, sync_icons, sync_labels, sync_texts};
+use crate::layer_sync::{
+    sync_cursors, sync_dividers, sync_dots, sync_icons, sync_labels, sync_texts,
+};
 use crate::overlay_layers::OverlayLayers;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
@@ -43,6 +46,7 @@ pub(crate) struct SceneLayers {
     highlight: Option<PanelLayer>,
     highlight_style: Option<(dokka_scene::Color, f32)>,
     dividers: Vec<DividerLayer>,
+    cursors: Vec<CursorLayer>,
     icons: Vec<IconLayer>,
     dots: Vec<DotLayer>,
     texts: Vec<TextLayer>,
@@ -114,6 +118,11 @@ impl SceneLayers {
             .iter()
             .map(|divider| DividerLayer::add(compositor, &content, divider))
             .collect::<Result<_>>()?;
+        let cursors = scene
+            .cursors
+            .iter()
+            .map(|cursor| CursorLayer::add(compositor, &content, cursor))
+            .collect::<Result<_>>()?;
         let icons = scene
             .icons
             .iter()
@@ -163,6 +172,7 @@ impl SceneLayers {
             highlight,
             highlight_style: scene.highlight.map(highlight_style_of),
             dividers,
+            cursors,
             icons,
             dots,
             texts,
@@ -214,6 +224,7 @@ impl SceneLayers {
                 .all(|(style, panel)| *style == panel_style_of(panel))
             && self.dots.len() >= scene.dots.len()
             && self.dividers.len() >= scene.dividers.len()
+            && self.cursors.len() >= scene.cursors.len()
             && self.texts.len() >= scene.texts.len()
             && self.labels.len() >= scene.labels.len()
             && self.icons.len() >= scene.icons.len()
@@ -244,6 +255,7 @@ impl SceneLayers {
             layer.update(panel)?;
         }
         sync_dividers(&self.dividers, &scene.dividers)?;
+        sync_cursors(&mut self.cursors, compositor, painter, &scene.cursors)?;
         sync_icons(&mut self.icons, compositor, painter, &scene.icons)?;
         sync_dots(&mut self.dots, compositor, &scene.dots)?;
         sync_texts(&mut self.texts, compositor, painter, &scene.texts)?;

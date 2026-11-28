@@ -161,6 +161,7 @@ fn overlay_inner(
         pill: None,
         flat_panels: Vec::new(),
         dividers,
+        cursors: Vec::new(),
         dots: Vec::new(),
         pointer,
         texts,

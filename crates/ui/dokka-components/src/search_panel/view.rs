@@ -16,7 +16,7 @@ pub fn search_panel_size(props: &SearchPanelProps) -> Size {
 
 /// Dos piezas de cristal separadas: cápsula de búsqueda y tarjeta de
 /// resultados, con sombra suave bajo cada una. Capas siempre iguales:
-/// panel invisible, dos piezas, un resaltado, una línea de cursor, nueve
+/// panel invisible, dos piezas, un resaltado, un cursor, nueve
 /// textos y ocho iconos; lo que no se ve va de tamaño cero o vacío.
 pub fn search_panel_panel(
     theme: &Theme,
@@ -60,7 +60,8 @@ pub fn search_panel_panel(
         pill: None,
         highlight: Some(result_highlight(theme, bounds, props, visible)),
         flat_panels: Vec::new(),
-        dividers: vec![field_cursor(theme, &search, props)],
+        dividers: Vec::new(),
+        cursors: vec![field_cursor(theme, &search, props)],
         dots: Vec::new(),
         pointer: None,
         texts: panel_texts(theme, bounds, &search, props, visible),

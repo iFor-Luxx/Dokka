@@ -40,6 +40,7 @@ pub fn network_panel(
         highlight: Some(settings_highlight(theme, settings, highlighted)),
         flat_panels: Vec::new(),
         dividers: vec![separator(theme, bounds)],
+        cursors: Vec::new(),
         dots: vec![Dot {
             x: circle.x,
             y: circle.y,
