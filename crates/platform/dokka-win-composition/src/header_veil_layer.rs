@@ -7,21 +7,19 @@
 
 use dokka_scene::{HeaderVeil, Panel};
 use windows::UI::Composition::{
-    CompositionLinearGradientBrush, CompositionMappingMode, CompositionRoundedRectangleGeometry,
-    Compositor, ContainerVisual, ShapeVisual, SpriteVisual,
+    CompositionRoundedRectangleGeometry, Compositor, ContainerVisual, ShapeVisual, SpriteVisual,
 };
 use windows::core::{HSTRING, Result};
 use windows_numerics::{Vector2, Vector3};
 
 use crate::blur_effect::{BLUR_ANIMATABLE, SOURCE_NAME, create_blur_factory};
 use crate::divider_layer::DividerLayer;
+use crate::header_veil_paint::{veil_gradient, window_clip_of};
 use crate::icon_layer::IconLayer;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
 use crate::scene_layers::{PanelStyle, panel_style_of};
 use crate::text_layer::TextLayer;
-use crate::tile_brushes::scaled_alpha;
-use crate::windows_color::windows_color;
 
 /// Por debajo de esta intensidad la franja se oculta y se ve como hoy.
 const VEIL_ACTIVE_MIN: f32 = 0.01;
@@ -84,16 +82,24 @@ impl HeaderVeilLayer {
             style: veil_style_of(veil),
         };
         for panel in &veil.panels {
-            layer.panels.push(PanelLayer::add(compositor, &header, panel)?);
+            layer
+                .panels
+                .push(PanelLayer::add(compositor, &header, panel)?);
         }
         for panel in &veil.flats {
-            layer.flats.push(PanelLayer::add_flat(compositor, &header, panel)?);
+            layer
+                .flats
+                .push(PanelLayer::add_flat(compositor, &header, panel)?);
         }
         for divider in &veil.dividers {
-            layer.dividers.push(DividerLayer::add(compositor, &header, divider)?);
+            layer
+                .dividers
+                .push(DividerLayer::add(compositor, &header, divider)?);
         }
         for icon in &veil.icons {
-            layer.icons.push(IconLayer::add(compositor, painter, &header, icon)?);
+            layer
+                .icons
+                .push(IconLayer::add(compositor, painter, &header, icon)?);
         }
         for _ in &veil.texts {
             layer.texts.push(TextLayer::add(compositor, &header)?);
@@ -248,49 +254,4 @@ pub(crate) fn veil_matches(current: &Option<HeaderVeilLayer>, next: &Option<Head
 /// Lo que obliga a reconstruir la franja si cambia.
 fn veil_style_of(veil: &HeaderVeil) -> (dokka_scene::Color, u32) {
     (veil.tint, veil.blur_radius.to_bits())
-}
-
-/// Degradado vertical del tinte: casi opaco arriba y transparente abajo,
-/// sin línea dura en el borde inferior. En relativo, sigue al tamaño solo.
-fn veil_gradient(
-    compositor: &Compositor,
-    tint: dokka_scene::Color,
-) -> Result<CompositionLinearGradientBrush> {
-    let base = windows_color(tint);
-    let brush = compositor.CreateLinearGradientBrush()?;
-    brush.SetMappingMode(CompositionMappingMode::Relative)?;
-    brush.SetStartPoint(Vector2 { X: 0.5, Y: 0.0 })?;
-    brush.SetEndPoint(Vector2 { X: 0.5, Y: 1.0 })?;
-    let stops = brush.ColorStops()?;
-    let soft = scaled_alpha(base.A, 11, 20);
-    for (offset, alpha) in [(0.0, base.A), (0.55, soft), (1.0, 0)] {
-        stops.Append(
-            &compositor.CreateColorGradientStopWithOffsetAndColor(
-                offset,
-                windows::UI::Color {
-                    A: alpha,
-                    R: base.R,
-                    G: base.G,
-                    B: base.B,
-                },
-            )?,
-        )?;
-    }
-    Ok(brush)
-}
-
-/// Recorte a la ventana redondeada, en coordenadas de su contenedor.
-fn window_clip_of(geometry: &CompositionRoundedRectangleGeometry, window: &Panel) -> Result<()> {
-    geometry.SetSize(Vector2 {
-        X: window.bounds.width.max(0.0),
-        Y: window.bounds.height.max(0.0),
-    })?;
-    geometry.SetCornerRadius(Vector2 {
-        X: window.corner_radius,
-        Y: window.corner_radius,
-    })?;
-    geometry.SetOffset(Vector2 {
-        X: window.bounds.x,
-        Y: window.bounds.y,
-    })
 }

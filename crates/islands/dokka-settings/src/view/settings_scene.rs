@@ -155,9 +155,7 @@ pub fn settings_scene(theme: &Theme, settings: &mut Settings) -> Scene {
             blur: measures::SHADOW_BLUR,
             offset: (0.0, measures::SHADOW_OFFSET_Y),
         }),
-        panels: vec![
-            sidebar_panel_for(theme, window_height),
-        ],
+        panels: vec![sidebar_panel_for(theme, window_height)],
         // Planos sobre la ventana: el cristal muestrearía el fondo de pantalla
         // y taparía su tinte. Las tarjetas, los deslizadores (barra, relleno
         // desde la fábrica, marca y tirador en cápsula), el segmentado (fondo

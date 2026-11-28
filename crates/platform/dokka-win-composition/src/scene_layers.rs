@@ -160,7 +160,9 @@ impl SceneLayers {
         let veil = scene
             .header_veil
             .as_ref()
-            .map(|veil| HeaderVeilLayer::add(compositor, painter, &holder, &content, &scene.panel, veil))
+            .map(|veil| {
+                HeaderVeilLayer::add(compositor, painter, &holder, &content, &scene.panel, veil)
+            })
             .transpose()?;
         let mut layers = Self {
             backdrop,
