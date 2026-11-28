@@ -2,6 +2,7 @@
 
 pub mod background;
 pub mod control_center;
+pub mod control_gallery;
 pub mod dock;
 pub mod launchpad;
 pub mod menu;

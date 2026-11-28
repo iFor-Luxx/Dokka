@@ -9,8 +9,9 @@ use crate::Menubar;
 
 impl Menubar {
     /// Franja de lado a lado con icono, app, fila derecha y hora; el menú,
-    /// el calendario o el panel provisional va en `overlay` (nunca dos).
-    pub fn scene(&self, bar_width: f32) -> Scene {
+    /// el calendario o el panel provisional va en `overlay` (nunca dos) y la
+    /// galería del modo editar, si está abierta, en `submenu` encima del centro.
+    pub fn scene(&self, bar_width: f32, screen_height: f32) -> Scene {
         let bar = Rect {
             x: 0.0,
             y: 0.0,
@@ -49,7 +50,7 @@ impl Menubar {
                 .menu_overlay()
                 .or_else(|| self.calendar_overlay(bar_width))
                 .or_else(|| self.tray_overlay()),
-            submenu: None,
+            submenu: self.gallery_overlay(bar_width, screen_height),
             panel_shadow: None,
             opacity: 1.0,
             scale: 1.0,
@@ -59,8 +60,9 @@ impl Menubar {
 
     /// Franja y, abierto, el menú, el calendario o la fila con su hueco.
     /// El buscador deja pasar los clics en todo lo vacío: solo la franja,
-    /// la casilla y la tarjeta de resultados reciben el ratón.
-    pub fn active_areas(&self, bar_width: f32) -> Vec<Rect> {
+    /// la casilla y la tarjeta de resultados reciben el ratón. Con la
+    /// galería, sus zonas son la galería y el centro.
+    pub fn active_areas(&self, bar_width: f32, screen_height: f32) -> Vec<Rect> {
         let mut areas = vec![Rect {
             x: 0.0,
             y: 0.0,
@@ -107,6 +109,19 @@ impl Menubar {
                     width: bounds.width,
                     height: bounds.y - measures::HEIGHT + bounds.height,
                 });
+            }
+            if let Some(gallery) = self.gallery_rect(bar_width, screen_height) {
+                // La ventana cubre la sombra de la galería para no recortarla.
+                let margin = dokka_theme::control_gallery::SHADOW_MARGIN;
+                areas.push(expand(
+                    Rect {
+                        x: gallery.x,
+                        y: measures::HEIGHT,
+                        width: gallery.width,
+                        height: gallery.y - measures::HEIGHT + gallery.height,
+                    },
+                    margin,
+                ));
             }
         }
         areas

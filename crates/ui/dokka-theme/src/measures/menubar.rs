@@ -10,7 +10,8 @@ pub const HEIGHT: f32 = 30.0;
 /// Alto de la ventana: la franja más el hueco y el panel colgando.
 /// El centro de control con brillo y burbuja de editar (484 + 12 + 28 = 524)
 /// es el más alto: 30 + 6 + 524 = 560, cabe justo; el buscador (386) y el
-/// calendario (291) siguen igual.
+/// calendario (291) siguen igual. La galería del modo editar no cabe aquí:
+/// usa todo el alto de la pantalla mientras está abierta.
 pub const WINDOW_HEIGHT: f32 = 560.0;
 /// Lado del icono de Dokka (Lucide), igual que los de la derecha.
 pub const ICON_SIDE: f32 = 16.0;

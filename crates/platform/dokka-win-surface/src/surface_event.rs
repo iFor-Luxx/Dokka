@@ -52,6 +52,9 @@ pub enum SurfaceEvent {
     MenubarUp,
     /// Flecha abajo sobre la barra. Solo con foco.
     MenubarDown,
+    /// Rueda sobre la barra, con su posición: la galería del modo editar la
+    /// usa para desplazar su columna o sus secciones.
+    MenubarWheel { x: f32, y: f32, delta: i16 },
     /// El cursor se mueve sobre el Launchpad.
     LaunchpadMoved {
         x: f32,

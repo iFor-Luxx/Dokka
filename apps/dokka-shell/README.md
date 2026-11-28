@@ -40,7 +40,11 @@ es el de antes); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El buscador filtra el catálogo del
 Escritorio más las fijadas (como el Launchpad) con `filter_search_order` e
-iconos de `IconCache`; flechas, Enter, clic y Esc. Pide al dock abrir el menú
+iconos de `IconCache`; flechas, Enter, clic y Esc. Con la galería del modo
+editar la ventana pasa a todo el alto del monitor (como el buscador) y vuelve
+a su alto al cerrar; el teclado de la barra escribe en su casilla y la rueda
+(`MenubarWheel`) desplaza su columna o sus secciones, con la plataforma
+limitada a entregar ese evento. Pide al dock abrir el menú
 (con si la barra está oculta o en automático) y ejecuta su `MenuAction`; mientras el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Preferencias» abre la ventana de configuración (o la trae al frente);

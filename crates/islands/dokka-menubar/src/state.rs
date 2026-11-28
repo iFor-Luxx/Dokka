@@ -12,7 +12,13 @@ use dokka_components::network_panel::NetworkIcons;
 use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
 use dokka_components::volume_panel::VolumePanelHit;
 use dokka_components::volume_panel::VolumePanelIcons;
-use dokka_icons::{TrayIcons, menubar_icon};
+use dokka_icons::{
+    TrayIcons, control_center_calculator_icon, control_center_clock_icon,
+    control_center_desktop_icon, control_center_lock_icon, control_center_play_icon,
+    control_center_screen_clip_icon, control_center_sun_icon,
+    control_center_task_view_icon, control_center_volume_icon, control_center_wifi_icon,
+    menubar_icon,
+};
 use dokka_model::{
     AudioOutput, MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
 };
@@ -73,12 +79,39 @@ pub struct Menubar {
     /// `true` en modo editar: cada pieza lleva su "−" y no hace su acción;
     /// la burbuja desaparece. Vive aquí; el componente solo la recibe.
     pub(crate) control_editing: bool,
+    /// Galería del modo editar: insignias blancas de cada categoría (una vez,
+    /// como el resto de dibujos), categoría elegida (0: todas), búsqueda y
+    /// desplazamiento de la columna y de las secciones. El componente solo
+    /// la recibe.
+    pub(crate) gallery_badges: Vec<Arc<dokka_scene::Drawing>>,
+    pub(crate) gallery_category: usize,
+    pub(crate) gallery_query: String,
+    pub(crate) gallery_list_scroll: f32,
+    pub(crate) gallery_grid_scroll: f32,
+    pub(crate) gallery_cursor: bool,
     pub(crate) shown: MenubarPreferences,
 }
 
 impl Menubar {
     pub fn new(theme: Arc<Theme>) -> Self {
         let icon = Arc::new(menubar_icon(theme.menubar.text));
+        // Insignias blancas de la galería, en el orden de sus categorías.
+        let badge = theme.tray.circle_active_icon;
+        let gallery_badges = [
+            control_center_task_view_icon(badge),
+            control_center_play_icon(badge),
+            control_center_screen_clip_icon(badge),
+            control_center_wifi_icon(badge),
+            control_center_desktop_icon(badge),
+            control_center_lock_icon(badge),
+            control_center_sun_icon(badge),
+            control_center_clock_icon(badge),
+            control_center_volume_icon(badge),
+            control_center_calculator_icon(badge),
+        ]
+        .into_iter()
+        .map(|drawing| Arc::new(drawing))
+        .collect();
         Self {
             volume_icons: VolumePanelIcons::new(&theme),
             network_icons: NetworkIcons::new(&theme),
@@ -134,6 +167,12 @@ impl Menubar {
             dragging_brightness: false,
             brightness: None,
             control_editing: false,
+            gallery_badges,
+            gallery_category: 0,
+            gallery_query: String::new(),
+            gallery_list_scroll: 0.0,
+            gallery_grid_scroll: 0.0,
+            gallery_cursor: false,
             shown: MenubarPreferences::default(),
         }
     }
@@ -191,6 +230,11 @@ impl Menubar {
             language: self.language_code.clone(),
             shown: self.shown,
             control_editing: self.control_editing,
+            gallery_category: self.gallery_category,
+            gallery_query: self.gallery_query.clone(),
+            gallery_list_scroll: self.gallery_list_scroll,
+            gallery_grid_scroll: self.gallery_grid_scroll,
+            gallery_cursor: self.gallery_cursor,
             menu_open: self.menu.is_some(),
             icon_hovered: self.icon_hovered,
             highlighted: self.highlighted(),

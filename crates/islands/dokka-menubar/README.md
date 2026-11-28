@@ -38,7 +38,13 @@ calendario o el panel real como `overlay`) y sus zonas activas (la franja y,
 abierto, lo desplegado con su hueco; el buscador la casilla y la tarjeta con el
 aire de la sombra para no recortarla, sin los huecos vacíos; en modo editar
 el área cubre también lo que sobresalen los "−"; el clic en ese
-aire no hace nada y no cierra). Expone `MenubarPainted` para repintar
+aire no hace nada y no cierra; con la galería las zonas son la galería y el
+centro). La galería (`logic/control_gallery.rs`) guarda categoría (0: todas),
+búsqueda y los dos desplazamientos: elige categoría, filtra por nombre sin
+tildes, añade el control quitado al momento con el mismo
+`HiddenControlsChanged` (los del centro salen atenuados sin responder),
+"Aceptar" cierra galería y modo editar, la rueda desplaza su columna o sus
+secciones y el teclado de la barra escribe en su casilla. Expone `MenubarPainted` para repintar
 solo si cambia (datos de los paneles incluidos) y `TrayKind` para saber qué
 panel está abierto.
 
@@ -62,8 +68,9 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `language.rs` | `open_language`, `set_languages`, elección de idioma |
 | `music.rs` | `open_music`, `set_now_playing` (canción y carátula), botón anterior/pausa/siguiente; expone `artwork` para reutilizarla |
 | `search.rs` | `open_search` (separado de la barra, centrado a lo ancho), texto, flechas, Enter y resaltado; `set_search_results` recoloca al cambiar las filas |
-| `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula, los ocultos de `shown` y el brillo en sus props, con `set_brightness` que recoloca el alto y `set_shown` que lo recoloca si cambian los ocultos); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red; la burbuja y los "−" pasan `editing` a tamaño, panel y golpe |
-| `control_center_edit.rs` | modo editar (`control_editing`, `enter_control_edit`, `hide_control` que oculta al momento y reacomoda); preparado para que el paso 2b abra aquí su galería |
+| `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula, los ocultos de `shown` y el brillo en sus props, con `set_brightness` que recoloca el alto y `set_shown` que lo recoloca si cambian los ocultos); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red; la burbuja y los "−" pasan `editing` a tamaño, panel y golpe; el centro aporta `preview_panels`/`preview_size` para dibujar la galería igual |
+| `control_center_edit.rs` | modo editar (`control_editing`, `enter_control_edit`, `hide_control` que oculta al momento y reacomoda; al entrar resetea la galería) |
+| `control_gallery.rs` | galería del modo editar (`is_gallery_open`, `gallery_rect` centrada sin tapar el centro, `gallery_overlay` en el `submenu` sobre el centro, `gallery_click` con categoría/control/aceptar, `gallery_typed`/`gallery_erased` con el teclado de la barra, `gallery_scroll` con la rueda y `tick_gallery_cursor`; el control quitado se añade quitándolo de ocultos) |
 | `background.rs` | `open_background`, `set_background_apps` (recoloca el alto si está abierto), clic izquierdo `TrayActivate`, clic derecho `TrayMenu` y hover |
 | `open.rs` | cajas de la franja y `open_tray`, que reparte a cada `open_<panel>` |
 | `tray.rs` | `TrayKind`, celdas de la fila y colocación (`tray_place`, `tray_place_centered` del buscador estilo Spotlight con el alto del monitor) |
@@ -71,7 +78,8 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `pointer.rs` | resaltados de la fila y de cada panel |
 
 `view/tray.rs` llama a cada `<x>_panel` con el mismo `bounds` y dibuja los
-iconos de la barra según los datos. Los iconos de cada panel se crean una vez
+iconos de la barra según los datos; `view/bar.rs` pone la galería en el
+`submenu`, encima del centro. Los iconos de cada panel se crean una vez
 en `Menubar::new`. Medidas nuevas van en `dokka-theme/src/measures/menubar_tray.rs`;
 iconos nuevos, en un archivo propio de `dokka-icons` (no en `lucide.rs`, casi lleno).
 

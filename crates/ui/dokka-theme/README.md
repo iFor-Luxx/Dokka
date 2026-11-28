@@ -33,7 +33,13 @@
   con aire de 8 al nombre, umbral de arrastre de 4, resaltado de radio 8 y
   ayuda de 12 bajo la tarjeta, y tarjeta
   "Próximamente"), con funciones para filas,
-  título y tarjetas. `SettingsColors` trae además interruptor encendido y
+  título y tarjetas. `measures/control_gallery.rs` para la galería del modo
+  editar (ventana de 760 × 900 con radio 26 que se encoge en pantallas bajas,
+  columna de 245, casilla de 36 con lupa a 16 y cursor, filas de 44 con
+  cuadrito de 28 y radio 8, títulos de sección en 12, nombres en 12/14, pie
+  fijo de 88 con aviso en 13 y botón "Aceptar" de 120 × 36 con radio 18,
+  sombra suave con su aire, paso de rueda de 48 y colocación centrada sin
+  tapar el centro, con radios concéntricos). `SettingsColors` trae además interruptor encendido y
   apagado con su tirador y barra, relleno, marca y atenuado del deslizador,
   con cápsula y pastilla del segmentado, con ocho
   cuadrados de color (el nuevo de la barra superior en rosa).

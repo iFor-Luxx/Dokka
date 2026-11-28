@@ -29,6 +29,11 @@ pub struct MenubarPainted {
     pub language: String,
     pub shown: MenubarPreferences,
     pub control_editing: bool,
+    pub gallery_category: usize,
+    pub gallery_query: String,
+    pub gallery_list_scroll: f32,
+    pub gallery_grid_scroll: f32,
+    pub gallery_cursor: bool,
     pub menu_open: bool,
     pub icon_hovered: bool,
     pub highlighted: Option<usize>,
@@ -69,6 +74,11 @@ impl PartialEq for MenubarPainted {
             && self.language == other.language
             && self.shown == other.shown
             && self.control_editing == other.control_editing
+            && self.gallery_category == other.gallery_category
+            && self.gallery_query == other.gallery_query
+            && self.gallery_list_scroll == other.gallery_list_scroll
+            && self.gallery_grid_scroll == other.gallery_grid_scroll
+            && self.gallery_cursor == other.gallery_cursor
             && self.menu_open == other.menu_open
             && self.icon_hovered == other.icon_hovered
             && self.highlighted == other.highlighted

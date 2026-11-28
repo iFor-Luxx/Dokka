@@ -1,8 +1,9 @@
 //! Modo editar del Centro de control: entra con la burbuja, sale al cerrar.
 //!
-//! El estado vive en la isla (`control_editing`); la geometría de pintar y
-//! pulsar es la misma del componente. Ocultar es inmediato (se reacomoda ya)
-//! y el shell lo guarda. Preparado para que el paso 2b abra aquí su galería.
+//! El estado vive en la isla (`control_editing` y la galería con su
+//! categoría, búsqueda y desplazamientos); la geometría de pintar y pulsar
+//! es la misma del componente. Ocultar es inmediato (se reacomoda ya) y el
+//! shell lo guarda; al entrar se abre además la galería en el centro.
 
 use dokka_model::{ControlItem, HiddenControls};
 
@@ -15,8 +16,15 @@ impl Menubar {
     }
 
     /// Entra en modo editar: aparecen los "−" y desaparece la burbuja.
+    /// La galería parte de cero: todas las categorías, sin búsqueda ni
+    /// desplazamiento y con el cursor visible en su casilla.
     pub(crate) fn enter_control_edit(&mut self) {
         self.control_editing = true;
+        self.gallery_category = 0;
+        self.gallery_query.clear();
+        self.gallery_list_scroll = 0.0;
+        self.gallery_grid_scroll = 0.0;
+        self.gallery_cursor = true;
         self.dragging_slider = false;
         self.dragging_brightness = false;
         self.resize_control_center();

@@ -71,6 +71,14 @@ el volumen y el Sonido y la Pantalla del centro (relleno desde la izquierda,
 sin marca); los paneles no dibujan el suyo) y segmentado (`segmented_control`:
 cápsula gris de 204 × 28 con la opción elegida en pastilla blanca de radios
 concéntricos y texto centrado por tercio, sin saber qué ajusta: la isla
-traduce índices).
+traduce índices) y galería del modo editar (`control_gallery`: ventana de
+cristal claro de 760 × 900 con radio 26 y sombra, centrada sin tapar el
+centro y encogida en pantallas bajas; columna de 245 con casilla redondeada
+de búsqueda con lupa y borde azul de foco más las categorías con cuadrito de
+color, secciones con título gris y línea separadora, cada control dibujado
+por la vista previa del centro al mismo tamaño con su nombre debajo —los del
+centro atenuados—, y pie fijo con aviso y botón azul "Aceptar"; sin lógica:
+categoría, búsqueda, desplazamientos y el golpe `GalleryHit` los da el
+componente y la isla decide).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.
