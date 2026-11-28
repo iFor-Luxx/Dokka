@@ -70,6 +70,9 @@ pub struct Menubar {
     pub(crate) dragging_brightness: bool,
     /// Brillo DDC de 0 a 1; `None` sin DDC: sin tarjeta de Pantalla.
     pub(crate) brightness: Option<f32>,
+    /// `true` en modo editar: cada pieza lleva su "−" y no hace su acción;
+    /// la burbuja desaparece. Vive aquí; el componente solo la recibe.
+    pub(crate) control_editing: bool,
     pub(crate) shown: MenubarPreferences,
 }
 
@@ -130,6 +133,7 @@ impl Menubar {
             dragging_slider: false,
             dragging_brightness: false,
             brightness: None,
+            control_editing: false,
             shown: MenubarPreferences::default(),
         }
     }
@@ -186,6 +190,7 @@ impl Menubar {
             today: self.today,
             language: self.language_code.clone(),
             shown: self.shown,
+            control_editing: self.control_editing,
             menu_open: self.menu.is_some(),
             icon_hovered: self.icon_hovered,
             highlighted: self.highlighted(),
@@ -251,5 +256,7 @@ impl Menubar {
         self.background_hovered = None;
         self.dragging_slider = false;
         self.dragging_brightness = false;
+        // Cerrar sale del modo editar: al reabrir no hay "−" ni burbuja a medias.
+        self.control_editing = false;
     }
 }

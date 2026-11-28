@@ -41,7 +41,11 @@ centro de control (`control_center_panel`: rejilla de cuatro columnas que repart
 los controles visibles en el orden de fábrica al primer hueco libre —Red y
 Preferencias 2x1, Música 2x2, Pantalla y Sonido 4x1, el resto 1x1— con las
 mismas celda, hueco y aire; con nada oculto cae donde caía; lo oculto no se
-dibuja ni responde y el alto se recalcula; Pantalla solo con brillo DDC): Red con dos círculos blancos,
+dibuja ni responde y el alto se recalcula; Pantalla solo con brillo DDC;
+burbuja de cristal "Editar controles" centrada bajo la rejilla (solo sin
+editar) y modo editar con botón "−" redondo (rectángulo plano, no texto) en
+la esquina superior izquierda de cada pieza visible, sin acción en el resto:
+el alto suma rejilla más hueco y burbuja y cabe en la ventana de 560): Red con dos círculos blancos,
 música de dos por dos con textos recortados a 16, Preferencias con dos círculos
 y textos de cápsula en 12/11 recortados a 12 con "…", Pantalla si hay,
 Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal

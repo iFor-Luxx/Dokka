@@ -128,6 +128,12 @@ pub(crate) fn run_menubar_action(
             surface.menubar_menu_dismissed();
             crate::menubar_background::open_background_menu(session, id);
         }
+        // Ocultar desde el modo editar: el centro ya se reacomodó en la isla;
+        // aquí se guarda por el mismo camino que Preferencias, se aplica y se
+        // sincroniza su copia. El panel sigue abierto en modo editar.
+        MenubarAction::HiddenControlsChanged(hidden) => {
+            crate::apply_preferences::apply_hidden_controls(session, hidden);
+        }
     }
     Ok(())
 }

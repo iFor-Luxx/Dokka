@@ -60,7 +60,10 @@ incluso con error. Lo ajustado en Preferencias se guarda con `PreferencesFile`
 previas y barra, con `resize`; `set_taskbar_auto` guarda el modo y oculta o muestra
 la barra de Windows ya reutilizando `taskbar_mode.rs`; `load_preferences` lo recupera
 al arrancar antes de dibujar; sin previas no se abre ninguna y se cierra la abierta;
-un error al leer o guardar se registra y se sigue). `preview_safety` recupera la salida del panel con el
+un error al leer o guardar se registra y se sigue). Lo ocultado desde el modo
+editar del centro (`HiddenControlsChanged`) se guarda por ese mismo camino
+(`apply_hidden_controls`: mismo archivo, `set_shown` en la barra y copia de
+Preferencias sincronizada aunque esté abierta) y el panel sigue en modo editar. `preview_safety` recupera la salida del panel con el
 cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
 cierra el panel si otro primer plano llega por `Refresh` sin el cursor
 encima, sin quitarlo de debajo del cursor. `dock_fit.rs` pega la ventana

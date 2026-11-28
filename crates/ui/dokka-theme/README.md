@@ -48,9 +48,11 @@
   a 12 con "…" (la música sigue en 16), música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual; el alto lo calcula el reparto según
   los visibles, y sombra suave bajo cada pieza
-  (desenfoque 10 y caída 2, que caben en el aire exterior de 12)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  (desenfoque 10 y caída 2, que caben en el aire exterior de 12); más la
+  burbuja de editar (hueco de 12, 168 × 28 con texto en 12) y el botón "−"
+  (22 con línea de 10 × 2 en la esquina de cada pieza)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 560 para que quepa el
-  centro con brillo (520) además del calendario de 6 semanas;
+  centro con brillo y burbuja (524) además del calendario de 6 semanas;
   la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora (alto reservado sobre el icono y ancho reservado
   al lado para el texto más largo, con su relleno y punta); `search.rs` para el buscador Spotlight de Tahoe (panel de 560, casilla al ~22% del alto con subida en pantallas bajas,

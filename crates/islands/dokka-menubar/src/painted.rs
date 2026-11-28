@@ -28,6 +28,7 @@ pub struct MenubarPainted {
     pub today: (u16, u16, u16),
     pub language: String,
     pub shown: MenubarPreferences,
+    pub control_editing: bool,
     pub menu_open: bool,
     pub icon_hovered: bool,
     pub highlighted: Option<usize>,
@@ -67,6 +68,7 @@ impl PartialEq for MenubarPainted {
             && self.today == other.today
             && self.language == other.language
             && self.shown == other.shown
+            && self.control_editing == other.control_editing
             && self.menu_open == other.menu_open
             && self.icon_hovered == other.icon_hovered
             && self.highlighted == other.highlighted

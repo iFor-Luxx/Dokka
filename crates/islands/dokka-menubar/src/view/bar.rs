@@ -87,6 +87,19 @@ impl Menubar {
                 let margin = dokka_theme::search::SHADOW_MARGIN;
                 areas.push(expand(dokka_theme::search::search_box(bounds), margin));
                 areas.push(expand(dokka_theme::search::results_box(bounds), margin));
+            } else if self.is_control_editing() {
+                // Al editar, la burbuja ya va en el tamaño; los "−"
+                // sobresalen de cada pieza y se incluyen con su aire.
+                let margin = dokka_theme::control_center::REMOVE_DIAMETER / 2.0;
+                areas.push(expand(
+                    Rect {
+                        x: bounds.x,
+                        y: measures::HEIGHT,
+                        width: bounds.width,
+                        height: bounds.y - measures::HEIGHT + bounds.height,
+                    },
+                    margin,
+                ));
             } else {
                 areas.push(Rect {
                     x: bounds.x,
