@@ -9,7 +9,7 @@
 use std::error::Error;
 use std::sync::Arc;
 
-use dokka_settings::{SettingsAction, drag_zone, settings_scene};
+use dokka_settings::{GeneralPage, SettingsAction, drag_zone, settings_scene};
 use dokka_win_surface::{Surface, SurfaceEvent};
 
 use crate::dock_session::DockSession;
@@ -112,6 +112,8 @@ pub(crate) fn press_over_settings(
         cy,
         session.settings.selected(),
         session.settings.content_width(),
+        session.settings.general(),
+        session.settings.scroll_offset(),
     ) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
@@ -168,6 +170,20 @@ pub(crate) fn click_settings(
         SettingsAction::TaskbarAuto(auto) => {
             crate::apply_preferences::set_taskbar_auto(session, surface, auto);
         }
+        SettingsAction::EnterGeneral(page) => {
+            if page == GeneralPage::About {
+                crate::settings_system::request_about(session);
+            }
+        }
+        SettingsAction::OpenAbout(button) => {
+            crate::settings_system::open_about_page(session, button);
+        }
+    }
+    // Volver con la píldora a "Acerca" también pide los datos una vez.
+    if session.settings.general() == GeneralPage::About
+        && session.settings.system_summary().is_none()
+    {
+        crate::settings_system::request_about(session);
     }
     Ok(())
 }
@@ -233,6 +249,9 @@ pub(crate) fn handle_settings_event(
         SurfaceEvent::SettingsBackspace => erase_over_settings(session),
         SurfaceEvent::SettingsEnter => confirm_over_settings(session),
         SurfaceEvent::SettingsEscape => escape_over_settings(session),
+        SurfaceEvent::SettingsWheel { delta } => {
+            crate::settings_system::scroll_settings(session, delta)
+        }
         _ => return Ok(false),
     }
     Ok(true)
@@ -251,6 +270,9 @@ pub(crate) fn render_settings(
     if !session.settings.is_open() {
         return Ok(());
     }
+    // El hilo ya leyó el equipo: pasa el último valor a la isla para que
+    // repinte "Acerca" sin pedir en bucle.
+    crate::settings_system::poll_about(session);
     let painted = session.settings.painted();
     if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());

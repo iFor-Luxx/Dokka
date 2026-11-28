@@ -1,13 +1,14 @@
 use std::sync::Arc;
 
-use dokka_components::nav_pill::{NavHalf, NavPillIcons, NavPillProps, nav_pill_at};
+use dokka_components::nav_pill::{NavHalf, NavPillIcons, nav_pill_at};
 use dokka_components::settings_list::{filtered_row_at, search_bounds};
 use dokka_components::window_controls::{TrafficButton, TrafficButtons, traffic_at};
 use dokka_model::Preferences;
-use dokka_scene::{Drawing, Rect};
+use dokka_scene::Drawing;
 use dokka_theme::{Theme, settings as measures};
 
 use super::drawings::CachedDrawings;
+use super::general::GeneralPage;
 use super::navigation::Navigation;
 use super::painted::{PaintedSettings, painted_drag, painted_reorder};
 use super::values::ContentValues;
@@ -16,6 +17,7 @@ use super::values::ContentValues;
 /// La navegación (sección, historial, búsqueda) vive en `navigation` para que
 /// este archivo no crezca; los valores reales van en `values`: el shell los
 /// fija al abrir con `set_values` y la isla avisa con `Changed` o `TaskbarAuto`.
+/// El resumen del equipo lo fija el shell con `set_system_info` tras pedirlo.
 #[derive(Debug)]
 pub struct Settings {
     is_open: bool,
@@ -26,7 +28,9 @@ pub struct Settings {
     window_focused: bool,
     zoomed: bool,
     values: ContentValues,
-    drawings: CachedDrawings,
+    pub(crate) drawings: CachedDrawings,
+    pub(crate) system: Option<dokka_model::SystemSummary>,
+    pub(crate) scroll: f32,
 }
 
 impl Default for Settings {
@@ -41,6 +45,8 @@ impl Default for Settings {
             zoomed: false,
             values: ContentValues::default(),
             drawings: CachedDrawings::new(),
+            system: None,
+            scroll: 0.0,
         }
     }
 }
@@ -76,6 +82,7 @@ impl Settings {
         self.values.control = None;
         self.values.drag = None;
         self.values.reorder = None;
+        self.scroll = 0.0;
     }
 
     pub fn is_open(&self) -> bool {
@@ -163,6 +170,14 @@ impl Settings {
         self.navigation.push_history(index);
     }
 
+    pub(crate) fn push_general(&mut self, page: GeneralPage) {
+        self.navigation.push_general(page);
+    }
+
+    pub(crate) fn navigation_general(&self) -> GeneralPage {
+        self.navigation.general()
+    }
+
     pub(crate) fn step_back(&mut self) {
         self.navigation.step_back();
     }
@@ -176,26 +191,12 @@ impl Settings {
         self.values.set_values(preferences, taskbar_auto);
     }
 
-    /// Píldora con los lados disponibles según el historial y el hover.
-    pub(crate) fn pill_props(&self) -> NavPillProps {
-        NavPillProps {
-            bounds: Rect {
-                x: measures::NAV_LEFT,
-                y: measures::NAV_TOP,
-                width: measures::NAV_PILL_WIDTH,
-                height: measures::NAV_PILL_HEIGHT,
-            },
-            can_previous: self.can_previous(),
-            can_next: self.can_next(),
-            hovered: self.nav_hovered,
-        }
-    }
-
     /// Lo ya dibujado, para que el shell solo repinte si cambió algo: incluye
     /// los valores, el orden arrastrado y el hover del contenido.
     pub fn painted(&self) -> PaintedSettings {
         PaintedSettings {
             selected: self.selected(),
+            general: self.navigation.general(),
             hovered: self.hovered,
             nav_hovered: self.nav_hovered,
             traffic_hovered: self.traffic_hovered,
@@ -210,6 +211,8 @@ impl Settings {
             control: self.values.control,
             drag: painted_drag(&self.values),
             reorder: painted_reorder(&self.values),
+            scroll: super::painted::OrderedF32(self.scroll),
+            system: self.system.clone(),
         }
     }
 

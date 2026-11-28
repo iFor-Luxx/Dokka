@@ -25,6 +25,7 @@ dokka-win-composition.workspace = true
 dokka-win-control.workspace = true
 dokka-win-media.workspace = true
 dokka-win-surface.workspace = true
+dokka-win-system.workspace = true
 dokka-win-tracking.workspace = true
 dokka-win-tray.workspace = true
 

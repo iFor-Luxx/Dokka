@@ -6,8 +6,9 @@ use windows::Win32::Graphics::DirectWrite::{
     DWRITE_FACTORY_TYPE_SHARED, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL,
     DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_WEIGHT_SEMI_BOLD, DWRITE_MEASURING_MODE_NATURAL,
     DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_LEADING,
-    DWRITE_TEXT_METRICS, DWriteCreateFactory, IDWriteFactory, IDWriteFactory3, IDWriteFactory5,
-    IDWriteFontCollection, IDWriteInMemoryFontFileLoader, IDWriteTextFormat,
+    DWRITE_TEXT_ALIGNMENT_TRAILING, DWRITE_TEXT_METRICS, DWriteCreateFactory, IDWriteFactory,
+    IDWriteFactory3, IDWriteFactory5, IDWriteFontCollection, IDWriteInMemoryFontFileLoader,
+    IDWriteTextFormat,
 };
 use windows::core::{HSTRING, Interface, Result, w};
 
@@ -25,8 +26,12 @@ pub struct CenteredText<'a> {
     pub y: f32,
     pub size: f32,
     pub is_bold: bool,
-    /// `true` alinea a la izquierda en `x`; `false` centra en `x`.
+    /// `true` alinea a la izquierda en `x`; con `align_right` a la derecha;
+    /// ambos falsos centra en `x`.
     pub align_left: bool,
+    /// `true` alinea a la derecha en `x`; manda sobre el centrado, no sobre
+    /// `align_left`.
+    pub align_right: bool,
 }
 
 impl<'a> CenteredText<'a> {
@@ -39,6 +44,7 @@ impl<'a> CenteredText<'a> {
             size,
             is_bold,
             align_left: false,
+            align_right: false,
         }
     }
 }
@@ -103,6 +109,13 @@ impl TextPainter {
                 right: text.x + BOX_HALF_SIDE * 2.0,
                 bottom: text.y + BOX_HALF_SIDE,
             }
+        } else if text.align_right {
+            D2D_RECT_F {
+                left: text.x - BOX_HALF_SIDE * 2.0,
+                top: text.y - BOX_HALF_SIDE,
+                right: text.x,
+                bottom: text.y + BOX_HALF_SIDE,
+            }
         } else {
             D2D_RECT_F {
                 left: text.x - BOX_HALF_SIDE,
@@ -115,6 +128,8 @@ impl TextPainter {
         unsafe {
             let align = if text.align_left {
                 DWRITE_TEXT_ALIGNMENT_LEADING
+            } else if text.align_right {
+                DWRITE_TEXT_ALIGNMENT_TRAILING
             } else {
                 DWRITE_TEXT_ALIGNMENT_CENTER
             };

@@ -13,8 +13,12 @@ use super::logic::{badge_drawing, section_drawing};
 pub(crate) struct CachedDrawings {
     badges: Vec<Option<(Color, Arc<Drawing>)>>,
     rows: Vec<Option<(Color, Arc<Drawing>)>>,
+    general_badges: Vec<Option<(Color, Arc<Drawing>)>>,
+    general_rows: Vec<Option<(Color, Arc<Drawing>)>>,
     search: Option<(Color, Arc<Drawing>)>,
     grip: Option<(Color, Arc<Drawing>)>,
+    chevron: Option<(Color, Arc<Drawing>)>,
+    gear: Option<(Color, Arc<Drawing>)>,
     nav: Option<NavPillIcons>,
     traffic: Option<TrafficButtons>,
 }
@@ -24,8 +28,12 @@ impl CachedDrawings {
         Self {
             badges: vec![None; measures::SECTIONS],
             rows: vec![None; measures::SECTIONS],
+            general_badges: vec![None; super::logic::GENERAL_ROWS],
+            general_rows: vec![None; super::logic::GENERAL_ROWS],
             search: None,
             grip: None,
+            chevron: None,
+            gear: None,
             nav: None,
             traffic: None,
         }
@@ -86,6 +94,69 @@ impl CachedDrawings {
         match &self.grip {
             Some((_, drawing)) => Arc::clone(drawing),
             None => Arc::new(dokka_icons::settings_grip_icon(color)),
+        }
+    }
+
+    /// Cuadrado de color de una fila de General, creado una vez.
+    pub(crate) fn general_badge(&mut self, theme: &Theme, row: usize) -> Arc<Drawing> {
+        let color = super::logic::general_badge_color(theme, row);
+        let slot = self.general_badges.get_mut(row);
+        let Some(entry) = slot else {
+            return Arc::new(badge_drawing(color));
+        };
+        if entry.as_ref().is_none_or(|(known, _)| *known != color) {
+            *entry = Some((color, Arc::new(badge_drawing(color))));
+        }
+        match entry {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(badge_drawing(color)),
+        }
+    }
+
+    /// Glifo blanco de una fila de General, creado una vez.
+    pub(crate) fn general_row(&mut self, theme: &Theme, row: usize) -> Arc<Drawing> {
+        let color = theme.settings.row_text_selected;
+        let slot = self.general_rows.get_mut(row);
+        let Some(entry) = slot else {
+            return Arc::new(super::logic::general_row_drawing(row, color));
+        };
+        if entry.as_ref().is_none_or(|(known, _)| *known != color) {
+            *entry = Some((
+                color,
+                Arc::new(super::logic::general_row_drawing(row, color)),
+            ));
+        }
+        match entry {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(super::logic::general_row_drawing(row, color)),
+        }
+    }
+
+    /// Chevrón derecho de las filas de General, creado una vez.
+    pub(crate) fn chevron(&mut self, theme: &Theme) -> Arc<Drawing> {
+        let color = theme.settings.card_text;
+        if self
+            .chevron
+            .as_ref()
+            .is_none_or(|(known, _)| *known != color)
+        {
+            self.chevron = Some((color, Arc::new(dokka_icons::submenu_chevron_icon(color))));
+        }
+        match &self.chevron {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(dokka_icons::submenu_chevron_icon(color)),
+        }
+    }
+
+    /// Engranaje grande de la cabecera de General, creado una vez.
+    pub(crate) fn gear(&mut self, theme: &Theme) -> Arc<Drawing> {
+        let color = theme.settings.card_text;
+        if self.gear.as_ref().is_none_or(|(known, _)| *known != color) {
+            self.gear = Some((color, Arc::new(dokka_icons::settings_general_icon(color))));
+        }
+        match &self.gear {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(dokka_icons::settings_general_icon(color)),
         }
     }
 

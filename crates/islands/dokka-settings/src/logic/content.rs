@@ -134,5 +134,9 @@ pub(crate) fn content_slider_track(top: f32, heights: &[f32], index: usize, widt
 
 /// `true` si la sección trae tarjetas con ajustes reales.
 pub(crate) fn has_content(section: usize) -> bool {
-    section == SECTION_DOCK || section == SECTION_MENUBAR || section == SECTION_TASKBAR
+    use super::sections::SECTION_GENERAL;
+    section == SECTION_GENERAL
+        || section == SECTION_DOCK
+        || section == SECTION_MENUBAR
+        || section == SECTION_TASKBAR
 }
