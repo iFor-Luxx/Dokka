@@ -1,3 +1,4 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 //! Punto de entrada de Dokka: crea las piezas y las conecta.
 
 mod app_menu_actions;
