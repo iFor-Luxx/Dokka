@@ -7,7 +7,7 @@ use super::general::{AboutButton, GeneralPage};
 use super::logic::{
     DockSwitch, SliderTarget, about_button_at, dock_segment_at, dock_slider_at, dock_switch_at,
     general_row_at, icon_scale_from, magnification_from, menubar_switch_at, position_from_index,
-    taskbar_switch_at, toggle_menubar,
+    storage_button_at, taskbar_switch_at, toggle_menubar,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
@@ -125,6 +125,17 @@ impl Settings {
                 _ => AboutButton::SystemReport,
             };
             return SettingsAction::OpenAbout(action);
+        }
+        // Botones de "Almacenamiento": vaciar la papelera o abrir sus ajustes.
+        let disks = self
+            .storage_breakdown()
+            .map(|known| known.other_disks.len())
+            .unwrap_or(0);
+        if let Some(button) = storage_button_at(selected, general, width, scroll, disks, x, y) {
+            if button == 0 {
+                return SettingsAction::EmptyTrash;
+            }
+            return SettingsAction::OpenAbout(AboutButton::StorageSettings);
         }
         if let Some(index) = self.filtered_at(x, y) {
             self.select_section(index);

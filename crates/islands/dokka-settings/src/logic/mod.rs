@@ -7,6 +7,8 @@ mod menubar_order;
 mod search_filter;
 mod sections;
 mod slider_map;
+mod storage;
+mod update;
 
 pub(crate) use content::{
     card_heights, card_tops, content_row, content_segmented, content_slider_area,
@@ -14,7 +16,7 @@ pub(crate) use content::{
 };
 pub(crate) use content_hit::{
     DockSwitch, SliderTarget, about_button_at, dock_segment_at, dock_slider_at, dock_switch_at,
-    general_row_at, menubar_switch_at, taskbar_switch_at,
+    general_row_at, menubar_switch_at, storage_button_at, taskbar_switch_at,
 };
 pub(crate) use dock_position::{position_from_index, position_options, position_to_index};
 pub(crate) use general::{
@@ -27,6 +29,11 @@ pub(crate) use menubar_order::{
     reorder_target, reordered, toggle_menubar,
 };
 pub(crate) use search_filter::filter_sections;
+pub(crate) use storage::{
+    storage_category_color, storage_category_drawing, storage_content_height, storage_layout,
+    storage_list_rows,
+};
+pub(crate) use update::{update_content_height, update_top};
 pub use sections::SECTION_NAMES;
 pub(crate) use sections::{SECTION_DOCK, SECTION_GENERAL, SECTION_MENUBAR, SECTION_TASKBAR};
 pub(crate) use sections::{badge_drawing, section_drawing, section_names};

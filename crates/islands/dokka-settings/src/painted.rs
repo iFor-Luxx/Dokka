@@ -18,6 +18,8 @@ pub enum PaintedControl {
     GeneralRow(usize),
     /// Botón de "Acerca de este PC": 0 pantalla, 1 almacenamiento, 2 informe.
     AboutButton(u8),
+    /// Botón de "Almacenamiento": 0 vaciar papelera, 1 ajustes.
+    StorageButton(u8),
 }
 
 /// Todo lo que cambia lo que se ve: si no cambió, el shell no repinta.
@@ -47,6 +49,10 @@ pub struct PaintedSettings {
     pub scroll: OrderedF32,
     /// Resumen del equipo para "Acerca de este PC".
     pub system: Option<dokka_model::SystemSummary>,
+    /// Desglose de almacenamiento para su apartado.
+    pub storage: Option<dokka_model::StorageBreakdown>,
+    /// Versión instalada de Dokka para su apartado.
+    pub dokka_version: Option<String>,
 }
 
 /// Fila arrastrada en la huella: hueco de origen, destino y altura.

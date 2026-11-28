@@ -30,6 +30,8 @@ pub struct Settings {
     values: ContentValues,
     pub(crate) drawings: CachedDrawings,
     pub(crate) system: Option<dokka_model::SystemSummary>,
+    pub(crate) storage: Option<dokka_model::StorageBreakdown>,
+    pub(crate) dokka_version: Option<String>,
     pub(crate) scroll: f32,
 }
 
@@ -46,6 +48,8 @@ impl Default for Settings {
             values: ContentValues::default(),
             drawings: CachedDrawings::new(),
             system: None,
+            storage: None,
+            dokka_version: None,
             scroll: 0.0,
         }
     }
@@ -213,6 +217,8 @@ impl Settings {
             reorder: painted_reorder(&self.values),
             scroll: super::painted::OrderedF32(self.scroll),
             system: self.system.clone(),
+            storage: self.storage.clone(),
+            dokka_version: self.dokka_version.clone(),
         }
     }
 

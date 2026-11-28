@@ -24,4 +24,6 @@ pub enum SettingsAction {
     EnterGeneral(GeneralPage),
     /// Botón de "Acerca de este PC": el shell abre la página del sistema.
     OpenAbout(AboutButton),
+    /// Botón "Vaciar papelera": el shell la vacía con su confirmación.
+    EmptyTrash,
 }

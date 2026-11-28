@@ -94,11 +94,13 @@ pub(crate) fn general_control_at(
     general: crate::general::GeneralPage,
     x: f32,
     y: f32,
+    disks: usize,
 ) -> bool {
     use crate::general::GeneralPage as Page;
     match general {
         Page::Root => general_row_at(width, scroll, x, y).is_some(),
         Page::About => about_button_at(width, scroll, x, y).is_some(),
+        Page::Storage => super::storage::storage_button_at(width, scroll, disks, x, y).is_some(),
         _ => false,
     }
 }
@@ -140,10 +142,12 @@ pub(crate) fn about_content_height() -> f32 {
 }
 
 /// Lo que se puede bajar con la rueda en esta ventana.
-/// La lista cabe sin bajar; la ficha "Acerca" es la más alta.
-pub(crate) fn general_scroll_max(window_height: f32) -> f32 {
+/// La lista cabe sin bajar; "Acerca" y "Almacenamiento" son las más altas.
+pub(crate) fn general_scroll_max(window_height: f32, disks: usize) -> f32 {
     let visible = window_height - measures::CONTENT_TOP - measures::GROUP_GAP;
-    let needed = about_content_height();
+    let needed = about_content_height()
+        .max(super::storage::storage_content_height(disks))
+        .max(super::update::update_content_height());
     (needed - visible).max(0.0)
 }
 

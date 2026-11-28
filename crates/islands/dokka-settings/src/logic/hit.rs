@@ -26,7 +26,8 @@ fn nav_at(x: f32, y: f32) -> bool {
 /// `true` si desde el punto se puede arrastrar la ventana: la franja superior
 /// quitando los semáforos, la píldora, la casilla, las filas y los controles
 /// del contenido (deslizadores, interruptores, filas de General y botones
-/// nunca mueven la ventana).
+/// nunca mueven la ventana). `disks` dice cuántos otros discos trae hoy
+/// "Almacenamiento", para no moverla desde sus botones.
 pub fn drag_zone(
     x: f32,
     y: f32,
@@ -34,11 +35,12 @@ pub fn drag_zone(
     width: f32,
     general: crate::general::GeneralPage,
     scroll: f32,
+    disks: usize,
 ) -> bool {
     if content_control_at(selected, width, x, y) {
         return false;
     }
-    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, x, y) {
+    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, x, y, disks) {
         return false;
     }
     // Los controles de las demás secciones no se ven, pero se comprueban

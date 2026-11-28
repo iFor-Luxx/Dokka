@@ -23,6 +23,9 @@ pub(crate) fn open_or_focus_settings(
     session
         .settings
         .set_values(session.preferences, session.taskbar_auto());
+    session
+        .settings
+        .set_dokka_version(env!("CARGO_PKG_VERSION").to_owned());
     session.settings.open();
     // Primera apertura: centra el contenido una vez con el aire alrededor;
     // luego conserva su sitio al moverla. El zoom aplica su tamaño aparte.
@@ -42,6 +45,7 @@ pub(crate) fn open_or_focus_settings(
 /// al volver a abrir empieza en General, sin historial, búsqueda ni foco. Los
 /// ajustes guardados no se tocan. Vuelve además al tamaño normal.
 pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
+    crate::settings_system::cancel_storage(session);
     session.settings.close();
     session.settings_pressed = false;
     // La próxima apertura debe dibujar de nuevo: el contenido pudo quedar
@@ -107,6 +111,11 @@ pub(crate) fn press_over_settings(
     if session.settings.press(cx, cy) {
         return;
     }
+    let disks = session
+        .settings
+        .storage_breakdown()
+        .map(|known| known.other_disks.len())
+        .unwrap_or(0);
     if drag_zone(
         cx,
         cy,
@@ -114,6 +123,7 @@ pub(crate) fn press_over_settings(
         session.settings.content_width(),
         session.settings.general(),
         session.settings.scroll_offset(),
+        disks,
     ) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
@@ -173,10 +183,15 @@ pub(crate) fn click_settings(
         SettingsAction::EnterGeneral(page) => {
             if page == GeneralPage::About {
                 crate::settings_system::request_about(session);
+            } else if page == GeneralPage::Storage {
+                crate::settings_system::request_storage(session);
             }
         }
         SettingsAction::OpenAbout(button) => {
             crate::settings_system::open_about_page(session, button);
+        }
+        SettingsAction::EmptyTrash => {
+            crate::settings_system::empty_trash(session);
         }
     }
     // Volver con la píldora a "Acerca" también pide los datos una vez.
@@ -184,6 +199,12 @@ pub(crate) fn click_settings(
         && session.settings.system_summary().is_none()
     {
         crate::settings_system::request_about(session);
+    }
+    // Volver con la píldora a "Almacenamiento" también calcula una vez.
+    if session.settings.general() == GeneralPage::Storage
+        && session.settings.storage_breakdown().is_none()
+    {
+        crate::settings_system::request_storage(session);
     }
     Ok(())
 }
@@ -273,6 +294,13 @@ pub(crate) fn render_settings(
     // El hilo ya leyó el equipo: pasa el último valor a la isla para que
     // repinte "Acerca" sin pedir en bucle.
     crate::settings_system::poll_about(session);
+    // El hilo del desglose avanza: si se está en "Almacenamiento" se pasa lo
+    // nuevo; si no, se detiene al salir del apartado.
+    if session.settings.general() == GeneralPage::Storage {
+        crate::settings_system::poll_storage(session);
+    } else {
+        crate::settings_system::cancel_storage(session);
+    }
     let painted = session.settings.painted();
     if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());

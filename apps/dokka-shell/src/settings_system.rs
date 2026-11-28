@@ -1,8 +1,10 @@
-//! Datos del equipo para "Acerca de este PC": pedir, pasar y abrir.
+//! Datos del equipo para "Acerca de este PC" y "Almacenamiento": pedir,
+//! pasar y abrir.
 //!
 //! La isla no habla con Windows: el shell pide el resumen al entrar en
-//! "Acerca", lo pasa cuando el hilo lo lee y abre las páginas de los botones.
-//! Falla sola: si no se lee, el campo queda en "No disponible".
+//! "Acerca" y el desglose al entrar en "Almacenamiento", los pasa cuando los
+//! hilos los leen y abre las páginas de los botones. Falla sola: si no se
+//! lee, el campo queda en "No disponible" o "Calculando…".
 
 use dokka_settings::{AboutButton, GeneralPage};
 
@@ -31,6 +33,46 @@ pub(crate) fn poll_about(session: &mut DockSession) {
     }
 }
 
+/// Pasa lo ya calculado y pide recalcular en el hilo. Solo calcula al
+/// abrir el apartado, nunca en bucle: mientras tanto la isla sigue mostrando
+/// el último resultado en memoria.
+pub(crate) fn request_storage(session: &mut DockSession) {
+    use dokka_contracts::SystemInfo as _;
+    if let Some(breakdown) = session.system_info.storage() {
+        session.settings.set_storage(Some(breakdown));
+    }
+    session.system_info.request_storage();
+}
+
+/// Si se está en "Almacenamiento" y el hilo ya calculó algo nuevo, pasa el
+/// último valor a la isla para que repinte sin pedir en bucle.
+pub(crate) fn poll_storage(session: &mut DockSession) {
+    if session.settings.general() != GeneralPage::Storage {
+        return;
+    }
+    use dokka_contracts::SystemInfo as _;
+    if let Some(breakdown) = session.system_info.storage()
+        && session.settings.storage_breakdown() != Some(breakdown.clone())
+    {
+        session.settings.set_storage(Some(breakdown));
+    }
+}
+
+/// Detiene el cálculo al salir del apartado; conserva lo ya calculado.
+pub(crate) fn cancel_storage(session: &DockSession) {
+    use dokka_contracts::SystemInfo as _;
+    session.system_info.cancel_storage();
+}
+
+/// Vacía la papelera con su confirmación y recalcula el apartado.
+pub(crate) fn empty_trash(session: &mut DockSession) {
+    use dokka_contracts::{RecycleBin as _, SystemInfo as _};
+    if session.recycle_bin.empty().is_err() {
+        return;
+    }
+    session.system_info.request_storage();
+}
+
 /// Abre la página del sistema del botón pulsado. Falla sola.
 pub(crate) fn open_about_page(session: &DockSession, button: AboutButton) {
     use dokka_contracts::{SystemInfo as _, SystemPage};
@@ -44,7 +86,7 @@ pub(crate) fn open_about_page(session: &DockSession, button: AboutButton) {
     }
 }
 
-/// Rueda sobre Preferencias: baja la ficha "Acerca de este PC".
+/// Rueda sobre Preferencias: baja la ficha del apartado de General.
 pub(crate) fn scroll_settings(session: &mut DockSession, delta: i16) {
     if session.settings.is_open() {
         session.settings.scroll_wheel(delta);

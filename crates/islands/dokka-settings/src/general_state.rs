@@ -37,6 +37,16 @@ impl Settings {
         self.drawings.general_row(theme, row)
     }
 
+    /// Cuadrado de color de una categoría de almacenamiento, creado una vez.
+    pub(crate) fn storage_badge_drawing(&mut self, theme: &Theme, index: usize) -> Arc<Drawing> {
+        self.drawings.storage_badge(theme, index)
+    }
+
+    /// Glifo blanco de una categoría de almacenamiento, creado una vez.
+    pub(crate) fn storage_row_drawing(&mut self, theme: &Theme, index: usize) -> Arc<Drawing> {
+        self.drawings.storage_row(theme, index)
+    }
+
     /// Chevrón derecho de las filas de General, creado una vez.
     pub(crate) fn chevron_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
         self.drawings.chevron(theme)
@@ -63,12 +73,15 @@ impl Settings {
     }
 
     /// Mueve el contenido con la rueda, sin salirse de su altura.
-    /// Solo la ficha "Acerca" baja; la lista cabe sin moverse.
+    /// La lista cabe sin moverse; "Acerca" y "Almacenamiento" bajan.
     pub(crate) fn scroll_by(&mut self, delta: f32) {
-        let max = if self.navigation_general() == super::general::GeneralPage::About {
-            super::logic::general_scroll_max(self.window_height())
-        } else {
-            0.0
+        use super::general::GeneralPage as Page;
+        let max = match self.navigation_general() {
+            Page::About | Page::Storage | Page::Update => {
+                let disks = self.storage.as_ref().map(|known| known.other_disks.len());
+                super::logic::general_scroll_max(self.window_height(), disks.unwrap_or(0))
+            }
+            _ => 0.0,
         };
         self.scroll = (self.scroll + delta).clamp(0.0, max);
     }
