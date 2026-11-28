@@ -4,15 +4,17 @@
 //! van a la derecha en gris. Lo que queda fuera de la vista se lleva a
 //! tamaño cero para no reconstruir capas al bajar con la rueda.
 
+use std::sync::Arc;
+
 use dokka_components::settings_group::{
     SettingsGroupProps, group_dividers, group_labels, group_panel,
 };
-use dokka_scene::{Divider, Panel, Rect, Text, TextAlign};
-use dokka_theme::{Theme, settings as measures};
+use dokka_scene::{Divider, Drawing, Icon, Panel, Rect, Text, TextAlign};
+use dokka_theme::{Theme, branding, settings as measures};
 
 use super::content::group_pieces;
 
-/// Cabecera de sección ("Windows", "Pantalla"...).
+/// Cabecera de sección ("macOS", "Pantalla"...).
 pub(crate) fn section_header(
     theme: &Theme,
     top: f32,
@@ -87,6 +89,75 @@ pub(crate) fn value_card_owned(
         width,
         window_height,
     )
+}
+
+/// Tarjeta de macOS: una fila con icono redondo de olas, nombre a su lado y
+/// versión a la derecha en gris. Lo escondido queda a tamaño cero para no
+/// reconstruir capas al bajar con la rueda.
+pub(crate) fn macos_card(
+    theme: &Theme,
+    top: f32,
+    width: f32,
+    window_height: f32,
+    icon: &Arc<Drawing>,
+) -> (Panel, Vec<Icon>, Vec<Text>) {
+    let heights = [measures::CONTENT_ROW_HEIGHT];
+    let props = SettingsGroupProps {
+        top,
+        rows: vec![String::new()],
+        heights: heights.to_vec(),
+        width,
+    };
+    let hidden = top + measures::CONTENT_ROW_HEIGHT < measures::CONTENT_TOP || top > window_height;
+    if hidden {
+        let panel = Panel {
+            bounds: Rect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            },
+            corner_radius: measures::CARD_RADIUS,
+            border_width: measures::CARD_BORDER_WIDTH,
+            tint: theme.settings.card,
+            border: theme.settings.card_border,
+        };
+        return (panel, Vec::new(), Vec::new());
+    }
+    let panel = group_panel(theme, &props);
+    let middle = top + measures::CONTENT_ROW_HEIGHT / 2.0;
+    let side = measures::BADGE_SIDE;
+    let icon_x = measures::CONTENT_LEFT + measures::CONTENT_PADDING;
+    let name_x = icon_x + side + measures::BADGE_TEXT_GAP;
+    let icons = vec![Icon {
+        x: icon_x,
+        y: middle - side / 2.0,
+        side,
+        image: Some(dokka_scene::IconImage::Drawing(Arc::clone(icon))),
+        placeholder: theme.settings.card_text,
+        placeholder_radius: side / 2.0,
+    }];
+    let texts = vec![
+        Text {
+            x: name_x,
+            center_y: middle,
+            content: branding::ABOUT_OS_NAME.to_owned(),
+            size: measures::CONTENT_LABEL_SIZE,
+            is_bold: false,
+            color: theme.settings.row_text,
+            align: TextAlign::Left,
+        },
+        Text {
+            x: measures::CONTENT_LEFT + width - measures::CONTENT_PADDING,
+            center_y: middle,
+            content: branding::ABOUT_OS_VERSION_LABEL.to_owned(),
+            size: measures::CONTENT_LABEL_SIZE,
+            is_bold: false,
+            color: theme.settings.card_text,
+            align: TextAlign::Right,
+        },
+    ];
+    (panel, icons, texts)
 }
 
 fn height_of(heights: &[f32]) -> f32 {

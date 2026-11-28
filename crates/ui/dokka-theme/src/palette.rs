@@ -40,6 +40,18 @@ pub(crate) const SILVER_SOFT: Color = Color::rgba(222, 226, 232, 235);
 pub(crate) const STEEL: Color = Color::rgba(160, 166, 176, 255);
 pub(crate) const STEEL_SOFT: Color = Color::rgba(150, 156, 168, 200);
 pub(crate) const GRAY: Color = Color::rgba(140, 145, 155, 255);
+/// Marco claro del iMac de la ficha: aluminio muy claro.
+pub(crate) const IMAC_FRAME: Color = Color::rgba(231, 234, 239, 255);
+/// Mentón de color bajo la pantalla del iMac: salvia suave.
+pub(crate) const IMAC_CHIN: Color = Color::rgba(198, 211, 200, 255);
+/// Pie en cuña del iMac: gris medio.
+pub(crate) const IMAC_STAND: Color = Color::rgba(168, 173, 184, 255);
+/// Pantalla del iMac: gris oscuro neutro.
+pub(crate) const IMAC_SCREEN: Color = Color::rgba(38, 42, 50, 255);
+/// Olas del icono redondo de macOS: tres azules estilo Tahoe.
+pub(crate) const TAHOE_DEEP: Color = Color::rgba(12, 84, 178, 255);
+pub(crate) const TAHOE_MID: Color = Color::rgba(38, 148, 240, 255);
+pub(crate) const TAHOE_LIGHT: Color = Color::rgba(155, 210, 250, 255);
 
 /// Azul de selección tipo macOS para el menú.
 pub(crate) const MACOS_BLUE: Color = Color::rgba(10, 100, 215, 255);

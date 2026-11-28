@@ -28,7 +28,7 @@ engranaje grande y dos tarjetas con filas (Acerca de este PC, Actualización de
 Dokka, Almacenamiento; Fecha y hora, Idioma y región) con cuadrito, chevrón y
 resaltado; la píldora va y viene entre la lista y sus apartados y el título
 cambia. "Acerca de este PC" trae el dibujo del PC, el modelo, la tarjeta con
-Nombre, Procesador, Gráfica, Memoria y Número de serie, las secciones Windows,
+Nombre, Procesador, Gráfica, Memoria y Número de serie, las secciones macOS,
 Pantalla y Almacenamiento con sus botones y el informe abajo; los datos los da
 el shell (`set_system_info`) y los botones avisan (`OpenAbout`); si no cabe, la
 rueda baja la ficha sin pintar fuera. "Fecha y hora" trae si las automáticas

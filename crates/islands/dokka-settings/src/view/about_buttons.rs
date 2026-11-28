@@ -105,7 +105,7 @@ fn display_button_top(top: f32) -> f32 {
         + 5.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + measures::ABOUT_SECTION_TITLE_HEIGHT
-        + 2.0 * measures::CONTENT_ROW_HEIGHT
+        + measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
@@ -122,8 +122,5 @@ fn storage_button_top(top: f32) -> f32 {
 }
 
 fn report_button_top(top: f32) -> f32 {
-    storage_button_top(top)
-        + measures::ABOUT_BUTTON_HEIGHT
-        + measures::GROUP_GAP
-        + measures::ABOUT_BUTTON_HEIGHT
+    storage_button_top(top) + measures::ABOUT_BUTTON_HEIGHT + measures::GROUP_GAP
 }

@@ -205,4 +205,16 @@ pub struct IconColors {
     pub trash_rib: Color,
     pub trash_paper: Color,
     pub trash_waste: Color,
+    /// Marco claro del iMac de la ficha.
+    pub imac_frame: Color,
+    /// Mentón de color bajo la pantalla del iMac.
+    pub imac_chin: Color,
+    /// Pie en cuña del iMac.
+    pub imac_stand: Color,
+    /// Pantalla del iMac.
+    pub imac_screen: Color,
+    /// Olas del icono redondo de macOS, de oscura a clara.
+    pub tahoe_deep: Color,
+    pub tahoe_mid: Color,
+    pub tahoe_light: Color,
 }
