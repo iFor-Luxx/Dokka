@@ -61,6 +61,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "dokka-installer"
+version = "0.1.0"
+dependencies = [
+ "dokka-contracts",
+ "dokka-icons",
+ "dokka-setup",
+ "dokka-theme",
+ "dokka-win-composition",
+ "dokka-win-install",
+ "dokka-win-surface",
+ "windows",
+]
+
+[[package]]
 name = "dokka-interaction"
 version = "0.1.0"
 
@@ -113,6 +127,15 @@ dependencies = [
  "dokka-components",
  "dokka-icons",
  "dokka-model",
+ "dokka-scene",
+ "dokka-theme",
+]
+
+[[package]]
+name = "dokka-setup"
+version = "0.1.0"
+dependencies = [
+ "dokka-components",
  "dokka-scene",
  "dokka-theme",
 ]
