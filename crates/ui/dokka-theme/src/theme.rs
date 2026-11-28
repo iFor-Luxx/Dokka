@@ -15,6 +15,7 @@ pub struct Theme {
     pub nav_pill: NavPillColors,
     pub tray: TrayColors,
     pub icons: IconColors,
+    pub installer: InstallerColors,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -217,4 +218,26 @@ pub struct IconColors {
     pub tahoe_deep: Color,
     pub tahoe_mid: Color,
     pub tahoe_light: Color,
+}
+
+/// Colores de la ventana del instalador propio, estilo iPhone.
+#[derive(Debug, Clone, Copy)]
+pub struct InstallerColors {
+    pub text: Color,
+    pub secondary: Color,
+    pub accent: Color,
+    pub accent_hover: Color,
+    pub accent_pressed: Color,
+    pub danger: Color,
+    pub danger_hover: Color,
+    pub danger_pressed: Color,
+    pub switch_on: Color,
+    pub switch_off: Color,
+    pub switch_knob: Color,
+    pub card: Color,
+    pub card_border: Color,
+    /// Crema de respaldo si la foto no se puede decodificar.
+    pub fallback: Color,
+    pub close: Color,
+    pub close_border: Color,
 }

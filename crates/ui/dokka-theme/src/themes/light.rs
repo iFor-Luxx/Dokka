@@ -93,6 +93,24 @@ pub fn light() -> Theme {
             percent: palette::TRAY_PERCENT,
         },
         settings: settings_colors(border),
+        installer: crate::InstallerColors {
+            text: palette::INSTALLER_TEXT,
+            secondary: palette::INSTALLER_SECONDARY,
+            accent: palette::INSTALLER_BLUE,
+            accent_hover: palette::INSTALLER_BLUE_HOVER,
+            accent_pressed: palette::INSTALLER_BLUE_PRESSED,
+            danger: palette::INSTALLER_RED,
+            danger_hover: palette::INSTALLER_RED_HOVER,
+            danger_pressed: palette::INSTALLER_RED_PRESSED,
+            switch_on: palette::INSTALLER_GREEN,
+            switch_off: palette::SETTINGS_SWITCH_OFF,
+            switch_knob: palette::SETTINGS_SWITCH_KNOB,
+            card: palette::INSTALLER_CARD,
+            card_border: palette::INSTALLER_CARD_BORDER,
+            fallback: palette::INSTALLER_FALLBACK,
+            close: palette::INSTALLER_CLOSE,
+            close_border: palette::INSTALLER_CLOSE_BORDER,
+        },
     }
 }
 

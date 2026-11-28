@@ -1,0 +1,17 @@
+[package]
+name = "dokka-installer"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dokka-contracts.workspace = true
+dokka-icons.workspace = true
+dokka-setup.workspace = true
+dokka-theme.workspace = true
+dokka-win-composition.workspace = true
+dokka-win-install.workspace = true
+dokka-win-surface.workspace = true
+
+[lints]
+workspace = true

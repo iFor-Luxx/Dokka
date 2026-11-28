@@ -68,3 +68,11 @@ hasta que el área se reevalúe; en uso normal nunca se registra dos veces y
 `menubar_show` solo recoloca.
 
 **No hace:** no dibuja ni decide qué hacer con los eventos. Usa solo el monitor principal y no reacciona aún a cambios de resolución o DPI.
+
+Crea además la ventana del instalador propio (`installer_window.rs`: normal y
+activable como Preferencias, con sitio en la barra de tareas, sin marco ni
+borde, no redimensionable; `place` la centra una vez con el contenido y el aire
+de la sombra) con su bucle propio (`installer_loop.rs`: ratón con captura
+como Preferencias para arrastrar desde el fondo, la X como `Dismissed`, avisos
+agrupados como `Refresh` y fotogramas como `Frame`; `InstallerEvent`). No toca
+las ventanas de Dokka.

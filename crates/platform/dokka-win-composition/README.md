@@ -48,3 +48,10 @@ desplazamiento del tema; se actualiza al mover o redimensionar sin reconstruir.
 
 **No hace:** no decide qué dibujar ni crea ventanas. Las miniaturas siempre quedan por encima del resto.
 Todavía no se recupera si falla la tarjeta gráfica.
+
+Dibuja además la única ventana del instalador (`installer_renderer.rs`: un solo
+árbol visual con `InstallerRenderer`, que reutiliza `Painter` y `SceneLayers`;
+la foto de fondo (`installer_background.rs`: decodificada con WIC de Windows,
+recortada a las esquinas y bajo el contenido, o color crema si falla) cuelga
+del fondo del contenido para no tapar tarjetas ni textos. `SceneRenderer` pide
+seis ventanas y no sirve aquí.
