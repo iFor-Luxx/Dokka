@@ -4,11 +4,11 @@ version = 4
 
 [[package]]
 name = "dokka-animation"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "dokka-components"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-icons",
  "dokka-model",
@@ -18,7 +18,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-config"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -26,14 +26,14 @@ dependencies = [
 
 [[package]]
 name = "dokka-contracts"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-model",
 ]
 
 [[package]]
 name = "dokka-dock"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-animation",
  "dokka-components",
@@ -46,14 +46,14 @@ dependencies = [
 
 [[package]]
 name = "dokka-events"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-model",
 ]
 
 [[package]]
 name = "dokka-icons"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-scene",
  "dokka-theme",
@@ -62,7 +62,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-installer"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-icons",
@@ -75,11 +75,11 @@ dependencies = [
 
 [[package]]
 name = "dokka-interaction"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "dokka-launchpad"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-animation",
  "dokka-components",
@@ -91,7 +91,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-menubar"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-components",
  "dokka-icons",
@@ -102,11 +102,11 @@ dependencies = [
 
 [[package]]
 name = "dokka-model"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "dokka-previews"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-animation",
  "dokka-components",
@@ -117,11 +117,11 @@ dependencies = [
 
 [[package]]
 name = "dokka-scene"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "dokka-settings"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-components",
  "dokka-icons",
@@ -132,7 +132,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-setup"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-components",
  "dokka-scene",
@@ -141,7 +141,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-shell"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-components",
  "dokka-config",
@@ -171,7 +171,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-state"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-events",
  "dokka-model",
@@ -179,14 +179,14 @@ dependencies = [
 
 [[package]]
 name = "dokka-theme"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-scene",
 ]
 
 [[package]]
 name = "dokka-win-apps"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -196,7 +196,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-audio-output"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -205,7 +205,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-composition"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-scene",
  "dokka-win-surface",
@@ -218,7 +218,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-control"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -227,7 +227,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-install"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "windows",
@@ -235,7 +235,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-media"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -245,7 +245,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-surface"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-model",
  "windows",
@@ -253,7 +253,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-system"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -262,14 +262,14 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-text"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "windows",
 ]
 
 [[package]]
 name = "dokka-win-tracking"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
@@ -278,7 +278,7 @@ dependencies = [
 
 [[package]]
 name = "dokka-win-tray"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "dokka-contracts",
  "dokka-model",
