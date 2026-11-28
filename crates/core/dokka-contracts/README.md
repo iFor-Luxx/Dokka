@@ -30,3 +30,9 @@ automática y zona (con `SeTimeZonePrivilege` solo en la llamada).
 `can_change_protected` dice si el proceso está elevado; sin elevar, lo
 protegido se atenúa y no responde. Si algo falla, se registra, se relee y
 la pantalla muestra el valor real.
+
+`Installer` instala y desinstala Dokka en Windows sin interfaz
+(`InstallOptions`: arrancar con Windows y acceso directo en el escritorio;
+`InstallStep` avisa del paso y del avance total de 0.0 a 1.0;
+`InstallFailure`: sin espacio, Dokka no se pudo cerrar, falta el contenido,
+acceso denegado u otro motivo). Lo cumple `dokka-win-install`.
