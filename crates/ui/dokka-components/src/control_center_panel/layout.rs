@@ -13,7 +13,7 @@ use dokka_scene::Rect;
 use dokka_theme::control_center as measures;
 
 /// Ancho por alto en celdas de cada control.
-fn cell_span(item: ControlItem) -> (usize, usize) {
+pub(crate) fn cell_span(item: ControlItem) -> (usize, usize) {
     match item {
         ControlItem::Network | ControlItem::Settings => (2, 1),
         ControlItem::Music => (2, 2),
@@ -23,7 +23,7 @@ fn cell_span(item: ControlItem) -> (usize, usize) {
 }
 
 /// Alto en píxeles de una fila con deslizador a todo lo ancho.
-fn slider_height(item: ControlItem) -> Option<f32> {
+pub(crate) fn slider_height(item: ControlItem) -> Option<f32> {
     match item {
         ControlItem::Brightness => Some(measures::BRIGHTNESS_HEIGHT),
         ControlItem::Sound => Some(measures::SOUND_HEIGHT),

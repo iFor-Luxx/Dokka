@@ -2,6 +2,7 @@ use dokka_model::ControlItem;
 use dokka_scene::Rect;
 
 use super::ControlCenterHit;
+use super::edit::{bubble_hit, remove_at};
 use super::layout::{arrange, music_button, slider_area, sound_mute_box};
 use super::props::ControlCenterProps;
 use crate::slider::{slider_hit, slider_track_bounds, slider_value_at};
@@ -10,13 +11,19 @@ use crate::slider::{slider_hit, slider_track_bounds, slider_value_at};
 /// los círculos y los botones de música, luego la Pantalla si se ve, el
 /// silencio y el deslizador de Sonido y al final las cápsulas. Dibujo,
 /// golpe y arrastre usan la misma geometría del componente `slider`.
+/// Al editar, solo responden los botones "−" (el resto no hace su acción);
+/// sin editar, la burbuja bajo la rejilla entra en modo editar.
 pub fn control_center_hit(
     bounds: Rect,
     x: f32,
     y: f32,
     props: &ControlCenterProps,
+    editing: bool,
 ) -> Option<ControlCenterHit> {
     let layout = arrange(bounds, props.hidden, props.brightness.is_some());
+    if editing {
+        return remove_at(&layout, x, y).map(ControlCenterHit::Remove);
+    }
     for (item, hit) in [
         (ControlItem::Desktop, ControlCenterHit::Desktop),
         (ControlItem::Lock, ControlCenterHit::Lock),
@@ -71,6 +78,9 @@ pub fn control_center_hit(
         && contains(prefs, x, y)
     {
         return Some(ControlCenterHit::Preferences);
+    }
+    if bubble_hit(bounds, layout.height(), x, y) {
+        return Some(ControlCenterHit::Edit);
     }
     None
 }

@@ -3,8 +3,8 @@
 //! cierra por el mismo camino que un cierre normal.
 //!
 //! Solo el centro: los demás paneles no pasan por aquí. La decisión vive
-//! en una sola función (`control_should_auto_close`) para excluir luego
-//! el modo editar con una línea.
+//! en una sola función (`control_should_auto_close`) y excluye el
+//! modo editar.
 
 use super::TrayKind;
 use crate::Menubar;
@@ -48,9 +48,10 @@ impl Menubar {
     }
 
     /// La única decisión: cerrado tras los segundos del tema sin uso con
-    /// el cursor fuera y sin arrastre. El modo editar se excluirá aquí.
+    /// el cursor fuera y sin arrastre. Editando no se cierra solo.
     fn control_should_auto_close(&self) -> bool {
         self.tray_kind() == Some(TrayKind::ControlCenter)
+            && !self.is_control_editing()
             && !self.dragging_slider
             && !self.control_cursor_inside
             && self.control_idle_ticks >= dokka_theme::control_center::IDLE_CLOSE_SECONDS

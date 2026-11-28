@@ -215,6 +215,9 @@ impl Menubar {
         bar_width: f32,
         screen_height: f32,
     ) -> MenubarClick {
+        if let Some(click) = self.gallery_press(x, y, bar_width, screen_height) {
+            return click;
+        }
         // Dentro del panel real: su propio golpe decide (o no cierra).
         if self.tray_contains(x, y)
             && let Some(kind) = self.tray_kind()

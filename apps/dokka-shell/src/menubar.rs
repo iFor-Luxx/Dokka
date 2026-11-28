@@ -55,15 +55,16 @@ pub(crate) fn render_menubar(
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     let width = surface.menubar_width();
+    let screen_height = surface.menubar_monitor_height();
     let finger = session.menubar.painted();
     if session.menubar_painted.as_ref() == Some(&finger) {
         return Ok(());
     }
-    let scene = session.menubar.scene(width);
+    let scene = session.menubar.scene(width, screen_height);
     session.renderer.draw_menubar(&scene)?;
     let areas: Vec<[f32; 4]> = session
         .menubar
-        .active_areas(width)
+        .active_areas(width, screen_height)
         .iter()
         .map(|area| [area.x, area.y, area.width, area.height])
         .collect();
@@ -84,11 +85,19 @@ pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) 
         session.menubar.close_tray();
         surface.menubar_menu_closed();
     }
-    reset_search_window(session, surface);
+    reset_menubar_window(session, surface);
 }
 
-/// Sin el buscador abierto, la ventana vuelve a su alto para los demás paneles.
-fn reset_search_window(session: &DockSession, surface: &mut Surface) {
+/// Con la galería abierta la ventana necesita todo el alto de la pantalla
+/// (como el buscador); al cerrar vuelve a su alto para los demás paneles.
+fn reset_menubar_window(session: &DockSession, surface: &mut Surface) {
+    if session.menubar.is_gallery_open() {
+        let height = session
+            .menubar
+            .gallery_window_height(surface.menubar_monitor_height());
+        surface.menubar_set_window_height(height);
+        return;
+    }
     if session.menubar.tray_kind() != Some(dokka_menubar::TrayKind::Search) {
         surface.menubar_set_window_height(menubar::WINDOW_HEIGHT);
     }
@@ -104,6 +113,7 @@ fn refresh_panels(session: &mut DockSession) {
     crate::menubar_music::refresh_music(session);
     crate::menubar_background::refresh_background_apps(session);
     session.menubar.tick_search_cursor();
+    session.menubar.tick_gallery_cursor();
     session.menubar_ticks += 1;
     if session.menubar_ticks.is_multiple_of(3) {
         crate::menubar_network::refresh_network(session);
@@ -166,11 +176,15 @@ pub(crate) fn handle_menubar_event(
         }
         SurfaceEvent::MenubarTyped { character } => {
             session.menubar.note_control_used();
-            crate::menubar_search::type_search(session, surface, character);
+            crate::menubar_gallery::typed(session, surface, character);
         }
         SurfaceEvent::MenubarBackspace => {
             session.menubar.note_control_used();
-            crate::menubar_search::erase_search(session, surface);
+            crate::menubar_gallery::erased(session, surface);
+        }
+        SurfaceEvent::MenubarWheel { x, y, delta } => {
+            session.menubar.note_control_used();
+            crate::menubar_gallery::scrolled(session, surface, x, y, delta);
         }
         SurfaceEvent::MenubarEnter => {
             session.menubar.note_control_used();
@@ -268,6 +282,6 @@ fn click_menubar(
     } else if was_open && !now_open {
         surface.menubar_menu_closed();
     }
-    reset_search_window(session, surface);
+    reset_menubar_window(session, surface);
     Ok(())
 }

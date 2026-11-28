@@ -162,7 +162,7 @@ fn typed_settings_character(message: &MSG) -> Option<SurfaceEvent> {
 }
 
 /// Desplazamiento de la rueda, en unidades de Windows (120 por paso).
-fn wheel_delta(message: &MSG) -> i16 {
+pub(crate) fn wheel_delta(message: &MSG) -> i16 {
     (message.wParam.0 >> 16) as i16
 }
 

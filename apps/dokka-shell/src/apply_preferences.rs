@@ -7,7 +7,7 @@
 
 use dokka_config::PreferencesFile;
 use dokka_contracts::PreferencesStore;
-use dokka_model::Preferences;
+use dokka_model::{HiddenControls, Preferences};
 use dokka_win_surface::Surface;
 
 use crate::dock_session::DockSession;
@@ -58,6 +58,29 @@ pub(crate) fn apply_preferences(
     if let Err(error) = session.resize(surface) {
         eprintln!("Dokka no pudo recolocar el dock con las preferencias: {error}");
     }
+}
+
+/// Guarda los controles ocultos del centro por el mismo camino que
+/// Preferencias (mismo archivo) y lo aplica en el acto: la barra reacomoda
+/// sin cerrar y la copia de la ventana de Preferencias (abierta o no) queda
+/// actualizada para que un cambio posterior allí no los devuelva.
+pub(crate) fn apply_hidden_controls(session: &mut DockSession, hidden: HiddenControls) {
+    if session.preferences.menubar.hidden_controls == hidden {
+        return;
+    }
+    let mut preferences = session.preferences;
+    preferences.menubar.hidden_controls = hidden;
+    let saved = PreferencesFile::in_user_folder().and_then(|file| file.save(&preferences));
+    if let Err(error) = saved {
+        eprintln!("No se pudieron guardar las preferencias: {error}");
+    }
+    session.preferences = preferences;
+    session.menubar.set_shown(preferences.menubar);
+    // La isla de Preferencias guarda su propia copia al abrir; se sincroniza
+    // también si está abierta para no pisar lo oculto desde el centro.
+    session
+        .settings
+        .set_values(preferences, session.taskbar_auto());
 }
 
 /// Guarda el modo de la barra y la oculta o muestra en el acto.
