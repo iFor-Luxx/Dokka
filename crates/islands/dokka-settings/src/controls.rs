@@ -3,9 +3,11 @@
 
 use dokka_components::nav_pill::NavHalf;
 
+use super::general::{AboutButton, GeneralPage};
 use super::logic::{
-    DockSwitch, SliderTarget, dock_segment_at, dock_slider_at, dock_switch_at, icon_scale_from,
-    magnification_from, menubar_switch_at, position_from_index, taskbar_switch_at, toggle_menubar,
+    DockSwitch, SliderTarget, about_button_at, dock_segment_at, dock_slider_at, dock_switch_at,
+    general_row_at, icon_scale_from, magnification_from, menubar_switch_at, position_from_index,
+    taskbar_switch_at, toggle_menubar,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
@@ -37,7 +39,9 @@ impl Settings {
             return SettingsAction::Stay;
         }
         let selected = self.selected();
+        let general = self.general();
         let width = self.content_width();
+        let scroll = self.scroll_offset();
         // Interruptores del Dock: hábitos y ocultado.
         if let Some(switch) = dock_switch_at(selected, width, x, y) {
             let mut preferences = self.values().preferences;
@@ -104,6 +108,23 @@ impl Settings {
             }
             self.values_mut().preferences = preferences;
             return SettingsAction::Changed(preferences);
+        }
+        // Filas de la lista de General: entran en su apartado.
+        if let Some(row) = general_row_at(selected, general, width, scroll, x, y) {
+            let Some(page) = GeneralPage::from_row(row) else {
+                return SettingsAction::Stay;
+            };
+            self.enter_general(page);
+            return SettingsAction::EnterGeneral(page);
+        }
+        // Botones de "Acerca de este PC": el shell abre la página.
+        if let Some(button) = about_button_at(selected, general, width, scroll, x, y) {
+            let action = match button {
+                0 => AboutButton::DisplaySettings,
+                1 => AboutButton::StorageSettings,
+                _ => AboutButton::SystemReport,
+            };
+            return SettingsAction::OpenAbout(action);
         }
         if let Some(index) = self.filtered_at(x, y) {
             self.select_section(index);

@@ -107,6 +107,9 @@ pub(crate) fn read_settings_pointer(
             Some(SurfaceEvent::SettingsBackspace)
         }
         WM_CHAR => typed_settings_character(message),
+        WM_MOUSEWHEEL => Some(SurfaceEvent::SettingsWheel {
+            delta: wheel_delta(message),
+        }),
         WM_MOUSEMOVE => {
             let (x, y) = pointer_position(message, scale);
             let mut request = TRACKMOUSEEVENT {

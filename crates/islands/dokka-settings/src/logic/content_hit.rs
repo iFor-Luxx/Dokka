@@ -4,7 +4,8 @@
 //! arrastre caigan donde se ve cada control.
 
 use super::content::{card_tops, content_segmented, content_slider_area, content_switch};
-use super::sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
+use super::general::{about_button_at as about_hit, general_row_at as general_hit};
+use super::sections::{SECTION_DOCK, SECTION_GENERAL, SECTION_MENUBAR, SECTION_TASKBAR};
 
 /// Deslizador arrastrado, si hay alguno a medias.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -114,6 +115,38 @@ pub(crate) fn dock_segment_at(section: usize, width: f32, x: f32, y: f32) -> Opt
     let heights = super::content::card_heights(section, 1);
     let touch = content_segmented(*top, &heights, 0, width);
     dokka_components::segmented_control::segmented_at(touch, 3, x, y)
+}
+
+/// Fila de General bajo el punto, con su desplazamiento aplicado.
+pub(crate) fn general_row_at(
+    section: usize,
+    general: crate::general::GeneralPage,
+    width: f32,
+    scroll: f32,
+    x: f32,
+    y: f32,
+) -> Option<usize> {
+    use crate::general::GeneralPage as Page;
+    if section != SECTION_GENERAL || general != Page::Root {
+        return None;
+    }
+    general_hit(width, scroll, x, y)
+}
+
+/// Botón de "Acerca de este PC" bajo el punto, con su desplazamiento aplicado.
+pub(crate) fn about_button_at(
+    section: usize,
+    general: crate::general::GeneralPage,
+    width: f32,
+    scroll: f32,
+    x: f32,
+    y: f32,
+) -> Option<u8> {
+    use crate::general::GeneralPage as Page;
+    if section != SECTION_GENERAL || general != Page::About {
+        return None;
+    }
+    about_hit(width, scroll, x, y)
 }
 
 /// `true` si el punto cae en algún control del contenido (para no arrastrar

@@ -7,9 +7,11 @@
 
 use dokka_model::Preferences;
 
+use super::general::GeneralPage;
 use super::logic::{
-    DockSwitch, SliderTarget, dock_slider_at, dock_switch_at, icon_scale_from, icon_scale_to,
-    magnification_from, magnification_to, menubar_switch_at, taskbar_switch_at,
+    DockSwitch, SliderTarget, about_button_at, dock_slider_at, dock_switch_at, general_row_at,
+    icon_scale_from, icon_scale_to, magnification_from, magnification_to, menubar_switch_at,
+    taskbar_switch_at,
 };
 use super::painted::PaintedControl;
 use super::slider_pointer::{clamped_slider_value, drag_track, slider_value_at_x_for};
@@ -40,7 +42,14 @@ pub(crate) fn display_preferences(values: &ContentValues) -> Preferences {
 }
 
 /// Control bajo el punto en la sección elegida, si hay alguno.
-pub(crate) fn control_at(selected: usize, width: f32, x: f32, y: f32) -> Option<PaintedControl> {
+pub(crate) fn control_at(
+    selected: usize,
+    general: GeneralPage,
+    width: f32,
+    scroll: f32,
+    x: f32,
+    y: f32,
+) -> Option<PaintedControl> {
     if let Some(switch) = dock_switch_at(selected, width, x, y) {
         let card = match switch {
             DockSwitch::Magnification => 0,
@@ -57,6 +66,12 @@ pub(crate) fn control_at(selected: usize, width: f32, x: f32, y: f32) -> Option<
     if taskbar_switch_at(selected, width, x, y).is_some() {
         return Some(PaintedControl::TaskbarSwitch);
     }
+    if let Some(row) = general_row_at(selected, general, width, scroll, x, y) {
+        return Some(PaintedControl::GeneralRow(row));
+    }
+    if let Some(button) = about_button_at(selected, general, width, scroll, x, y) {
+        return Some(PaintedControl::AboutButton(button));
+    }
     match dock_slider_at(selected, width, x, y) {
         Some(SliderTarget::DockScale) => Some(PaintedControl::DockSlider(0)),
         Some(SliderTarget::DockStrength) => Some(PaintedControl::DockSlider(1)),
@@ -69,6 +84,8 @@ impl Settings {
     /// punto. Si hay un deslizador o una fila agarrados, siguen al cursor.
     pub fn pointer_moved(&mut self, x: f32, y: f32) {
         let width = self.content_width();
+        let general = self.general();
+        let scroll = self.scroll_offset();
         self.set_hovered(self.filtered_at(x, y));
         self.set_traffic_hovered(Self::traffic_button_at(x, y).is_some());
         self.set_nav_hovered(self.pill_at(x, y));
@@ -85,10 +102,11 @@ impl Settings {
             self.values_mut().control = if self.reorder_active() {
                 None
             } else {
-                control_at(self.selected(), width, x, y)
+                control_at(self.selected(), general, width, scroll, x, y)
             };
         } else {
-            self.values_mut().control = control_at(self.selected(), width, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, x, y);
         }
     }
 
@@ -161,11 +179,14 @@ impl Settings {
     /// `Changed` una sola vez con el valor final; si no, resuelve el clic.
     pub fn release(&mut self, x: f32, y: f32) -> SettingsAction {
         let width = self.content_width();
+        let general = self.general();
+        let scroll = self.scroll_offset();
         if let Some(target) = self.values().drag {
             // Suelta fuera de la barra: se queda en el extremo más cercano.
             let value = clamped_slider_value(target, self.values(), width, x);
             self.values_mut().drag = None;
-            self.values_mut().control = control_at(self.selected(), width, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, x, y);
             let mut preferences = self.values().preferences;
             match target {
                 SliderTarget::DockScale => {
@@ -181,7 +202,8 @@ impl Settings {
         if self.values().reorder.is_some() {
             let was_active = self.reorder_active();
             let action = self.finish_reorder();
-            self.values_mut().control = control_at(self.selected(), width, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, x, y);
             if was_active {
                 // Hubo arrastre: una sola vez y solo si cambió el orden.
                 return action.unwrap_or(SettingsAction::Stay);
@@ -190,5 +212,15 @@ impl Settings {
             return self.click(x, y);
         }
         self.click(x, y)
+    }
+
+    /// Rueda sobre el contenido de General: baja o sube la ficha.
+    pub fn scroll_wheel(&mut self, delta: i16) {
+        if self.selected() != super::logic::SECTION_GENERAL {
+            return;
+        }
+        // Un paso de rueda son 120 unidades: baja unos 44 lógicos.
+        let step = f32::from(delta) / 120.0 * -44.0;
+        self.scroll_by(step);
     }
 }

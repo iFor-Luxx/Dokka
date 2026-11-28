@@ -184,6 +184,43 @@ pub fn settings_about_icon(color: Color) -> Drawing {
     glyph(lucide_icons::Icon::Info, settings::ROW_GLYPH_SIZE, color)
 }
 
+/// Icono de "Acerca de este PC": monitor propio de la ficha.
+pub fn general_about_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Monitor, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de "Actualización de Dokka": flecha circular.
+pub fn general_update_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::RefreshCw,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono de "Almacenamiento": disco duro.
+pub fn general_storage_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::HardDrive,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono de "Fecha y hora": reloj.
+pub fn general_datetime_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Clock, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de "Idioma y región": idiomas.
+pub fn general_language_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Languages,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
 /// Agarre de las filas reordenables de la barra superior: seis puntos
 /// verticales en color secundario, a tamaño de la fila.
 pub fn settings_grip_icon(color: Color) -> Drawing {

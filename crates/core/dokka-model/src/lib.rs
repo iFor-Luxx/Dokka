@@ -7,6 +7,7 @@ mod control_item;
 mod dock_app;
 mod open_window;
 mod preferences;
+mod system_info;
 mod system_status;
 mod tray_item;
 mod window_id;
@@ -21,6 +22,7 @@ pub use preferences::{
     DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPosition, DockPreferences, MenubarItem,
     MenubarPreferences, Preferences,
 };
+pub use system_info::{SystemSummary, bytes_in_gb};
 pub use system_status::{
     AudioOutput, KeyboardLanguage, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
 };

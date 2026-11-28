@@ -113,6 +113,10 @@ pub enum SurfaceEvent {
     SettingsEnter,
     /// Esc sobre Preferencias: limpia la búsqueda antes de quitar el foco.
     SettingsEscape,
+    /// Rueda sobre Preferencias: baja el contenido de General.
+    SettingsWheel {
+        delta: i16,
+    },
     /// Llegó el aviso de actualización pedido en `run`.
     Refresh,
     /// Pasó un segundo.

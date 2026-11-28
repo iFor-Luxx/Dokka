@@ -6,7 +6,8 @@ use dokka_scene::Rect;
 use dokka_theme::settings as measures;
 
 use super::content_hit::content_control_at;
-use super::sections::{SECTION_DOCK, SECTION_MENUBAR, SECTION_TASKBAR};
+use super::general::general_control_at;
+use super::sections::{SECTION_DOCK, SECTION_GENERAL, SECTION_MENUBAR, SECTION_TASKBAR};
 
 /// `true` si el punto cae en la píldora de la cabecera.
 fn nav_at(x: f32, y: f32) -> bool {
@@ -24,9 +25,22 @@ fn nav_at(x: f32, y: f32) -> bool {
 
 /// `true` si desde el punto se puede arrastrar la ventana: la franja superior
 /// quitando los semáforos, la píldora, la casilla, las filas y los controles
-/// del contenido (deslizadores e interruptores nunca mueven la ventana).
-pub fn drag_zone(x: f32, y: f32, selected: usize, width: f32) -> bool {
+/// del contenido (deslizadores, interruptores, filas de General y botones
+/// nunca mueven la ventana).
+pub fn drag_zone(
+    x: f32,
+    y: f32,
+    selected: usize,
+    width: f32,
+    general: crate::general::GeneralPage,
+    scroll: f32,
+) -> bool {
     if content_control_at(selected, width, x, y) {
+        return false;
+    }
+    if selected == SECTION_GENERAL
+        && general_control_at(width, scroll, general, x, y)
+    {
         return false;
     }
     // Los controles de las demás secciones no se ven, pero se comprueban

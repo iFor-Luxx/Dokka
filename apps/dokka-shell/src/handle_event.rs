@@ -43,6 +43,7 @@ pub(crate) fn handle_event(
         | SurfaceEvent::SettingsBackspace
         | SurfaceEvent::SettingsEnter
         | SurfaceEvent::SettingsEscape
+        | SurfaceEvent::SettingsWheel { .. }
         | SurfaceEvent::MenubarMoved { .. }
         | SurfaceEvent::MenubarLeft
         | SurfaceEvent::MenubarPressed { .. }
