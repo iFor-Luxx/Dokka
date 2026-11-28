@@ -14,6 +14,7 @@ mod menubar;
 mod menubar_actions;
 mod menubar_background;
 mod menubar_brightness;
+mod menubar_click;
 mod menubar_dismiss;
 mod menubar_gallery;
 mod menubar_language;

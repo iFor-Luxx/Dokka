@@ -8,9 +8,6 @@ use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
 use crate::label_layer::LabelLayer;
-use crate::layer_sync::{
-    sync_cursors, sync_dividers, sync_dots, sync_icons, sync_labels, sync_texts,
-};
 use crate::overlay_layers::OverlayLayers;
 use crate::painter::Painter;
 use crate::panel_layer::PanelLayer;
@@ -32,33 +29,33 @@ pub(crate) struct SceneLayers {
     content: ContainerVisual,
     root: ContainerVisual,
     blur: BlurStage,
-    panel: PanelLayer,
+    pub(crate) panel: PanelLayer,
     /// Estilo con el que se creó el fondo.
-    panel_style: PanelStyle,
+    pub(crate) panel_style: PanelStyle,
     /// Sombra bajo el fondo, si se pidió (Preferencias). Falla sola.
-    panel_shadow: Option<ShadowLayer>,
+    pub(crate) panel_shadow: Option<ShadowLayer>,
     /// Sombra pedida para el fondo, exista o no la capa.
-    panel_shadow_spec: Option<Shadow>,
-    panels: Vec<PanelLayer>,
-    panel_styles: Vec<PanelStyle>,
-    flats: Vec<PanelLayer>,
-    flat_styles: Vec<PanelStyle>,
-    highlight: Option<PanelLayer>,
-    highlight_style: Option<(dokka_scene::Color, f32)>,
-    dividers: Vec<DividerLayer>,
-    cursors: Vec<CursorLayer>,
-    icons: Vec<IconLayer>,
-    dots: Vec<DotLayer>,
-    texts: Vec<TextLayer>,
-    labels: Vec<LabelLayer>,
-    overlay: Option<OverlayLayers>,
-    submenu: Option<OverlayLayers>,
+    pub(crate) panel_shadow_spec: Option<Shadow>,
+    pub(crate) panels: Vec<PanelLayer>,
+    pub(crate) panel_styles: Vec<PanelStyle>,
+    pub(crate) flats: Vec<PanelLayer>,
+    pub(crate) flat_styles: Vec<PanelStyle>,
+    pub(crate) highlight: Option<PanelLayer>,
+    pub(crate) highlight_style: Option<(dokka_scene::Color, f32)>,
+    pub(crate) dividers: Vec<DividerLayer>,
+    pub(crate) cursors: Vec<CursorLayer>,
+    pub(crate) icons: Vec<IconLayer>,
+    pub(crate) dots: Vec<DotLayer>,
+    pub(crate) texts: Vec<TextLayer>,
+    pub(crate) labels: Vec<LabelLayer>,
+    pub(crate) overlay: Option<OverlayLayers>,
+    pub(crate) submenu: Option<OverlayLayers>,
 }
 
 /// Lo que fija el aspecto de un panel extra al crearse: `update` no lo reconstruye.
 type PanelStyle = (Color, Color, f32, f32);
 
-fn panel_style_of(panel: &Panel) -> PanelStyle {
+pub(crate) fn panel_style_of(panel: &Panel) -> PanelStyle {
     (
         panel.tint,
         panel.border,
@@ -184,92 +181,6 @@ impl SceneLayers {
         Ok(layers)
     }
 
-    /// `true` si la escena tiene la misma forma y basta con actualizar.
-    /// La opacidad, la escala y el desenfoque no reconstruyen: los aplica `update`.
-    /// Los iconos, textos, puntos, líneas y etiquetas pueden encoger: sobran
-    /// capas que se ocultan sin reconstruir; si crecen, se reconstruye una vez
-    /// y la reserva ya cubre las vueltas. Así cambiar de página o escribir en
-    /// el Launchpad no rehace cristales ni el desenfoque.
-    pub(crate) fn matches(&self, scene: &Scene) -> bool {
-        let same_overlay = match (&self.overlay, &scene.overlay) {
-            (Some(layers), Some(overlay)) => layers.matches(overlay),
-            (None, None) => true,
-            _ => false,
-        };
-        // El resaltado se mueve con `update`: cambiar de fila no reconstruye.
-        let same_submenu = match (&self.submenu, &scene.submenu) {
-            (Some(layers), Some(submenu)) => layers.matches(submenu),
-            (None, None) => true,
-            _ => false,
-        };
-        same_overlay
-            && same_submenu
-            && self.panel_style == panel_style_of(&scene.panel)
-            && self.panel_shadow_spec == scene.panel_shadow
-            && self.highlight.is_some() == scene.highlight.is_some()
-            && self.highlight_style == scene.highlight.map(highlight_style_of)
-            && self.panel_styles.len() == scene.panels.len()
-            && self
-                .panel_styles
-                .iter()
-                .zip(&scene.panels)
-                .all(|(style, panel)| *style == panel_style_of(panel))
-            // Lo plano y el cristal van en listas distintas: un cambio de un
-            // lado al otro reconstruye en vez de reutilizar el cristal.
-            && self.flat_styles.len() == scene.flat_panels.len()
-            && self
-                .flat_styles
-                .iter()
-                .zip(&scene.flat_panels)
-                .all(|(style, panel)| *style == panel_style_of(panel))
-            && self.dots.len() >= scene.dots.len()
-            && self.dividers.len() >= scene.dividers.len()
-            && self.cursors.len() >= scene.cursors.len()
-            && self.texts.len() >= scene.texts.len()
-            && self.labels.len() >= scene.labels.len()
-            && self.icons.len() >= scene.icons.len()
-            && self
-                .icons
-                .iter()
-                .zip(&scene.icons)
-                .all(|(layer, icon)| layer.accepts(icon))
-    }
-
-    pub(crate) fn update(
-        &mut self,
-        compositor: &Compositor,
-        painter: &Painter,
-        scene: &Scene,
-    ) -> Result<()> {
-        self.panel.update(&scene.panel)?;
-        if let (Some(layer), Some(shadow)) = (&mut self.panel_shadow, &scene.panel_shadow) {
-            let _ = layer.update(compositor, &scene.panel, shadow, &[]);
-        }
-        for (layer, panel) in self.panels.iter().zip(&scene.panels) {
-            layer.update(panel)?;
-        }
-        for (layer, panel) in self.flats.iter().zip(&scene.flat_panels) {
-            layer.update(panel)?;
-        }
-        if let (Some(layer), Some(panel)) = (&self.highlight, &scene.highlight) {
-            layer.update(panel)?;
-        }
-        sync_dividers(&self.dividers, &scene.dividers)?;
-        sync_cursors(&mut self.cursors, compositor, painter, &scene.cursors)?;
-        sync_icons(&mut self.icons, compositor, painter, &scene.icons)?;
-        sync_dots(&mut self.dots, compositor, &scene.dots)?;
-        sync_texts(&mut self.texts, compositor, painter, &scene.texts)?;
-        if let (Some(layers), Some(overlay)) = (&mut self.overlay, &scene.overlay) {
-            layers.update(compositor, painter, overlay)?;
-        }
-        if let (Some(layers), Some(submenu)) = (&mut self.submenu, &scene.submenu) {
-            layers.update(compositor, painter, submenu)?;
-        }
-        sync_labels(&mut self.labels, compositor, painter, &scene.labels)?;
-        self.apply_stage(compositor, scene)?;
-        Ok(())
-    }
-
     /// Salida del centro por piezas en su overlay, una sola vez.
     pub(crate) fn start_control_dismiss(
         &self,
@@ -286,7 +197,7 @@ impl SceneLayers {
     /// manos de `BlurStage`: en reposo lo deja normal y sin efectos activos, y
     /// en transición muestra la copia desenfocada. Sin desenfoque ni efecto
     /// disponible, aplica el zoom y el desvanecido clásicos.
-    fn apply_stage(&mut self, compositor: &Compositor, scene: &Scene) -> Result<()> {
+    pub(crate) fn apply_stage(&mut self, compositor: &Compositor, scene: &Scene) -> Result<()> {
         let backdrop = self.backdrop.clone();
         let holder = self.holder.clone();
         let content = self.content.clone();
@@ -297,6 +208,6 @@ impl SceneLayers {
 }
 
 /// Lo que fija el aspecto del resaltado al crearse.
-fn highlight_style_of(panel: Panel) -> (dokka_scene::Color, f32) {
+pub(crate) fn highlight_style_of(panel: Panel) -> (dokka_scene::Color, f32) {
     (panel.tint, panel.corner_radius)
 }

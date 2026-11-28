@@ -21,7 +21,7 @@ pub(crate) fn open_context_menu(
     y: f32,
 ) -> Result<(), Box<dyn Error>> {
     // Al revés que la barra: un menú cierra el otro.
-    crate::menubar::dismiss_menubar(session, surface);
+    crate::menubar_dismiss::dismiss_menubar(session, surface);
     if session.dock.is_menu_open() {
         session.dock.close_menu();
     }

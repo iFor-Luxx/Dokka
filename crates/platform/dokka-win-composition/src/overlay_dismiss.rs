@@ -1,17 +1,18 @@
-//! Piezas del panel flotante como objetos propios para su salida.
+//! Salida del centro por piezas con animaciones de Composition.
 //!
-//! Cada pieza (`tiles`) lleva lo que cae dentro (planos, textos, iconos,
-//! líneas, puntos y cursor) en su mismo contenedor: al cerrarse el centro,
-//! el grupo vuela entero hacia el icono, encogiéndose y desvaneciéndose
-//! alrededor del centro de la pieza. Los grupos se crean al dibujar (sin
-//! cambiar lo visible: empiezan en identidad) y solo se animan al cerrar,
-//! una vez, con animaciones de Composition por fotogramas clave.
+//! Cada grupo (`overlay_piece_groups.rs`) vuela a su icono, encogiéndose y
+//! desvaneciéndose alrededor del centro de la pieza, primero el más cercano.
+//! Las anima Composition; Dokka no repinta mientras duran. Se lanzan una
+//! sola vez al cerrar (`start`); si las piezas ya no coinciden, falla para
+//! que el shell cierre sin animación.
 
-use dokka_scene::{ControlDismiss, Overlay, Panel};
+use dokka_scene::{ControlDismiss, Panel};
 use windows::Foundation::TimeSpan;
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::{HSTRING, Result};
 use windows_numerics::Vector3;
+
+use crate::overlay_piece_groups::{PieceGroups, piece_center, piece_middle};
 
 /// Suavizado a mitad de camino (salida cubicada al 55%): llegada blanda.
 const EASE_MID_PROGRESS: f32 = 0.55;
@@ -20,145 +21,7 @@ const EASE_MID_VALUE: f32 = 0.909;
 /// La opacidad se mantiene antes de desvanecerse, como el fundido anterior.
 const OPACITY_HOLD: f32 = 0.35;
 
-/// A qué pieza pertenece cada capa que cae dentro de una (`None`: fondo).
-pub(crate) struct GroupMap {
-    flats: Vec<Option<usize>>,
-    dividers: Vec<Option<usize>>,
-    cursors: Vec<Option<usize>>,
-    dots: Vec<Option<usize>>,
-    texts: Vec<Option<usize>>,
-    icons: Vec<Option<usize>>,
-}
-
-/// Un contenedor por pieza, en el orden de `tiles`, en identidad.
-pub(crate) struct PieceGroups {
-    groups: Vec<ContainerVisual>,
-}
-
 impl PieceGroups {
-    /// Crea un contenedor por pieza y dice a cuál pertenece cada capa
-    /// interior por contención geométrica. Sin piezas no crea ninguno.
-    pub(crate) fn build(
-        compositor: &Compositor,
-        container: &ContainerVisual,
-        overlay: &Overlay,
-    ) -> Result<(Self, GroupMap)> {
-        let mut groups = Vec::with_capacity(overlay.tiles.len());
-        for tile in &overlay.tiles {
-            let group = compositor.CreateContainerVisual()?;
-            group.SetCenterPoint(piece_center(tile))?;
-            container.Children()?.InsertAtTop(&group)?;
-            groups.push(group);
-        }
-        let at = |point| tile_of(&overlay.tiles, point);
-        let map = GroupMap {
-            flats: overlay
-                .flat_panels
-                .iter()
-                .map(|panel| at(rect_center(&panel.bounds)))
-                .collect(),
-            dividers: overlay
-                .dividers
-                .iter()
-                .map(|divider| at(rect_center(&divider.bounds)))
-                .collect(),
-            cursors: overlay
-                .cursors
-                .iter()
-                .map(|cursor| at((cursor.text_x, cursor.center_y)))
-                .collect(),
-            dots: overlay
-                .dots
-                .iter()
-                .map(|dot| at((dot.x + dot.diameter / 2.0, dot.y + dot.diameter / 2.0)))
-                .collect(),
-            texts: overlay
-                .texts
-                .iter()
-                .map(|text| at((text.x, text.center_y)))
-                .collect(),
-            icons: overlay
-                .icons
-                .iter()
-                .map(|icon| at((icon.x + icon.side / 2.0, icon.y + icon.side / 2.0)))
-                .collect(),
-        };
-        Ok((Self { groups }, map))
-    }
-
-    /// Contenedor de esta pieza, o el fondo si no existe.
-    pub(crate) fn parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.groups.get(index).map_or(container, |group| group)
-    }
-
-    /// Contenedor de la pieza indicada, o el fondo sin pieza.
-    pub(crate) fn parent_opt<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        index: Option<usize>,
-    ) -> &'a ContainerVisual {
-        index.map_or(container, |known| self.parent(container, known))
-    }
-
-    /// Padre para cada plano, línea, cursor, punto, texto o icono, en orden.
-    pub(crate) fn flat_parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        map: &GroupMap,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.parent_opt(container, map.flats.get(index).copied().flatten())
-    }
-
-    pub(crate) fn divider_parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        map: &GroupMap,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.parent_opt(container, map.dividers.get(index).copied().flatten())
-    }
-
-    pub(crate) fn cursor_parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        map: &GroupMap,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.parent_opt(container, map.cursors.get(index).copied().flatten())
-    }
-
-    pub(crate) fn dot_parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        map: &GroupMap,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.parent_opt(container, map.dots.get(index).copied().flatten())
-    }
-
-    pub(crate) fn text_parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        map: &GroupMap,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.parent_opt(container, map.texts.get(index).copied().flatten())
-    }
-
-    pub(crate) fn icon_parent<'a>(
-        &'a self,
-        container: &'a ContainerVisual,
-        map: &GroupMap,
-        index: usize,
-    ) -> &'a ContainerVisual {
-        self.parent_opt(container, map.icons.get(index).copied().flatten())
-    }
-
     /// Lanza la salida por piezas: cada grupo vuela a su icono,
     /// encogiéndose y desvaneciéndose, primero el más cercano.
     /// Las anima Composition; Dokka no repinta mientras duran.
@@ -168,7 +31,7 @@ impl PieceGroups {
         tiles: &[Panel],
         dismiss: &ControlDismiss,
     ) -> Result<()> {
-        if self.groups.len() != tiles.len() {
+        if self.len() != tiles.len() {
             return Err(windows::core::Error::from_thread());
         }
         let mut by_distance: Vec<(f32, usize)> = tiles
@@ -186,7 +49,7 @@ impl PieceGroups {
         for (rank, &(_, index)) in by_distance.iter().enumerate() {
             delay_of[index] = dismiss.stagger * rank as f32;
         }
-        for (index, group) in self.groups.iter().enumerate() {
+        for (index, group) in self.groups().iter().enumerate() {
             let Some(tile) = tiles.get(index) else {
                 return Err(windows::core::Error::from_thread());
             };
@@ -276,39 +139,6 @@ fn start_piece(
     scale.SetDelayTime(span(delay))?;
     scale.SetDuration(span(dismiss.duration))?;
     group.StartAnimation(&HSTRING::from("Scale"), &scale)
-}
-
-/// Centro de la pieza como punto de escala, en unidades lógicas.
-fn piece_center(tile: &Panel) -> Vector3 {
-    let (x, y) = piece_middle(tile);
-    Vector3 { X: x, Y: y, Z: 0.0 }
-}
-
-/// Centro geométrico de la pieza, en unidades lógicas.
-fn piece_middle(tile: &Panel) -> (f32, f32) {
-    (
-        tile.bounds.x + tile.bounds.width / 2.0,
-        tile.bounds.y + tile.bounds.height / 2.0,
-    )
-}
-
-/// Centro de un rectángulo, en unidades lógicas.
-fn rect_center(bounds: &dokka_scene::Rect) -> (f32, f32) {
-    (
-        bounds.x + bounds.width / 2.0,
-        bounds.y + bounds.height / 2.0,
-    )
-}
-
-/// Primera pieza que contiene el punto, si alguna (no se solapan).
-fn tile_of(tiles: &[Panel], point: (f32, f32)) -> Option<usize> {
-    tiles.iter().position(|tile| {
-        let bounds = tile.bounds;
-        point.0 >= bounds.x
-            && point.0 <= bounds.x + bounds.width
-            && point.1 >= bounds.y
-            && point.1 <= bounds.y + bounds.height
-    })
 }
 
 /// Segundos a la unidad de Composition (intervalos de 100 ns).
