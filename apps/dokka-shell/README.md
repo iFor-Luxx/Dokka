@@ -40,7 +40,11 @@ es el de antes); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El buscador filtra el catálogo del
 Escritorio más las fijadas (como el Launchpad) con `filter_search_order` e
-iconos de `IconCache`; flechas, Enter, clic y Esc. Pide al dock abrir el menú
+iconos de `IconCache`; flechas, Enter, clic y Esc. Con la galería del modo
+editar la ventana pasa a todo el alto del monitor (como el buscador) y vuelve
+a su alto al cerrar; el teclado de la barra escribe en su casilla y la rueda
+(`MenubarWheel`) desplaza su columna o sus secciones, con la plataforma
+limitada a entregar ese evento. Pide al dock abrir el menú
 (con si la barra está oculta o en automático) y ejecuta su `MenuAction`; mientras el menú
 está abierto, el overlay del menú y su submenú tienen prioridad. «Añadir app…» fija la elegida
 en el diálogo; «Preferencias» abre la ventana de configuración (o la trae al frente);
@@ -60,7 +64,10 @@ incluso con error. Lo ajustado en Preferencias se guarda con `PreferencesFile`
 previas y barra, con `resize`; `set_taskbar_auto` guarda el modo y oculta o muestra
 la barra de Windows ya reutilizando `taskbar_mode.rs`; `load_preferences` lo recupera
 al arrancar antes de dibujar; sin previas no se abre ninguna y se cierra la abierta;
-un error al leer o guardar se registra y se sigue). `preview_safety` recupera la salida del panel con el
+un error al leer o guardar se registra y se sigue). Lo ocultado desde el modo
+editar del centro (`HiddenControlsChanged`) se guarda por ese mismo camino
+(`apply_hidden_controls`: mismo archivo, `set_shown` en la barra y copia de
+Preferencias sincronizada aunque esté abierta) y el panel sigue en modo editar. `preview_safety` recupera la salida del panel con el
 cursor real (cada fotograma, cada segundo y cada 200 ms solo con panel) y
 cierra el panel si otro primer plano llega por `Refresh` sin el cursor
 encima, sin quitarlo de debajo del cursor. `dock_fit.rs` pega la ventana

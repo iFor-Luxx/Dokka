@@ -84,3 +84,23 @@ pub const CAPSULE_TEXT_CHARACTERS: usize = 12;
 pub const GLYPH_SIZE: f32 = DRAWING_SIDE;
 /// Cuánto se desplazan las copias que engrosan cada glifo, en el lienzo de 100.
 pub const BOLD_SPREAD: f32 = 2.6;
+
+/// Burbuja "Editar controles" bajo la rejilla, solo sin editar: hueco sobre
+/// ella igual al aire exterior y alto justo para que el centro lleno con
+/// brillo (484) más hueco y burbuja (524) quepa en la ventana de 560
+/// (30 de franja + 6 de separación + 524 = 560).
+pub const EDIT_GAP: f32 = 12.0;
+/// Ancho fijo de la burbuja, centrada a lo ancho del panel.
+pub const EDIT_BUBBLE_WIDTH: f32 = 168.0;
+/// Alto de la burbuja de cristal.
+pub const EDIT_BUBBLE_HEIGHT: f32 = 28.0;
+/// Texto de la burbuja, un punto menos que los títulos para que quepa.
+pub const EDIT_TEXT_SIZE: f32 = 12.0;
+
+/// Botón redondo "−" de cada pieza en modo editar, centrado en su esquina
+/// superior izquierda (sobresale de la pieza pero queda dentro del panel,
+/// a 1 del borde con el aire exterior de 12).
+pub const REMOVE_DIAMETER: f32 = 22.0;
+/// Grosor de la línea del menos, como rectángulo plano (no es texto).
+pub const REMOVE_LINE_WIDTH: f32 = 10.0;
+pub const REMOVE_LINE_HEIGHT: f32 = 2.0;

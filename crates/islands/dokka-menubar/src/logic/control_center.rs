@@ -10,17 +10,23 @@ use super::tray::tray_place;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
-    /// Mide con su tamaño real (según ocultos y brillo) y lo coloca bajo su icono.
-    /// Reutiliza los datos de volumen, brillo, red y música ya guardados.
+    /// Mide con su tamaño real (según ocultos, brillo y modo editar) y lo
+    /// coloca bajo su icono. Reutiliza los datos de volumen, brillo, red y
+    /// música ya guardados. Al abrir nunca empieza editando.
     pub fn open_control_center(&mut self, bar_width: f32) {
         let Some(anchor) = self.tray_anchor(super::TrayKind::ControlCenter, bar_width) else {
             return;
         };
+        self.control_editing = false;
         self.show_tray(
             super::TrayKind::ControlCenter,
             tray_place(
                 anchor,
-                control_center_size(self.shown.hidden_controls, self.brightness),
+                control_center_size(
+                    self.shown.hidden_controls,
+                    self.brightness,
+                    self.control_editing,
+                ),
                 bar_width,
             ),
         );
@@ -36,9 +42,13 @@ impl Menubar {
         }
     }
 
-    /// Recoloca el alto del centro abierto según ocultos y brillo.
+    /// Recoloca el alto del centro abierto según ocultos, brillo y burbuja.
     pub(crate) fn resize_control_center(&mut self) {
-        let size = control_center_size(self.shown.hidden_controls, self.brightness);
+        let size = control_center_size(
+            self.shown.hidden_controls,
+            self.brightness,
+            self.control_editing,
+        );
         self.tray = self.tray.map(|open| super::OpenTray {
             panel: dokka_scene::Rect {
                 x: open.panel.x,
@@ -63,21 +73,31 @@ impl Menubar {
 
     pub(crate) fn control_overlay(&self) -> Overlay {
         let props = self.control_props();
-        let size = control_center_size(props.hidden, props.brightness);
+        let size = control_center_size(props.hidden, props.brightness, self.control_editing);
         let bounds = self.tray_bounds().unwrap_or(dokka_scene::Rect {
             x: 0.0,
             y: dokka_theme::menubar::HEIGHT,
             width: size.width,
             height: size.height,
         });
-        control_center_panel(&self.theme, &self.control_icons, bounds, &props)
+        control_center_panel(
+            &self.theme,
+            &self.control_icons,
+            bounds,
+            &props,
+            self.control_editing,
+        )
     }
 
     /// Botón abajo en un deslizador: fija el nivel ya, como en volumen.
     /// Recuerda cuál se arrastra para que el movimiento siga al mismo.
+    /// Al editar no hay arrastre: las piezas no hacen su acción.
     pub(crate) fn control_press(&mut self, x: f32, y: f32) -> Option<MenubarAction> {
+        if self.control_editing {
+            return None;
+        }
         let bounds = self.tray_bounds()?;
-        match control_center_hit(bounds, x, y, &self.control_props()) {
+        match control_center_hit(bounds, x, y, &self.control_props(), self.control_editing) {
             Some(ControlCenterHit::Slider(level)) => {
                 self.dragging_slider = true;
                 self.dragging_brightness = false;
@@ -93,8 +113,9 @@ impl Menubar {
     }
 
     /// Arrastrando desde el centro: el nivel sigue al cursor en su tarjeta.
+    /// Al editar no hay arrastre.
     pub(crate) fn control_drag(&mut self, x: f32) -> Option<MenubarAction> {
-        if !self.dragging_slider {
+        if !self.dragging_slider || self.control_editing {
             return None;
         }
         let bounds = self.tray_bounds()?;
@@ -113,6 +134,8 @@ impl Menubar {
     /// El resto delega en las variantes de cada panel; la tarjeta de red
     /// abre el panel de red sin pasar por el shell. Los círculos nuevos
     /// devuelven su acción para que el shell los abra con el lanzador.
+    /// La burbuja entra en modo editar; un "−" oculta ese control al momento
+    /// y pide guardarlo. Al editar, lo demás no hace su acción.
     pub(crate) fn control_click(
         &mut self,
         x: f32,
@@ -120,8 +143,16 @@ impl Menubar {
         bar_width: f32,
     ) -> Option<MenubarAction> {
         let bounds = self.tray_bounds()?;
-        let hit = control_center_hit(bounds, x, y, &self.control_props());
+        let hit = control_center_hit(bounds, x, y, &self.control_props(), self.control_editing);
         match hit {
+            Some(ControlCenterHit::Remove(item)) => {
+                let hidden = self.hide_control(item);
+                Some(MenubarAction::HiddenControlsChanged(hidden))
+            }
+            Some(ControlCenterHit::Edit) => {
+                self.enter_control_edit();
+                None
+            }
             Some(ControlCenterHit::Slider(level)) => Some(MenubarAction::VolumeSetLevel(level)),
             Some(ControlCenterHit::Brightness(level)) => {
                 Some(MenubarAction::BrightnessSetLevel(level))

@@ -33,7 +33,13 @@
   con aire de 8 al nombre, umbral de arrastre de 4, resaltado de radio 8 y
   ayuda de 12 bajo la tarjeta, y tarjeta
   "Próximamente"), con funciones para filas,
-  título y tarjetas. `SettingsColors` trae además interruptor encendido y
+  título y tarjetas. `measures/control_gallery.rs` para la galería del modo
+  editar (ventana de 760 × 900 con radio 26 que se encoge en pantallas bajas,
+  columna de 245, casilla de 36 con lupa a 16 y cursor, filas de 44 con
+  cuadrito de 28 y radio 8, títulos de sección en 12, nombres en 12/14, pie
+  fijo de 88 con aviso en 13 y botón "Aceptar" de 120 × 36 con radio 18,
+  sombra suave con su aire, paso de rueda de 48 y colocación centrada sin
+  tapar el centro, con radios concéntricos). `SettingsColors` trae además interruptor encendido y
   apagado con su tirador y barra, relleno, marca y atenuado del deslizador,
   con cápsula y pastilla del segmentado, con ocho
   cuadrados de color (el nuevo de la barra superior en rosa).
@@ -48,9 +54,11 @@
   a 12 con "…" (la música sigue en 16), música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual; el alto lo calcula el reparto según
   los visibles, y sombra suave bajo cada pieza
-  (desenfoque 10 y caída 2, que caben en el aire exterior de 12)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
+  (desenfoque 10 y caída 2, que caben en el aire exterior de 12); más la
+  burbuja de editar (hueco de 12, 168 × 28 con texto en 12) y el botón "−"
+  (22 con línea de 10 × 2 en la esquina de cada pieza)); `menubar.rs` para la barra superior (franja de 30, icono a 20, hueco del
   reloj, menú colgando con su separación y ventana de 560 para que quepa el
-  centro con brillo (520) además del calendario de 6 semanas;
+  centro con brillo y burbuja (524) además del calendario de 6 semanas;
   la reserva de la franja no cambia); `tooltip.rs` para la
   etiqueta en forma de píldora (alto reservado sobre el icono y ancho reservado
   al lado para el texto más largo, con su relleno y punta); `search.rs` para el buscador Spotlight de Tahoe (panel de 560, casilla al ~22% del alto con subida en pantallas bajas,

@@ -29,6 +29,9 @@ pub enum MenubarAction {
     Calculator,
     ScreenClip,
     Clock,
+    /// Ocultar controles del centro: los guarda el shell por el mismo camino
+    /// que Preferencias y actualiza su copia para no devolverlos.
+    HiddenControlsChanged(dokka_model::HiddenControls),
     /// Abrir el resultado visible con este índice.
     SearchOpen(usize),
     /// Clic izquierdo en una app en segundo plano: activarla.

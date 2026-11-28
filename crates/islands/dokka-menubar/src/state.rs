@@ -12,7 +12,12 @@ use dokka_components::network_panel::NetworkIcons;
 use dokka_components::search_panel::{SearchPanelIcons, SearchPanelItem};
 use dokka_components::volume_panel::VolumePanelHit;
 use dokka_components::volume_panel::VolumePanelIcons;
-use dokka_icons::{TrayIcons, menubar_icon};
+use dokka_icons::{
+    TrayIcons, control_center_calculator_icon, control_center_clock_icon,
+    control_center_desktop_icon, control_center_lock_icon, control_center_play_icon,
+    control_center_screen_clip_icon, control_center_sun_icon, control_center_task_view_icon,
+    control_center_volume_icon, control_center_wifi_icon, menubar_icon,
+};
 use dokka_model::{
     AudioOutput, MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
 };
@@ -20,7 +25,6 @@ use dokka_scene::{Bitmap, Drawing};
 use dokka_theme::Theme;
 
 use super::logic::{OpenCalendar, OpenMenu, TrayKind};
-use super::painted::MenubarPainted;
 
 /// Lo que la barra recuerda entre eventos: nombre, hora, idioma, menú,
 /// calendario, fila derecha con sus datos y resaltados.
@@ -70,12 +74,42 @@ pub struct Menubar {
     pub(crate) dragging_brightness: bool,
     /// Brillo DDC de 0 a 1; `None` sin DDC: sin tarjeta de Pantalla.
     pub(crate) brightness: Option<f32>,
+    /// `true` en modo editar: cada pieza lleva su "−" y no hace su acción;
+    /// la burbuja desaparece. Vive aquí; el componente solo la recibe.
+    pub(crate) control_editing: bool,
+    /// Galería del modo editar: insignias blancas de cada categoría (una vez,
+    /// como el resto de dibujos), categoría elegida (0: todas), búsqueda y
+    /// desplazamiento de la columna y de las secciones. El componente solo
+    /// la recibe.
+    pub(crate) gallery_badges: Vec<Arc<dokka_scene::Drawing>>,
+    pub(crate) gallery_category: usize,
+    pub(crate) gallery_query: String,
+    pub(crate) gallery_list_scroll: f32,
+    pub(crate) gallery_grid_scroll: f32,
+    pub(crate) gallery_cursor: bool,
     pub(crate) shown: MenubarPreferences,
 }
 
 impl Menubar {
     pub fn new(theme: Arc<Theme>) -> Self {
         let icon = Arc::new(menubar_icon(theme.menubar.text));
+        // Insignias blancas de la galería, en el orden de sus categorías.
+        let badge = theme.tray.circle_active_icon;
+        let gallery_badges = [
+            control_center_task_view_icon(badge),
+            control_center_play_icon(badge),
+            control_center_screen_clip_icon(badge),
+            control_center_wifi_icon(badge),
+            control_center_desktop_icon(badge),
+            control_center_lock_icon(badge),
+            control_center_sun_icon(badge),
+            control_center_clock_icon(badge),
+            control_center_volume_icon(badge),
+            control_center_calculator_icon(badge),
+        ]
+        .into_iter()
+        .map(Arc::new)
+        .collect();
         Self {
             volume_icons: VolumePanelIcons::new(&theme),
             network_icons: NetworkIcons::new(&theme),
@@ -130,6 +164,13 @@ impl Menubar {
             dragging_slider: false,
             dragging_brightness: false,
             brightness: None,
+            control_editing: false,
+            gallery_badges,
+            gallery_category: 0,
+            gallery_query: String::new(),
+            gallery_list_scroll: 0.0,
+            gallery_grid_scroll: 0.0,
+            gallery_cursor: false,
             shown: MenubarPreferences::default(),
         }
     }
@@ -178,59 +219,6 @@ impl Menubar {
         self.menu.as_ref().and_then(|menu| menu.highlighted)
     }
 
-    /// Huella de lo dibujado: el shell solo repinta si cambia.
-    pub fn painted(&self) -> MenubarPainted {
-        MenubarPainted {
-            app: self.app_name.clone(),
-            clock: self.clock.clone(),
-            today: self.today,
-            language: self.language_code.clone(),
-            shown: self.shown,
-            menu_open: self.menu.is_some(),
-            icon_hovered: self.icon_hovered,
-            highlighted: self.highlighted(),
-            calendar_open: self.calendar.is_some(),
-            month_offset: self.calendar_month_offset(),
-            nav_hovered: self.nav_hovered,
-            clock_hovered: self.clock_hovered,
-            tray_open: self.tray_kind(),
-            tray_hovered: self.tray_hovered,
-            volume_level: self.volume.level,
-            volume_muted: self.volume.is_muted,
-            brightness: self.brightness,
-            volume_hovered: self.volume_hovered,
-            audio_outputs: self.audio_outputs.clone(),
-            network_kind: self.network.kind,
-            network_name: self.network.name.clone(),
-            network_online: self.network.has_internet,
-            network_hovered: self.network_hovered,
-            languages: self.languages.clone(),
-            language_hovered: self.language_hovered,
-            track: self.track.clone(),
-            artwork: self.artwork.clone(),
-            background_ids: self.background_apps.iter().map(|app| app.id).collect(),
-            background_names: self
-                .background_apps
-                .iter()
-                .map(|app| app.name.clone())
-                .collect(),
-            background_icons: self
-                .background_apps
-                .iter()
-                .map(|app| app.icon.clone())
-                .collect(),
-            background_hovered: self.background_hovered,
-            search_query: self.search_query.clone(),
-            search_results: self
-                .search_results
-                .iter()
-                .map(|item| item.name.clone())
-                .collect(),
-            search_highlighted: self.search_highlighted,
-            search_cursor: self.search_cursor,
-        }
-    }
-
     pub fn close_menu(&mut self) {
         self.menu = None;
         self.icon_hovered = false;
@@ -251,5 +239,7 @@ impl Menubar {
         self.background_hovered = None;
         self.dragging_slider = false;
         self.dragging_brightness = false;
+        // Cerrar sale del modo editar: al reabrir no hay "−" ni burbuja a medias.
+        self.control_editing = false;
     }
 }
