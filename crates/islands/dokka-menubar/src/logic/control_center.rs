@@ -83,15 +83,15 @@ impl Menubar {
             width: size.width,
             height: size.height,
         });
-        let mut overlay = control_center_panel(
+        // Sin fundido por fotograma: la salida por piezas la anima
+        // Composition con la orden de `dismiss_order`, una sola vez.
+        control_center_panel(
             &self.theme,
             &self.control_icons,
             bounds,
             &props,
             self.control_editing,
-        );
-        self.apply_control_dismiss(&mut overlay);
-        overlay
+        )
     }
 
     /// Botón abajo en un deslizador: fija el nivel ya, como en volumen.

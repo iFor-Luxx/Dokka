@@ -43,9 +43,9 @@ pub struct MenubarPainted {
     pub clock_hovered: bool,
     pub tray_open: Option<TrayKind>,
     pub tray_hovered: Option<TrayKind>,
-    /// Progreso del fundido de salida del centro, si se está cerrando: cambia
-    /// en cada fotograma y pide repintar.
-    pub control_closing: Option<f32>,
+    /// Salida del centro por piezas en curso: estable mientras dura, no pide
+    /// repintar por fotograma (la anima Composition).
+    pub control_closing: bool,
     pub volume_level: f32,
     pub volume_muted: bool,
     pub brightness: Option<f32>,
@@ -161,7 +161,7 @@ impl crate::Menubar {
             clock_hovered: self.clock_hovered,
             tray_open: self.tray_kind(),
             tray_hovered: self.tray_hovered,
-            control_closing: self.control_dismiss_progress(),
+            control_closing: self.is_control_closing(),
             volume_level: self.volume.level,
             volume_muted: self.volume.is_muted,
             brightness: self.brightness,

@@ -13,7 +13,8 @@ pub(crate) fn handle_frame(
     seconds: f32,
 ) -> Result<(), Box<dyn Error>> {
     session.dock.advance(seconds);
-    // El fundido del centro avanza en cada fotograma hasta su cierre real.
+    // La salida del centro solo cuenta el tiempo hasta su cierre real:
+    // la animan las capas de Composition sin repintar por fotograma.
     crate::menubar_dismiss::advance_menubar(session, surface, seconds);
     // El auto-ocultado mueve la ventana: solo mientras anima.
     if session.dock.is_hide_animating() {

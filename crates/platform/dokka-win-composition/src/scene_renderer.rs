@@ -144,6 +144,24 @@ impl SceneRenderer {
         Ok(())
     }
 
+    /// Lanza la salida del centro por piezas sobre sus capas actuales.
+    /// Falla si no hay panel: el shell cierra sin animación.
+    pub fn start_control_dismiss(
+        &mut self,
+        dismiss: &dokka_scene::ControlDismiss,
+    ) -> std::result::Result<(), CompositionError> {
+        let Some(layers) = self.menubar_layers.as_ref() else {
+            return Err(windows::core::Error::from_thread().into());
+        };
+        Ok(layers.start_control_dismiss(&self.compositor, dismiss)?)
+    }
+
+    /// Descarta las capas de la barra para que la próxima vez se reconstruya
+    /// limpio: ninguna reutilizada queda encogida o invisible tras cancelar.
+    pub fn cancel_control_dismiss(&mut self) {
+        self.menubar_layers = None;
+    }
+
     fn build(
         handles: WindowHandles,
         scale: f32,

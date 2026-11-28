@@ -270,6 +270,14 @@ impl SceneLayers {
         Ok(())
     }
 
+    /// Salida del centro por piezas en su overlay, una sola vez.
+    pub(crate) fn start_control_dismiss(&self, compositor: &Compositor, dismiss: &dokka_scene::ControlDismiss) -> Result<()> {
+        let Some(overlay) = &self.overlay else {
+            return Err(windows::core::Error::from_thread());
+        };
+        overlay.start_dismiss(compositor, dismiss)
+    }
+
     /// Desvanece el fondo y deja escala, opacidad y desenfoque del contenido en
     /// manos de `BlurStage`: en reposo lo deja normal y sin efectos activos, y
     /// en transición muestra la copia desenfocada. Sin desenfoque ni efecto

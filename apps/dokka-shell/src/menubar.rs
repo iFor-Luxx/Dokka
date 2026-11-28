@@ -50,10 +50,15 @@ pub(crate) fn refresh_clock(session: &mut DockSession) {
 }
 
 /// Dibuja la barra en su ventana si algo cambió (mira `menubar_painted`).
+/// Con la salida por piezas en curso no repinta: Composition la anima sin
+/// que Dokka pise opacidad, escala ni posición (ni el `Tick` ni la música).
 pub(crate) fn render_menubar(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
+    if session.menubar.is_control_closing() {
+        return Ok(());
+    }
     let width = surface.menubar_width();
     let screen_height = surface.menubar_monitor_height();
     let finger = session.menubar.painted();
@@ -233,10 +238,25 @@ fn click_menubar(
         return run_menubar_action(session, surface, action);
     }
     if session.menubar.is_control_closing() {
-        // Fundido en curso (empezado o seguido): el foco vuelve ya; la
+        // Salida en curso (empezada o seguida): el foco vuelve ya; la
         // ventana y las zonas se mantienen hasta el cierre real.
         surface.menubar_menu_closed();
+        // Recién empezada por este clic (repetir su icono o fuera): lanzar
+        // las animaciones una sola vez; si fallan, cerrar al instante.
+        if !was_closing
+            && let Some(order) = session.menubar.dismiss_order()
+            && let Err(error) = session.renderer.start_control_dismiss(&order)
+        {
+            eprintln!("Dokka no pudo animar la salida del centro: {error}");
+            session.menubar.close_tray();
+            reset_menubar_window(session, surface);
+        }
         return Ok(());
+    }
+    if was_closing {
+        // Se canceló (reabrir) o se cambió de panel: descartar lo animado
+        // para reconstruir limpio antes de dibujar lo nuevo.
+        crate::menubar_dismiss::cancel_control_dismiss(session);
     }
     if !was_tray && session.menubar.is_tray_open() {
         match session.menubar.tray_kind() {

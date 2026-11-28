@@ -6,6 +6,7 @@ use crate::cursor_layer::CursorLayer;
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
+use crate::overlay_dismiss::PieceGroups;
 use crate::overlay_style::{
     apply_scale, has_glass, highlight_style_of, panel_layer, pill_style_of,
 };
@@ -24,6 +25,7 @@ use crate::text_layer::TextLayer;
 /// ninguna capa para no ver un rectángulo borroso; el resto de paneles no cambia.
 pub(crate) struct OverlayLayers {
     container: ContainerVisual,
+    pieces: PieceGroups,
     panel: Option<PanelLayer>,
     panel_shadow: Option<ShadowLayer>,
     panel_shadow_spec: Option<Shadow>,
@@ -80,29 +82,24 @@ impl OverlayLayers {
             )
             .ok()
         });
+        // Cada pieza lleva lo suyo en su mismo contenedor para volar entera.
+        let (pieces, map) = PieceGroups::build(compositor, &container, overlay)?;
         // Las piezas llevan filo de luz y brillo alto (Liquid Glass).
-        let tiles = overlay
-            .tiles
-            .iter()
-            .map(|tile| PanelLayer::add_tile(compositor, &container, tile))
-            .collect::<Result<Vec<_>>>()?;
-        let tile_shadows = overlay
-            .tiles
-            .iter()
-            .enumerate()
-            .map(|(index, tile)| {
-                overlay.tile_shadow.and_then(|shadow| {
-                    ShadowLayer::add(
-                        compositor,
-                        &container,
-                        tile,
-                        &shadow,
-                        &others_of(&overlay.tiles, index),
-                    )
-                    .ok()
-                })
+        let tiles = overlay.tiles.iter().enumerate().map(|(index, tile)| {
+            PanelLayer::add_tile(compositor, pieces.parent(&container, index), tile)
+        }).collect::<Result<Vec<_>>>()?;
+        let tile_shadows = overlay.tiles.iter().enumerate().map(|(index, tile)| {
+            overlay.tile_shadow.and_then(|shadow| {
+                ShadowLayer::add(
+                    compositor,
+                    pieces.parent(&container, index),
+                    tile,
+                    &shadow,
+                    &others_of(&overlay.tiles, index),
+                )
+                .ok()
             })
-            .collect();
+        }).collect();
         // Encima del panel: el fondo de la píldora tapa ese tramo de tinte.
         let mut pill = None;
         if let Some(pill_panel) = &overlay.pill {
@@ -129,39 +126,28 @@ impl OverlayLayers {
                 highlight_style,
             )?);
         }
-        let flats = overlay
-            .flat_panels
-            .iter()
-            .map(|panel| PanelLayer::add_flat(compositor, &container, panel))
-            .collect::<Result<Vec<_>>>()?;
-        let dividers = overlay
-            .dividers
-            .iter()
-            .map(|divider| DividerLayer::add(compositor, &container, divider))
-            .collect::<Result<Vec<_>>>()?;
-        let cursors = overlay
-            .cursors
-            .iter()
-            .map(|cursor| CursorLayer::add(compositor, &container, cursor))
-            .collect::<Result<Vec<_>>>()?;
-        let dots = overlay
-            .dots
-            .iter()
-            .map(|dot| DotLayer::add(compositor, &container, dot))
-            .collect::<Result<Vec<_>>>()?;
-        let texts = overlay
-            .texts
-            .iter()
-            .map(|_| TextLayer::add(compositor, &container))
-            .collect::<Result<Vec<_>>>()?;
+        let flats = overlay.flat_panels.iter().enumerate().map(|(index, panel)| {
+            PanelLayer::add_flat(compositor, pieces.flat_parent(&container, &map, index), panel)
+        }).collect::<Result<Vec<_>>>()?;
+        let dividers = overlay.dividers.iter().enumerate().map(|(index, divider)| {
+            DividerLayer::add(compositor, pieces.divider_parent(&container, &map, index), divider)
+        }).collect::<Result<Vec<_>>>()?;
+        let cursors = overlay.cursors.iter().enumerate().map(|(index, cursor)| {
+            CursorLayer::add(compositor, pieces.cursor_parent(&container, &map, index), cursor)
+        }).collect::<Result<Vec<_>>>()?;
+        let dots = overlay.dots.iter().enumerate().map(|(index, dot)| {
+            DotLayer::add(compositor, pieces.dot_parent(&container, &map, index), dot)
+        }).collect::<Result<Vec<_>>>()?;
+        let texts = overlay.texts.iter().enumerate().map(|(index, _)| {
+            TextLayer::add(compositor, pieces.text_parent(&container, &map, index))
+        }).collect::<Result<Vec<_>>>()?;
         // Encima del resaltado y junto a los textos: no se solapan con ellos.
-        let icons = overlay
-            .icons
-            .iter()
-            .map(|icon| IconLayer::add(compositor, painter, &container, icon))
-            .collect::<Result<Vec<_>>>()?;
+        let icons = overlay.icons.iter().enumerate().map(|(index, icon)| {
+            IconLayer::add(compositor, painter, pieces.icon_parent(&container, &map, index), icon)
+        }).collect::<Result<Vec<_>>>()?;
         Ok(Self {
             container,
+            pieces,
             panel,
             panel_shadow,
             panel_shadow_spec,
@@ -278,5 +264,15 @@ impl OverlayLayers {
             layer.update(compositor, painter, icon)?;
         }
         Ok(())
+    }
+
+    /// Lanza la salida por piezas con la orden de la isla. Falla si las
+    /// piezas ya no coinciden: el shell cierra sin animación.
+    pub(crate) fn start_dismiss(
+        &self,
+        compositor: &Compositor,
+        dismiss: &dokka_scene::ControlDismiss,
+    ) -> Result<()> {
+        self.pieces.start(compositor, &self.tile_styles, dismiss)
     }
 }
