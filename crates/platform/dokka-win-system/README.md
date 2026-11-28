@@ -13,6 +13,11 @@ Trae además fecha y hora (`datetime.rs`: automáticas por `Type`, servidor NTP,
 zona automática por `tzautoupdate` y nombre de la zona) e idioma y región
 (`locale.rs`: idiomas preferidos, región, calendario, temperatura y medida por
 el sistema de medida, patrones y ejemplos con el formato del usuario).
+También calcula el desglose de almacenamiento para su apartado (`breakdown`):
+papelera (`SHQueryRecycleBinW`), programas instalados (`EstimatedSize` del
+registro), carpetas del usuario con sus rutas conocidas (sin seguir enlaces
+ni uniones, ignorando lo ilegible) y otros discos fijos. Todo en su propio
+hilo con progreso parcial y cancelable; la isla lee el último valor.
 
 **No hace:** no cambia nada del equipo, solo lee y abre páginas.
 Los textos de relleno de los PC montados a mano ("System Product Name",

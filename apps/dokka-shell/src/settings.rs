@@ -9,10 +9,14 @@
 use std::error::Error;
 use std::sync::Arc;
 
-use dokka_settings::{GeneralPage, SettingsAction, drag_zone, settings_scene};
+use dokka_settings::{SettingsAction, drag_zone, settings_scene};
 use dokka_win_surface::{Surface, SurfaceEvent};
 
 use crate::dock_session::DockSession;
+use crate::settings_keyboard::{
+    confirm_over_settings, erase_over_settings, escape_over_settings, focus_over_settings,
+    type_over_settings,
+};
 
 /// Abre la ventana o la trae al frente si ya estaba abierta.
 /// Si estaba minimizada, `SW_SHOWNORMAL` la restaura.
@@ -23,6 +27,9 @@ pub(crate) fn open_or_focus_settings(
     session
         .settings
         .set_values(session.preferences, session.taskbar_auto());
+    session
+        .settings
+        .set_dokka_version(env!("CARGO_PKG_VERSION").to_owned());
     session.settings.open();
     // Primera apertura: centra el contenido una vez con el aire alrededor;
     // luego conserva su sitio al moverla. El zoom aplica su tamaño aparte.
@@ -42,6 +49,7 @@ pub(crate) fn open_or_focus_settings(
 /// al volver a abrir empieza en General, sin historial, búsqueda ni foco. Los
 /// ajustes guardados no se tocan. Vuelve además al tamaño normal.
 pub(crate) fn close_settings(session: &mut DockSession, surface: &mut Surface) {
+    crate::settings_system::cancel_storage(session);
     session.settings.close();
     session.settings_pressed = false;
     // La próxima apertura debe dibujar de nuevo: el contenido pudo quedar
@@ -114,7 +122,7 @@ pub(crate) fn press_over_settings(
         session.settings.content_width(),
         session.settings.general(),
         session.settings.scroll_offset(),
-        session.settings.language_count(),
+        crate::settings_system::list_counts(session),
     ) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
@@ -172,9 +180,7 @@ pub(crate) fn click_settings(
             crate::apply_preferences::set_taskbar_auto(session, surface, auto);
         }
         SettingsAction::EnterGeneral(page) => {
-            if page != GeneralPage::Root {
-                crate::settings_system::request_system_data(session);
-            }
+            crate::settings_system::request_for_page(session, page);
         }
         SettingsAction::OpenAbout(button) => {
             crate::settings_system::open_about_page(session, button);
@@ -182,51 +188,13 @@ pub(crate) fn click_settings(
         SettingsAction::OpenGeneral(button) => {
             crate::settings_system::open_general_page(session, button);
         }
+        SettingsAction::EmptyTrash => {
+            crate::settings_system::empty_trash(session);
+        }
     }
     // Volver con la píldora a un apartado con datos también los pide una vez.
-    if matches!(
-        session.settings.general(),
-        GeneralPage::About | GeneralPage::DateTime | GeneralPage::Language
-    ) && session.settings.system_summary().is_none()
-    {
-        crate::settings_system::request_system_data(session);
-    }
+    crate::settings_system::refresh_after_navigation(session);
     Ok(())
-}
-
-/// Foco ganado o perdido: sin foco los semáforos se ven grises.
-pub(crate) fn focus_over_settings(session: &mut DockSession, focused: bool) {
-    if session.settings.is_open() {
-        session.settings.set_window_focused(focused);
-    }
-}
-
-/// Letra escrita con la casilla enfocada: filtra las filas.
-pub(crate) fn type_over_settings(session: &mut DockSession, character: char) {
-    if session.settings.is_open() {
-        session.settings.type_character(character);
-    }
-}
-
-/// Retroceso con la casilla enfocada: borra la última letra.
-pub(crate) fn erase_over_settings(session: &mut DockSession) {
-    if session.settings.is_open() {
-        session.settings.erase_character();
-    }
-}
-
-/// Enter con búsqueda: elige la primera coincidencia.
-pub(crate) fn confirm_over_settings(session: &mut DockSession) {
-    if session.settings.is_open() {
-        session.settings.confirm_search();
-    }
-}
-
-/// Esc: limpia lo escrito y quita el foco.
-pub(crate) fn escape_over_settings(session: &mut DockSession) {
-    if session.settings.is_open() {
-        session.settings.escape_search();
-    }
 }
 
 /// Atiende un evento de la ventana si es suyo. Devuelve si lo consumió.
@@ -276,9 +244,10 @@ pub(crate) fn render_settings(
     if !session.settings.is_open() {
         return Ok(());
     }
-    // El hilo ya leyó el equipo: pasa el último valor a la isla para que
-    // repinte sus apartados sin pedir en bucle.
-    crate::settings_system::poll_system_data(session);
+    // Los hilos ya leyeron el equipo: se pasa lo último a la isla para que
+    // repinte sus apartados sin pedir en bucle (fuera de "Almacenamiento"
+    // se detiene su cálculo).
+    crate::settings_system::poll_settings(session);
     let painted = session.settings.painted();
     if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());

@@ -14,6 +14,8 @@ papelera con la confirmación de Windows.
 (último valor + pedir refresco, como el brillo) y abre sus páginas
 (`SystemPage`: pantalla, almacenamiento, informe, fecha y hora, e idioma y
 región). El resumen trae además fecha y hora e idioma y región de Windows.
+También da el desglose de almacenamiento por categorías (`storage` +
+`request_storage` solo al abrir el apartado + `cancel_storage` al salir).
 
 **No hace:** no implementa ninguno. Las implementaciones irán en `platform/` y `services/`.
 

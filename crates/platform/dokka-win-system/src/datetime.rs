@@ -66,7 +66,10 @@ fn timezone_name() -> Option<String> {
 
 /// Texto UTF-16 hasta el primer nulo, sin aire ni vacíos.
 fn widen(units: &[u16]) -> Option<String> {
-    let end = units.iter().position(|unit| *unit == 0).unwrap_or(units.len());
+    let end = units
+        .iter()
+        .position(|unit| *unit == 0)
+        .unwrap_or(units.len());
     let text = String::from_utf16(&units[..end]).ok()?;
     let text = text.trim();
     (!text.is_empty()).then(|| text.to_owned())

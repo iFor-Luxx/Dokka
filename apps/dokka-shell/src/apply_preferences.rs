@@ -30,8 +30,12 @@ pub(crate) fn load_preferences(session: &mut DockSession) {
     session.dock.set_clock_24(stored.general.hour_24);
     session.refresh_occlusion();
     session.menubar.set_shown(stored.menubar);
-    session.menubar.set_week_start(stored.general.week_starts_monday);
-    session.previews.set_week_start(stored.general.week_starts_monday);
+    session
+        .menubar
+        .set_week_start(stored.general.week_starts_monday);
+    session
+        .previews
+        .set_week_start(stored.general.week_starts_monday);
     apply_background_apps(session, stored.menubar.background_apps);
     if !stored.dock.previews {
         session.previews.close();
@@ -55,8 +59,12 @@ pub(crate) fn apply_preferences(
     session.dock.set_clock_24(preferences.general.hour_24);
     session.refresh_occlusion();
     session.menubar.set_shown(preferences.menubar);
-    session.menubar.set_week_start(preferences.general.week_starts_monday);
-    session.previews.set_week_start(preferences.general.week_starts_monday);
+    session
+        .menubar
+        .set_week_start(preferences.general.week_starts_monday);
+    session
+        .previews
+        .set_week_start(preferences.general.week_starts_monday);
     apply_background_apps(session, preferences.menubar.background_apps);
     if !preferences.dock.previews {
         session.previews.close();

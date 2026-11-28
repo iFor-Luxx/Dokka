@@ -70,7 +70,20 @@ fn general_scene(theme: &Theme, settings: &mut Settings) -> ContentScene {
         }
         Page::DateTime => super::datetime_content::datetime_content(theme, settings),
         Page::Language => super::language_content::language_content(theme, settings),
-        _ => coming_soon(theme, settings.content_width()),
+        Page::Storage => {
+            let mut badges = Vec::new();
+            let mut glyphs = Vec::new();
+            for index in 0..super::super::storage_state::STORAGE_CATEGORIES {
+                badges.push(settings.storage_badge_drawing(theme, index));
+                glyphs.push(settings.storage_row_drawing(theme, index));
+            }
+            super::storage_content::storage_content(theme, settings, &badges, &glyphs)
+        }
+        Page::Update => {
+            let badge = settings.general_badge_drawing(theme, 1);
+            let glyph = settings.general_row_drawing(theme, 1);
+            super::update_content::update_content(theme, settings, &badge, &glyph)
+        }
     }
 }
 
@@ -196,9 +209,7 @@ pub(crate) fn zero_panels(panels: Vec<Panel>) -> Vec<Panel> {
 pub(crate) fn visible_texts(texts: Vec<Text>, window_height: f32) -> Vec<Text> {
     texts
         .into_iter()
-        .filter(|text| {
-            text.center_y >= measures::CONTENT_TOP && text.center_y <= window_height
-        })
+        .filter(|text| text.center_y >= measures::CONTENT_TOP && text.center_y <= window_height)
         .collect()
 }
 

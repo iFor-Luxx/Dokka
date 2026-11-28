@@ -8,7 +8,7 @@ use super::logic::{
     DockSwitch, SliderTarget, about_button_at, datetime_button_at, datetime_switch_at,
     dock_segment_at, dock_slider_at, dock_switch_at, general_row_at, icon_scale_from,
     language_button_at, language_segment_at, magnification_from, menubar_switch_at,
-    position_from_index, taskbar_switch_at, toggle_menubar,
+    position_from_index, storage_button_at, taskbar_switch_at, toggle_menubar,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
@@ -43,7 +43,7 @@ impl Settings {
         let general = self.general();
         let width = self.content_width();
         let scroll = self.scroll_offset();
-        let count = self.language_count();
+        let counts = self.list_counts();
         // Interruptores del Dock: hábitos y ocultado.
         if let Some(switch) = dock_switch_at(selected, width, x, y) {
             let mut preferences = self.values().preferences;
@@ -136,7 +136,7 @@ impl Settings {
             return SettingsAction::Changed(preferences);
         }
         // Segmentado de "Idioma y región": primer día de la semana.
-        if let Some(index) = language_segment_at(general, width, count, scroll, x, y) {
+        if let Some(index) = language_segment_at(general, width, counts.languages, scroll, x, y) {
             let mut preferences = self.values().preferences;
             preferences.general.week_starts_monday = index == 1;
             self.values_mut().preferences = preferences;
@@ -144,9 +144,18 @@ impl Settings {
         }
         // Botones de "Fecha y hora" e "Idioma y región": el shell abre Windows.
         if let Some(button) = datetime_button_at(general, width, scroll, x, y)
-            .or_else(|| language_button_at(general, width, count, scroll, x, y))
+            .or_else(|| language_button_at(general, width, counts.languages, scroll, x, y))
         {
             return SettingsAction::OpenGeneral(button);
+        }
+        // Botones de "Almacenamiento": vaciar la papelera o abrir sus ajustes.
+        if let Some(button) =
+            storage_button_at(selected, general, width, scroll, counts.disks, x, y)
+        {
+            if button == 0 {
+                return SettingsAction::EmptyTrash;
+            }
+            return SettingsAction::OpenAbout(AboutButton::StorageSettings);
         }
         if let Some(index) = self.filtered_at(x, y) {
             self.select_section(index);

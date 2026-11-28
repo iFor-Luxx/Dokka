@@ -7,6 +7,7 @@ use dokka_theme::settings as measures;
 
 use super::content_hit::content_control_at;
 use super::general::general_control_at;
+use super::list_counts::ListCounts;
 use super::sections::{SECTION_DOCK, SECTION_GENERAL, SECTION_MENUBAR, SECTION_TASKBAR};
 
 /// `true` si el punto cae en la píldora de la cabecera.
@@ -26,7 +27,8 @@ fn nav_at(x: f32, y: f32) -> bool {
 /// `true` si desde el punto se puede arrastrar la ventana: la franja superior
 /// quitando los semáforos, la píldora, la casilla, las filas y los controles
 /// del contenido (deslizadores, interruptores, filas de General y botones
-/// nunca mueven la ventana).
+/// nunca mueven la ventana). `counts` trae los idiomas y otros discos de hoy,
+/// para no moverla desde sus controles.
 pub fn drag_zone(
     x: f32,
     y: f32,
@@ -34,12 +36,12 @@ pub fn drag_zone(
     width: f32,
     general: crate::general::GeneralPage,
     scroll: f32,
-    languages: usize,
+    counts: ListCounts,
 ) -> bool {
     if content_control_at(selected, width, x, y) {
         return false;
     }
-    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, languages, x, y) {
+    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, counts, x, y) {
         return false;
     }
     // Los controles de las demás secciones no se ven, pero se comprueban

@@ -20,10 +20,12 @@ pub enum SettingsAction {
     Changed(Preferences),
     /// Ocultar sola la barra de tareas de Windows, o dejar de hacerlo.
     TaskbarAuto(bool),
-    /// Se entró en un apartado de General: el shell pide los datos si es "Acerca".
+    /// Se entró en un apartado de General: el shell pide sus datos.
     EnterGeneral(GeneralPage),
     /// Botón de "Acerca de este PC": el shell abre la página del sistema.
     OpenAbout(AboutButton),
     /// Botón de "Fecha y hora" o de "Idioma y región": el shell abre su página.
     OpenGeneral(GeneralButton),
+    /// Botón "Vaciar papelera": el shell la vacía con su confirmación.
+    EmptyTrash,
 }

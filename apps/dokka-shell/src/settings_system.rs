@@ -1,19 +1,32 @@
-//! Datos del equipo para "Acerca de este PC", "Fecha y hora" e
-//! "Idioma y región": pedir, pasar y abrir.
+//! Datos del equipo para "Acerca de este PC", "Fecha y hora",
+//! "Idioma y región" y "Almacenamiento": pedir, pasar y abrir.
 //!
 //! La isla no habla con Windows: el shell pide el resumen al entrar en cada
-//! apartado, lo pasa cuando el hilo lo lee y abre las páginas de los botones.
-//! Falla sola: si no se lee, el campo queda en "No disponible". La fecha en
-//! vivo la pasa el `Tick` solo con su apartado abierto.
+//! apartado con datos y el desglose al entrar en "Almacenamiento", los pasa
+//! cuando los hilos los leen y abre las páginas de los botones. Falla sola:
+//! si no se lee, el campo queda en "No disponible" o "Calculando…". La fecha
+//! en vivo la pasa el `Tick` solo con su apartado abierto.
 
+use dokka_contracts::SystemInfo as _;
 use dokka_settings::{AboutButton, GeneralButton, GeneralPage, PageNow};
 
 use super::dock_session::DockSession;
 
+/// Cuentas variables de General: idiomas leídos y otros discos de hoy.
+pub(crate) fn list_counts(session: &DockSession) -> dokka_settings::ListCounts {
+    dokka_settings::ListCounts::new(
+        session.settings.language_count(),
+        session
+            .settings
+            .storage_breakdown()
+            .map(|known| known.other_disks.len())
+            .unwrap_or(0),
+    )
+}
+
 /// Pide el resumen del equipo una vez y pasa lo que ya haya al abrir un
 /// apartado con datos ("Acerca", "Fecha y hora" o "Idioma y región").
 pub(crate) fn request_system_data(session: &mut DockSession) {
-    use dokka_contracts::SystemInfo as _;
     if let Some(summary) = session.system_info.summary() {
         session.settings.set_system_info(Some(summary));
     } else {
@@ -23,13 +36,13 @@ pub(crate) fn request_system_data(session: &mut DockSession) {
     refresh_now(session);
 }
 
-/// Si se está en un apartado con datos y el hilo ya leyó, pasa el último
-/// valor a la isla para que repinte sin pedir en bucle.
+/// Si se está en un apartado con datos ("Acerca", "Fecha y hora" o
+/// "Idioma y región") y el hilo ya leyó, pasa el último valor a la isla
+/// para que repinte sin pedir en bucle.
 pub(crate) fn poll_system_data(session: &mut DockSession) {
     if !is_data_page(session.settings.general()) {
         return;
     }
-    use dokka_contracts::SystemInfo as _;
     if let Some(summary) = session.system_info.summary()
         && session.settings.system_summary() != Some(summary.clone())
     {
@@ -71,9 +84,82 @@ fn refresh_now(session: &mut DockSession) {
     }
 }
 
+/// Pasa lo ya calculado y pide recalcular en el hilo. Solo calcula al
+/// abrir el apartado, nunca en bucle: mientras tanto la isla sigue mostrando
+/// el último resultado en memoria.
+pub(crate) fn request_storage(session: &mut DockSession) {
+    if let Some(breakdown) = session.system_info.storage() {
+        session.settings.set_storage(Some(breakdown));
+    }
+    session.system_info.request_storage();
+}
+
+/// Si se está en "Almacenamiento" y el hilo ya calculó algo nuevo, pasa el
+/// último valor a la isla para que repinte sin pedir en bucle.
+pub(crate) fn poll_storage(session: &mut DockSession) {
+    if session.settings.general() != GeneralPage::Storage {
+        return;
+    }
+    if let Some(breakdown) = session.system_info.storage()
+        && session.settings.storage_breakdown() != Some(breakdown.clone())
+    {
+        session.settings.set_storage(Some(breakdown));
+    }
+}
+
+/// Detiene el cálculo al salir del apartado; conserva lo ya calculado.
+pub(crate) fn cancel_storage(session: &DockSession) {
+    session.system_info.cancel_storage();
+}
+
+/// Pasa a la isla lo nuevo de los dos hilos: el resumen en su apartado con
+/// datos y el desglose en "Almacenamiento" (fuera de él detiene el cálculo).
+pub(crate) fn poll_settings(session: &mut DockSession) {
+    poll_system_data(session);
+    if session.settings.general() == GeneralPage::Storage {
+        poll_storage(session);
+    } else {
+        cancel_storage(session);
+    }
+}
+
+/// Vacía la papelera con su confirmación y recalcula el apartado.
+pub(crate) fn empty_trash(session: &mut DockSession) {
+    use dokka_contracts::RecycleBin as _;
+    if session.recycle_bin.empty().is_err() {
+        return;
+    }
+    session.system_info.request_storage();
+}
+
+/// Pide los datos del apartado al que se acaba de entrar, si trae.
+pub(crate) fn request_for_page(session: &mut DockSession, page: GeneralPage) {
+    match page {
+        GeneralPage::About | GeneralPage::DateTime | GeneralPage::Language => {
+            request_system_data(session);
+        }
+        GeneralPage::Storage => {
+            request_storage(session);
+        }
+        GeneralPage::Root | GeneralPage::Update => {}
+    }
+}
+
+/// Repide los datos al volver con la píldora a un apartado que aún no los tiene.
+pub(crate) fn refresh_after_navigation(session: &mut DockSession) {
+    if is_data_page(session.settings.general()) && session.settings.system_summary().is_none() {
+        request_system_data(session);
+    }
+    if session.settings.general() == GeneralPage::Storage
+        && session.settings.storage_breakdown().is_none()
+    {
+        request_storage(session);
+    }
+}
+
 /// Abre la página del sistema del botón pulsado. Falla sola.
 pub(crate) fn open_about_page(session: &DockSession, button: AboutButton) {
-    use dokka_contracts::{SystemInfo as _, SystemPage};
+    use dokka_contracts::SystemPage;
     let page = match button {
         AboutButton::DisplaySettings => SystemPage::Display,
         AboutButton::StorageSettings => SystemPage::Storage,
@@ -86,7 +172,7 @@ pub(crate) fn open_about_page(session: &DockSession, button: AboutButton) {
 
 /// Abre la página de Windows del botón de fecha o idioma. Falla sola.
 pub(crate) fn open_general_page(session: &DockSession, button: GeneralButton) {
-    use dokka_contracts::{SystemInfo as _, SystemPage};
+    use dokka_contracts::SystemPage;
     let page = match button {
         GeneralButton::DateTimeSettings => SystemPage::DateTime,
         GeneralButton::LanguageSettings => SystemPage::Region,
@@ -96,8 +182,7 @@ pub(crate) fn open_general_page(session: &DockSession, button: GeneralButton) {
     }
 }
 
-/// Rueda sobre Preferencias: baja las fichas con datos ("Acerca",
-/// "Fecha y hora" e "Idioma y región").
+/// Rueda sobre Preferencias: baja la ficha del apartado de General.
 pub(crate) fn scroll_settings(session: &mut DockSession, delta: i16) {
     if session.settings.is_open() {
         session.settings.scroll_wheel(delta);

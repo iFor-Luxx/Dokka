@@ -1,11 +1,8 @@
-use std::sync::Arc;
-
-use dokka_components::nav_pill::{NavHalf, NavPillIcons, nav_pill_at};
+use dokka_components::nav_pill::{NavHalf, nav_pill_at};
 use dokka_components::settings_list::{filtered_row_at, search_bounds};
-use dokka_components::window_controls::{TrafficButton, TrafficButtons, traffic_at};
+use dokka_components::window_controls::{TrafficButton, traffic_at};
 use dokka_model::Preferences;
-use dokka_scene::Drawing;
-use dokka_theme::{Theme, settings as measures};
+use dokka_theme::settings as measures;
 
 use super::drawings::CachedDrawings;
 use super::general::GeneralPage;
@@ -30,6 +27,8 @@ pub struct Settings {
     values: ContentValues,
     pub(crate) drawings: CachedDrawings,
     pub(crate) system: Option<dokka_model::SystemSummary>,
+    pub(crate) storage: Option<dokka_model::StorageBreakdown>,
+    pub(crate) dokka_version: Option<String>,
     pub(crate) scroll: f32,
 }
 
@@ -46,6 +45,8 @@ impl Default for Settings {
             values: ContentValues::default(),
             drawings: CachedDrawings::new(),
             system: None,
+            storage: None,
+            dokka_version: None,
             scroll: 0.0,
         }
     }
@@ -214,37 +215,9 @@ impl Settings {
             scroll: super::painted::OrderedF32(self.scroll),
             system: self.system.clone(),
             now: self.values.now,
+            storage: self.storage.clone(),
+            dokka_version: self.dokka_version.clone(),
         }
-    }
-
-    /// Cuadrado de color de la fila como imagen, creado una vez y reutilizado.
-    pub(crate) fn badge_drawing(&mut self, theme: &Theme, index: usize) -> Arc<Drawing> {
-        self.drawings.badge(theme, index)
-    }
-
-    /// Dibujo blanco del icono de la fila, creado una vez y reutilizado.
-    pub(crate) fn row_drawing(&mut self, theme: &Theme, index: usize) -> Arc<Drawing> {
-        self.drawings.row(theme, index)
-    }
-
-    /// Lupa de la casilla, creada una vez y reutilizada.
-    pub(crate) fn search_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
-        self.drawings.search(theme)
-    }
-
-    /// Chevrones de la píldora según el historial, creados una vez.
-    pub(crate) fn nav_drawings(&mut self, theme: &Theme) -> NavPillIcons {
-        self.drawings.nav(theme)
-    }
-
-    /// Botones completos de los semáforos, creados una vez y reutilizados.
-    pub(crate) fn traffic_drawings(&mut self, theme: &Theme) -> TrafficButtons {
-        self.drawings.traffic(theme)
-    }
-
-    /// Agarre de las filas reordenables, creado una vez y reutilizado.
-    pub(crate) fn grip_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
-        self.drawings.grip(theme)
     }
 
     pub(crate) fn values(&self) -> &ContentValues {

@@ -9,8 +9,8 @@ use windows::Win32::Globalization::{
     DATE_LONGDATE, DATE_SHORTDATE, ENUM_DATE_FORMATS_FLAGS, GetDateFormatW, GetLocaleInfoW,
     GetNumberFormatW, GetUserDefaultLCID, GetUserPreferredUILanguages, LOCALE_ICALENDARTYPE,
     LOCALE_IMEASURE, LOCALE_SDECIMAL, LOCALE_SLOCALIZEDCOUNTRYNAME, LOCALE_SLOCALIZEDDISPLAYNAME,
-    LOCALE_SNAME, LOCALE_SSHORTDATE, LOCALE_STHOUSAND, LOCALE_USER_DEFAULT, MUI_LANGUAGE_NAME,
-    LocaleNameToLCID,
+    LOCALE_SNAME, LOCALE_SSHORTDATE, LOCALE_STHOUSAND, LOCALE_USER_DEFAULT, LocaleNameToLCID,
+    MUI_LANGUAGE_NAME,
 };
 use windows::core::{HSTRING, PCWSTR, PWSTR};
 
@@ -197,7 +197,10 @@ fn split_multi_sz(buffer: &[u16]) -> Vec<String> {
 
 /// Texto UTF-16 hasta el primer nulo, sin aire ni vacíos.
 fn widen(units: &[u16]) -> Option<String> {
-    let end = units.iter().position(|unit| *unit == 0).unwrap_or(units.len());
+    let end = units
+        .iter()
+        .position(|unit| *unit == 0)
+        .unwrap_or(units.len());
     let text = String::from_utf16(&units[..end]).ok()?;
     let text = text.trim();
     (!text.is_empty()).then(|| text.to_owned())

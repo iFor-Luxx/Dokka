@@ -36,7 +36,12 @@ pub(crate) fn language_card_top(card: usize, count: usize, scroll: f32) -> f32 {
     let top = language_top(scroll);
     match card {
         0 => top,
-        1 => top + languages_height(count) + measures::GROUP_GAP + example_height() + measures::GROUP_GAP,
+        1 => {
+            top + languages_height(count)
+                + measures::GROUP_GAP
+                + example_height()
+                + measures::GROUP_GAP
+        }
         _ => {
             top + languages_height(count)
                 + measures::GROUP_GAP
@@ -137,7 +142,13 @@ pub(crate) fn language_control_at(width: f32, count: usize, scroll: f32, x: f32,
 }
 
 /// Fila completa para reutilizar su geometría en el dibujo.
-pub(crate) fn language_row(card: usize, index: usize, count: usize, width: f32, scroll: f32) -> Rect {
+pub(crate) fn language_row(
+    card: usize,
+    index: usize,
+    count: usize,
+    width: f32,
+    scroll: f32,
+) -> Rect {
     let rows = if card == 0 {
         count.max(1)
     } else if card == 1 {
@@ -146,7 +157,12 @@ pub(crate) fn language_row(card: usize, index: usize, count: usize, width: f32, 
         1
     };
     let heights = vec![measures::CONTENT_ROW_HEIGHT; rows];
-    content_row(language_card_top(card, count, scroll), &heights, index, width)
+    content_row(
+        language_card_top(card, count, scroll),
+        &heights,
+        index,
+        width,
+    )
 }
 
 fn in_touch(touch: &Rect, x: f32, y: f32) -> bool {

@@ -47,7 +47,15 @@ pub(crate) fn value_card(
 ) -> (Panel, Vec<Divider>, Vec<Text>) {
     let heights = vec![measures::CONTENT_ROW_HEIGHT; labels.len()];
     let card = group_pieces(theme, top, labels, &heights, &[false; 0], width);
-    with_values(theme, card, top, height_of(&heights), values, width, window_height)
+    with_values(
+        theme,
+        card,
+        top,
+        height_of(&heights),
+        values,
+        width,
+        window_height,
+    )
 }
 
 /// Tarjeta con etiquetas dinámicas a la izquierda y valores a la derecha.

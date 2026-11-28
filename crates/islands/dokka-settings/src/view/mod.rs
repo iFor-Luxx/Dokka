@@ -11,5 +11,11 @@ mod language_content;
 mod menubar_content;
 mod other_content;
 mod settings_scene;
+mod storage_bar;
+mod storage_cards;
+mod storage_content;
+mod storage_disks;
+mod storage_rows;
+mod update_content;
 
 pub use settings_scene::settings_scene;

@@ -111,3 +111,64 @@ pub fn settings_grip_icon(color: Color) -> Drawing {
         color,
     )
 }
+
+/// Icono de la categoría Aplicaciones del almacenamiento: cuadrícula.
+pub fn storage_apps_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::LayoutGrid,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono de la categoría Documentos del almacenamiento: texto.
+pub fn storage_documents_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::FileText,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono de la categoría Imágenes del almacenamiento: imagen.
+pub fn storage_images_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Image, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de la categoría Música del almacenamiento: nota.
+pub fn storage_music_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Music, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de la categoría Videos del almacenamiento: película.
+pub fn storage_videos_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Film, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de la categoría Descargas del almacenamiento: descarga.
+pub fn storage_downloads_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Download,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}
+
+/// Icono de la categoría Papelera del almacenamiento: papelera.
+pub fn storage_trash_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Trash2, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de la categoría Windows del almacenamiento: carpeta.
+pub fn storage_windows_icon(color: Color) -> Drawing {
+    glyph(lucide_icons::Icon::Folder, settings::ROW_GLYPH_SIZE, color)
+}
+
+/// Icono de "Datos del sistema y otros": base de datos.
+pub fn storage_other_icon(color: Color) -> Drawing {
+    glyph(
+        lucide_icons::Icon::Database,
+        settings::ROW_GLYPH_SIZE,
+        color,
+    )
+}

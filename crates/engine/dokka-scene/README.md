@@ -34,7 +34,7 @@
   escala el contenido sobre el fondo, con origen en su centro. El dock siempre vale 1.
 - `Scene` añade `blur`: desenfoque gaussiano del contenido en unidades lógicas
   (0 en reposo, máximo del tema durante el zoom del Launchpad).
-- `ControlDismiss` es la salida del centro por piezas: destino en la barra
+- `ControlDismiss` es la salida del centro en bloque: destino en la barra
   y tiempos por pieza, descritos una sola vez para que Composition las anime.
 - `Shadow` es la sombra negra suave (color con su alfa, desenfoque y
   desplazamiento) que pide una `Scene` bajo su fondo o un `Overlay` bajo su

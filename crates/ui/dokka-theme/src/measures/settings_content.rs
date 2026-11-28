@@ -85,11 +85,22 @@ pub const REORDER_HINT_GAP: f32 = 8.0;
 pub const REORDER_HIGHLIGHT_RADIUS: f32 = 8.0;
 
 /// Alto de la tarjeta de cabecera de General: engranaje grande, título y ayuda.
-pub const GENERAL_HEADER_HEIGHT: f32 = 176.0;
-/// Lado del engranaje grande de la cabecera de General.
-pub const GENERAL_GEAR_SIDE: f32 = 56.0;
-/// Aire entre el engranaje y el título de General, y entre el título y la ayuda.
-pub const GENERAL_HEADER_GAP: f32 = 8.0;
+/// 20 + 64 + 12 + 20 + 12 + 13 + 6 + 13 + 20 = 180: aire arriba y abajo,
+/// baldosa gris, título y dos líneas de ayuda con aire entre ellas.
+pub const GENERAL_HEADER_HEIGHT: f32 = 180.0;
+/// Aire arriba y abajo dentro de la tarjeta de cabecera, para que respire.
+pub const GENERAL_HEADER_PAD: f32 = 20.0;
+/// Lado de la baldosa gris de la cabecera de General, como Tahoe (~64).
+pub const GENERAL_HEADER_BADGE_SIDE: f32 = 64.0;
+/// Radio de la baldosa: el mismo que la tarjeta, concéntrico con ella.
+pub const GENERAL_HEADER_BADGE_RADIUS: f32 = 16.0;
+/// Lado del glifo blanco del engranaje dentro de la baldosa, con aire de 12
+/// por lado como el cuadrito de la barra lateral.
+pub const GENERAL_GEAR_SIDE: f32 = 40.0;
+/// Aire entre la baldosa y el título de General, y entre el título y la ayuda.
+pub const GENERAL_HEADER_GAP: f32 = 12.0;
+/// Aire entre las dos líneas de ayuda de la cabecera de General.
+pub const GENERAL_HEADER_HELP_GAP: f32 = 6.0;
 /// Tamaño del título "General" en su tarjeta.
 pub const GENERAL_HEADER_TITLE_SIZE: f32 = 20.0;
 /// Tamaño de la ayuda bajo el título de General.
@@ -125,3 +136,12 @@ pub const ABOUT_HERO_LINE_GAP: f32 = 12.0;
 pub const ABOUT_HERO_LINE_HALF: f32 = 60.0;
 /// Ancho de la línea gris bajo el modelo.
 pub const ABOUT_HERO_LINE_WIDTH: f32 = 120.0;
+
+/// Alto de la barra de almacenamiento con sus tramos por categoría.
+pub const STORAGE_BAR_HEIGHT: f32 = 12.0;
+/// Radio de la pista de la barra de almacenamiento, concéntrico.
+pub const STORAGE_BAR_RADIUS: f32 = 6.0;
+/// Alto de la fila que trae la barra dentro de su tarjeta.
+pub const STORAGE_BAR_ROW_HEIGHT: f32 = 48.0;
+/// Aire sobre la barra dentro de su fila.
+pub const STORAGE_BAR_TOP_GAP: f32 = 18.0;

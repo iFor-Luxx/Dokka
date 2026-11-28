@@ -9,9 +9,7 @@
 use dokka_scene::{Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::super::logic::{
-    datetime_button_top, datetime_card_top, datetime_labels, datetime_row,
-};
+use super::super::logic::{datetime_button_top, datetime_card_top, datetime_labels, datetime_row};
 use super::super::painted::PaintedControl;
 use super::super::state::Settings;
 use super::about_buttons::button_pieces;
@@ -183,7 +181,11 @@ fn format_live(now: Option<super::super::general::PageNow>, hour_24: bool) -> St
             12 => (12, "p. m."),
             _ => (hour - 12, "p. m."),
         };
-        format!("{hour}:{:02}:{:02} {period}", now.minute % 60, now.second % 60)
+        format!(
+            "{hour}:{:02}:{:02} {period}",
+            now.minute % 60,
+            now.second % 60
+        )
     };
     format!("{weekday}, {} de {month} de {}, {time}", now.day, now.year)
 }

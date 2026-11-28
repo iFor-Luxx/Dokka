@@ -40,8 +40,12 @@ preferidos (el primero es el principal), una línea de ejemplo con la fecha
 larga, la corta y un número con el formato de Windows, las filas de solo
 lectura (región, calendario, temperatura, medida y formatos) y el segmentado
 propio del primer día de la semana (lo usa el calendario de la barra y del
-dock), con su botón a la página de Windows. Los demás apartados siguen con la
-tarjeta gris "Próximamente". Barra superior: siete filas reordenables (Volumen, Red, Música,
+dock), con su botón a la página de Windows. "Actualización de Dokka" trae su tarjeta
+con la versión instalada (dato del shell) y el aviso de que aún no hay de
+dónde descargar. "Almacenamiento" trae el disco con su barra por categorías,
+la lista con tamaños ("Calculando…" mientras el hilo calcula) y los botones
+de vaciar la papelera (`EmptyTrash`) y ajustes; los demás discos van aparte.
+Barra superior: siete filas reordenables (Volumen, Red, Música,
 Idioma, Buscar, Centro de control y Apps en segundo plano) en una sola
 tarjeta, cada una con agarre a la izquierda (seis puntos verticales en color
 secundario), nombre e interruptor; debajo, texto pequeño secundario que
@@ -78,13 +82,18 @@ salirse de su tercio. El contenido cambia de tamaño entre secciones:
 e iconos sobrantes se ocultan. Al reordenar la cantidad y el estilo no cambian:
 solo se mueven, sin reconstruir. La lógica vive dividida (`content.rs` geometría,
 `general.rs` lista y ficha, `datetime.rs` y `language.rs` fecha e idioma,
+`storage.rs` y `update.rs` sus apartados, `list_counts.rs` cuentas variables,
 `menubar_order.rs` orden y huecos, `slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
 `content_hit.rs` golpe, `menubar_drag.rs` arrastre, `reorder_pointer.rs` gesto y
 `slider_pointer.rs` pista); la vista vive dividida (`content.rs` ayudantes,
 `general_content.rs` y `general_rows.rs` lista, `about_content.rs`, `about_cards.rs`,
 `about_buttons.rs` y `about_pc.rs` ficha, `datetime_content.rs` fecha y hora,
-`language_content.rs` idioma y región, `dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
-el historial vive en `selection.rs` y el apartado en `general.rs`.
+`language_content.rs` idioma y región, `storage_content.rs` con sus tarjetas
+(`storage_cards.rs`, `storage_rows.rs`, `storage_disks.rs`) y su barra
+(`storage_bar.rs`), y `update_content.rs`, `dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
+el historial vive en `selection.rs` y el apartado en `general.rs`. El desglose
+de almacenamiento y la versión de Dokka viven en `storage_state.rs`; la fecha
+viva de "Fecha y hora" vive en `values.rs` (`now`).
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Sin
 animaciones: la ventana aparece, cambia de sección y se arrastra sin

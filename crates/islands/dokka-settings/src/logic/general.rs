@@ -8,6 +8,8 @@
 use dokka_scene::{Color, Drawing};
 use dokka_theme::{Theme, settings as measures};
 
+use super::list_counts::ListCounts;
+
 /// Filas de la lista de General: 3 + 2.
 pub(crate) const GENERAL_ROWS: usize = 5;
 
@@ -46,8 +48,13 @@ pub(crate) fn general_row_drawing(row: usize, color: Color) -> Drawing {
     }
 }
 
-/// Texto de ayuda de la cabecera de General.
-pub(crate) const GENERAL_HEADER_HELP: &str = "Ajustes generales de tu equipo y de Dokka: actualizaciones, almacenamiento, fecha, idioma y más.";
+/// Texto de ayuda de la cabecera de General, en dos líneas centradas.
+/// Cada línea cabe en el ancho de contenido más estrecho (468) con aire a
+/// los lados: la primera (~59 caracteres a 13) ocupa ~383 y deja ~42 por lado.
+pub(crate) const GENERAL_HEADER_HELP_FIRST: &str =
+    "Ajustes generales de tu equipo y de Dokka: actualizaciones,";
+/// Segunda línea de la ayuda de la cabecera de General.
+pub(crate) const GENERAL_HEADER_HELP_SECOND: &str = "almacenamiento, fecha, idioma y más.";
 
 fn header_top(scroll: f32) -> f32 {
     measures::CONTENT_TOP - scroll
@@ -92,7 +99,7 @@ pub(crate) fn general_control_at(
     width: f32,
     scroll: f32,
     general: crate::general::GeneralPage,
-    languages: usize,
+    counts: ListCounts,
     x: f32,
     y: f32,
 ) -> bool {
@@ -101,8 +108,13 @@ pub(crate) fn general_control_at(
         Page::Root => general_row_at(width, scroll, x, y).is_some(),
         Page::About => about_button_at(width, scroll, x, y).is_some(),
         Page::DateTime => super::datetime::datetime_control_at(width, scroll, x, y),
-        Page::Language => super::language::language_control_at(width, languages, scroll, x, y),
-        Page::Update | Page::Storage => false,
+        Page::Language => {
+            super::language::language_control_at(width, counts.languages, scroll, x, y)
+        }
+        Page::Storage => {
+            super::storage::storage_button_at(width, scroll, counts.disks, x, y).is_some()
+        }
+        Page::Update => false,
     }
 }
 
@@ -142,11 +154,31 @@ pub(crate) fn about_content_height() -> f32 {
         + measures::GROUP_GAP
 }
 
-/// Lo que se puede bajar con la rueda en esta ventana.
-/// La lista cabe sin bajar; la ficha "Acerca" es la más alta.
-pub(crate) fn general_scroll_max(window_height: f32) -> f32 {
+/// Lo que se puede bajar con la rueda en esta ventana, según el apartado.
+/// La lista raíz cabe sin bajar; cada apartado usa su propia altura y su
+/// cuenta (idiomas para "Idioma y región", otros discos para "Almacenamiento").
+pub(crate) fn general_scroll_max(
+    window_height: f32,
+    page: crate::general::GeneralPage,
+    counts: ListCounts,
+) -> f32 {
+    use crate::general::GeneralPage as Page;
+    match page {
+        Page::Root => 0.0,
+        Page::DateTime => super::datetime::datetime_scroll_max(window_height),
+        Page::Language => super::language::language_scroll_max(window_height, counts.languages),
+        Page::About => scroll_for(window_height, about_content_height()),
+        Page::Storage => scroll_for(
+            window_height,
+            super::storage::storage_content_height(counts.disks),
+        ),
+        Page::Update => scroll_for(window_height, super::update::update_content_height()),
+    }
+}
+
+/// Lo que se puede bajar con un contenido de alto `needed` en esta ventana.
+fn scroll_for(window_height: f32, needed: f32) -> f32 {
     let visible = window_height - measures::CONTENT_TOP - measures::GROUP_GAP;
-    let needed = about_content_height();
     (needed - visible).max(0.0)
 }
 

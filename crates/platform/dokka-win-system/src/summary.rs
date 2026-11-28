@@ -43,6 +43,7 @@ pub(crate) fn read_all() -> SystemSummary {
         storage_total_bytes: total,
         datetime: read_datetime(),
         locale: read_locale(),
+        storage: None,
     }
 }
 

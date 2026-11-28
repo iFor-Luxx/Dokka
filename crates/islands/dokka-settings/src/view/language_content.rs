@@ -81,8 +81,14 @@ pub(crate) fn language_content(theme: &Theme, settings: &Settings) -> ContentSce
     // Primer día de la semana: segmentado propio de Dokka.
     let top = language_card_top(2, count, scroll);
     let heights = [measures::CONTENT_ROW_HEIGHT; 1];
-    let (panel, card_dividers, card_texts) =
-        group_pieces(theme, top, &["Primer día de la semana"], &heights, &[false; 1], width);
+    let (panel, card_dividers, card_texts) = group_pieces(
+        theme,
+        top,
+        &["Primer día de la semana"],
+        &heights,
+        &[false; 1],
+        width,
+    );
     let touch = segmented_touch(language_row(2, 0, count, width, scroll));
     let props = SegmentedProps {
         options: vec!["Domingo".to_owned(), "Lunes".to_owned()],
@@ -90,7 +96,9 @@ pub(crate) fn language_content(theme: &Theme, settings: &Settings) -> ContentSce
     };
     if top + measures::CONTENT_ROW_HEIGHT < measures::CONTENT_TOP || top > window_height {
         flats.push(zeroed(panel));
-        flats.extend(zero_panels(segmented_panels(theme, touch, &props).into_iter().collect()));
+        flats.extend(zero_panels(
+            segmented_panels(theme, touch, &props).into_iter().collect(),
+        ));
     } else {
         flats.push(panel);
         dividers.extend(hide_above(card_dividers, window_height));
@@ -152,10 +160,7 @@ fn language_values(summary: &dokka_model::SystemSummary) -> [&str; 6] {
             .as_deref()
             .unwrap_or("No disponible"),
         locale.date_pattern.as_deref().unwrap_or("No disponible"),
-        locale
-            .number_format
-            .as_deref()
-            .unwrap_or("No disponible"),
+        locale.number_format.as_deref().unwrap_or("No disponible"),
     ]
 }
 

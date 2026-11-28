@@ -24,6 +24,8 @@ pub enum PaintedControl {
     LanguageSegment,
     /// Botón de "Fecha y hora" (0) o de "Idioma y región" (1).
     GeneralButton(u8),
+    /// Botón de "Almacenamiento": 0 vaciar papelera, 1 ajustes.
+    StorageButton(u8),
 }
 
 /// Todo lo que cambia lo que se ve: si no cambió, el shell no repinta.
@@ -55,6 +57,10 @@ pub struct PaintedSettings {
     pub system: Option<dokka_model::SystemSummary>,
     /// Fecha y hora que muestra "Fecha y hora", en vivo con el `Tick`.
     pub now: Option<PageNow>,
+    /// Desglose de almacenamiento para su apartado.
+    pub storage: Option<dokka_model::StorageBreakdown>,
+    /// Versión instalada de Dokka para su apartado.
+    pub dokka_version: Option<String>,
 }
 
 /// Fila arrastrada en la huella: hueco de origen, destino y altura.
