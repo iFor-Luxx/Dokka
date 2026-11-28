@@ -4,7 +4,7 @@
 //! como `false` para que el hilo lo registre, relea y la pantalla muestre
 //! el valor real. Nada se deshace al cerrar Dokka.
 
-use windows::Win32::Foundation::{ERROR_SUCCESS, WIN32_ERROR};
+use windows::Win32::Foundation::{ERROR_SERVICE_NOT_ACTIVE, ERROR_SUCCESS, WIN32_ERROR};
 use windows::Win32::Security::SE_TIME_ZONE_NAME;
 use windows::Win32::System::Registry::{
     HKEY, HKEY_LOCAL_MACHINE, KEY_SET_VALUE, REG_DWORD, REG_SZ, RegCloseKey, RegOpenKeyExW,
@@ -12,20 +12,22 @@ use windows::Win32::System::Registry::{
 };
 use windows::Win32::System::Services::{
     CloseServiceHandle, ControlService, OpenSCManagerW, OpenServiceW, SC_MANAGER_CONNECT,
-    SERVICE_ALL_ACCESS, SERVICE_CONTROL_PARAMCHANGE, SERVICE_STATUS,
+    SERVICE_CONTROL_PARAMCHANGE, SERVICE_PAUSE_CONTINUE, SERVICE_STATUS,
 };
 use windows::Win32::System::SystemInformation::SetLocalTime;
-use windows::Win32::System::Time::{DYNAMIC_TIME_ZONE_INFORMATION, EnumDynamicTimeZoneInformation};
-use windows::core::HSTRING;
+use windows::Win32::System::Time::{
+    DYNAMIC_TIME_ZONE_INFORMATION, EnumDynamicTimeZoneInformation, SetDynamicTimeZoneInformation,
+};
+use windows::core::{HRESULT, HSTRING};
 
 /// Servidor válido: 1-253 letras, números, puntos y guiones.
 pub(crate) fn is_valid_ntp_server(server: &str) -> bool {
     if server.is_empty() || server.len() > 253 {
         return false;
     }
-    server.bytes().all(|unit| {
-        unit.is_ascii_alphanumeric() || unit == b'.' || unit == b'-'
-    })
+    server
+        .bytes()
+        .all(|unit| unit.is_ascii_alphanumeric() || unit == b'.' || unit == b'-')
 }
 
 /// Automáticas (`NTP`) o manual (`NoSync`) y aviso al servicio.
@@ -95,7 +97,8 @@ fn tz_auto() -> &'static str {
     r"SYSTEM\CurrentControlSet\Services\tzautoupdate"
 }
 
-/// Avisa a `W32Time` de que cambió su configuración.
+/// Avisa a `W32Time` de que cambió su configuración. Si el servicio está
+/// parado, el registro ya quedó escrito y no se trata como fallo.
 fn notify_w32time() -> bool {
     // SAFETY: solo conecta con el gestor local y cierra lo abierto abajo.
     let manager = unsafe {
@@ -104,9 +107,10 @@ fn notify_w32time() -> bool {
             Err(_) => return false,
         }
     };
+    let service_name = HSTRING::from("W32Time");
     // SAFETY: el gestor sigue válido y el servicio se cierra abajo.
     let service = unsafe {
-        match OpenServiceW(manager, HSTRING::from("W32Time"), SERVICE_ALL_ACCESS) {
+        match OpenServiceW(manager, &service_name, SERVICE_PAUSE_CONTINUE) {
             Ok(service) => service,
             Err(_) => {
                 let _ = CloseServiceHandle(manager);
@@ -116,13 +120,17 @@ fn notify_w32time() -> bool {
     };
     let mut status = SERVICE_STATUS::default();
     // SAFETY: el servicio se abrió arriba y el estado es válido.
-    let notified = unsafe { ControlService(service, SERVICE_CONTROL_PARAMCHANGE, &mut status).is_ok() };
+    let notified = unsafe { ControlService(service, SERVICE_CONTROL_PARAMCHANGE, &mut status) };
     // SAFETY: ambos se abrieron arriba y ya no se usan.
     unsafe {
         let _ = CloseServiceHandle(service);
         let _ = CloseServiceHandle(manager);
     }
-    notified
+    match notified {
+        Ok(()) => true,
+        Err(error) if error.code() == HRESULT::from_win32(ERROR_SERVICE_NOT_ACTIVE.0) => true,
+        Err(_) => false,
+    }
 }
 
 /// Busca la zona con esta clave enumerando las de Windows.
@@ -161,7 +169,8 @@ fn write_registry_string(path: &str, value: &str, data: &str) -> bool {
     let subkey = HSTRING::from(path);
     let mut key = HKEY(std::ptr::null_mut());
     // SAFETY: abre la clave existente solo para escribir y se cierra abajo.
-    let opened = unsafe { RegOpenKeyExW(HKEY_LOCAL_MACHINE, &subkey, None, KEY_SET_VALUE, &mut key) };
+    let opened =
+        unsafe { RegOpenKeyExW(HKEY_LOCAL_MACHINE, &subkey, None, KEY_SET_VALUE, &mut key) };
     if opened != ERROR_SUCCESS {
         return false;
     }
@@ -169,15 +178,7 @@ fn write_registry_string(path: &str, value: &str, data: &str) -> bool {
     let wide: Vec<u16> = data.encode_utf16().chain([0]).collect();
     let bytes = wide_bytes(&wide);
     // SAFETY: `bytes` son los bytes UTF-16 con nulo de `data`.
-    let written: WIN32_ERROR = unsafe {
-        RegSetValueExW(
-            key,
-            &name,
-            None,
-            REG_SZ,
-            Some(bytes),
-        )
-    };
+    let written: WIN32_ERROR = unsafe { RegSetValueExW(key, &name, None, REG_SZ, Some(bytes)) };
     // SAFETY: la clave se abrió arriba y ya no se usa.
     unsafe {
         let _ = RegCloseKey(key);
@@ -190,16 +191,15 @@ fn write_registry_dword(path: &str, value: &str, data: u32) -> bool {
     let subkey = HSTRING::from(path);
     let mut key = HKEY(std::ptr::null_mut());
     // SAFETY: abre la clave existente solo para escribir y se cierra abajo.
-    let opened = unsafe { RegOpenKeyExW(HKEY_LOCAL_MACHINE, &subkey, None, KEY_SET_VALUE, &mut key) };
+    let opened =
+        unsafe { RegOpenKeyExW(HKEY_LOCAL_MACHINE, &subkey, None, KEY_SET_VALUE, &mut key) };
     if opened != ERROR_SUCCESS {
         return false;
     }
     let name = HSTRING::from(value);
     let bytes = data.to_le_bytes();
     // SAFETY: `bytes` son los 4 bytes del `u32` en orden local.
-    let written: WIN32_ERROR = unsafe {
-        RegSetValueExW(key, &name, None, REG_DWORD, Some(&bytes))
-    };
+    let written: WIN32_ERROR = unsafe { RegSetValueExW(key, &name, None, REG_DWORD, Some(&bytes)) };
     // SAFETY: la clave se abrió arriba y ya no se usa.
     unsafe {
         let _ = RegCloseKey(key);
@@ -210,10 +210,5 @@ fn write_registry_dword(path: &str, value: &str, data: u32) -> bool {
 /// Vista de `u16` como bytes para `RegSetValueExW`.
 fn wide_bytes(wide: &[u16]) -> &[u8] {
     // SAFETY: `u16` y `u8` son planos y el corte usa su tamaño real.
-    unsafe {
-        std::slice::from_raw_parts(
-            wide.as_ptr().cast::<u8>(),
-            wide.len() * size_of::<u16>(),
-        )
-    }
+    unsafe { std::slice::from_raw_parts(wide.as_ptr().cast::<u8>(), std::mem::size_of_val(wide)) }
 }

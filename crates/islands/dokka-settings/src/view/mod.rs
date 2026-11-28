@@ -3,6 +3,7 @@ mod about_cards;
 mod about_content;
 mod about_pc;
 mod content;
+mod datetime_cards;
 mod datetime_content;
 mod datetime_edit;
 mod datetime_rows;

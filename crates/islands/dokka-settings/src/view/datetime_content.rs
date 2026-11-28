@@ -14,11 +14,3 @@ pub(crate) fn datetime_content(theme: &Theme, settings: &mut Settings) -> Conten
     let plus = settings.stepper_plus_drawing(theme);
     super::datetime_edit::datetime_edit_content(theme, settings, &minus, &plus)
 }
-
-/// Fecha en vivo para la tarjeta, con segundos para que se vea pasar.
-pub(crate) fn format_live_public(
-    now: Option<crate::general::PageNow>,
-    hour_24: bool,
-) -> String {
-    super::datetime_edit::format_live_shared(now, hour_24)
-}

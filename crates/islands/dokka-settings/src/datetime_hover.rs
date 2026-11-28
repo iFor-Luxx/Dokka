@@ -30,7 +30,9 @@ pub(crate) fn datetime_hover(settings: &Settings, x: f32, y: f32) -> Option<Pain
     if edit.can_change && auto_zone_at(edit, width, scroll, x, y) {
         return Some(PaintedControl::DateTimeAutoZone);
     }
-    if edit.can_change && let Some(hit) = server_hit_at(edit, width, scroll, x, y) {
+    if edit.can_change
+        && let Some(hit) = server_hit_at(edit, width, scroll, x, y)
+    {
         use super::logic::ServerHit as Hit;
         match hit {
             Hit::Change => return Some(PaintedControl::DateTimeServer(0)),

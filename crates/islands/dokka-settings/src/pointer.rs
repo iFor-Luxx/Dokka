@@ -10,10 +10,10 @@ use dokka_model::Preferences;
 use super::datetime_hover::datetime_hover;
 use super::general::GeneralPage;
 use super::logic::{
-    DockSwitch, ListCounts, SliderTarget, about_button_at, datetime_button_at,
-    datetime_switch_at, dock_slider_at, dock_switch_at, general_row_at, icon_scale_from,
-    icon_scale_to, language_button_at, language_segment_at, magnification_from,
-    magnification_to, menubar_switch_at, storage_button_at, taskbar_switch_at,
+    DockSwitch, ListCounts, SliderTarget, about_button_at, datetime_button_at, datetime_switch_at,
+    dock_slider_at, dock_switch_at, general_row_at, icon_scale_from, icon_scale_to,
+    language_button_at, language_segment_at, magnification_from, magnification_to,
+    menubar_switch_at, storage_button_at, taskbar_switch_at,
 };
 use super::painted::PaintedControl;
 use super::slider_pointer::{clamped_slider_value, drag_track, slider_value_at_x_for};

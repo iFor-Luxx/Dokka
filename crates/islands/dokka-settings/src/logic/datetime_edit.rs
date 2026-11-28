@@ -36,7 +36,8 @@ pub(crate) fn edit_top(scroll: f32) -> f32 {
 pub(crate) fn edit_card_tops(edit: &DateTimeEdit, scroll: f32) -> [f32; 3] {
     let top = edit_top(scroll);
     let first = top;
-    let second = first + card0_rows(edit) as f32 * measures::CONTENT_ROW_HEIGHT
+    let second = first
+        + card0_rows(edit) as f32 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
         + admin_note_height(edit.can_change);
     let third = second

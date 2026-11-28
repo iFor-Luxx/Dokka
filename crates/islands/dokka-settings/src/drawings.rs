@@ -40,6 +40,8 @@ impl CachedDrawings {
             grip: None,
             chevron: None,
             gear: None,
+            stepper_minus: None,
+            stepper_plus: None,
             nav: None,
             traffic: None,
         }

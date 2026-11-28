@@ -133,11 +133,7 @@ pub(crate) fn auto_time_at(edit: &DateTimeEdit, width: f32, scroll: f32, x: f32,
     let tops = edit_card_tops(edit, scroll);
     let rows = if edit.server_editing { 3 } else { 2 };
     let heights = vec![measures::CONTENT_ROW_HEIGHT; rows];
-    in_touch(
-        &content_switch(tops[0], &heights, 0, width),
-        x,
-        y,
-    )
+    in_touch(&content_switch(tops[0], &heights, 0, width), x, y)
 }
 
 /// Interruptor de zona automática bajo el punto, si cae en él.
@@ -149,11 +145,7 @@ pub(crate) fn auto_zone_at(edit: &DateTimeEdit, width: f32, scroll: f32, x: f32,
         2
     };
     let heights = vec![measures::CONTENT_ROW_HEIGHT; rows];
-    in_touch(
-        &content_switch(tops[2], &heights, 0, width),
-        x,
-        y,
-    )
+    in_touch(&content_switch(tops[2], &heights, 0, width), x, y)
 }
 
 /// Interruptor de formato de 24 horas bajo el punto, con su altura real.

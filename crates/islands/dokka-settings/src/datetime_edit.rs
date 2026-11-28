@@ -96,8 +96,8 @@ impl DateTimeEdit {
     pub(crate) fn start_manual(&mut self, now: crate::general::PageNow) {
         self.manual_editing = true;
         self.day = now.day;
-        self.month = now.month.max(1).min(12);
-        self.year = now.year.max(1970).min(2100);
+        self.month = now.month.clamp(1, 12);
+        self.year = now.year.clamp(1970, 2100);
         self.hour = now.hour.min(23);
         self.minute = now.minute.min(59);
         self.clamp_day();
@@ -169,7 +169,8 @@ pub(crate) fn days_in_month(year: u16, month: u16) -> u16 {
     match month {
         4 | 6 | 9 | 11 => 30,
         2 => {
-            let leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+            let leap =
+                year.is_multiple_of(4) && (!year.is_multiple_of(100) || year.is_multiple_of(400));
             if leap { 29 } else { 28 }
         }
         _ => 31,

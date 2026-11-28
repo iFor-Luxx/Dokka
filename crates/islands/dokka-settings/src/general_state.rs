@@ -150,7 +150,8 @@ impl Settings {
     pub(crate) fn scroll_by(&mut self, delta: f32) {
         let page = self.navigation_general();
         let edit = self.datetime_edit.clone();
-        let max = super::logic::general_scroll_max(self.window_height(), page, self.list_counts(), &edit);
+        let max =
+            super::logic::general_scroll_max(self.window_height(), page, self.list_counts(), &edit);
         self.scroll = (self.scroll + delta).clamp(0.0, max);
     }
 

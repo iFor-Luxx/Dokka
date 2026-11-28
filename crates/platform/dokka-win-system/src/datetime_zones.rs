@@ -60,9 +60,7 @@ fn zone_key(units: &[u16]) -> Option<String> {
 
 /// Nombre visible traducido de la clave, o `None` si no se lee.
 fn zone_display(key: &str) -> Option<String> {
-    let path = format!(
-        r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones\{key}"
-    );
+    let path = format!(r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones\{key}");
     let raw = read_registry_string(&path, "MUI_Display")
         .or_else(|| read_registry_string(&path, "Display"))?;
     let text = translate(&raw).unwrap_or(raw);

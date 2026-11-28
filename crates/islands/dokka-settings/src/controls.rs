@@ -6,10 +6,10 @@ use dokka_components::nav_pill::NavHalf;
 use super::datetime_click::datetime_edit_action;
 use super::general::{AboutButton, GeneralPage};
 use super::logic::{
-    DockSwitch, SliderTarget, about_button_at, datetime_button_at, dock_segment_at,
-    dock_slider_at, dock_switch_at, general_row_at, icon_scale_from, language_button_at,
-    language_segment_at, magnification_from, menubar_switch_at, position_from_index,
-    storage_button_at, taskbar_switch_at, toggle_menubar,
+    DockSwitch, SliderTarget, about_button_at, datetime_button_at, dock_segment_at, dock_slider_at,
+    dock_switch_at, general_row_at, icon_scale_from, language_button_at, language_segment_at,
+    magnification_from, menubar_switch_at, position_from_index, storage_button_at,
+    taskbar_switch_at, toggle_menubar,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;

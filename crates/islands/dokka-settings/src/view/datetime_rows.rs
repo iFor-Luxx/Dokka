@@ -12,7 +12,7 @@ use crate::datetime_edit::visible_zones as zone_capacity;
 use crate::logic::{edit_row, stepper_rects};
 use crate::state::Settings;
 
-use super::datetime_edit::format_live_shared;
+use super::datetime_cards::format_live_shared;
 
 /// Valor del servidor o su borrador con "Cambiar…".
 pub(crate) fn server_texts(
@@ -47,7 +47,11 @@ pub(crate) fn server_texts(
         .ntp_server
         .clone()
         .unwrap_or_else(|| "No disponible".to_owned());
-    let suffix = if edit.can_change { " · Cambiar…" } else { "" };
+    let suffix = if edit.can_change {
+        " · Cambiar…"
+    } else {
+        ""
+    };
     texts.push(Text {
         x: measures::CONTENT_LEFT + width - measures::CONTENT_PADDING,
         center_y: middle,
@@ -205,7 +209,11 @@ pub(crate) fn zone_texts(
                     .find(|zone| zone.key == key)
                     .map(|zone| zone.display.clone())
             })
-            .unwrap_or_else(|| current.clone().unwrap_or_else(|| "No disponible".to_owned()));
+            .unwrap_or_else(|| {
+                current
+                    .clone()
+                    .unwrap_or_else(|| "No disponible".to_owned())
+            });
         let suffix = if edit.zone_open { " ▴" } else { " ▾" };
         texts.push(Text {
             x: measures::CONTENT_LEFT + width - measures::CONTENT_PADDING,

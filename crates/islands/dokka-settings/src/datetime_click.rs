@@ -12,7 +12,11 @@ use super::state::Settings;
 use crate::SettingsAction;
 
 /// Acción de fecha de un clic, si cae en sus controles nuevos.
-pub(crate) fn datetime_edit_action(settings: &mut Settings, x: f32, y: f32) -> Option<SettingsAction> {
+pub(crate) fn datetime_edit_action(
+    settings: &mut Settings,
+    x: f32,
+    y: f32,
+) -> Option<SettingsAction> {
     if settings.general() != GeneralPage::DateTime {
         return None;
     }
