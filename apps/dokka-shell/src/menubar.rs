@@ -4,7 +4,8 @@
 //!
 //! La isla decide y dibuja; aquí solo se conecta con la plataforma y con lo
 //! que ya hace `context_menu.rs`, sin duplicarlo. Las acciones viven en
-//! `menubar_actions.rs` para que este archivo no pase de 300 líneas. Abrir
+//! `menubar_actions.rs`, el clic en `menubar_click.rs` y el cierre con su
+//! salida por piezas en `menubar_dismiss.rs`. Abrir
 //! el menú, el calendario o la fila cierra los otros dos, el del dock y las
 //! vistas previas; abrir el del dock o un panel los cierra a ellos.
 
@@ -50,10 +51,15 @@ pub(crate) fn refresh_clock(session: &mut DockSession) {
 }
 
 /// Dibuja la barra en su ventana si algo cambió (mira `menubar_painted`).
+/// Con la salida por piezas en curso no repinta: Composition la anima sin
+/// que Dokka pise opacidad, escala ni posición (ni el `Tick` ni la música).
 pub(crate) fn render_menubar(
     session: &mut DockSession,
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
+    if session.menubar.is_control_closing() {
+        return Ok(());
+    }
     let width = surface.menubar_width();
     let screen_height = surface.menubar_monitor_height();
     let finger = session.menubar.painted();
@@ -71,12 +77,6 @@ pub(crate) fn render_menubar(
     surface.menubar_set_active_areas(&areas);
     session.menubar_painted = Some(finger);
     Ok(())
-}
-
-/// Cierra el menú, el calendario o la fila. El centro se desvanece con su
-/// fundido (`menubar_dismiss.rs`); lo demás se cierra al instante como hoy.
-pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) {
-    crate::menubar_dismiss::dismiss_menubar(session, surface);
 }
 
 /// Con la galería abierta la ventana necesita todo el alto de la pantalla
@@ -135,7 +135,7 @@ pub(crate) fn handle_menubar_event(
             // Solo el centro se cierra solo: por el mismo camino que al
             // perder el foco (devuelve el foco igual, sin robarlo).
             if session.menubar.tick_control_idle() {
-                dismiss_menubar(session, surface);
+                crate::menubar_dismiss::dismiss_menubar(session, surface);
             }
             return Ok(false);
         }
@@ -157,12 +157,12 @@ pub(crate) fn handle_menubar_event(
             session.menubar.pointer_left();
         }
         SurfaceEvent::MenubarClicked { x, y } => {
-            click_menubar(session, surface, x, y)?;
+            crate::menubar_click::click_menubar(session, surface, x, y)?;
             session.menubar.note_control_used();
             session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarRightClicked { x, y } => {
-            right_click_menubar(session, surface, x, y)?;
+            crate::menubar_click::right_click_menubar(session, surface, x, y)?;
             session.menubar.note_control_used();
         }
         SurfaceEvent::MenubarTyped { character } => {
@@ -190,100 +190,9 @@ pub(crate) fn handle_menubar_event(
             crate::menubar_search::step_search_down(session);
         }
         SurfaceEvent::MenubarDismissed => {
-            dismiss_menubar(session, surface);
+            crate::menubar_dismiss::dismiss_menubar(session, surface);
         }
         _ => return Ok(false),
     }
     Ok(true)
-}
-
-/// Clic derecho en la barra: en una fila de segundo plano abre su menú;
-/// en su botón abre el panel como el clic izquierdo.
-fn right_click_menubar(
-    session: &mut DockSession,
-    surface: &mut Surface,
-    x: f32,
-    y: f32,
-) -> Result<(), Box<dyn Error>> {
-    let width = surface.menubar_width();
-    if let Some(action) = session.menubar.background_right_clicked(x, y, width) {
-        return run_menubar_action(session, surface, action);
-    }
-    Ok(())
-}
-
-/// Clic en la barra: icono, hora, fila, píldora o cerrar fuera. Abrir el menú,
-/// el calendario o la fila cierra los otros dos, el del dock y las previas;
-/// cerrar devuelve el foco. Al abrir red o idioma se releen con la app de
-/// delante aún al frente; al abrir buscar se calculan sus resultados.
-fn click_menubar(
-    session: &mut DockSession,
-    surface: &mut Surface,
-    x: f32,
-    y: f32,
-) -> Result<(), Box<dyn Error>> {
-    let width = surface.menubar_width();
-    let screen_height = surface.menubar_monitor_height();
-    let was_menu = session.menubar.is_menu_open();
-    let was_calendar = session.menubar.is_calendar_open();
-    let was_tray = session.menubar.is_tray_open();
-    let was_closing = session.menubar.is_control_closing();
-    let chosen = session.menubar.click(x, y, width, screen_height);
-    if let Some(action) = chosen {
-        return run_menubar_action(session, surface, action);
-    }
-    if session.menubar.is_control_closing() {
-        // Fundido en curso (empezado o seguido): el foco vuelve ya; la
-        // ventana y las zonas se mantienen hasta el cierre real.
-        surface.menubar_menu_closed();
-        return Ok(());
-    }
-    if !was_tray && session.menubar.is_tray_open() {
-        match session.menubar.tray_kind() {
-            Some(dokka_menubar::TrayKind::Volume) => {
-                crate::menubar_volume::refresh_audio_outputs(session);
-            }
-            Some(dokka_menubar::TrayKind::ControlCenter) => {
-                crate::menubar_brightness::request_brightness(session);
-            }
-            Some(dokka_menubar::TrayKind::Network) => {
-                crate::menubar_network::refresh_network(session);
-            }
-            Some(dokka_menubar::TrayKind::Language) => {
-                crate::menubar_language::refresh_languages(session);
-            }
-            Some(dokka_menubar::TrayKind::Search) => {
-                crate::menubar_search::refresh_search_results(session, surface);
-            }
-            _ => {}
-        }
-    }
-    let now_menu = session.menubar.is_menu_open();
-    let now_calendar = session.menubar.is_calendar_open();
-    let now_tray = session.menubar.is_tray_open();
-    let was_open = was_menu || was_calendar || was_tray;
-    let now_open = now_menu || now_calendar || now_tray;
-    if !was_open && now_open {
-        // Se acaba de abrir: fuera el menú del dock y las previas.
-        session.dock.close_menu();
-        surface.menu_closed();
-        session.previews.close();
-        surface.menubar_menu_opened();
-    } else if was_open
-        && now_open
-        && (was_menu != now_menu || was_calendar != now_calendar || was_tray != now_tray)
-    {
-        // Cambio directo entre menú, calendario y fila: ya tenía el foco,
-        // salvo que venga de cancelar el fundido (ya se había devuelto).
-        session.dock.close_menu();
-        surface.menu_closed();
-        session.previews.close();
-        if was_closing {
-            surface.menubar_menu_opened();
-        }
-    } else if was_open && !now_open {
-        surface.menubar_menu_closed();
-    }
-    reset_menubar_window(session, surface);
-    Ok(())
 }

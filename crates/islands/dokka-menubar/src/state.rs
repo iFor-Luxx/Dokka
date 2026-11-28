@@ -92,9 +92,10 @@ pub struct Menubar {
     pub(crate) gallery_grid_scroll: f32,
     pub(crate) gallery_cursor: bool,
     pub(crate) shown: MenubarPreferences,
-    /// Fundido de salida del centro en curso, si lo hay: guarda el progreso.
-    /// Mientras existe el panel sigue abierto y se repinta en cada fotograma.
-    pub(crate) control_dismiss: Option<dokka_animation::Reveal>,
+    /// Salida del centro por piezas en curso, si la hay: destino y tiempo
+    /// para el cierre real. Mientras existe el panel sigue abierto y la
+    /// plataforma lo anima sin repintar.
+    pub(crate) control_dismiss: Option<super::logic::ClosingCenter>,
 }
 
 impl Menubar {

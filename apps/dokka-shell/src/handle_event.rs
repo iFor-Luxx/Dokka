@@ -213,7 +213,7 @@ fn click(
     with_shift: bool,
 ) -> Result<(), Box<dyn Error>> {
     // Un clic en el dock es fuera de la barra: cierra su menú.
-    crate::menubar::dismiss_menubar(session, surface);
+    crate::menubar_dismiss::dismiss_menubar(session, surface);
     if session.dock.is_menu_open() {
         if let Some(action) = session.dock.click_menu(x, y) {
             return run_menu_action(session, surface, action);

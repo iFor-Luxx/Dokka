@@ -2,6 +2,7 @@
 
 mod bitmap;
 mod color;
+mod control_dismiss;
 mod cursor;
 mod divider;
 mod dot;
@@ -20,6 +21,7 @@ mod thumbnail;
 
 pub use bitmap::Bitmap;
 pub use color::Color;
+pub use control_dismiss::ControlDismiss;
 pub use cursor::TextCursor;
 pub use divider::Divider;
 pub use dot::Dot;
