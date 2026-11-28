@@ -11,6 +11,7 @@ use dokka_scene::Scene;
 use windows::UI::Composition::Compositor;
 use windows::core::Result;
 
+use crate::header_veil_layer::veil_matches;
 use crate::layer_sync::{
     sync_cursors, sync_dividers, sync_dots, sync_icons, sync_labels, sync_texts,
 };
@@ -40,6 +41,7 @@ impl SceneLayers {
             && same_submenu
             && self.panel_style == panel_style_of(&scene.panel)
             && self.panel_shadow_spec == scene.panel_shadow
+            && veil_matches(&self.veil, &scene.header_veil)
             && self.highlight.is_some() == scene.highlight.is_some()
             && self.highlight_style == scene.highlight.map(highlight_style_of)
             && self.panel_styles.len() == scene.panels.len()
@@ -100,6 +102,9 @@ impl SceneLayers {
             layers.update(compositor, painter, submenu)?;
         }
         sync_labels(&mut self.labels, compositor, painter, &scene.labels)?;
+        if let (Some(layer), Some(veil)) = (&mut self.veil, &scene.header_veil) {
+            layer.update(compositor, painter, &scene.panel, veil)?;
+        }
         self.apply_stage(compositor, scene)?;
         Ok(())
     }

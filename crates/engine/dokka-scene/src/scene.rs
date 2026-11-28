@@ -1,4 +1,6 @@
-use crate::{Divider, Dot, Icon, Label, Overlay, Panel, Shadow, Text, TextCursor, Thumbnail};
+use crate::{
+    Divider, Dot, HeaderVeil, Icon, Label, Overlay, Panel, Shadow, Text, TextCursor, Thumbnail,
+};
 
 /// Todo lo que muestra una superficie.
 #[derive(Debug, Clone, PartialEq)]
@@ -37,4 +39,8 @@ pub struct Scene {
     /// al máximo del tema. Solo el Launchpad lo usa durante el zoom; el resto
     /// vale 0. No reconstruye capas: la plataforma lo aplica sobre la escena.
     pub blur: f32,
+    /// Franja difuminada bajo la cabecera, solo Preferencias. La plataforma
+    /// la dibuja entre el contenido y sus piezas (píldora y título); el resto
+    /// vale `None` y se ve igual que hoy.
+    pub header_veil: Option<HeaderVeil>,
 }

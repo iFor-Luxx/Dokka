@@ -135,6 +135,20 @@ pub const HEADER_DIVIDER_RIGHT: f32 = 744.0;
 pub const HEADER_DIVIDER_TOP: f32 = 64.0;
 pub const HEADER_DIVIDER_HEIGHT: f32 = 1.0;
 
+/// Franja difuminada bajo la cabecera, estilo Tahoe: del borde superior
+/// hasta un poco por debajo del título (cubre la píldora y la línea),
+/// solo en la zona de contenido (derecha de la barra lateral). El tinte
+/// es el fondo de la ventana en degradado y el desenfoque es sutil.
+pub const HEADER_VEIL_LEFT: f32 = SIDEBAR_WIDTH;
+pub const HEADER_VEIL_TOP: f32 = 0.0;
+/// Hasta aquí llega la franja: bajo la línea de la cabecera, con aire para
+/// fundir el tinte sin línea dura antes del contenido.
+pub const HEADER_VEIL_BOTTOM: f32 = 96.0;
+/// Desenfoque del contenido que pasa bajo la franja.
+pub const HEADER_VEIL_BLUR_RADIUS: f32 = 24.0;
+/// Desplazamiento con el que la franja llega a plena intensidad.
+pub const HEADER_VEIL_FULL_SCROLL: f32 = 32.0;
+
 pub const CARD_TOP: f32 = 88.0;
 pub const CARD_HEIGHT: f32 = 120.0;
 pub const CARD_RADIUS: f32 = 16.0;
@@ -212,6 +226,27 @@ pub fn window_size(zoomed: bool) -> (f32, f32) {
 /// Origen del contenido dentro de la ventana exterior: el aire de la sombra.
 pub fn content_origin() -> (f32, f32) {
     (SHADOW_MARGIN, SHADOW_MARGIN)
+}
+
+/// Borde derecho de la franja para este ancho de ventana: como la cabecera.
+pub fn header_veil_right_for(window_width: f32) -> f32 {
+    header_right_for(window_width)
+}
+
+/// Ancho de la franja para este ancho de ventana, nunca negativo.
+pub fn header_veil_width_for(window_width: f32) -> f32 {
+    (header_veil_right_for(window_width) - HEADER_VEIL_LEFT).max(0.0)
+}
+
+/// Alto de la franja, nunca negativo.
+pub fn header_veil_height() -> f32 {
+    (HEADER_VEIL_BOTTOM - HEADER_VEIL_TOP).max(0.0)
+}
+
+/// Intensidad de la franja según el desplazamiento: 0 arriba del todo
+/// (no se nota) hasta 1 al desplazar, sin saltos.
+pub fn header_veil_strength(scroll: f32) -> f32 {
+    (scroll / HEADER_VEIL_FULL_SCROLL).clamp(0.0, 1.0)
 }
 
 /// Margen derecho original: lo que queda entre el divisor y el borde.
