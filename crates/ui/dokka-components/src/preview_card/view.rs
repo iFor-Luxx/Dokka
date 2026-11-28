@@ -71,6 +71,7 @@ pub fn preview_card(
         highlight: None,
         flat_panels: Vec::new(),
         dividers: Vec::new(),
+        cursors: Vec::new(),
         dots: Vec::new(),
         pointer: None,
         texts,

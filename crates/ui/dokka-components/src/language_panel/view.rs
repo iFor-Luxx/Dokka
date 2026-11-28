@@ -96,6 +96,7 @@ pub fn language_panel(
         highlight: Some(highlight_panel(theme, bounds, languages, highlighted)),
         flat_panels,
         dividers: vec![separator(theme, bounds, languages.len())],
+        cursors: Vec::new(),
         dots: Vec::new(),
         pointer: None,
         texts,

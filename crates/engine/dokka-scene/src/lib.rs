@@ -2,6 +2,7 @@
 
 mod bitmap;
 mod color;
+mod cursor;
 mod divider;
 mod dot;
 mod drawing;
@@ -19,6 +20,7 @@ mod thumbnail;
 
 pub use bitmap::Bitmap;
 pub use color::Color;
+pub use cursor::TextCursor;
 pub use divider::Divider;
 pub use dot::Dot;
 pub use drawing::{DRAWING_SIDE, Drawing, Shape};

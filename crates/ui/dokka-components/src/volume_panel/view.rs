@@ -66,6 +66,7 @@ pub fn volume_panel(
             separator(theme, bounds, outputs, 0),
             separator(theme, bounds, outputs, 1),
         ],
+        cursors: Vec::new(),
         dots: Vec::new(),
         pointer: None,
         texts: row_texts(theme, rows, outputs, props),

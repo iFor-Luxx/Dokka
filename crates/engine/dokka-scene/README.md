@@ -10,7 +10,8 @@
   dónde está el icono (`Below` abajo como hoy, `After` a la izquierda con la
   etiqueta a la derecha, `Before` al revés); `center_y` y `bottom` (punta)
   colocan las laterales.
-- `Overlay` añade `highlight`, `dividers` y `pointer` (la punta del menú:
+- `Overlay` añade `highlight`, `dividers`, `cursors` (el cursor tras un texto:
+  la plataforma mide ese texto y lo coloca) y `pointer` (la punta del menú:
   centro y altura; base = 2 × altura; nace en el borde hacia el dock
   —abajo, izquierda o derecha según `side`— y usa su tinte y su borde). Orden: panel, punta, resaltado, líneas, puntos, textos, iconos.
 - `Overlay` lleva `panel_shadow`: sombra suave opcional bajo el fondo, con su

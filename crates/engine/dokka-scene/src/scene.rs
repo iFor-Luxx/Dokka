@@ -1,4 +1,4 @@
-use crate::{Divider, Dot, Icon, Label, Overlay, Panel, Shadow, Text, Thumbnail};
+use crate::{Divider, Dot, Icon, Label, Overlay, Panel, Shadow, Text, TextCursor, Thumbnail};
 
 /// Todo lo que muestra una superficie.
 #[derive(Debug, Clone, PartialEq)]
@@ -17,6 +17,8 @@ pub struct Scene {
     pub icons: Vec<Icon>,
     pub dots: Vec<Dot>,
     pub dividers: Vec<Divider>,
+    /// Cursores tras un texto: la plataforma mide ese texto y los coloca.
+    pub cursors: Vec<TextCursor>,
     pub thumbnails: Vec<Thumbnail>,
     pub labels: Vec<Label>,
     /// Textos sueltos, como los nombres bajo los iconos del Launchpad.

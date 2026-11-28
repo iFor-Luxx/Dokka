@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
-use dokka_scene::{Color, Divider, Drawing, Icon, Panel, Rect, Text, TextAlign};
+use dokka_scene::{Color, Drawing, Icon, Panel, Rect, Text, TextAlign, TextCursor};
 use dokka_theme::{Theme, launchpad as measures};
 
 use super::SearchFieldProps;
+use super::cursor::text_cursor;
 
 /// Esquina superior izquierda y tamaño de la casilla, centrada.
 fn search_bounds(props: &SearchFieldProps) -> Rect {
@@ -90,7 +91,7 @@ pub fn search_label(theme: &Theme, props: &SearchFieldProps) -> Text {
     let middle = bounds.y + bounds.height / 2.0;
     if props.query.is_empty() {
         let (x, color) = if props.focused {
-            (text_end(props), theme.launchpad.search_placeholder)
+            (text_left(props), theme.launchpad.search_placeholder)
         } else {
             (text_left(props), theme.launchpad.search_text)
         };
@@ -115,44 +116,23 @@ pub fn search_label(theme: &Theme, props: &SearchFieldProps) -> Text {
     }
 }
 
-/// Cursor vertical tras el texto (o tras el borde si está vacío). Siempre hay
-/// uno, de ancho cero cuando está oculto, para no reconstruir capas al
-/// parpadear: solo se actualiza en posición y tamaño, como el resaltado.
-pub fn search_cursor(theme: &Theme, props: &SearchFieldProps) -> Divider {
+/// Cursor vertical tras el texto medido (o tras el borde si está vacío).
+/// Siempre hay uno: `visible` lo oculta sin destruir la capa al parpadear.
+pub fn search_cursor(theme: &Theme, props: &SearchFieldProps) -> TextCursor {
     let bounds = search_bounds(props);
-    if !props.focused || !props.cursor_visible {
-        return Divider {
-            bounds: Rect {
-                x: 0.0,
-                y: 0.0,
-                width: 0.0,
-                height: 0.0,
-            },
-            color: theme.launchpad.search_text,
-        };
-    }
-    Divider {
-        bounds: Rect {
-            x: text_end(props),
-            y: bounds.y + (bounds.height - measures::SEARCH_CURSOR_HEIGHT) / 2.0,
-            width: measures::SEARCH_CURSOR_WIDTH,
-            height: measures::SEARCH_CURSOR_HEIGHT,
-        },
+    text_cursor(TextCursor {
+        text_x: text_left(props),
+        center_y: bounds.y + bounds.height / 2.0,
+        content: props.query.clone(),
+        size: measures::SEARCH_TEXT_SIZE,
+        is_bold: false,
+        max_x: bounds.x + bounds.width - measures::SEARCH_TEXT_INSET,
+        gap: measures::SEARCH_CURSOR_GAP,
+        width: measures::SEARCH_CURSOR_WIDTH,
+        height: measures::SEARCH_CURSOR_HEIGHT,
         color: theme.launchpad.search_text,
-    }
-}
-
-/// Borde derecho del texto escrito, con un aire antes del cursor o del marcador.
-/// Con la casilla vacía es el borde izquierdo: el avance es aproximado para no
-/// medir la fuente en cada redibujado.
-fn text_end(props: &SearchFieldProps) -> f32 {
-    let advance = props.query.chars().count() as f32 * measures::SEARCH_CHAR_ADVANCE;
-    let gap = if props.query.is_empty() {
-        0.0
-    } else {
-        measures::SEARCH_CURSOR_GAP
-    };
-    text_left(props) + advance + gap
+        visible: props.focused && props.cursor_visible,
+    })
 }
 
 /// `true` si el punto cae dentro de la casilla.
