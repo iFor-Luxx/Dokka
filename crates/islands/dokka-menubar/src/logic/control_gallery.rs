@@ -13,6 +13,7 @@ use dokka_components::control_gallery::{
 use dokka_scene::{Overlay, Rect};
 use dokka_theme::control_gallery as measures;
 
+use super::click::MenubarClick;
 use crate::{Menubar, MenubarAction};
 
 impl Menubar {
@@ -47,14 +48,13 @@ impl Menubar {
             center: self.control_props(),
             selected: self.gallery_category.min(CATEGORY_COUNT - 1),
             query: self.gallery_query.clone(),
+            list_scroll: self.gallery_list_scroll,
+            grid_scroll: self.gallery_grid_scroll,
+            cursor_visible: self.gallery_cursor,
         }
     }
 
-    pub(crate) fn gallery_overlay(
-        &self,
-        bar_width: f32,
-        screen_height: f32,
-    ) -> Option<Overlay> {
+    pub(crate) fn gallery_overlay(&self, bar_width: f32, screen_height: f32) -> Option<Overlay> {
         let gallery = self.gallery_rect(bar_width, screen_height)?;
         Some(gallery_panel(
             &self.theme,
@@ -63,9 +63,6 @@ impl Menubar {
             &self.gallery_badges,
             gallery,
             &self.gallery_props(),
-            self.gallery_list_scroll,
-            self.gallery_grid_scroll,
-            self.gallery_cursor,
         ))
     }
 
@@ -122,8 +119,7 @@ impl Menubar {
         };
         let step = -(delta as f32) / 120.0 * measures::SCROLL_STEP;
         if contains(list_view(gallery), x, y) {
-            self.gallery_list_scroll =
-                clamp_list_scroll(gallery, self.gallery_list_scroll + step);
+            self.gallery_list_scroll = clamp_list_scroll(gallery, self.gallery_list_scroll + step);
         } else if contains(grid_view(gallery), x, y) {
             let props = self.gallery_props();
             self.gallery_grid_scroll = clamp_grid_scroll(
@@ -163,16 +159,7 @@ impl Menubar {
     ) -> Option<MenubarAction> {
         let gallery = self.gallery_rect(bar_width, screen_height)?;
         let props = self.gallery_props();
-        match gallery_hit(
-            gallery,
-            props.selected,
-            &props.query,
-            self.brightness.is_some(),
-            self.gallery_list_scroll,
-            self.gallery_grid_scroll,
-            x,
-            y,
-        )? {
+        match gallery_hit(gallery, &props, x, y)? {
             GalleryHit::Category(index) => {
                 self.gallery_category = index.min(CATEGORY_COUNT - 1);
                 self.gallery_grid_scroll = 0.0;
@@ -200,4 +187,28 @@ impl Menubar {
 
 fn contains(area: Rect, x: f32, y: f32) -> bool {
     x >= area.x && x < area.x + area.width && y >= area.y && y < area.y + area.height
+}
+
+impl crate::Menubar {
+    /// La galería va encima: primero ella (categoría, control o aceptar);
+    /// un clic en sus huecos no hace nada y no cierra. `None` si el clic no
+    /// es suyo.
+    pub(crate) fn gallery_press(
+        &mut self,
+        x: f32,
+        y: f32,
+        bar_width: f32,
+        screen_height: f32,
+    ) -> Option<MenubarClick> {
+        if !self.is_gallery_open() || !self.gallery_at(x, y, bar_width, screen_height) {
+            return None;
+        }
+        if let Some(action) = self.gallery_click(x, y, bar_width, screen_height) {
+            return Some(MenubarClick::Chosen(action));
+        }
+        if self.tray_kind() != Some(super::TrayKind::ControlCenter) {
+            return Some(MenubarClick::Dismissed);
+        }
+        Some(MenubarClick::TrayKept)
+    }
 }

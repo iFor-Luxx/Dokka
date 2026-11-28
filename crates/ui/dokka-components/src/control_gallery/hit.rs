@@ -8,16 +8,12 @@ use dokka_scene::Rect;
 
 use super::categories::CATEGORY_COUNT;
 use super::layout::{accept_button, category_row, place_sections, search_box};
-use super::props::GalleryHit;
+use super::props::{ControlGalleryProps, GalleryHit};
 
 /// Zona bajo el punto, si es pulsable.
 pub fn gallery_hit(
     gallery: Rect,
-    selected: usize,
-    query: &str,
-    with_brightness: bool,
-    list_scroll: f32,
-    grid_scroll: f32,
+    props: &ControlGalleryProps,
     x: f32,
     y: f32,
 ) -> Option<GalleryHit> {
@@ -28,11 +24,18 @@ pub fn gallery_hit(
         return Some(GalleryHit::Search);
     }
     for index in 0..CATEGORY_COUNT {
-        if contains(category_row(gallery, index, list_scroll), x, y) {
+        if contains(category_row(gallery, index, props.list_scroll), x, y) {
             return Some(GalleryHit::Category(index));
         }
     }
-    for section in place_sections(gallery, selected, query, with_brightness, grid_scroll) {
+    let sections = place_sections(
+        gallery,
+        props.selected,
+        &props.query,
+        props.center.brightness.is_some(),
+        props.grid_scroll,
+    );
+    for section in sections {
         for placed in &section.items {
             if contains(placed.tile, x, y) {
                 return Some(GalleryHit::Control(placed.item));

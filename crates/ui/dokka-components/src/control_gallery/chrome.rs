@@ -6,10 +6,11 @@
 
 use std::sync::Arc;
 
-use dokka_scene::{Divider, Drawing, Icon, IconImage, Panel, Rect, Text, TextAlign};
+use dokka_scene::{Divider, Drawing, Icon, IconImage, Panel, Rect, Text, TextAlign, TextCursor};
 use dokka_theme::{Theme, control_gallery as measures};
 
 use super::layout::{accept_button, footer_line};
+use crate::search_field::text_cursor;
 
 /// Casilla redondeada con borde azul de foco.
 pub(crate) fn search_tile(theme: &Theme, search: Rect) -> Panel {
@@ -36,7 +37,9 @@ pub(crate) fn search_icon(theme: &Theme, magnifier: &Arc<Drawing>, search: Rect)
 
 /// Lo escrito o el marcador "Buscar controles".
 pub(crate) fn search_text(theme: &Theme, search: Rect, query: &str) -> Text {
-    let x = search.x + measures::SEARCH_ICON_INSET + measures::SEARCH_ICON_SIDE
+    let x = search.x
+        + measures::SEARCH_ICON_INSET
+        + measures::SEARCH_ICON_SIDE
         + measures::SEARCH_TEXT_GAP;
     let middle = search.y + search.height / 2.0;
     if query.is_empty() {
@@ -53,7 +56,7 @@ pub(crate) fn search_text(theme: &Theme, search: Rect, query: &str) -> Text {
     Text {
         x,
         center_y: middle,
-        content: query.clone(),
+        content: query.to_owned(),
         size: measures::SEARCH_TEXT_SIZE,
         is_bold: false,
         color: theme.settings.search_text,
@@ -61,31 +64,25 @@ pub(crate) fn search_text(theme: &Theme, search: Rect, query: &str) -> Text {
     }
 }
 
-/// Cursor tras lo escrito, de ancho cero si está oculto.
-pub(crate) fn search_cursor(theme: &Theme, search: Rect, query: &str, visible: bool) -> Divider {
-    if !visible {
-        return Divider {
-            bounds: Rect {
-                x: 0.0,
-                y: 0.0,
-                width: 0.0,
-                height: 0.0,
-            },
-            color: theme.settings.search_text,
-        };
-    }
-    let left = search.x + measures::SEARCH_ICON_INSET + measures::SEARCH_ICON_SIDE
+/// Cursor tras lo escrito: la plataforma mide el texto y lo coloca.
+pub(crate) fn search_cursor(theme: &Theme, search: Rect, query: &str, visible: bool) -> TextCursor {
+    let left = search.x
+        + measures::SEARCH_ICON_INSET
+        + measures::SEARCH_ICON_SIDE
         + measures::SEARCH_TEXT_GAP;
-    Divider {
-        bounds: Rect {
-            x: left + query.chars().count() as f32 * measures::SEARCH_CHAR_ADVANCE
-                + measures::SEARCH_CURSOR_GAP,
-            y: search.y + (search.height - measures::SEARCH_CURSOR_HEIGHT) / 2.0,
-            width: measures::SEARCH_CURSOR_WIDTH,
-            height: measures::SEARCH_CURSOR_HEIGHT,
-        },
+    text_cursor(TextCursor {
+        text_x: left,
+        center_y: search.y + search.height / 2.0,
+        content: query.to_owned(),
+        size: measures::SEARCH_TEXT_SIZE,
+        is_bold: false,
+        max_x: search.x + search.width - measures::SEARCH_ICON_INSET,
+        gap: measures::SEARCH_CURSOR_GAP,
+        width: measures::SEARCH_CURSOR_WIDTH,
+        height: measures::SEARCH_CURSOR_HEIGHT,
         color: theme.settings.search_text,
-    }
+        visible,
+    })
 }
 
 /// Línea vertical entre la columna y las secciones.

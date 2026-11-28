@@ -215,17 +215,8 @@ impl Menubar {
         bar_width: f32,
         screen_height: f32,
     ) -> MenubarClick {
-        // La galería va encima: primero ella (categoría, control o aceptar);
-        // un clic en sus huecos no hace nada y no cierra.
-        if self.is_gallery_open() && self.gallery_at(x, y, bar_width, screen_height) {
-            let chosen = self.gallery_click(x, y, bar_width, screen_height);
-            if let Some(action) = chosen {
-                return MenubarClick::Chosen(action);
-            }
-            if self.tray_kind() != Some(super::TrayKind::ControlCenter) {
-                return MenubarClick::Dismissed;
-            }
-            return MenubarClick::TrayKept;
+        if let Some(click) = self.gallery_press(x, y, bar_width, screen_height) {
+            return click;
         }
         // Dentro del panel real: su propio golpe decide (o no cierra).
         if self.tray_contains(x, y)

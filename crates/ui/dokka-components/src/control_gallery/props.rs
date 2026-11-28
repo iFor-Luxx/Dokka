@@ -13,6 +13,11 @@ pub struct ControlGalleryProps {
     pub selected: usize,
     /// Lo escrito en "Buscar controles".
     pub query: String,
+    /// Desplazamiento de la columna de categorías y de las secciones.
+    pub list_scroll: f32,
+    pub grid_scroll: f32,
+    /// Fase del parpadeo del cursor de la casilla.
+    pub cursor_visible: bool,
 }
 
 /// Zona pulsable de la galería.

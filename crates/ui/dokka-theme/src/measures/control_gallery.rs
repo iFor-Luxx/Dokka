@@ -42,8 +42,6 @@ pub const SEARCH_ICON_INSET: f32 = 12.0;
 pub const SEARCH_TEXT_GAP: f32 = 8.0;
 /// Texto de la casilla.
 pub const SEARCH_TEXT_SIZE: f32 = 14.0;
-/// Ancho aproximado de cada letra, para el cursor sin medir la fuente.
-pub const SEARCH_CHAR_ADVANCE: f32 = 8.0;
 /// Aire entre la última letra y el cursor.
 pub const SEARCH_CURSOR_GAP: f32 = 2.0;
 /// Ancho y alto del cursor vertical.

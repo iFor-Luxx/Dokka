@@ -139,9 +139,8 @@ pub fn grid_height(selected: usize, query: &str, with_brightness: bool) -> f32 {
     let mut bottom = view.y + measures::PADDING;
     for section in &placed {
         for item in &section.items {
-            bottom = bottom.max(
-                item.tile.y + item.tile.height + measures::LABEL_GAP + measures::LABEL_HEIGHT,
-            );
+            bottom = bottom
+                .max(item.tile.y + item.tile.height + measures::LABEL_GAP + measures::LABEL_HEIGHT);
         }
         bottom = bottom.max(section.title.y + section.title.height + measures::LABEL_GAP);
     }

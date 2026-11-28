@@ -15,9 +15,8 @@ use dokka_components::volume_panel::VolumePanelIcons;
 use dokka_icons::{
     TrayIcons, control_center_calculator_icon, control_center_clock_icon,
     control_center_desktop_icon, control_center_lock_icon, control_center_play_icon,
-    control_center_screen_clip_icon, control_center_sun_icon,
-    control_center_task_view_icon, control_center_volume_icon, control_center_wifi_icon,
-    menubar_icon,
+    control_center_screen_clip_icon, control_center_sun_icon, control_center_task_view_icon,
+    control_center_volume_icon, control_center_wifi_icon, menubar_icon,
 };
 use dokka_model::{
     AudioOutput, MenubarPreferences, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
@@ -26,7 +25,6 @@ use dokka_scene::{Bitmap, Drawing};
 use dokka_theme::Theme;
 
 use super::logic::{OpenCalendar, OpenMenu, TrayKind};
-use super::painted::MenubarPainted;
 
 /// Lo que la barra recuerda entre eventos: nombre, hora, idioma, menú,
 /// calendario, fila derecha con sus datos y resaltados.
@@ -110,7 +108,7 @@ impl Menubar {
             control_center_calculator_icon(badge),
         ]
         .into_iter()
-        .map(|drawing| Arc::new(drawing))
+        .map(Arc::new)
         .collect();
         Self {
             volume_icons: VolumePanelIcons::new(&theme),
@@ -219,65 +217,6 @@ impl Menubar {
 
     pub fn highlighted(&self) -> Option<usize> {
         self.menu.as_ref().and_then(|menu| menu.highlighted)
-    }
-
-    /// Huella de lo dibujado: el shell solo repinta si cambia.
-    pub fn painted(&self) -> MenubarPainted {
-        MenubarPainted {
-            app: self.app_name.clone(),
-            clock: self.clock.clone(),
-            today: self.today,
-            language: self.language_code.clone(),
-            shown: self.shown,
-            control_editing: self.control_editing,
-            gallery_category: self.gallery_category,
-            gallery_query: self.gallery_query.clone(),
-            gallery_list_scroll: self.gallery_list_scroll,
-            gallery_grid_scroll: self.gallery_grid_scroll,
-            gallery_cursor: self.gallery_cursor,
-            menu_open: self.menu.is_some(),
-            icon_hovered: self.icon_hovered,
-            highlighted: self.highlighted(),
-            calendar_open: self.calendar.is_some(),
-            month_offset: self.calendar_month_offset(),
-            nav_hovered: self.nav_hovered,
-            clock_hovered: self.clock_hovered,
-            tray_open: self.tray_kind(),
-            tray_hovered: self.tray_hovered,
-            volume_level: self.volume.level,
-            volume_muted: self.volume.is_muted,
-            brightness: self.brightness,
-            volume_hovered: self.volume_hovered,
-            audio_outputs: self.audio_outputs.clone(),
-            network_kind: self.network.kind,
-            network_name: self.network.name.clone(),
-            network_online: self.network.has_internet,
-            network_hovered: self.network_hovered,
-            languages: self.languages.clone(),
-            language_hovered: self.language_hovered,
-            track: self.track.clone(),
-            artwork: self.artwork.clone(),
-            background_ids: self.background_apps.iter().map(|app| app.id).collect(),
-            background_names: self
-                .background_apps
-                .iter()
-                .map(|app| app.name.clone())
-                .collect(),
-            background_icons: self
-                .background_apps
-                .iter()
-                .map(|app| app.icon.clone())
-                .collect(),
-            background_hovered: self.background_hovered,
-            search_query: self.search_query.clone(),
-            search_results: self
-                .search_results
-                .iter()
-                .map(|item| item.name.clone())
-                .collect(),
-            search_highlighted: self.search_highlighted,
-            search_cursor: self.search_cursor,
-        }
     }
 
     pub fn close_menu(&mut self) {

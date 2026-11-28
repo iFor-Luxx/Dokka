@@ -29,9 +29,6 @@ pub fn gallery_panel(
     badges: &[Arc<Drawing>],
     gallery: Rect,
     props: &ControlGalleryProps,
-    list_scroll: f32,
-    grid_scroll: f32,
-    cursor_visible: bool,
 ) -> Overlay {
     let search = search_box(gallery);
     let with_brightness = props.center.brightness.is_some();
@@ -40,41 +37,36 @@ pub fn gallery_panel(
         props.selected,
         &props.query,
         with_brightness,
-        grid_scroll,
+        props.grid_scroll,
     );
     let mut tiles = vec![search_tile(theme, search), accept_tile(theme, gallery)];
     let mut flats = Vec::new();
-    let mut texts = vec![search_text(theme, search, &props.query), hint_text(theme, gallery)];
+    let mut texts = vec![
+        search_text(theme, search, &props.query),
+        hint_text(theme, gallery),
+    ];
     texts.push(accept_label(theme, gallery));
     let mut overlay_icons = vec![search_icon(theme, magnifier, search)];
     let mut dividers = vec![
         column_divider(theme, gallery),
         footer_divider(theme, gallery),
-        search_cursor(theme, search, &props.query, cursor_visible),
     ];
+    let mut layers = Layers {
+        tiles: &mut tiles,
+        flats: &mut flats,
+        texts: &mut texts,
+        icons: &mut overlay_icons,
+        dividers: &mut dividers,
+    };
     add_categories(
         theme,
         gallery,
         badges,
         props.selected,
-        list_scroll,
-        &mut tiles,
-        &mut flats,
-        &mut texts,
-        &mut overlay_icons,
+        props.list_scroll,
+        &mut layers,
     );
-    add_sections(
-        theme,
-        icons,
-        gallery,
-        props,
-        &placed,
-        &mut tiles,
-        &mut flats,
-        &mut texts,
-        &mut overlay_icons,
-        &mut dividers,
-    );
+    add_sections(theme, icons, gallery, props, &placed, &mut layers);
     Overlay {
         panel: Panel {
             bounds: gallery,
@@ -94,6 +86,12 @@ pub fn gallery_panel(
         highlight: None,
         flat_panels: flats,
         dividers,
+        cursors: vec![search_cursor(
+            theme,
+            search,
+            &props.query,
+            props.cursor_visible,
+        )],
         dots: Vec::new(),
         pointer: None,
         texts,
@@ -106,6 +104,15 @@ pub fn gallery_panel(
     }
 }
 
+/// Listas de la ventana donde cada zona añade lo suyo.
+struct Layers<'a> {
+    tiles: &'a mut Vec<Panel>,
+    flats: &'a mut Vec<Panel>,
+    texts: &'a mut Vec<Text>,
+    icons: &'a mut Vec<Icon>,
+    dividers: &'a mut Vec<Divider>,
+}
+
 /// Filas de la columna con su cuadrito de color y su nombre.
 fn add_categories(
     theme: &Theme,
@@ -113,10 +120,7 @@ fn add_categories(
     badges: &[Arc<Drawing>],
     selected: usize,
     list_scroll: f32,
-    tiles: &mut Vec<Panel>,
-    flats: &mut Vec<Panel>,
-    texts: &mut Vec<Text>,
-    icons: &mut Vec<Icon>,
+    layers: &mut Layers<'_>,
 ) {
     let view = list_view(gallery);
     for index in 0..CATEGORY_COUNT {
@@ -125,7 +129,7 @@ fn add_categories(
             continue;
         }
         if index == selected {
-            tiles.push(Panel {
+            layers.tiles.push(Panel {
                 bounds: row,
                 corner_radius: measures::ROW_RADIUS,
                 border_width: 0.0,
@@ -140,7 +144,7 @@ fn add_categories(
             height: measures::BADGE_SIDE,
         };
         let tint = theme.settings.badge[index % theme.settings.badge.len()];
-        flats.push(Panel {
+        layers.flats.push(Panel {
             bounds: badge,
             corner_radius: measures::BADGE_RADIUS,
             border_width: 0.0,
@@ -148,7 +152,7 @@ fn add_categories(
             border: tint,
         });
         if let Some(drawing) = badges.get(index) {
-            icons.push(Icon {
+            layers.icons.push(Icon {
                 x: badge.x + (badge.width - measures::BADGE_ICON_SIDE) / 2.0,
                 y: badge.y + (badge.height - measures::BADGE_ICON_SIDE) / 2.0,
                 side: measures::BADGE_ICON_SIDE,
@@ -157,7 +161,7 @@ fn add_categories(
                 placeholder_radius: 0.0,
             });
         }
-        texts.push(Text {
+        layers.texts.push(Text {
             x: badge.x + badge.width + measures::BADGE_TEXT_GAP,
             center_y: row.y + row.height / 2.0,
             content: category_name(index).to_owned(),
@@ -176,18 +180,14 @@ fn add_sections(
     gallery: Rect,
     props: &ControlGalleryProps,
     placed: &[super::layout::PlacedSection],
-    tiles: &mut Vec<Panel>,
-    flats: &mut Vec<Panel>,
-    texts: &mut Vec<Text>,
-    overlay_icons: &mut Vec<Icon>,
-    dividers: &mut Vec<Divider>,
+    layers: &mut Layers<'_>,
 ) {
     let view = grid_view(gallery);
     for section in placed {
         if section.title.y + section.title.height >= view.y
             && section.title.y <= view.y + view.height
         {
-            texts.push(Text {
+            layers.texts.push(Text {
                 x: section.title.x,
                 center_y: section.title.y + measures::SECTION_TITLE_HEIGHT / 2.0 - 2.0,
                 content: category_name(section.category).to_owned(),
@@ -196,11 +196,10 @@ fn add_sections(
                 color: theme.tray.secondary,
                 align: TextAlign::Left,
             });
-            dividers.push(Divider {
+            layers.dividers.push(Divider {
                 bounds: Rect {
                     x: section.title.x,
-                    y: section.title.y + measures::SECTION_TITLE_HEIGHT
-                        - measures::DIVIDER_HEIGHT,
+                    y: section.title.y + measures::SECTION_TITLE_HEIGHT - measures::DIVIDER_HEIGHT,
                     width: section.title.width,
                     height: measures::DIVIDER_HEIGHT,
                 },
@@ -225,11 +224,11 @@ fn add_sections(
                     border: theme.menubar.hover,
                 });
             }
-            tiles.append(&mut tile);
-            flats.append(&mut flat);
-            texts.append(&mut text);
-            overlay_icons.append(&mut icon);
-            texts.push(Text {
+            layers.tiles.append(&mut tile);
+            layers.flats.append(&mut flat);
+            layers.texts.append(&mut text);
+            layers.icons.append(&mut icon);
+            layers.texts.push(Text {
                 x: cell.tile.x + cell.tile.width / 2.0,
                 center_y: cell.label_y,
                 content: item_name(cell.item).to_owned(),

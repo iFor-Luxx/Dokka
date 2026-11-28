@@ -168,7 +168,9 @@ pub(crate) fn handle_menubar_event(
             if session.menubar.is_gallery_open() {
                 let width = surface.menubar_width();
                 let screen_height = surface.menubar_monitor_height();
-                session.menubar.gallery_typed(character, width, screen_height);
+                session
+                    .menubar
+                    .gallery_typed(character, width, screen_height);
             } else {
                 crate::menubar_search::type_search(session, surface, character);
             }
