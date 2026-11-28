@@ -83,6 +83,16 @@ impl Settings {
         self.drawings.chevron(theme)
     }
 
+    /// Menos del editor de fecha, creado una vez.
+    pub(crate) fn stepper_minus_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
+        self.drawings.stepper_minus(theme)
+    }
+
+    /// Más del editor de fecha, creado una vez.
+    pub(crate) fn stepper_plus_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
+        self.drawings.stepper_plus(theme)
+    }
+
     /// Engranaje grande de la cabecera de General, creado una vez.
     pub(crate) fn gear_drawing(&mut self, theme: &Theme) -> Arc<Drawing> {
         self.drawings.gear(theme)
@@ -139,7 +149,8 @@ impl Settings {
     /// La lista cabe sin moverse; cada apartado baja con su propia altura.
     pub(crate) fn scroll_by(&mut self, delta: f32) {
         let page = self.navigation_general();
-        let max = super::logic::general_scroll_max(self.window_height(), page, self.list_counts());
+        let edit = self.datetime_edit.clone();
+        let max = super::logic::general_scroll_max(self.window_height(), page, self.list_counts(), &edit);
         self.scroll = (self.scroll + delta).clamp(0.0, max);
     }
 

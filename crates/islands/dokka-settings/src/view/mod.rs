@@ -4,6 +4,8 @@ mod about_content;
 mod about_pc;
 mod content;
 mod datetime_content;
+mod datetime_edit;
+mod datetime_rows;
 mod dock_content;
 mod general_content;
 mod general_rows;

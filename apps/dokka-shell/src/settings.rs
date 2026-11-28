@@ -191,6 +191,21 @@ pub(crate) fn click_settings(
         SettingsAction::EmptyTrash => {
             crate::settings_system::empty_trash(session);
         }
+        SettingsAction::DateTimeAutoTime(enabled) => {
+            crate::settings_system::apply_datetime_auto_time(session, enabled);
+        }
+        SettingsAction::DateTimeServer(server) => {
+            crate::settings_system::apply_datetime_server(session, server);
+        }
+        SettingsAction::DateTimeManual(date) => {
+            crate::settings_system::apply_datetime_manual(session, date);
+        }
+        SettingsAction::DateTimeAutoZone(enabled) => {
+            crate::settings_system::apply_datetime_auto_zone(session, enabled);
+        }
+        SettingsAction::DateTimeZone(key) => {
+            crate::settings_system::apply_datetime_zone(session, key);
+        }
     }
     // Volver con la píldora a un apartado con datos también los pide una vez.
     crate::settings_system::refresh_after_navigation(session);

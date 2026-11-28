@@ -23,3 +23,10 @@ Cambiar un contrato requiere aprobación.
 
 `SystemTray` da los iconos de las apps en segundo plano y reenvía sus clics; `PreferencesStore`
 guarda lo ajustado en Preferencias.
+
+`DateTimeControls` escribe fecha y hora desde Preferencias, en su hilo y
+tras un clic: automáticas, servidor validado, fecha manual válida, zona
+automática y zona (con `SeTimeZonePrivilege` solo en la llamada).
+`can_change_protected` dice si el proceso está elevado; sin elevar, lo
+protegido se atenúa y no responde. Si algo falla, se registra, se relee y
+la pantalla muestra el valor real.

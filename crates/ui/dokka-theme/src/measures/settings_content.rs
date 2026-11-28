@@ -145,3 +145,12 @@ pub const STORAGE_BAR_RADIUS: f32 = 6.0;
 pub const STORAGE_BAR_ROW_HEIGHT: f32 = 48.0;
 /// Aire sobre la barra dentro de su fila.
 pub const STORAGE_BAR_TOP_GAP: f32 = 18.0;
+
+/// Ancho de cada campo del editor de fecha (Día, Mes, Año, Hora, Minuto).
+pub const DATETIME_STEP_SLOT: f32 = 64.0;
+/// Lado de cada flecha de menos y más del editor de fecha.
+pub const DATETIME_STEP_SIDE: f32 = 22.0;
+/// Aire entre cada flecha y el centro de su fila.
+pub const DATETIME_STEP_GAP: f32 = 2.0;
+/// Distancia del valor al centro de su campo en el editor de fecha.
+pub const DATETIME_FIELD_OFFSET: f32 = 14.0;

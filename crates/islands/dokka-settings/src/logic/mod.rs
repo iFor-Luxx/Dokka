@@ -1,6 +1,8 @@
 mod content;
 mod content_hit;
 mod datetime;
+mod datetime_edit;
+mod datetime_hit;
 mod dock_position;
 mod general;
 mod hit;
@@ -24,6 +26,13 @@ pub(crate) use content_hit::{
 pub(crate) use datetime::{
     datetime_button_at, datetime_button_top, datetime_card_top, datetime_labels, datetime_row,
     datetime_switch_at,
+};
+pub(crate) use datetime_edit::{
+    edit_button_top, edit_card_tops, edit_content_height, edit_row, edit_scroll_max, stepper_rects,
+};
+pub(crate) use datetime_hit::{
+    ManualHit, ServerHit, ZoneHit, auto_time_at, auto_zone_at, hour24_at, manual_hit_at,
+    server_hit_at, zone_hit_at,
 };
 pub(crate) use dock_position::{position_from_index, position_options, position_to_index};
 pub(crate) use general::{

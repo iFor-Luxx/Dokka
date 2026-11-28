@@ -3,12 +3,13 @@
 
 use dokka_components::nav_pill::NavHalf;
 
+use super::datetime_click::datetime_edit_action;
 use super::general::{AboutButton, GeneralPage};
 use super::logic::{
-    DockSwitch, SliderTarget, about_button_at, datetime_button_at, datetime_switch_at,
-    dock_segment_at, dock_slider_at, dock_switch_at, general_row_at, icon_scale_from,
-    language_button_at, language_segment_at, magnification_from, menubar_switch_at,
-    position_from_index, storage_button_at, taskbar_switch_at, toggle_menubar,
+    DockSwitch, SliderTarget, about_button_at, datetime_button_at, dock_segment_at,
+    dock_slider_at, dock_switch_at, general_row_at, icon_scale_from, language_button_at,
+    language_segment_at, magnification_from, menubar_switch_at, position_from_index,
+    storage_button_at, taskbar_switch_at, toggle_menubar,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
@@ -128,12 +129,9 @@ impl Settings {
             };
             return SettingsAction::OpenAbout(action);
         }
-        // Interruptor de "Fecha y hora": formato de 24 horas, propio de Dokka.
-        if datetime_switch_at(general, width, scroll, x, y).is_some() {
-            let mut preferences = self.values().preferences;
-            preferences.general.hour_24 = !preferences.general.hour_24;
-            self.values_mut().preferences = preferences;
-            return SettingsAction::Changed(preferences);
+        // Controles nuevos de fecha y 24 horas, propios y de Windows.
+        if let Some(action) = datetime_edit_action(self, x, y) {
+            return action;
         }
         // Segmentado de "Idioma y región": primer día de la semana.
         if let Some(index) = language_segment_at(general, width, counts.languages, scroll, x, y) {
@@ -165,6 +163,10 @@ impl Settings {
 
     /// Letra escrita con la casilla enfocada: filtra desde arriba.
     pub fn type_character(&mut self, character: char) {
+        if self.general() == GeneralPage::DateTime && self.datetime_edit.server_editing {
+            self.datetime_edit_mut().push_server(character);
+            return;
+        }
         if !self.search_focused() {
             return;
         }
@@ -176,6 +178,10 @@ impl Settings {
 
     /// Retroceso con la casilla enfocada: borra la última letra.
     pub fn erase_character(&mut self) {
+        if self.general() == GeneralPage::DateTime && self.datetime_edit.server_editing {
+            self.datetime_edit_mut().pop_server();
+            return;
+        }
         if self.search_focused() {
             self.query_mut().pop();
         }
@@ -183,6 +189,9 @@ impl Settings {
 
     /// Enter con búsqueda: elige la primera coincidencia.
     pub fn confirm_search(&mut self) {
+        if self.general() == GeneralPage::DateTime && self.datetime_edit.server_editing {
+            return;
+        }
         if !self.search_focused() || self.query().is_empty() {
             return;
         }
@@ -193,6 +202,14 @@ impl Settings {
 
     /// Esc: limpia lo escrito y quita el foco.
     pub fn escape_search(&mut self) {
+        if self.general() == GeneralPage::DateTime && self.datetime_edit.server_editing {
+            self.datetime_edit_mut().cancel_server();
+            return;
+        }
+        if self.general() == GeneralPage::DateTime && self.datetime_edit.manual_editing {
+            self.datetime_edit_mut().cancel_manual();
+            return;
+        }
         if self.search_focused() || !self.query().is_empty() {
             self.query_mut().clear();
             self.set_search_focused(false);

@@ -13,6 +13,7 @@ use dokka_contracts::{ContractError, SystemInfo, SystemPage};
 use dokka_model::{StorageBreakdown, SystemSummary};
 
 use super::breakdown::StorageWorker;
+use super::datetime_worker::DateTimeWriteWorker;
 use super::open;
 use super::summary::read_all;
 
@@ -28,6 +29,7 @@ pub struct SystemSystemInfo {
     commands: Sender<SystemCommand>,
     shared: Arc<Mutex<Option<SystemSummary>>>,
     storage: StorageWorker,
+    writer: DateTimeWriteWorker,
 }
 
 impl SystemSystemInfo {
@@ -36,10 +38,12 @@ impl SystemSystemInfo {
         let shared = Arc::new(Mutex::new(None));
         let worker_shared = Arc::clone(&shared);
         thread::spawn(move || watch(&queue, &worker_shared));
+        let writer = DateTimeWriteWorker::start(Arc::clone(&shared));
         Self {
             commands,
             shared,
             storage: StorageWorker::start(),
+            writer,
         }
     }
 
@@ -56,6 +60,14 @@ impl SystemSystemInfo {
     /// Detiene el cálculo (al salir de "Almacenamiento").
     pub fn cancel_storage(&self) {
         self.storage.cancel();
+    }
+
+    pub(crate) fn write_send(&self, command: super::datetime_worker::WriteCommand) {
+        self.writer.send(command);
+    }
+
+    pub(crate) fn write_zones(&self) -> Option<Vec<dokka_contracts::TimezoneOption>> {
+        self.writer.cached_zones()
     }
 }
 

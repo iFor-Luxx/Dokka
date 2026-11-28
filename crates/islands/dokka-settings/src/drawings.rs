@@ -21,6 +21,8 @@ pub(crate) struct CachedDrawings {
     grip: Option<(Color, Arc<Drawing>)>,
     chevron: Option<(Color, Arc<Drawing>)>,
     gear: Option<(Color, Arc<Drawing>)>,
+    stepper_minus: Option<(Color, Arc<Drawing>)>,
+    stepper_plus: Option<(Color, Arc<Drawing>)>,
     nav: Option<NavPillIcons>,
     traffic: Option<TrafficButtons>,
 }
@@ -200,6 +202,38 @@ impl CachedDrawings {
         }
     }
 
+    /// Menos del editor de fecha, creado una vez y reutilizado.
+    pub(crate) fn stepper_minus(&mut self, theme: &Theme) -> Arc<Drawing> {
+        let color = theme.settings.row_text;
+        if self
+            .stepper_minus
+            .as_ref()
+            .is_none_or(|(known, _)| *known != color)
+        {
+            self.stepper_minus = Some((color, Arc::new(stepper_minus_drawing(color))));
+        }
+        match &self.stepper_minus {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(stepper_minus_drawing(color)),
+        }
+    }
+
+    /// Más del editor de fecha, creado una vez y reutilizado.
+    pub(crate) fn stepper_plus(&mut self, theme: &Theme) -> Arc<Drawing> {
+        let color = theme.settings.row_text;
+        if self
+            .stepper_plus
+            .as_ref()
+            .is_none_or(|(known, _)| *known != color)
+        {
+            self.stepper_plus = Some((color, Arc::new(stepper_plus_drawing(color))));
+        }
+        match &self.stepper_plus {
+            Some((_, drawing)) => Arc::clone(drawing),
+            None => Arc::new(stepper_plus_drawing(color)),
+        }
+    }
+
     /// Chevrones de la píldora según el historial, creados una vez.
     pub(crate) fn nav(&mut self, theme: &Theme) -> NavPillIcons {
         if self.nav.is_none() {
@@ -218,5 +252,37 @@ impl CachedDrawings {
         self.traffic
             .clone()
             .unwrap_or_else(|| TrafficButtons::new(theme))
+    }
+}
+
+/// Resta del editor: línea horizontal propia en el lienzo de 100.
+fn stepper_minus_drawing(color: Color) -> Drawing {
+    Drawing {
+        shapes: vec![dokka_scene::Shape::Line {
+            from: (28.0, 50.0),
+            to: (72.0, 50.0),
+            width: 10.0,
+            color,
+        }],
+    }
+}
+
+/// Suma del editor: cruz propia en el lienzo de 100.
+fn stepper_plus_drawing(color: Color) -> Drawing {
+    Drawing {
+        shapes: vec![
+            dokka_scene::Shape::Line {
+                from: (28.0, 50.0),
+                to: (72.0, 50.0),
+                width: 10.0,
+                color,
+            },
+            dokka_scene::Shape::Line {
+                from: (50.0, 28.0),
+                to: (50.0, 72.0),
+                width: 10.0,
+                color,
+            },
+        ],
     }
 }
