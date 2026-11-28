@@ -37,7 +37,11 @@ del deslizador y devuelve `MenubarAction`. El centro se cierra solo tras 6 s
 sin uso con el cursor fuera de su panel y sin clics, arrastres ni teclas
 (`logic/control_idle.rs`: cuenta un `Tick` de 1 s; con el cursor encima o
 arrastrando no se cierra y cualquier uso reinicia; el shell lo cierra por el
-camino normal). Da su `Scene` (con el menú, el
+camino normal). Al cerrarse (también por clic fuera o Esc) no desaparece
+de golpe: se desvanece en 0,2 s encogiéndose un poco hacia su icono
+(`logic/control_dismiss.rs` con el `Reveal` de `dokka-animation` y los
+tiempos de `dokka-theme`); el foco vuelve al instante, dentro no acepta
+clics mientras dura y la huella incluye el progreso. Da su `Scene` (con el menú, el
 calendario o el panel real como `overlay`) y sus zonas activas (la franja y,
 abierto, lo desplegado con su hueco; el buscador la casilla y la tarjeta con el
 aire de la sombra para no recortarla, sin los huecos vacíos; en modo editar
@@ -49,7 +53,7 @@ tildes, añade el control quitado al momento con el mismo
 `HiddenControlsChanged` (los del centro salen atenuados sin responder),
 "Aceptar" cierra galería y modo editar, la rueda desplaza su columna o sus
 secciones y el teclado de la barra escribe en su casilla. Expone `MenubarPainted` para repintar
-solo si cambia (datos de los paneles incluidos) y `TrayKind` para saber qué
+solo si cambia (datos de los paneles y progreso del fundido incluidos) y `TrayKind` para saber qué
 panel está abierto.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco.
@@ -75,6 +79,7 @@ Cada panel usa su pieza de `dokka-components` (una carpeta por panel con
 | `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula, los ocultos de `shown` y el brillo en sus props, con `set_brightness` que recoloca el alto y `set_shown` que lo recoloca si cambian los ocultos); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red |
 | `control_idle.rs` | cierre solo del centro tras 6 s (`IDLE_CLOSE_SECONDS` del tema) con el cursor fuera y sin clics, arrastres ni teclas: cuenta un `Tick` de 1 s, decide en `control_should_auto_close` (el modo editar queda excluido ahí) y el shell cierra por el camino normal |
 | `control_center.rs` | `open_control_center` con los datos combinados (incluida la carátula, los ocultos de `shown` y el brillo en sus props, con `set_brightness` que recoloca el alto y `set_shown` que lo recoloca si cambian los ocultos); los deslizadores delegan en volumen y brillo (`VolumeSetLevel` / `BrightnessSetLevel` en vivo, con recuerdo de cuál se arrastra), los botones en sus variantes (vista de tareas, proyectar, calculadora, recorte, reloj y tareas son variantes nuevas) y la tarjeta de red abre el panel de red; la burbuja y los "−" pasan `editing` a tamaño, panel y golpe; el centro aporta `preview_panels`/`preview_size` para dibujar la galería igual |
+| `control_dismiss.rs` | fundido de salida del centro (progreso `Reveal`, avance por fotograma con cierre real al final, clics ignorados, cancelación al reabrir o cambiar de panel, galería al instante) |
 | `control_center_edit.rs` | modo editar (`control_editing`, `enter_control_edit`, `hide_control` que oculta al momento y reacomoda; al entrar resetea la galería) |
 | `control_gallery.rs` | galería del modo editar (`is_gallery_open`, `gallery_rect` centrada sin tapar el centro, `gallery_overlay` en el `submenu` sobre el centro, `gallery_click` con categoría/control/aceptar, `gallery_typed`/`gallery_erased` con el teclado de la barra, `gallery_scroll` con la rueda y `tick_gallery_cursor`; el control quitado se añade quitándolo de ocultos) |
 | `background.rs` | `open_background`, `set_background_apps` (recoloca el alto si está abierto), clic izquierdo `TrayActivate`, clic derecho `TrayMenu` y hover |

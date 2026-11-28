@@ -43,6 +43,9 @@ pub struct MenubarPainted {
     pub clock_hovered: bool,
     pub tray_open: Option<TrayKind>,
     pub tray_hovered: Option<TrayKind>,
+    /// Progreso del fundido de salida del centro, si se está cerrando: cambia
+    /// en cada fotograma y pide repintar.
+    pub control_closing: Option<f32>,
     pub volume_level: f32,
     pub volume_muted: bool,
     pub brightness: Option<f32>,
@@ -88,6 +91,7 @@ impl PartialEq for MenubarPainted {
             && self.clock_hovered == other.clock_hovered
             && self.tray_open == other.tray_open
             && self.tray_hovered == other.tray_hovered
+            && self.control_closing == other.control_closing
             && self.volume_level == other.volume_level
             && self.volume_muted == other.volume_muted
             && self.brightness == other.brightness
@@ -157,6 +161,7 @@ impl crate::Menubar {
             clock_hovered: self.clock_hovered,
             tray_open: self.tray_kind(),
             tray_hovered: self.tray_hovered,
+            control_closing: self.control_dismiss_progress(),
             volume_level: self.volume.level,
             volume_muted: self.volume.is_muted,
             brightness: self.brightness,

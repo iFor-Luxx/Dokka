@@ -100,6 +100,7 @@ impl crate::Menubar {
     /// Solo el centro edita: al cambiar de panel se sale del modo editar.
     pub(crate) fn show_tray(&mut self, kind: super::TrayKind, panel: Rect) {
         self.tray = Some(super::OpenTray { kind, panel });
+        self.control_dismiss = None;
         self.menu = None;
         self.icon_hovered = false;
         self.calendar = None;

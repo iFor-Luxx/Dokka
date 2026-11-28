@@ -40,7 +40,10 @@ es el de antes); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El `Tick` además cierra solo el centro
 de control tras 6 s sin uso con el cursor fuera (`tick_control_idle`, por el
-mismo camino que `MenubarDismissed`: devuelve el foco igual, sin robarlo);
+mismo camino que `MenubarDismissed`: empieza el fundido de 0,2 s de
+`menubar_dismiss.rs`, que avanza en cada fotograma hasta el cierre real y solo
+entonces recoge la ventana; el foco vuelve al instante y los fotogramas se
+piden solo mientras dura, sin hilos ni temporizadores nuevos);
 los demás paneles no cambian. El buscador filtra el catálogo del
 Escritorio más las fijadas (como el Launchpad) con `filter_search_order` e
 iconos de `IconCache`; flechas, Enter, clic y Esc. Con la galería del modo

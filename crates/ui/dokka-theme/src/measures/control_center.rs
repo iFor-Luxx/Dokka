@@ -21,6 +21,13 @@ pub const WIDTH: f32 = CELL * 4.0 + GAP * 3.0 + PADDING * 2.0;
 /// Segundos sin uso con el cursor fuera antes de cerrar solo el centro.
 /// El shell cuenta un `Tick` de 1 s por segundo; la isla decide.
 pub const IDLE_CLOSE_SECONDS: u32 = 6;
+/// Cuánto tarda el centro en desvanecerse al cerrarse: corto y suave.
+pub const DISMISS_SECONDS: f32 = 0.2;
+/// Escala final del fundido, con origen arriba en el centro: se encoge un
+/// poco hacia su icono de la barra.
+pub const DISMISS_END_SCALE: f32 = 0.95;
+/// Fracción del fundido con el centro aún opaco antes de desvanecerse.
+pub const DISMISS_OPACITY_SPAN: f32 = 0.5;
 /// Alto de la tarjeta de Sonido a todo lo ancho (≈ 68).
 pub const SOUND_HEIGHT: f32 = 68.0;
 /// Alto de la tarjeta de Pantalla: exactamente igual que la de Sonido.
