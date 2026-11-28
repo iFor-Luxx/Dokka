@@ -40,7 +40,7 @@ es el de antes); red e idioma cada pocos `Tick` y al abrir (el idioma solo
 con la fila cerrada, antes de tomar el foco); música cada `Tick` con la pausa
 adelantada al instante por el monitor. El `Tick` además cierra solo el centro
 de control tras 6 s sin uso con el cursor fuera (`tick_control_idle`, por el
-mismo camino que `MenubarDismissed`: empieza la salida por piezas de
+mismo camino que `MenubarDismissed`: empieza la salida en bloque de
 `menubar_dismiss.rs` (Composition vuela cada pieza a su icono una sola vez
 y cuenta el tiempo hasta el cierre real, que solo entonces recoge la
 ventana; el foco vuelve al instante y los fotogramas se piden solo mientras

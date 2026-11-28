@@ -1,9 +1,8 @@
-//! Salida del centro de control por piezas hacia su icono de la barra.
+//! Salida del centro de control en bloque hacia su icono de la barra.
 //!
 //! Al cerrarse (inactividad, clic fuera, Escape o repetir su icono) no
-//! desaparece de golpe: cada píldora, círculo y tarjeta vuela por separado
-//! hacia el icono, encogiéndose y desvaneciéndose, escalonadas desde la más
-//! cercana (~25 ms entre una y otra, tope ~0,45 s), estilo macOS Tahoe.
+//! desaparece de golpe: todo el centro, como una sola pieza, se encoge y se
+//! desvanece hacia su botón, estilo macOS Tahoe.
 //!
 //! La isla solo guarda el destino y el tiempo para el cierre real; las
 //! anima el motor de Composition de Windows con la orden de `dokka-scene`
@@ -26,7 +25,7 @@ pub(crate) struct ClosingCenter {
 }
 
 impl Menubar {
-    /// `true` si el centro se está yendo por piezas: el shell mantiene los
+    /// `true` si el centro se está yendo: el shell mantiene los
     /// fotogramas para el cierre real, sin repintar la capa.
     pub fn is_control_closing(&self) -> bool {
         self.control_dismiss.is_some()
@@ -38,13 +37,12 @@ impl Menubar {
         self.control_dismiss
             .map(|closing| dokka_scene::ControlDismiss {
                 target: closing.target,
-                stagger: measures::DISMISS_STAGGER_SECONDS,
-                duration: measures::DISMISS_PIECE_SECONDS,
+                duration: measures::DISMISS_SECONDS,
                 end_scale: measures::DISMISS_END_SCALE,
             })
     }
 
-    /// Empieza a cerrar el centro: por piezas si está abierto sin galería,
+    /// Empieza a cerrar el centro: con animación si está abierto sin galería,
     /// cierre al instante con galería como hoy. Devuelve si hay salida en
     /// curso (el panel sigue abierto). Sin centro no hace nada.
     pub fn begin_control_close(&mut self, bar_width: f32) -> bool {
@@ -69,7 +67,7 @@ impl Menubar {
         true
     }
 
-    /// Punto del icono del centro en la barra, al que vuela cada pieza.
+    /// Punto del icono del centro en la barra, al que vuelve el centro.
     /// Sin su caja (no debería pasar), arriba en el centro del panel.
     fn control_icon_target(&self, bar_width: f32) -> (f32, f32) {
         if let Some(anchor) = self.tray_anchor(TrayKind::ControlCenter, bar_width) {
@@ -137,7 +135,7 @@ impl Menubar {
     }
 
     /// Cola del clic con la fila abierta: repetir el icono cierra (el centro
-    /// con salida por piezas) y otro cambia de panel; el icono y la hora
+    /// con su salida) y otro cambia de panel; el icono y la hora
     /// cambian al menú y al calendario; fuera cierra (el centro con salida).
     pub(crate) fn click_tray_tail(
         &mut self,

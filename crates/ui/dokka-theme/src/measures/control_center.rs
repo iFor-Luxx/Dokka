@@ -21,17 +21,13 @@ pub const WIDTH: f32 = CELL * 4.0 + GAP * 3.0 + PADDING * 2.0;
 /// Segundos sin uso con el cursor fuera antes de cerrar solo el centro.
 /// El shell cuenta un `Tick` de 1 s por segundo; la isla decide.
 pub const IDLE_CLOSE_SECONDS: u32 = 6;
-/// Retardo entre piezas al cerrarse: primero las más cercanas al icono de la
-/// barra, unas a otras cada ~25 ms, estilo Tahoe.
-pub const DISMISS_STAGGER_SECONDS: f32 = 0.025;
-/// Cuánto tarda cada pieza en encogerse, desvanecerse y volar a su icono.
-/// Con el escalonado, el conjunto termina como mucho en `DISMISS_TOTAL_SECONDS`.
-pub const DISMISS_PIECE_SECONDS: f32 = 0.22;
-/// Tope total de la salida por piezas: la isla hace el cierre real al llegar
-/// aquí, sin repintar por fotograma (las anima Composition).
-pub const DISMISS_TOTAL_SECONDS: f32 = 0.45;
-/// Escala final de cada pieza al llegar a su icono: se encoge hacia él.
-pub const DISMISS_END_SCALE: f32 = 0.2;
+/// Cuánto tarda el centro entero en encogerse y desvanecerse hacia su icono.
+pub const DISMISS_SECONDS: f32 = 0.22;
+/// La isla hace el cierre real al llegar aquí, con un pequeño margen sobre la
+/// animación, sin repintar por fotograma (la anima Composition).
+pub const DISMISS_TOTAL_SECONDS: f32 = 0.25;
+/// Escala final del conjunto al llegar a su icono.
+pub const DISMISS_END_SCALE: f32 = 0.3;
 /// Alto de la tarjeta de Sonido a todo lo ancho (≈ 68).
 pub const SOUND_HEIGHT: f32 = 68.0;
 /// Alto de la tarjeta de Pantalla: exactamente igual que la de Sonido.

@@ -54,7 +54,7 @@
   a 12 con "…" (la música sigue en 16), música de 144 × 144,
   Sonido de 300 × 68 y Pantalla igual; el alto lo calcula el reparto según
   los visibles, la inactividad antes de cerrar solo el centro
-  (`IDLE_CLOSE_SECONDS` = 6 s, salida por piezas con `DISMISS_STAGGER_SECONDS`,
+  (`IDLE_CLOSE_SECONDS` = 6 s, salida en bloque con `DISMISS_STAGGER_SECONDS`,
    `DISMISS_PIECE_SECONDS`, `DISMISS_END_SCALE` y tope `DISMISS_TOTAL_SECONDS`)
    y tope `DISMISS_TOTAL_SECONDS`) y sombra suave bajo cada pieza
   (desenfoque 10 y caída 2, que caben en el aire exterior de 12; más la
