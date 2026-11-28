@@ -30,5 +30,12 @@ pub(super) fn light_icons() -> IconColors {
         trash_rib: palette::STEEL_SOFT,
         trash_paper: palette::SNOW,
         trash_waste: palette::BLUE,
+        imac_frame: palette::IMAC_FRAME,
+        imac_chin: palette::IMAC_CHIN,
+        imac_stand: palette::IMAC_STAND,
+        imac_screen: palette::IMAC_SCREEN,
+        tahoe_deep: palette::TAHOE_DEEP,
+        tahoe_mid: palette::TAHOE_MID,
+        tahoe_light: palette::TAHOE_LIGHT,
     }
 }
