@@ -55,15 +55,16 @@ pub(crate) fn render_menubar(
     surface: &mut Surface,
 ) -> Result<(), Box<dyn Error>> {
     let width = surface.menubar_width();
+    let screen_height = surface.menubar_monitor_height();
     let finger = session.menubar.painted();
     if session.menubar_painted.as_ref() == Some(&finger) {
         return Ok(());
     }
-    let scene = session.menubar.scene(width);
+    let scene = session.menubar.scene(width, screen_height);
     session.renderer.draw_menubar(&scene)?;
     let areas: Vec<[f32; 4]> = session
         .menubar
-        .active_areas(width)
+        .active_areas(width, screen_height)
         .iter()
         .map(|area| [area.x, area.y, area.width, area.height])
         .collect();
@@ -72,23 +73,22 @@ pub(crate) fn render_menubar(
     Ok(())
 }
 
-/// Cierra el menú, el calendario o la fila si hay algo abierto, devolviendo el foco.
+/// Cierra el menú, el calendario o la fila. El centro se desvanece con su
+/// fundido (`menubar_dismiss.rs`); lo demás se cierra al instante como hoy.
 pub(crate) fn dismiss_menubar(session: &mut DockSession, surface: &mut Surface) {
-    if session.menubar.is_menu_open() {
-        session.menubar.close_menu();
-        surface.menubar_menu_closed();
-    } else if session.menubar.is_calendar_open() {
-        session.menubar.close_calendar();
-        surface.menubar_menu_closed();
-    } else if session.menubar.is_tray_open() {
-        session.menubar.close_tray();
-        surface.menubar_menu_closed();
-    }
-    reset_search_window(session, surface);
+    crate::menubar_dismiss::dismiss_menubar(session, surface);
 }
 
-/// Sin el buscador abierto, la ventana vuelve a su alto para los demás paneles.
-fn reset_search_window(session: &DockSession, surface: &mut Surface) {
+/// Con la galería abierta la ventana necesita todo el alto de la pantalla
+/// (como el buscador); al cerrar vuelve a su alto para los demás paneles.
+pub(crate) fn reset_menubar_window(session: &DockSession, surface: &mut Surface) {
+    if session.menubar.is_gallery_open() {
+        let height = session
+            .menubar
+            .gallery_window_height(surface.menubar_monitor_height());
+        surface.menubar_set_window_height(height);
+        return;
+    }
     if session.menubar.tray_kind() != Some(dokka_menubar::TrayKind::Search) {
         surface.menubar_set_window_height(menubar::WINDOW_HEIGHT);
     }
@@ -104,6 +104,7 @@ fn refresh_panels(session: &mut DockSession) {
     crate::menubar_music::refresh_music(session);
     crate::menubar_background::refresh_background_apps(session);
     session.menubar.tick_search_cursor();
+    session.menubar.tick_gallery_cursor();
     session.menubar_ticks += 1;
     if session.menubar_ticks.is_multiple_of(3) {
         crate::menubar_network::refresh_network(session);
@@ -131,6 +132,11 @@ pub(crate) fn handle_menubar_event(
             refresh_foreground(session);
             refresh_clock(session);
             refresh_panels(session);
+            // Solo el centro se cierra solo: por el mismo camino que al
+            // perder el foco (devuelve el foco igual, sin robarlo).
+            if session.menubar.tick_control_idle() {
+                dismiss_menubar(session, surface);
+            }
             return Ok(false);
         }
         SurfaceEvent::MenubarMoved { x, y } => {
@@ -138,34 +144,49 @@ pub(crate) fn handle_menubar_event(
             if let Some(action) = session.menubar.pointer_moved(x, y, width) {
                 run_menubar_action(session, surface, action)?;
             }
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarPressed { x, y } => {
             if let Some(action) = session.menubar.pressed(x, y) {
                 run_menubar_action(session, surface, action)?;
             }
+            session.menubar.note_control_used();
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarLeft => {
             session.menubar.pointer_left();
         }
         SurfaceEvent::MenubarClicked { x, y } => {
             click_menubar(session, surface, x, y)?;
+            session.menubar.note_control_used();
+            session.menubar.update_control_cursor(x, y);
         }
         SurfaceEvent::MenubarRightClicked { x, y } => {
             right_click_menubar(session, surface, x, y)?;
+            session.menubar.note_control_used();
         }
         SurfaceEvent::MenubarTyped { character } => {
-            crate::menubar_search::type_search(session, surface, character);
+            session.menubar.note_control_used();
+            crate::menubar_gallery::typed(session, surface, character);
         }
         SurfaceEvent::MenubarBackspace => {
-            crate::menubar_search::erase_search(session, surface);
+            session.menubar.note_control_used();
+            crate::menubar_gallery::erased(session, surface);
+        }
+        SurfaceEvent::MenubarWheel { x, y, delta } => {
+            session.menubar.note_control_used();
+            crate::menubar_gallery::scrolled(session, surface, x, y, delta);
         }
         SurfaceEvent::MenubarEnter => {
+            session.menubar.note_control_used();
             crate::menubar_search::confirm_search(session, surface)?;
         }
         SurfaceEvent::MenubarUp => {
+            session.menubar.note_control_used();
             crate::menubar_search::step_search_up(session);
         }
         SurfaceEvent::MenubarDown => {
+            session.menubar.note_control_used();
             crate::menubar_search::step_search_down(session);
         }
         SurfaceEvent::MenubarDismissed => {
@@ -206,9 +227,16 @@ fn click_menubar(
     let was_menu = session.menubar.is_menu_open();
     let was_calendar = session.menubar.is_calendar_open();
     let was_tray = session.menubar.is_tray_open();
+    let was_closing = session.menubar.is_control_closing();
     let chosen = session.menubar.click(x, y, width, screen_height);
     if let Some(action) = chosen {
         return run_menubar_action(session, surface, action);
+    }
+    if session.menubar.is_control_closing() {
+        // Fundido en curso (empezado o seguido): el foco vuelve ya; la
+        // ventana y las zonas se mantienen hasta el cierre real.
+        surface.menubar_menu_closed();
+        return Ok(());
     }
     if !was_tray && session.menubar.is_tray_open() {
         match session.menubar.tray_kind() {
@@ -245,13 +273,17 @@ fn click_menubar(
         && now_open
         && (was_menu != now_menu || was_calendar != now_calendar || was_tray != now_tray)
     {
-        // Cambio directo entre menú, calendario y fila: ya tenía el foco.
+        // Cambio directo entre menú, calendario y fila: ya tenía el foco,
+        // salvo que venga de cancelar el fundido (ya se había devuelto).
         session.dock.close_menu();
         surface.menu_closed();
         session.previews.close();
+        if was_closing {
+            surface.menubar_menu_opened();
+        }
     } else if was_open && !now_open {
         surface.menubar_menu_closed();
     }
-    reset_search_window(session, surface);
+    reset_menubar_window(session, surface);
     Ok(())
 }

@@ -4,11 +4,12 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_DOWN, VK_ESCAPE, VK_RETURN, VK_UP,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    MSG, WM_CHAR, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_RBUTTONUP,
+    MSG, WM_CHAR, WM_KEYDOWN, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_MOUSEWHEEL,
+    WM_RBUTTONUP,
 };
 
 use crate::SurfaceEvent;
-use crate::read_pointer::pointer_position;
+use crate::read_pointer::{pointer_position, wheel_delta};
 
 /// `WM_MOUSELEAVE`, que la librería declara junto a controles que no usamos.
 const MOUSE_LEFT: u32 = 0x02A3;
@@ -40,6 +41,14 @@ pub(crate) fn read_menubar(
             focused_event(message.hwnd, SurfaceEvent::MenubarDown)
         }
         WM_CHAR => typed_character(message),
+        WM_MOUSEWHEEL => {
+            let (x, y) = pointer_position(message, scale);
+            Some(SurfaceEvent::MenubarWheel {
+                x,
+                y,
+                delta: wheel_delta(message),
+            })
+        }
         WM_MOUSEMOVE => {
             let (x, y) = pointer_position(message, scale);
             let mut request = TRACKMOUSEEVENT {

@@ -13,6 +13,8 @@ pub(crate) fn handle_frame(
     seconds: f32,
 ) -> Result<(), Box<dyn Error>> {
     session.dock.advance(seconds);
+    // El fundido del centro avanza en cada fotograma hasta su cierre real.
+    crate::menubar_dismiss::advance_menubar(session, surface, seconds);
     // El auto-ocultado mueve la ventana: solo mientras anima.
     if session.dock.is_hide_animating() {
         if let Err(error) = session.apply_hide(surface) {

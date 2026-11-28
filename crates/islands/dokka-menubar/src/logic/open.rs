@@ -97,8 +97,10 @@ impl crate::Menubar {
     }
 
     /// Cierra menú y calendario y marca la fila como abierta.
+    /// Solo el centro edita: al cambiar de panel se sale del modo editar.
     pub(crate) fn show_tray(&mut self, kind: super::TrayKind, panel: Rect) {
         self.tray = Some(super::OpenTray { kind, panel });
+        self.control_dismiss = None;
         self.menu = None;
         self.icon_hovered = false;
         self.calendar = None;
@@ -107,5 +109,8 @@ impl crate::Menubar {
         self.tray_hovered = Some(kind);
         self.dragging_slider = false;
         self.dragging_brightness = false;
+        if kind != super::TrayKind::ControlCenter {
+            self.control_editing = false;
+        }
     }
 }

@@ -4,6 +4,7 @@ pub mod app_grid;
 pub mod background_panel;
 pub mod calendar_panel;
 pub mod control_center_panel;
+pub mod control_gallery;
 pub mod language_panel;
 pub mod menu_panel;
 pub mod music_panel;

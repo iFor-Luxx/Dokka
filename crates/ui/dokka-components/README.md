@@ -41,7 +41,11 @@ centro de control (`control_center_panel`: rejilla de cuatro columnas que repart
 los controles visibles en el orden de fábrica al primer hueco libre —Red y
 Preferencias 2x1, Música 2x2, Pantalla y Sonido 4x1, el resto 1x1— con las
 mismas celda, hueco y aire; con nada oculto cae donde caía; lo oculto no se
-dibuja ni responde y el alto se recalcula; Pantalla solo con brillo DDC): Red con dos círculos blancos,
+dibuja ni responde y el alto se recalcula; Pantalla solo con brillo DDC;
+burbuja de cristal "Editar controles" centrada bajo la rejilla (solo sin
+editar) y modo editar con botón "−" redondo (rectángulo plano, no texto) en
+la esquina superior izquierda de cada pieza visible, sin acción en el resto:
+el alto suma rejilla más hueco y burbuja y cabe en la ventana de 560): Red con dos círculos blancos,
 música de dos por dos con textos recortados a 16, Preferencias con dos círculos
 y textos de cápsula en 12/11 recortados a 12 con "…", Pantalla si hay,
 Sonido y cuatro círculos; fondo invisible sin cristal y piezas en cristal
@@ -67,6 +71,14 @@ el volumen y el Sonido y la Pantalla del centro (relleno desde la izquierda,
 sin marca); los paneles no dibujan el suyo) y segmentado (`segmented_control`:
 cápsula gris de 204 × 28 con la opción elegida en pastilla blanca de radios
 concéntricos y texto centrado por tercio, sin saber qué ajusta: la isla
-traduce índices).
+traduce índices) y galería del modo editar (`control_gallery`: ventana de
+cristal claro de 760 × 900 con radio 26 y sombra, centrada sin tapar el
+centro y encogida en pantallas bajas; columna de 245 con casilla redondeada
+de búsqueda con lupa y borde azul de foco más las categorías con cuadrito de
+color, secciones con título gris y línea separadora, cada control dibujado
+por la vista previa del centro al mismo tamaño con su nombre debajo —los del
+centro atenuados—, y pie fijo con aviso y botón azul "Aceptar"; sin lógica:
+categoría, búsqueda, desplazamientos y el golpe `GalleryHit` los da el
+componente y la isla decide).
 
 **No hace:** no conoce ninguna isla ni contiene lógica de negocio. No dibuja: describe qué dibujar.

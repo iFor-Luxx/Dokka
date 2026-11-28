@@ -41,4 +41,8 @@ pub enum ControlCenterHit {
     ScreenClip,
     Clock,
     TaskManager,
+    /// Burbuja "Editar controles" bajo la rejilla (solo sin editar).
+    Edit,
+    /// Botón "−" de este control (solo al editar): se oculta al momento.
+    Remove(dokka_model::ControlItem),
 }

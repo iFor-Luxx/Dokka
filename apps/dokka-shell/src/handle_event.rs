@@ -50,6 +50,7 @@ pub(crate) fn handle_event(
         | SurfaceEvent::MenubarClicked { .. }
         | SurfaceEvent::MenubarTyped { .. }
         | SurfaceEvent::MenubarBackspace
+        | SurfaceEvent::MenubarWheel { .. }
         | SurfaceEvent::MenubarEnter
         | SurfaceEvent::MenubarUp
         | SurfaceEvent::MenubarDown
