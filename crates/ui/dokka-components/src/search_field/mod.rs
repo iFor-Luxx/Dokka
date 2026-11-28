@@ -1,9 +1,11 @@
 //! Casilla de búsqueda sin saber qué es el Launchpad.
 
+mod cursor;
 mod props;
 mod settings;
 mod view;
 
+pub use cursor::text_cursor;
 pub use props::SearchFieldProps;
 pub use settings::{settings_search_cursor, settings_search_text};
 pub use view::{

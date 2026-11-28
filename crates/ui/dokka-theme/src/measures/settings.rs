@@ -69,9 +69,6 @@ pub const SEARCH_TEXT_INSET: f32 = SEARCH_ICON_INSET + SEARCH_ICON_SIDE + 8.0;
 pub const SEARCH_TEXT_SIZE: f32 = 13.0;
 /// Texto que muestra la casilla, sin ajustes reales todavía.
 pub const SEARCH_PLACEHOLDER: &str = "Buscar";
-/// Ancho aproximado de cada letra escrita en la casilla, para colocar el
-/// cursor tras el texto sin medir la fuente en cada redibujado.
-pub const SEARCH_CHAR_ADVANCE: f32 = 7.0;
 /// Aire entre la última letra y el cursor vertical.
 pub const SEARCH_CURSOR_GAP: f32 = 2.0;
 /// Ancho del cursor vertical de la casilla enfocada.

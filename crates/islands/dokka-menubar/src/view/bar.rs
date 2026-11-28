@@ -41,6 +41,7 @@ impl Menubar {
             icons,
             dots: Vec::new(),
             dividers: Vec::new(),
+            cursors: Vec::new(),
             thumbnails: Vec::new(),
             labels: Vec::new(),
             texts: self.bar_texts(bar_width),

@@ -2,6 +2,7 @@ use dokka_scene::{Overlay, Panel, Shadow};
 use windows::UI::Composition::{Compositor, ContainerVisual};
 use windows::core::Result;
 
+use crate::cursor_layer::CursorLayer;
 use crate::divider_layer::DividerLayer;
 use crate::dot_layer::DotLayer;
 use crate::icon_layer::IconLayer;
@@ -48,6 +49,7 @@ pub(crate) struct OverlayLayers {
     /// Estilo con el que se creó cada plano.
     flat_styles: Vec<Panel>,
     dividers: Vec<DividerLayer>,
+    cursors: Vec<CursorLayer>,
     dots: Vec<DotLayer>,
     texts: Vec<TextLayer>,
     icons: Vec<IconLayer>,
@@ -137,6 +139,11 @@ impl OverlayLayers {
             .iter()
             .map(|divider| DividerLayer::add(compositor, &container, divider))
             .collect::<Result<Vec<_>>>()?;
+        let cursors = overlay
+            .cursors
+            .iter()
+            .map(|cursor| CursorLayer::add(compositor, &container, cursor))
+            .collect::<Result<Vec<_>>>()?;
         let dots = overlay
             .dots
             .iter()
@@ -172,6 +179,7 @@ impl OverlayLayers {
             flats,
             flat_styles: overlay.flat_panels.clone(),
             dividers,
+            cursors,
             dots,
             texts,
             icons,
@@ -208,6 +216,7 @@ impl OverlayLayers {
                 .zip(&overlay.flat_panels)
                 .all(|(old, new)| pill_style_of(*old) == pill_style_of(*new))
             && self.dividers.len() == overlay.dividers.len()
+            && self.cursors.len() == overlay.cursors.len()
             && self.dots.len() == overlay.dots.len()
             && self.texts.len() == overlay.texts.len()
             && self.icons.len() == overlay.icons.len()
@@ -255,6 +264,9 @@ impl OverlayLayers {
         }
         for (layer, divider) in self.dividers.iter().zip(&overlay.dividers) {
             layer.update(divider)?;
+        }
+        for (layer, cursor) in self.cursors.iter_mut().zip(&overlay.cursors) {
+            layer.update(compositor, painter, cursor)?;
         }
         for (layer, dot) in self.dots.iter_mut().zip(&overlay.dots) {
             layer.update(compositor, dot)?;

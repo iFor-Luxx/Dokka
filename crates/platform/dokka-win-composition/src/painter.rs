@@ -1,4 +1,4 @@
-use dokka_scene::{IconImage, Label, Text};
+use dokka_scene::{IconImage, Label, Text, TextCursor};
 use dokka_win_text::TextPainter;
 use windows::UI::Composition::{CompositionDrawingSurface, CompositionGraphicsDevice, Compositor};
 use windows::core::Result;
@@ -50,5 +50,14 @@ impl Painter {
     /// Ancho y alto que ocupa el texto de la etiqueta en una línea.
     pub(crate) fn measure_label(&self, label: &Label) -> Result<(f32, f32)> {
         self.text.measure(&label.text, label.font_size, false)
+    }
+
+    /// Ancho que ocupa el texto del cursor en una línea, con la misma fuente,
+    /// tamaño y peso con que se pinta (incluye los espacios finales).
+    pub(crate) fn measure_cursor(&self, cursor: &TextCursor) -> Result<f32> {
+        let (width, _) = self
+            .text
+            .measure(&cursor.content, cursor.size, cursor.is_bold)?;
+        Ok(width)
     }
 }

@@ -1,6 +1,6 @@
 # dokka-win-composition
 
-**Hace:** dibuja una `Scene` (cristal, paneles extra, iconos, puntos, separador, textos sueltos, resaltado y
+**Hace:** dibuja una `Scene` (cristal, paneles extra, iconos, puntos, separador, cursor tras un texto medido, textos sueltos, resaltado y
 etiquetas) y coloca las miniaturas en vivo de Windows (DWM). Solo repinta un icono cuando cambia
 su imagen y solo cambia el pincel de un punto cuando cambia su color. Un fondo con tinte y borde
 transparentes (centro de control y buscador) no crea cristal ni se ve: `matches` lo distingue

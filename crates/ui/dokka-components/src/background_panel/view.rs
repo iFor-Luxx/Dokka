@@ -112,6 +112,7 @@ pub fn background_panel(
         highlight: Some(highlight_panel(theme, bounds, apps, highlighted, visible)),
         flat_panels: Vec::new(),
         dividers: Vec::new(),
+        cursors: Vec::new(),
         dots,
         pointer: None,
         texts,

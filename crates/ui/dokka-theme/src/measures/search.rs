@@ -33,8 +33,6 @@ pub const SEARCH_MAGNIFIER_GAP: f32 = 10.0;
 pub const SEARCH_TEXT_INSET: f32 = SEARCH_ICON_INSET + SEARCH_ICON_SIDE + SEARCH_MAGNIFIER_GAP;
 /// Texto grande de la consulta.
 pub const SEARCH_TEXT_SIZE: f32 = 17.0;
-/// Ancho aproximado de cada letra, para colocar el cursor sin medir la fuente.
-pub const SEARCH_CHAR_ADVANCE: f32 = 9.0;
 /// Aire entre la última letra y el cursor vertical.
 pub const SEARCH_CURSOR_GAP: f32 = 2.0;
 /// Ancho del cursor vertical.
