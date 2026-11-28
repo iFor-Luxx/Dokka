@@ -1,6 +1,6 @@
 use dokka_model::Preferences;
 
-use super::general::{AboutButton, GeneralPage};
+use super::general::{AboutButton, GeneralButton, GeneralPage};
 
 /// Botón de "Acerca de este PC" que el shell debe abrir.
 pub type AboutButtonAction = AboutButton;
@@ -24,4 +24,6 @@ pub enum SettingsAction {
     EnterGeneral(GeneralPage),
     /// Botón de "Acerca de este PC": el shell abre la página del sistema.
     OpenAbout(AboutButton),
+    /// Botón de "Fecha y hora" o de "Idioma y región": el shell abre su página.
+    OpenGeneral(GeneralButton),
 }

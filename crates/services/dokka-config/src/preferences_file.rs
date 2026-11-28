@@ -13,6 +13,7 @@ use dokka_contracts::{ContractError, PreferencesStore};
 use dokka_model::Preferences;
 
 use super::preferences_dock::{apply_dock, render_dock};
+use super::preferences_general::{apply_general, render_general};
 use super::preferences_menubar::{apply_menubar, render_menubar};
 
 /// Preferencias guardadas en `%APPDATA%\Dokka\preferences.txt`.
@@ -67,8 +68,8 @@ fn parse(text: &str) -> Preferences {
 }
 
 fn apply(preferences: &mut Preferences, key: &str, value: &str) {
-    // Una clave es de una sola parte: si no es del dock, se prueba la barra.
-    if !apply_dock(preferences, key, value) {
+    // Una clave es de una sola parte: si no es del dock ni general, se prueba la barra.
+    if !apply_dock(preferences, key, value) && !apply_general(preferences, key, value) {
         apply_menubar(preferences, key, value);
     }
 }
@@ -78,6 +79,7 @@ fn render(preferences: &Preferences) -> String {
     let mut text = String::new();
     for (key, value) in render_dock(preferences)
         .into_iter()
+        .chain(render_general(preferences))
         .chain(render_menubar(preferences))
     {
         push(&mut text, key, &value);

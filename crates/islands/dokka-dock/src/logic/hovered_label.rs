@@ -57,7 +57,11 @@ pub(crate) fn hovered_label(
         Entry::Explorer(_) => "Explorador".to_owned(),
         Entry::App(app) => app_name(app),
         Entry::Launchpad => "Launchpad".to_owned(),
-        Entry::Clock => clock_label(dock.icons.time.hour, dock.icons.time.minute),
+        Entry::Clock => clock_label(
+            dock.icons.time.hour,
+            dock.icons.time.minute,
+            dock.clock_24,
+        ),
         Entry::Trash => trash_label(dock.icons.trash_size),
         // Vista previa o panel propio: ya filtrado en `hovered_slot`.
         _ => return None,

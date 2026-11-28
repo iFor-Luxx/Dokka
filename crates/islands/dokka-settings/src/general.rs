@@ -58,3 +58,35 @@ pub enum AboutButton {
     /// Abre `msinfo32`.
     SystemReport,
 }
+
+/// Botón de "Fecha y hora" o de "Idioma y región".
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GeneralButton {
+    /// Abre `ms-settings:dateandtime`.
+    DateTimeSettings,
+    /// Abre `ms-settings:regionformatting`.
+    LanguageSettings,
+}
+
+impl GeneralButton {
+    /// Índice para la huella de repintado: 0 fecha, 1 idioma.
+    pub fn index(self) -> u8 {
+        match self {
+            Self::DateTimeSettings => 0,
+            Self::LanguageSettings => 1,
+        }
+    }
+}
+
+/// Fecha y hora que muestra "Fecha y hora", pasadas por el shell en el `Tick`.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct PageNow {
+    pub year: u16,
+    pub month: u16,
+    pub day: u16,
+    /// 0 es domingo.
+    pub weekday: u16,
+    pub hour: u16,
+    pub minute: u16,
+    pub second: u16,
+}

@@ -1,4 +1,4 @@
-use super::general::GeneralPage;
+use super::general::{GeneralPage, PageNow};
 use super::logic::SliderTarget;
 use super::values::ContentValues;
 
@@ -18,6 +18,12 @@ pub enum PaintedControl {
     GeneralRow(usize),
     /// Botón de "Acerca de este PC": 0 pantalla, 1 almacenamiento, 2 informe.
     AboutButton(u8),
+    /// Interruptor de "Fecha y hora": formato de 24 horas.
+    DateTimeSwitch,
+    /// Segmentado de "Idioma y región": primer día de la semana.
+    LanguageSegment,
+    /// Botón de "Fecha y hora" (0) o de "Idioma y región" (1).
+    GeneralButton(u8),
 }
 
 /// Todo lo que cambia lo que se ve: si no cambió, el shell no repinta.
@@ -47,6 +53,8 @@ pub struct PaintedSettings {
     pub scroll: OrderedF32,
     /// Resumen del equipo para "Acerca de este PC".
     pub system: Option<dokka_model::SystemSummary>,
+    /// Fecha y hora que muestra "Fecha y hora", en vivo con el `Tick`.
+    pub now: Option<PageNow>,
 }
 
 /// Fila arrastrada en la huella: hueco de origen, destino y altura.

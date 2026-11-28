@@ -5,9 +5,10 @@ use dokka_components::nav_pill::NavHalf;
 
 use super::general::{AboutButton, GeneralPage};
 use super::logic::{
-    DockSwitch, SliderTarget, about_button_at, dock_segment_at, dock_slider_at, dock_switch_at,
-    general_row_at, icon_scale_from, magnification_from, menubar_switch_at, position_from_index,
-    taskbar_switch_at, toggle_menubar,
+    DockSwitch, SliderTarget, about_button_at, datetime_button_at, datetime_switch_at,
+    dock_segment_at, dock_slider_at, dock_switch_at, general_row_at, icon_scale_from,
+    language_button_at, language_segment_at, magnification_from, menubar_switch_at,
+    position_from_index, taskbar_switch_at, toggle_menubar,
 };
 use super::slider_pointer::clamped_slider_value;
 use super::state::Settings;
@@ -42,6 +43,7 @@ impl Settings {
         let general = self.general();
         let width = self.content_width();
         let scroll = self.scroll_offset();
+        let count = self.language_count();
         // Interruptores del Dock: hábitos y ocultado.
         if let Some(switch) = dock_switch_at(selected, width, x, y) {
             let mut preferences = self.values().preferences;
@@ -125,6 +127,26 @@ impl Settings {
                 _ => AboutButton::SystemReport,
             };
             return SettingsAction::OpenAbout(action);
+        }
+        // Interruptor de "Fecha y hora": formato de 24 horas, propio de Dokka.
+        if datetime_switch_at(general, width, scroll, x, y).is_some() {
+            let mut preferences = self.values().preferences;
+            preferences.general.hour_24 = !preferences.general.hour_24;
+            self.values_mut().preferences = preferences;
+            return SettingsAction::Changed(preferences);
+        }
+        // Segmentado de "Idioma y región": primer día de la semana.
+        if let Some(index) = language_segment_at(general, width, count, scroll, x, y) {
+            let mut preferences = self.values().preferences;
+            preferences.general.week_starts_monday = index == 1;
+            self.values_mut().preferences = preferences;
+            return SettingsAction::Changed(preferences);
+        }
+        // Botones de "Fecha y hora" e "Idioma y región": el shell abre Windows.
+        if let Some(button) = datetime_button_at(general, width, scroll, x, y)
+            .or_else(|| language_button_at(general, width, count, scroll, x, y))
+        {
+            return SettingsAction::OpenGeneral(button);
         }
         if let Some(index) = self.filtered_at(x, y) {
             self.select_section(index);

@@ -12,11 +12,13 @@ las preferencias en `%APPDATA%\Dokka\preferences.txt` (`PreferencesFile`,
 `menubar.background_apps`, `menubar.hidden_controls` (nombres en minúsculas
 separados por comas, en el orden de fábrica; lo desconocido se ignora y vacío
 es nada oculto), `menubar.order` (`volume,network,music,background_apps,language,search,control_center`
-de izquierda a derecha); sin archivo devuelve los valores de fábrica, las
+de izquierda a derecha), `general.hour_24` y `general.week_starts_monday`
+(formato de 24 horas y semana desde el lunes, propios de Dokka); sin archivo devuelve los valores de fábrica, las
 claves desconocidas o los valores mal escritos se ignoran (el orden incompleto,
 repetido o mal escrito conserva los válidos en su orden y añade los que falten
 en el orden de fábrica, sin fallar), los números se
 limitan a su rango y la escritura es atómica (borrador y renombre). El detalle
-vive dividido: `preferences_dock.rs` (dock) y `preferences_menubar.rs` (barra).
+vive dividido: `preferences_dock.rs` (dock), `preferences_general.rs` (fecha e
+idioma) y `preferences_menubar.rs` (barra).
 
 **No hace:** no decide qué se fija.

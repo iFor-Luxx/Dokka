@@ -1,4 +1,5 @@
-//! Resumen del equipo para "Acerca de este PC".
+//! Resumen del equipo para "Acerca de este PC" y para "Fecha y hora" e
+//! "Idioma y región".
 //!
 //! Todo es opcional: lo que no se puede leer es `None` y se muestra
 //! como "No disponible". No incluye nada sensible en el log: quien lo
@@ -33,6 +34,74 @@ pub struct SystemSummary {
     pub storage_free_bytes: Option<u64>,
     /// Bytes totales del disco del sistema.
     pub storage_total_bytes: Option<u64>,
+    /// Fecha, hora y zona horaria leídas de Windows.
+    pub datetime: DateTimeSummary,
+    /// Idiomas y formatos leídos de Windows.
+    pub locale: LocaleSummary,
+}
+
+/// Fecha y hora de Windows: todo opcional, lo que no se lee es `None`.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DateTimeSummary {
+    /// `true` con "Fecha y hora automáticas" de Windows.
+    pub auto_time: Option<bool>,
+    /// Servidor NTP de Windows, como "time.windows.com".
+    pub ntp_server: Option<String>,
+    /// `true` con "Zona horaria automática" de Windows.
+    pub auto_timezone: Option<bool>,
+    /// Nombre de la zona horaria actual.
+    pub timezone_name: Option<String>,
+}
+
+impl DateTimeSummary {
+    /// `true` cuando no se leyó nada útil.
+    pub fn is_empty(&self) -> bool {
+        self.auto_time.is_none()
+            && self.ntp_server.is_none()
+            && self.auto_timezone.is_none()
+            && self.timezone_name.is_none()
+    }
+}
+
+/// Idioma y región de Windows: todo opcional, lo que no se lee es `None`.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct LocaleSummary {
+    /// Idiomas preferidos del usuario, el primero es el principal.
+    pub languages: Option<Vec<String>>,
+    /// Región, como "Perú".
+    pub region_name: Option<String>,
+    /// Calendario, como "Gregoriano".
+    pub calendar_name: Option<String>,
+    /// Temperatura, "Celsius" o "Fahrenheit".
+    pub temperature_unit: Option<String>,
+    /// Sistema de medida, "Métrico" o "EE. UU.".
+    pub measurement_system: Option<String>,
+    /// Patrón de fecha corta de Windows, como "d/M/yyyy".
+    pub date_pattern: Option<String>,
+    /// Número con el formato de Windows, como "1.234,56".
+    pub number_format: Option<String>,
+    /// Fecha larga de hoy con el formato de Windows.
+    pub long_date_example: Option<String>,
+    /// Fecha corta de hoy con el formato de Windows.
+    pub short_date_example: Option<String>,
+    /// Número con el formato de Windows.
+    pub number_example: Option<String>,
+}
+
+impl LocaleSummary {
+    /// `true` cuando no se leyó nada útil.
+    pub fn is_empty(&self) -> bool {
+        self.languages.is_none()
+            && self.region_name.is_none()
+            && self.calendar_name.is_none()
+            && self.temperature_unit.is_none()
+            && self.measurement_system.is_none()
+            && self.date_pattern.is_none()
+            && self.number_format.is_none()
+            && self.long_date_example.is_none()
+            && self.short_date_example.is_none()
+            && self.number_example.is_none()
+    }
 }
 
 impl SystemSummary {
@@ -56,6 +125,8 @@ impl SystemSummary {
             && self.storage_drive.is_none()
             && self.storage_free_bytes.is_none()
             && self.storage_total_bytes.is_none()
+            && self.datetime.is_empty()
+            && self.locale.is_empty()
     }
 }
 

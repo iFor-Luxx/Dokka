@@ -174,6 +174,7 @@ pub(crate) fn handle_event(
         SurfaceEvent::Tick => {
             crate::taskbar_mode::keep_taskbar_hidden(session);
             session.update_clock_and_trash();
+            crate::settings_system::tick_datetime(session);
             preview_safety::check_preview_cursor(session, surface);
             if session.refresh_occlusion() {
                 session.resize(surface)?;

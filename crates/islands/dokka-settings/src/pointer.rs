@@ -9,9 +9,10 @@ use dokka_model::Preferences;
 
 use super::general::GeneralPage;
 use super::logic::{
-    DockSwitch, SliderTarget, about_button_at, dock_slider_at, dock_switch_at, general_row_at,
-    icon_scale_from, icon_scale_to, magnification_from, magnification_to, menubar_switch_at,
-    taskbar_switch_at,
+    DockSwitch, SliderTarget, about_button_at, datetime_button_at, datetime_switch_at,
+    dock_slider_at, dock_switch_at, general_row_at, icon_scale_from, icon_scale_to,
+    language_button_at, language_segment_at, magnification_from, magnification_to,
+    menubar_switch_at, taskbar_switch_at,
 };
 use super::painted::PaintedControl;
 use super::slider_pointer::{clamped_slider_value, drag_track, slider_value_at_x_for};
@@ -47,6 +48,7 @@ pub(crate) fn control_at(
     general: GeneralPage,
     width: f32,
     scroll: f32,
+    languages: usize,
     x: f32,
     y: f32,
 ) -> Option<PaintedControl> {
@@ -72,6 +74,17 @@ pub(crate) fn control_at(
     if let Some(button) = about_button_at(selected, general, width, scroll, x, y) {
         return Some(PaintedControl::AboutButton(button));
     }
+    if datetime_switch_at(general, width, scroll, x, y).is_some() {
+        return Some(PaintedControl::DateTimeSwitch);
+    }
+    if language_segment_at(general, width, languages, scroll, x, y).is_some() {
+        return Some(PaintedControl::LanguageSegment);
+    }
+    if let Some(button) = datetime_button_at(general, width, scroll, x, y)
+        .or_else(|| language_button_at(general, width, languages, scroll, x, y))
+    {
+        return Some(PaintedControl::GeneralButton(button.index()));
+    }
     match dock_slider_at(selected, width, x, y) {
         Some(SliderTarget::DockScale) => Some(PaintedControl::DockSlider(0)),
         Some(SliderTarget::DockStrength) => Some(PaintedControl::DockSlider(1)),
@@ -86,6 +99,7 @@ impl Settings {
         let width = self.content_width();
         let general = self.general();
         let scroll = self.scroll_offset();
+        let languages = self.language_count();
         self.set_hovered(self.filtered_at(x, y));
         self.set_traffic_hovered(Self::traffic_button_at(x, y).is_some());
         self.set_nav_hovered(self.pill_at(x, y));
@@ -102,10 +116,11 @@ impl Settings {
             self.values_mut().control = if self.reorder_active() {
                 None
             } else {
-                control_at(self.selected(), general, width, scroll, x, y)
+                control_at(self.selected(), general, width, scroll, languages, x, y)
             };
         } else {
-            self.values_mut().control = control_at(self.selected(), general, width, scroll, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, languages, x, y);
         }
     }
 
@@ -180,11 +195,13 @@ impl Settings {
         let width = self.content_width();
         let general = self.general();
         let scroll = self.scroll_offset();
+        let languages = self.language_count();
         if let Some(target) = self.values().drag {
             // Suelta fuera de la barra: se queda en el extremo más cercano.
             let value = clamped_slider_value(target, self.values(), width, x);
             self.values_mut().drag = None;
-            self.values_mut().control = control_at(self.selected(), general, width, scroll, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, languages, x, y);
             let mut preferences = self.values().preferences;
             match target {
                 SliderTarget::DockScale => {
@@ -200,7 +217,8 @@ impl Settings {
         if self.values().reorder.is_some() {
             let was_active = self.reorder_active();
             let action = self.finish_reorder();
-            self.values_mut().control = control_at(self.selected(), general, width, scroll, x, y);
+            self.values_mut().control =
+                control_at(self.selected(), general, width, scroll, languages, x, y);
             if was_active {
                 // Hubo arrastre: una sola vez y solo si cambió el orden.
                 return action.unwrap_or(SettingsAction::Stay);

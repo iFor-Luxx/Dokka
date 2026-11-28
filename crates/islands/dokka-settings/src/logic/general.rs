@@ -92,6 +92,7 @@ pub(crate) fn general_control_at(
     width: f32,
     scroll: f32,
     general: crate::general::GeneralPage,
+    languages: usize,
     x: f32,
     y: f32,
 ) -> bool {
@@ -99,7 +100,8 @@ pub(crate) fn general_control_at(
     match general {
         Page::Root => general_row_at(width, scroll, x, y).is_some(),
         Page::About => about_button_at(width, scroll, x, y).is_some(),
-        _ => false,
+        Page::DateTime => super::datetime::datetime_control_at(width, scroll, x, y),
+        Page::Language => super::language::language_control_at(width, languages, scroll, x, y),
     }
 }
 

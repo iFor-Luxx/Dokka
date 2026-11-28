@@ -8,7 +8,8 @@ use crate::nav_pill::{
 };
 use crate::popup_panel::popup_panel;
 
-const WEEKDAYS: [&str; 7] = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
+const WEEKDAYS_SUNDAY: [&str; 7] = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
+const WEEKDAYS_MONDAY: [&str; 7] = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
 /// El calendario mide siempre 6 filas de semanas, como macOS.
 const WEEKS: u16 = 6;
 
@@ -60,7 +61,19 @@ pub fn calendar_panel(
         true,
         theme.panel.text,
     )];
-    texts.extend((0..7).zip(WEEKDAYS).map(|(column, name)| {
+    // Columna del día 1 en la semana que se muestra: con lunes primero el
+    // domingo (6) cae en la última columna.
+    let leading: u16 = if month.monday_first {
+        (month.first_column + 6) % 7
+    } else {
+        month.first_column
+    };
+    let weekdays = if month.monday_first {
+        WEEKDAYS_MONDAY
+    } else {
+        WEEKDAYS_SUNDAY
+    };
+    texts.extend((0..7).zip(weekdays).map(|(column, name)| {
         let center = (column_x(column), row_y(0));
         centered(
             name.to_owned(),
@@ -73,8 +86,8 @@ pub fn calendar_panel(
 
     let mut dots = Vec::new();
     // Vecinos del mes anterior: últimos días antes del día 1, atenuados.
-    for cell in 0..month.first_column {
-        let day = month.prev_days - month.first_column + 1 + cell;
+    for cell in 0..leading {
+        let day = month.prev_days - leading + 1 + cell;
         let (x, y) = (column_x(cell % 7), row_y(cell / 7 + 1));
         texts.push(centered(
             day.to_string(),
@@ -85,7 +98,7 @@ pub fn calendar_panel(
         ));
     }
     for day in 1..=month.days {
-        let cell = month.first_column + day - 1;
+        let cell = leading + day - 1;
         let (x, y) = (column_x(cell % 7), row_y(cell / 7 + 1));
         if month.today == Some(day) {
             let diameter = measures::CALENDAR_CELL_HEIGHT - measures::CALENDAR_TODAY_INSET;
@@ -105,7 +118,7 @@ pub fn calendar_panel(
         ));
     }
     // Vecinos del mes siguiente: primeros días hasta completar 6 filas.
-    let used = u32::from(month.first_column) + u32::from(month.days);
+    let used = u32::from(leading) + u32::from(month.days);
     let trailing = 7 * u32::from(WEEKS) - used;
     for next in 0..trailing {
         let cell = (used + next) as u16;

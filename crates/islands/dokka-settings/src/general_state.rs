@@ -57,18 +57,45 @@ impl Settings {
         self.system = summary;
     }
 
+    /// Fecha y hora que muestra "Fecha y hora", si el shell ya la pasó.
+    pub fn page_now(&self) -> Option<super::general::PageNow> {
+        self.values().now
+    }
+
+    /// Guarda la fecha y hora en vivo para la página de fecha y hora.
+    pub fn set_page_now(&mut self, now: super::general::PageNow) {
+        self.values_mut().now = Some(now);
+    }
+
+    /// Idiomas de la tarjeta de "Idioma y región": cuantos leyó Windows.
+    pub fn language_count(&self) -> usize {
+        self.system
+            .as_ref()
+            .and_then(|summary| summary.locale.languages.as_ref())
+            .map(|languages| languages.len())
+            .unwrap_or(0)
+    }
+
     /// Desplazamiento vertical del contenido de General, en lógicas.
     pub fn scroll_offset(&self) -> f32 {
         self.scroll
     }
 
     /// Mueve el contenido con la rueda, sin salirse de su altura.
-    /// Solo la ficha "Acerca" baja; la lista cabe sin moverse.
+    /// Solo las fichas bajan; la lista cabe sin moverse.
     pub(crate) fn scroll_by(&mut self, delta: f32) {
-        let max = if self.navigation_general() == super::general::GeneralPage::About {
-            super::logic::general_scroll_max(self.window_height())
-        } else {
-            0.0
+        let page = self.navigation_general();
+        let max = match page {
+            super::general::GeneralPage::About => {
+                super::logic::general_scroll_max(self.window_height())
+            }
+            super::general::GeneralPage::DateTime => {
+                super::logic::datetime_scroll_max(self.window_height())
+            }
+            super::general::GeneralPage::Language => {
+                super::logic::language_scroll_max(self.window_height(), self.language_count())
+            }
+            super::general::GeneralPage::Root => 0.0,
         };
         self.scroll = (self.scroll + delta).clamp(0.0, max);
     }

@@ -34,11 +34,12 @@ pub fn drag_zone(
     width: f32,
     general: crate::general::GeneralPage,
     scroll: f32,
+    languages: usize,
 ) -> bool {
     if content_control_at(selected, width, x, y) {
         return false;
     }
-    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, x, y) {
+    if selected == SECTION_GENERAL && general_control_at(width, scroll, general, languages, x, y) {
         return false;
     }
     // Los controles de las demás secciones no se ven, pero se comprueban

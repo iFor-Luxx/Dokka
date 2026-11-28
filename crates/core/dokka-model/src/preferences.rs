@@ -10,6 +10,26 @@ pub const DOCK_MAGNIFICATION_RANGE: (f32, f32) = (0.5, 1.5);
 pub struct Preferences {
     pub dock: DockPreferences,
     pub menubar: MenubarPreferences,
+    pub general: GeneralPreferences,
+}
+
+/// Ajustes propios de Dokka de fecha, hora e idioma: lo que cambia Windows
+/// se abre con un botón y nunca se guarda aquí.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct GeneralPreferences {
+    /// Reloj de la barra y hora del dock en 24 horas (si no, en 12).
+    pub hour_24: bool,
+    /// La semana del calendario (barra y dock) empieza en lunes (si no, en domingo).
+    pub week_starts_monday: bool,
+}
+
+impl Default for GeneralPreferences {
+    fn default() -> Self {
+        Self {
+            hour_24: true,
+            week_starts_monday: false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

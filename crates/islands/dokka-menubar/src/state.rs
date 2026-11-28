@@ -96,6 +96,8 @@ pub struct Menubar {
     /// para el cierre real. Mientras existe el panel sigue abierto y la
     /// plataforma lo anima sin repintar.
     pub(crate) control_dismiss: Option<super::logic::ClosingCenter>,
+    /// La semana del calendario empieza en lunes; si no, en domingo.
+    pub(crate) week_monday: bool,
 }
 
 impl Menubar {
@@ -183,6 +185,7 @@ impl Menubar {
             gallery_cursor: false,
             shown: MenubarPreferences::default(),
             control_dismiss: None,
+            week_monday: false,
         }
     }
 
@@ -196,6 +199,11 @@ impl Menubar {
 
     pub fn set_today(&mut self, year: u16, month: u16, day: u16) {
         self.today = (year, month, day);
+    }
+
+    /// Guarda si la semana del calendario empieza en lunes (Dokka).
+    pub fn set_week_start(&mut self, monday_first: bool) {
+        self.week_monday = monday_first;
     }
 
     pub fn app_name(&self) -> &str {

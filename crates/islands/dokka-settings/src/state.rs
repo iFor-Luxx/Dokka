@@ -213,6 +213,7 @@ impl Settings {
             reorder: painted_reorder(&self.values),
             scroll: super::painted::OrderedF32(self.scroll),
             system: self.system.clone(),
+            now: self.values.now,
         }
     }
 

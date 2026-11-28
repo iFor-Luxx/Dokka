@@ -31,8 +31,17 @@ cambia. "Acerca de este PC" trae el dibujo del PC, el modelo, la tarjeta con
 Nombre, Procesador, Gráfica, Memoria y Número de serie, las secciones Windows,
 Pantalla y Almacenamiento con sus botones y el informe abajo; los datos los da
 el shell (`set_system_info`) y los botones avisan (`OpenAbout`); si no cabe, la
-rueda baja la ficha sin pintar fuera. Los demás apartados siguen con la tarjeta
-gris "Próximamente". Barra superior: siete filas reordenables (Volumen, Red, Música,
+rueda baja la ficha sin pintar fuera. "Fecha y hora" trae si las automáticas
+están activas y el servidor NTP, la fecha en vivo (la pasa el shell con el
+`Tick` solo con el apartado abierto), el interruptor propio de 24 horas (lo
+usan el reloj de la barra y la hora del dock), si la zona es automática y su
+nombre, con su botón a la página de Windows. "Idioma y región" trae los idiomas
+preferidos (el primero es el principal), una línea de ejemplo con la fecha
+larga, la corta y un número con el formato de Windows, las filas de solo
+lectura (región, calendario, temperatura, medida y formatos) y el segmentado
+propio del primer día de la semana (lo usa el calendario de la barra y del
+dock), con su botón a la página de Windows. Los demás apartados siguen con la
+tarjeta gris "Próximamente". Barra superior: siete filas reordenables (Volumen, Red, Música,
 Idioma, Buscar, Centro de control y Apps en segundo plano) en una sola
 tarjeta, cada una con agarre a la izquierda (seis puntos verticales en color
 secundario), nombre e interruptor; debajo, texto pequeño secundario que
@@ -68,11 +77,13 @@ salirse de su tercio. El contenido cambia de tamaño entre secciones:
 `SceneLayers` reconstruye si cambia el estilo o crece la cantidad; los textos
 e iconos sobrantes se ocultan. Al reordenar la cantidad y el estilo no cambian:
 solo se mueven, sin reconstruir. La lógica vive dividida (`content.rs` geometría,
-`general.rs` lista y ficha, `menubar_order.rs` orden y huecos, `slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
+`general.rs` lista y ficha, `datetime.rs` y `language.rs` fecha e idioma,
+`menubar_order.rs` orden y huecos, `slider_map.rs` conversión 0-1, `dock_position.rs` índice de posición,
 `content_hit.rs` golpe, `menubar_drag.rs` arrastre, `reorder_pointer.rs` gesto y
 `slider_pointer.rs` pista); la vista vive dividida (`content.rs` ayudantes,
 `general_content.rs` y `general_rows.rs` lista, `about_content.rs`, `about_cards.rs`,
-`about_buttons.rs` y `about_pc.rs` ficha, `dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
+`about_buttons.rs` y `about_pc.rs` ficha, `datetime_content.rs` fecha y hora,
+`language_content.rs` idioma y región, `dock_content.rs` Dock, `menubar_content.rs` barra, `other_content.rs` resto);
 el historial vive en `selection.rs` y el apartado en `general.rs`.
 
 **No hace:** no crea ventanas, no habla con Windows ni guarda en disco. Sin

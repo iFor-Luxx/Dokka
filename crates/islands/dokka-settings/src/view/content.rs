@@ -68,6 +68,8 @@ fn general_scene(theme: &Theme, settings: &mut Settings) -> ContentScene {
             let pc = std::sync::Arc::new(super::about_pc::pc_drawing(theme));
             super::about_content::about_content(theme, settings, &pc)
         }
+        Page::DateTime => super::datetime_content::datetime_content(theme, settings),
+        Page::Language => super::language_content::language_content(theme, settings),
         _ => coming_soon(theme, settings.content_width()),
     }
 }
@@ -171,6 +173,33 @@ pub(crate) fn switch_pieces(
     let touch = switch_touch(row);
     let props = SwitchProps { on };
     switch_panels(theme, touch, &props).into_iter().collect()
+}
+
+/// Planos del interruptor a tamaño cero con su estilo, para esconderlos
+/// sin reconstruir capas al bajar con la rueda.
+pub(crate) fn zero_panels(panels: Vec<Panel>) -> Vec<Panel> {
+    panels
+        .into_iter()
+        .map(|mut panel| {
+            panel.bounds = Rect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            };
+            panel
+        })
+        .collect()
+}
+
+/// Textos dentro de la vista: los de fuera se quitan para no dibujar a medias.
+pub(crate) fn visible_texts(texts: Vec<Text>, window_height: f32) -> Vec<Text> {
+    texts
+        .into_iter()
+        .filter(|text| {
+            text.center_y >= measures::CONTENT_TOP && text.center_y <= window_height
+        })
+        .collect()
 }
 
 /// Etiquetas, líneas y tarjeta de un grupo que empieza en `top`.

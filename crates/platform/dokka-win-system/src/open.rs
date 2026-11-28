@@ -13,6 +13,8 @@ pub(crate) fn address(page: SystemPage) -> &'static str {
         SystemPage::Display => "ms-settings:display",
         SystemPage::Storage => "ms-settings:storagesense",
         SystemPage::Report => "msinfo32",
+        SystemPage::DateTime => "ms-settings:dateandtime",
+        SystemPage::Region => "ms-settings:regionformatting",
     }
 }
 

@@ -114,6 +114,7 @@ pub(crate) fn press_over_settings(
         session.settings.content_width(),
         session.settings.general(),
         session.settings.scroll_offset(),
+        session.settings.language_count(),
     ) {
         surface.settings_begin_drag();
         session.settings_pressed = false;
@@ -171,19 +172,24 @@ pub(crate) fn click_settings(
             crate::apply_preferences::set_taskbar_auto(session, surface, auto);
         }
         SettingsAction::EnterGeneral(page) => {
-            if page == GeneralPage::About {
-                crate::settings_system::request_about(session);
+            if page != GeneralPage::Root {
+                crate::settings_system::request_system_data(session);
             }
         }
         SettingsAction::OpenAbout(button) => {
             crate::settings_system::open_about_page(session, button);
         }
+        SettingsAction::OpenGeneral(button) => {
+            crate::settings_system::open_general_page(session, button);
+        }
     }
-    // Volver con la píldora a "Acerca" también pide los datos una vez.
-    if session.settings.general() == GeneralPage::About
-        && session.settings.system_summary().is_none()
+    // Volver con la píldora a un apartado con datos también los pide una vez.
+    if matches!(
+        session.settings.general(),
+        GeneralPage::About | GeneralPage::DateTime | GeneralPage::Language
+    ) && session.settings.system_summary().is_none()
     {
-        crate::settings_system::request_about(session);
+        crate::settings_system::request_system_data(session);
     }
     Ok(())
 }
@@ -271,8 +277,8 @@ pub(crate) fn render_settings(
         return Ok(());
     }
     // El hilo ya leyó el equipo: pasa el último valor a la isla para que
-    // repinte "Acerca" sin pedir en bucle.
-    crate::settings_system::poll_about(session);
+    // repinte sus apartados sin pedir en bucle.
+    crate::settings_system::poll_system_data(session);
     let painted = session.settings.painted();
     if session.settings_painted.as_ref() == Some(&painted) {
         return Ok(());

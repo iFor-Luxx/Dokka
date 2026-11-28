@@ -227,7 +227,7 @@ impl Menubar {
     fn calendar_overlay(&self, bar_width: f32) -> Option<dokka_scene::Overlay> {
         let bounds = self.calendar_bounds(bar_width)?;
         let open = self.calendar?;
-        let month = calendar_month(self.today, open.month_offset);
+        let month = calendar_month(self.today, open.month_offset, self.week_monday);
         let pill = calendar_pill_props(bounds, self.nav_hovered);
         Some(calendar_panel(
             &self.theme,

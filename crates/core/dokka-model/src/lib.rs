@@ -19,10 +19,10 @@ pub use control_item::{ControlItem, HiddenControls};
 pub use dock_app::DockApp;
 pub use open_window::OpenWindow;
 pub use preferences::{
-    DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPosition, DockPreferences, MenubarItem,
-    MenubarPreferences, Preferences,
+    DOCK_ICON_SCALE_RANGE, DOCK_MAGNIFICATION_RANGE, DockPosition, DockPreferences,
+    GeneralPreferences, MenubarItem, MenubarPreferences, Preferences,
 };
-pub use system_info::{SystemSummary, bytes_in_gb};
+pub use system_info::{DateTimeSummary, LocaleSummary, SystemSummary, bytes_in_gb};
 pub use system_status::{
     AudioOutput, KeyboardLanguage, NetworkKind, NetworkState, NowPlayingInfo, VolumeState,
 };

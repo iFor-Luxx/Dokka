@@ -16,7 +16,7 @@ const MONTHS: [&str; 12] = [
 ];
 
 /// Mes situado a `offset` meses del de `today` (año, mes, día).
-pub fn calendar_month(today: (u16, u16, u16), offset: i32) -> CalendarMonth {
+pub fn calendar_month(today: (u16, u16, u16), offset: i32, monday_first: bool) -> CalendarMonth {
     let months = i32::from(today.0) * 12 + i32::from(today.1.max(1)) - 1 + offset;
     let year = months.div_euclid(12);
     let month = months.rem_euclid(12) as usize + 1;
@@ -31,6 +31,7 @@ pub fn calendar_month(today: (u16, u16, u16), offset: i32) -> CalendarMonth {
         days: days_in(year, month),
         prev_days: days_in(prev_year, prev_month),
         today: (offset == 0).then_some(today.2),
+        monday_first,
     }
 }
 
