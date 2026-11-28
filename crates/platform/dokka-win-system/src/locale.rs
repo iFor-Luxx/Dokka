@@ -5,14 +5,14 @@
 //! usan el formato del usuario con la fecha de hoy.
 
 use dokka_model::LocaleSummary;
-use windows::Win32::Foundation::PWSTR;
 use windows::Win32::Globalization::{
-    DATE_LONGDATE, DATE_SHORTDATE, GetDateFormatW, GetLocaleInfoW, GetNumberFormatW,
-    GetUserDefaultLCID, GetUserPreferredUILanguages, LOCALE_ICALENDARTYPE, LOCALE_IMEASURE,
-    LOCALE_SDECIMAL, LOCALE_SLOCALIZEDCOUNTRYNAME, LOCALE_SLOCALIZEDDISPLAYNAME, LOCALE_SNAME,
-    LOCALE_SSHORTDATE, LOCALE_STHOUSAND, LOCALE_USER_DEFAULT, MUI_LANGUAGE_NAME, LocaleNameToLCID,
+    DATE_LONGDATE, DATE_SHORTDATE, ENUM_DATE_FORMATS_FLAGS, GetDateFormatW, GetLocaleInfoW,
+    GetNumberFormatW, GetUserDefaultLCID, GetUserPreferredUILanguages, LOCALE_ICALENDARTYPE,
+    LOCALE_IMEASURE, LOCALE_SDECIMAL, LOCALE_SLOCALIZEDCOUNTRYNAME, LOCALE_SLOCALIZEDDISPLAYNAME,
+    LOCALE_SNAME, LOCALE_SSHORTDATE, LOCALE_STHOUSAND, LOCALE_USER_DEFAULT, MUI_LANGUAGE_NAME,
+    LocaleNameToLCID,
 };
-use windows::core::{HSTRING, PCWSTR};
+use windows::core::{HSTRING, PCWSTR, PWSTR};
 
 /// Lee la tarjeta de idioma y región de una vez, sin detenerse en fallos.
 pub(crate) fn read_locale() -> LocaleSummary {
@@ -116,9 +116,9 @@ fn number_format(decimal: Option<&str>, thousand: Option<&str>) -> Option<String
 }
 
 /// Fecha de hoy con el formato del usuario (larga o corta).
-fn format_date(flags: u32) -> Option<String> {
+fn format_date(flags: ENUM_DATE_FORMATS_FLAGS) -> Option<String> {
     // SAFETY: sin búfer solo pide el tamaño, en caracteres con el nulo final.
-    let size = unsafe { GetDateFormatW(LOCALE_USER_DEFAULT, flags, None, PCWSTR::null(), None) };
+    let size = unsafe { GetDateFormatW(LOCALE_USER_DEFAULT, flags.0, None, PCWSTR::null(), None) };
     if size <= 0 || size > 512 {
         return None;
     }
@@ -127,7 +127,7 @@ fn format_date(flags: u32) -> Option<String> {
     let written = unsafe {
         GetDateFormatW(
             LOCALE_USER_DEFAULT,
-            flags,
+            flags.0,
             None,
             PCWSTR::null(),
             Some(buffer.as_mut_slice()),

@@ -102,6 +102,7 @@ pub(crate) fn general_control_at(
         Page::About => about_button_at(width, scroll, x, y).is_some(),
         Page::DateTime => super::datetime::datetime_control_at(width, scroll, x, y),
         Page::Language => super::language::language_control_at(width, languages, scroll, x, y),
+        Page::Update | Page::Storage => false,
     }
 }
 

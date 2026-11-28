@@ -95,7 +95,9 @@ impl Settings {
             super::general::GeneralPage::Language => {
                 super::logic::language_scroll_max(self.window_height(), self.language_count())
             }
-            super::general::GeneralPage::Root => 0.0,
+            super::general::GeneralPage::Root
+            | super::general::GeneralPage::Update
+            | super::general::GeneralPage::Storage => 0.0,
         };
         self.scroll = (self.scroll + delta).clamp(0.0, max);
     }
