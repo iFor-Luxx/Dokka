@@ -19,7 +19,10 @@ registro), carpetas del usuario con sus rutas conocidas (sin seguir enlaces
 ni uniones, ignorando lo ilegible) y otros discos fijos. Todo en su propio
 hilo con progreso parcial y cancelable; la isla lee el último valor.
 
-**No hace:** no cambia nada del equipo, solo lee y abre páginas.
+**No hace:** no abre páginas salvo las indicadas. Los cambios de fecha y
+hora solo se escriben tras un clic del usuario y nunca se deshacen al
+cerrar; si un cambio falla, se registra, se relee y la pantalla muestra el
+valor real.
 Los textos de relleno de los PC montados a mano ("System Product Name",
 "To be filled by O.E.M.", "System Serial Number", "Default string"...)
 se tratan como no disponibles; para el modelo se usa el de la placa base.

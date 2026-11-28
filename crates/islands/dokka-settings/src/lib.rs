@@ -1,5 +1,8 @@
 //! Isla de Preferencias: ventana de configuración estilo Tahoe.
 mod controls;
+mod datetime_click;
+mod datetime_edit;
+mod datetime_hover;
 mod drawings;
 mod events;
 mod general;
@@ -18,6 +21,7 @@ mod storage_state;
 mod values;
 mod view;
 
+pub use datetime_edit::{DateTimeEdit, DateTimeEditManual, TimezoneEntry};
 pub use events::{AboutButtonAction, SettingsAction};
 pub use general::{AboutButton, GeneralButton, GeneralPage, PageNow};
 pub use logic::{ListCounts, SECTION_NAMES, drag_zone};

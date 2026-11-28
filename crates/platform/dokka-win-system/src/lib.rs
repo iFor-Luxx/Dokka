@@ -4,6 +4,10 @@
 mod apps_size;
 mod breakdown;
 mod datetime;
+mod datetime_elevation;
+mod datetime_set;
+mod datetime_worker;
+mod datetime_zones;
 mod disks;
 mod display;
 mod folder_size;

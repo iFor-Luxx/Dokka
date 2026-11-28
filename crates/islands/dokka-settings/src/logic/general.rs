@@ -161,11 +161,12 @@ pub(crate) fn general_scroll_max(
     window_height: f32,
     page: crate::general::GeneralPage,
     counts: ListCounts,
+    edit: &crate::datetime_edit::DateTimeEdit,
 ) -> f32 {
     use crate::general::GeneralPage as Page;
     match page {
         Page::Root => 0.0,
-        Page::DateTime => super::datetime::datetime_scroll_max(window_height),
+        Page::DateTime => super::datetime_edit::edit_scroll_max(window_height, edit),
         Page::Language => super::language::language_scroll_max(window_height, counts.languages),
         Page::About => scroll_for(window_height, about_content_height()),
         Page::Storage => scroll_for(

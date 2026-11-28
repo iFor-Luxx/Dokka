@@ -20,6 +20,20 @@ pub enum PaintedControl {
     AboutButton(u8),
     /// Interruptor de "Fecha y hora": formato de 24 horas.
     DateTimeSwitch,
+    /// Interruptor de automáticas de Windows.
+    DateTimeAutoTime,
+    /// Interruptor de zona automática.
+    DateTimeAutoZone,
+    /// Servidor: 0 cambiar, 1 aplicar, 2 cancelar.
+    DateTimeServer(u8),
+    /// Fecha manual: 0 cambiar, 1 aplicar, 2 cancelar.
+    DateTimeManual(u8),
+    /// Paso de fecha: campo 0-4 y sentido.
+    DateTimeStep(u8, i8),
+    /// Desplegable de zonas: cabecera.
+    DateTimeZoneToggle,
+    /// Zona de la lista (posición visible 0-5).
+    DateTimeZoneSlot(u8),
     /// Segmentado de "Idioma y región": primer día de la semana.
     LanguageSegment,
     /// Botón de "Fecha y hora" (0) o de "Idioma y región" (1).
@@ -61,6 +75,23 @@ pub struct PaintedSettings {
     pub storage: Option<dokka_model::StorageBreakdown>,
     /// Versión instalada de Dokka para su apartado.
     pub dokka_version: Option<String>,
+    /// Si lo protegido de fecha responde (elevado).
+    pub datetime_can_change: bool,
+    /// Cuántas zonas trae el desplegable.
+    pub datetime_zones: usize,
+    /// Casilla del servidor abierta y su borrador.
+    pub server_editing: bool,
+    pub server_draft: String,
+    /// Editor de fecha abierto y su borrador.
+    pub manual_editing: bool,
+    pub manual_day: u16,
+    pub manual_month: u16,
+    pub manual_year: u16,
+    pub manual_hour: u16,
+    pub manual_minute: u16,
+    /// Desplegable de zonas abierto y su desplazamiento.
+    pub zone_open: bool,
+    pub zone_scroll: usize,
 }
 
 /// Fila arrastrada en la huella: hueco de origen, destino y altura.

@@ -6,7 +6,7 @@ use super::general::{AboutButton, GeneralButton, GeneralPage};
 pub type AboutButtonAction = AboutButton;
 
 /// Lo que Preferencias pide hacer al shell.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum SettingsAction {
     /// Cerrar la ventana con el semáforo rojo (Dokka sigue en marcha).
     Close,
@@ -28,4 +28,14 @@ pub enum SettingsAction {
     OpenGeneral(GeneralButton),
     /// Botón "Vaciar papelera": el shell la vacía con su confirmación.
     EmptyTrash,
+    /// Automáticas de Windows (`NTP` o `NoSync`).
+    DateTimeAutoTime(bool),
+    /// Servidor NTP validado.
+    DateTimeServer(String),
+    /// Fecha y hora manual con las automáticas apagadas.
+    DateTimeManual(crate::datetime_edit::DateTimeEditManual),
+    /// Zona automática (`tzautoupdate` 3 o 4).
+    DateTimeAutoZone(bool),
+    /// Zona por su clave en inglés.
+    DateTimeZone(String),
 }

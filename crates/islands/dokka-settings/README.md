@@ -35,7 +35,11 @@ rueda baja la ficha sin pintar fuera. "Fecha y hora" trae si las automáticas
 están activas y el servidor NTP, la fecha en vivo (la pasa el shell con el
 `Tick` solo con el apartado abierto), el interruptor propio de 24 horas (lo
 usan el reloj de la barra y la hora del dock), si la zona es automática y su
-nombre, con su botón a la página de Windows. "Idioma y región" trae los idiomas
+nombre, con su botón a la página de Windows. Desde Dokka se puede cambiar:
+automáticas y servidor (con casilla, "Aplicar" y "Cancelar"), fecha manual
+con Día, Mes, Año, Hora y Minuto y sus flechas propias, zona automática y
+zona con su desplegable ordenado y traducido; lo protegido necesita
+elevación y sin ella se atenúa con su aviso, la zona no la necesita. "Idioma y región" trae los idiomas
 preferidos (el primero es el principal), una línea de ejemplo con la fecha
 larga, la corta y un número con el formato de Windows, las filas de solo
 lectura (región, calendario, temperatura, medida y formatos) y el segmentado

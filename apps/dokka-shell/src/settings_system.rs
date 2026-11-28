@@ -7,8 +7,8 @@
 //! si no se lee, el campo queda en "No disponible" o "Calculando…". La fecha
 //! en vivo la pasa el `Tick` solo con su apartado abierto.
 
-use dokka_contracts::SystemInfo as _;
-use dokka_settings::{AboutButton, GeneralButton, GeneralPage, PageNow};
+use dokka_contracts::{DateTimeControls as _, SystemInfo as _};
+use dokka_settings::{AboutButton, DateTimeEditManual, GeneralButton, GeneralPage, PageNow};
 
 use super::dock_session::DockSession;
 
@@ -34,6 +34,10 @@ pub(crate) fn request_system_data(session: &mut DockSession) {
     }
     // "Fecha y hora" enseña la hora en vivo desde la primera pintura.
     refresh_now(session);
+    if session.settings.general() == GeneralPage::DateTime {
+        session.system_info.request_timezones();
+        sync_datetime_info(session);
+    }
 }
 
 /// Si se está en un apartado con datos ("Acerca", "Fecha y hora" o
@@ -47,6 +51,9 @@ pub(crate) fn poll_system_data(session: &mut DockSession) {
         && session.settings.system_summary() != Some(summary.clone())
     {
         session.settings.set_system_info(Some(summary));
+    }
+    if session.settings.general() == GeneralPage::DateTime {
+        sync_datetime_info(session);
     }
 }
 
@@ -82,6 +89,58 @@ fn refresh_now(session: &mut DockSession) {
     if session.settings.page_now() != Some(page_now) {
         session.settings.set_page_now(page_now);
     }
+}
+
+/// Pasa a la isla si lo protegido responde y las zonas del desplegable.
+/// Solo con "Fecha y hora" abierto; conserva los borradores en curso.
+pub(crate) fn sync_datetime_info(session: &mut DockSession) {
+    let can_change = session.system_info.can_change_protected();
+    let zones = session
+        .system_info
+        .timezones()
+        .map(|list| {
+            list.into_iter()
+                .map(|zone| dokka_settings::TimezoneEntry {
+                    key: zone.key,
+                    display: zone.display,
+                })
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    session.settings.set_datetime_info(can_change, zones);
+}
+
+/// Aplica un cambio de fecha tras un clic; el hilo relee y la pantalla
+/// muestra el valor real. Falla sola.
+pub(crate) fn apply_datetime_auto_time(session: &DockSession, enabled: bool) {
+    session.system_info.set_automatic_time(enabled);
+}
+
+/// Aplica un servidor validado; el hilo relee tras escribir.
+pub(crate) fn apply_datetime_server(session: &DockSession, server: String) {
+    session.system_info.set_ntp_server(server);
+}
+
+/// Aplica la fecha manual; solo con las automáticas apagadas.
+pub(crate) fn apply_datetime_manual(session: &DockSession, date: DateTimeEditManual) {
+    use dokka_contracts::ManualDateTime;
+    session.system_info.set_manual_time(ManualDateTime {
+        year: date.year,
+        month: date.month,
+        day: date.day,
+        hour: date.hour,
+        minute: date.minute,
+    });
+}
+
+/// Aplica la zona automática del servicio `tzautoupdate`.
+pub(crate) fn apply_datetime_auto_zone(session: &DockSession, enabled: bool) {
+    session.system_info.set_automatic_timezone(enabled);
+}
+
+/// Aplica la zona elegida por su clave.
+pub(crate) fn apply_datetime_zone(session: &DockSession, key: String) {
+    session.system_info.set_timezone(key);
 }
 
 /// Pasa lo ya calculado y pide recalcular en el hilo. Solo calcula al

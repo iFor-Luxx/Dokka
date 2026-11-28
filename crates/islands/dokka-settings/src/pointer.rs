@@ -7,6 +7,7 @@
 
 use dokka_model::Preferences;
 
+use super::datetime_hover::datetime_hover;
 use super::general::GeneralPage;
 use super::logic::{
     DockSwitch, ListCounts, SliderTarget, about_button_at, datetime_button_at, datetime_switch_at,
@@ -125,6 +126,16 @@ impl Settings {
             self.values_mut().control =
                 control_at(self.selected(), general, width, scroll, counts, x, y);
         }
+        if self.values().control.is_none() {
+            self.values_mut().control = datetime_hover(self, x, y);
+        } else if general == GeneralPage::DateTime
+            && matches!(self.values().control, Some(PaintedControl::DateTimeSwitch))
+        {
+            // El formato de 24 horas convive con los nuevos controles.
+            if let Some(hover) = datetime_hover(self, x, y) {
+                self.values_mut().control = Some(hover);
+            }
+        }
     }
 
     pub fn pointer_left(&mut self) {
@@ -235,6 +246,11 @@ impl Settings {
     /// Rueda sobre el contenido de General: baja o sube la ficha.
     pub fn scroll_wheel(&mut self, delta: i16) {
         if self.selected() != super::logic::SECTION_GENERAL {
+            return;
+        }
+        if self.general() == GeneralPage::DateTime && self.datetime_edit.zone_open {
+            let up = delta > 0;
+            self.datetime_edit_mut().scroll_zones(up);
             return;
         }
         // Un paso de rueda son 120 unidades: baja una fila de contenido.

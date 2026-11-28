@@ -30,6 +30,7 @@ pub struct Settings {
     pub(crate) storage: Option<dokka_model::StorageBreakdown>,
     pub(crate) dokka_version: Option<String>,
     pub(crate) scroll: f32,
+    pub(crate) datetime_edit: crate::datetime_edit::DateTimeEdit,
 }
 
 impl Default for Settings {
@@ -48,6 +49,7 @@ impl Default for Settings {
             storage: None,
             dokka_version: None,
             scroll: 0.0,
+            datetime_edit: crate::datetime_edit::DateTimeEdit::default(),
         }
     }
 }
@@ -84,6 +86,11 @@ impl Settings {
         self.values.drag = None;
         self.values.reorder = None;
         self.scroll = 0.0;
+        self.datetime_edit.server_editing = false;
+        self.datetime_edit.server_draft.clear();
+        self.datetime_edit.manual_editing = false;
+        self.datetime_edit.zone_open = false;
+        self.datetime_edit.zone_scroll = 0;
     }
 
     pub fn is_open(&self) -> bool {
@@ -217,6 +224,18 @@ impl Settings {
             now: self.values.now,
             storage: self.storage.clone(),
             dokka_version: self.dokka_version.clone(),
+            datetime_can_change: self.datetime_edit.can_change,
+            datetime_zones: self.datetime_edit.zones.len(),
+            server_editing: self.datetime_edit.server_editing,
+            server_draft: self.datetime_edit.server_draft.clone(),
+            manual_editing: self.datetime_edit.manual_editing,
+            manual_day: self.datetime_edit.day,
+            manual_month: self.datetime_edit.month,
+            manual_year: self.datetime_edit.year,
+            manual_hour: self.datetime_edit.hour,
+            manual_minute: self.datetime_edit.minute,
+            zone_open: self.datetime_edit.zone_open,
+            zone_scroll: self.datetime_edit.zone_scroll,
         }
     }
 
