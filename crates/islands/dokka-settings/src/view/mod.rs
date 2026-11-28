@@ -10,5 +10,4 @@ mod menubar_content;
 mod other_content;
 mod settings_scene;
 
-pub(crate) use about_pc::pc_drawing;
 pub use settings_scene::settings_scene;

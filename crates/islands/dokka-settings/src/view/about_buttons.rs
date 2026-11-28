@@ -7,10 +7,6 @@
 use dokka_scene::{Panel, Rect, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::super::logic::{
-    ABOUT_BUTTON_GAP, ABOUT_BUTTON_HEIGHT, ABOUT_BUTTON_RADIUS, ABOUT_HERO_HEIGHT,
-    ABOUT_SECTION_TITLE,
-};
 use super::super::painted::PaintedControl;
 use super::super::state::Settings;
 
@@ -22,10 +18,10 @@ pub(crate) fn button_pieces(
     width: f32,
     window_height: f32,
 ) -> (Panel, Text) {
-    let button_width = 220.0;
+    let button_width = measures::ABOUT_BUTTON_WIDTH;
     let x = measures::CONTENT_LEFT + (width - button_width) / 2.0;
-    let middle = top + ABOUT_BUTTON_HEIGHT / 2.0;
-    let hidden = top + ABOUT_BUTTON_HEIGHT < measures::CONTENT_TOP || top > window_height;
+    let middle = top + measures::ABOUT_BUTTON_HEIGHT / 2.0;
+    let hidden = top + measures::ABOUT_BUTTON_HEIGHT < measures::CONTENT_TOP || top > window_height;
     let panel = if hidden {
         Panel {
             bounds: Rect {
@@ -34,7 +30,7 @@ pub(crate) fn button_pieces(
                 width: 0.0,
                 height: 0.0,
             },
-            corner_radius: ABOUT_BUTTON_RADIUS,
+            corner_radius: measures::ABOUT_BUTTON_RADIUS,
             border_width: measures::CARD_BORDER_WIDTH,
             tint: theme.settings.card,
             border: theme.settings.card_border,
@@ -45,9 +41,9 @@ pub(crate) fn button_pieces(
                 x,
                 y: top,
                 width: button_width,
-                height: ABOUT_BUTTON_HEIGHT,
+                height: measures::ABOUT_BUTTON_HEIGHT,
             },
-            corner_radius: ABOUT_BUTTON_RADIUS,
+            corner_radius: measures::ABOUT_BUTTON_RADIUS,
             border_width: measures::CARD_BORDER_WIDTH,
             tint: theme.settings.card,
             border: theme.settings.card_border,
@@ -74,7 +70,7 @@ pub(crate) fn button_hover(theme: &Theme, settings: &Settings, top: f32, width: 
             width: 0.0,
             height: 0.0,
         },
-        corner_radius: ABOUT_BUTTON_RADIUS,
+        corner_radius: measures::ABOUT_BUTTON_RADIUS,
         border_width: 0.0,
         tint: theme.settings.hover,
         border: theme.settings.hover,
@@ -82,7 +78,7 @@ pub(crate) fn button_hover(theme: &Theme, settings: &Settings, top: f32, width: 
     let Some(PaintedControl::AboutButton(index)) = settings.values().control else {
         return hidden;
     };
-    let button_width = 220.0;
+    let button_width = measures::ABOUT_BUTTON_WIDTH;
     let x = measures::CONTENT_LEFT + (width - button_width) / 2.0;
     let button_top = match index {
         0 => display_button_top(top),
@@ -94,9 +90,9 @@ pub(crate) fn button_hover(theme: &Theme, settings: &Settings, top: f32, width: 
             x,
             y: button_top,
             width: button_width,
-            height: ABOUT_BUTTON_HEIGHT,
+            height: measures::ABOUT_BUTTON_HEIGHT,
         },
-        corner_radius: ABOUT_BUTTON_RADIUS,
+        corner_radius: measures::ABOUT_BUTTON_RADIUS,
         border_width: 0.0,
         tint: theme.settings.hover,
         border: theme.settings.hover,
@@ -104,27 +100,30 @@ pub(crate) fn button_hover(theme: &Theme, settings: &Settings, top: f32, width: 
 }
 
 fn display_button_top(top: f32) -> f32 {
-    top + ABOUT_HERO_HEIGHT
+    top + measures::ABOUT_HERO_HEIGHT
         + measures::GROUP_GAP
         + 5.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
-        + ABOUT_BUTTON_GAP
+        + measures::ABOUT_BUTTON_GAP
 }
 
 fn storage_button_top(top: f32) -> f32 {
     display_button_top(top)
-        + ABOUT_BUTTON_HEIGHT
+        + measures::ABOUT_BUTTON_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + measures::CONTENT_ROW_HEIGHT
-        + ABOUT_BUTTON_GAP
+        + measures::ABOUT_BUTTON_GAP
 }
 
 fn report_button_top(top: f32) -> f32 {
-    storage_button_top(top) + ABOUT_BUTTON_HEIGHT + measures::GROUP_GAP + ABOUT_BUTTON_HEIGHT
+    storage_button_top(top)
+        + measures::ABOUT_BUTTON_HEIGHT
+        + measures::GROUP_GAP
+        + measures::ABOUT_BUTTON_HEIGHT
 }

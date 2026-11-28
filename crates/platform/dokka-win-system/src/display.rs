@@ -23,8 +23,10 @@ pub(crate) fn resolution() -> Option<String> {
 
 /// Nombre del monitor principal ("Monitor PnP genérico"), o `None`.
 pub(crate) fn display_name() -> Option<String> {
-    let mut device = DISPLAY_DEVICEW::default();
-    device.cb = size_of::<DISPLAY_DEVICEW>() as u32;
+    let mut device = DISPLAY_DEVICEW {
+        cb: size_of::<DISPLAY_DEVICEW>() as u32,
+        ..Default::default()
+    };
     // SAFETY: `device` declara su tamaño y es escribible; índice 0 válido.
     let ok = unsafe { EnumDisplayDevicesW(PCWSTR::null(), 0, &mut device, 0) };
     if !ok.as_bool() {

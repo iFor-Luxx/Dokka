@@ -73,14 +73,11 @@ fn watch(
     shared: &Arc<Mutex<Option<SystemSummary>>>,
 ) {
     loop {
-        let command = match queue.recv() {
-            Ok(command) => command,
-            Err(_) => return,
-        };
-        // Vacía la cola: varias peticiones seguidas son una sola lectura.
-        for _ in queue.try_iter() {
-            let _ = command;
+        if queue.recv().is_err() {
+            return;
         }
+        // Vacía la cola: varias peticiones seguidas son una sola lectura.
+        for _ in queue.try_iter() {}
         let summary = read_all();
         if let Ok(mut known) = shared.lock() {
             *known = Some(summary);

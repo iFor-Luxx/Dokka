@@ -8,14 +8,11 @@ use std::sync::Arc;
 use dokka_scene::{Drawing, Icon, Panel, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::super::logic::{
-    GENERAL_GEAR_SIDE, GENERAL_HEADER_GAP, GENERAL_HEADER_HEIGHT, GENERAL_HEADER_HELP,
-    GENERAL_HEADER_SUBTITLE, GENERAL_HEADER_TITLE, general_card_top, general_rows,
-};
+use super::super::logic::{GENERAL_HEADER_HELP, general_card_top, general_rows};
 use super::super::state::Settings;
 use super::content::{ContentScene, coming_soon};
 use super::general_rows::{
-    hidden_icon, hidden_panel, hide_above, hover_panel, row_badges, row_labels,
+    RowBadgeArgs, hidden_icon, hidden_panel, hide_above, hover_panel, row_badges, row_labels,
 };
 
 /// Cabecera + dos tarjetas de General; `badges`, `glyphs` y `chevron` ya
@@ -78,26 +75,26 @@ pub(crate) fn general_content(
         window_height,
     ));
     let mut icons = header_icons;
-    icons.extend(row_badges(
+    icons.extend(row_badges(RowBadgeArgs {
         theme,
-        first_top,
-        0,
+        top: first_top,
+        base: 0,
         badges,
         glyphs,
         chevron,
         width,
         window_height,
-    ));
-    icons.extend(row_badges(
+    }));
+    icons.extend(row_badges(RowBadgeArgs {
         theme,
-        second_top,
-        3,
+        top: second_top,
+        base: 3,
         badges,
         glyphs,
         chevron,
         width,
         window_height,
-    ));
+    }));
     // Resaltado de la fila bajo el cursor: siempre existe para no reconstruir.
     flats.push(hover_panel(theme, settings, first_top, second_top, width));
     ContentScene {
@@ -119,47 +116,54 @@ fn header_pieces(
     use super::super::logic::general_card_top as top_of;
     let top = top_of(0, scroll);
     let window_height = settings.window_height();
-    let panel = if top + GENERAL_HEADER_HEIGHT < measures::CONTENT_TOP || top > window_height {
-        hidden_panel(theme)
-    } else {
-        Panel {
-            bounds: dokka_scene::Rect {
-                x: measures::CONTENT_LEFT,
-                y: top,
-                width,
-                height: GENERAL_HEADER_HEIGHT,
-            },
-            corner_radius: measures::CARD_RADIUS,
-            border_width: measures::CARD_BORDER_WIDTH,
-            tint: theme.settings.card,
-            border: theme.settings.card_border,
-        }
-    };
-    let center = measures::CONTENT_LEFT + width / 2.0;
-    let gear_top = top + 16.0;
-    let gear_icon =
-        if gear_top + GENERAL_GEAR_SIDE < measures::CONTENT_TOP || gear_top > window_height {
-            hidden_icon()
+    let panel =
+        if top + measures::GENERAL_HEADER_HEIGHT < measures::CONTENT_TOP || top > window_height {
+            hidden_panel(theme)
         } else {
-            Icon {
-                x: center - GENERAL_GEAR_SIDE / 2.0,
-                y: gear_top,
-                side: GENERAL_GEAR_SIDE,
-                image: Some(dokka_scene::IconImage::Drawing(Arc::clone(gear))),
-                placeholder: theme.settings.card_text,
-                placeholder_radius: 0.0,
+            Panel {
+                bounds: dokka_scene::Rect {
+                    x: measures::CONTENT_LEFT,
+                    y: top,
+                    width,
+                    height: measures::GENERAL_HEADER_HEIGHT,
+                },
+                corner_radius: measures::CARD_RADIUS,
+                border_width: measures::CARD_BORDER_WIDTH,
+                tint: theme.settings.card,
+                border: theme.settings.card_border,
             }
         };
-    let title_y = gear_top + GENERAL_GEAR_SIDE + GENERAL_HEADER_GAP + GENERAL_HEADER_TITLE / 2.0;
-    let help_y =
-        title_y + GENERAL_HEADER_TITLE / 2.0 + GENERAL_HEADER_GAP + GENERAL_HEADER_SUBTITLE / 2.0;
+    let center = measures::CONTENT_LEFT + width / 2.0;
+    let gear_top = top + measures::GROUP_GAP;
+    let gear_icon = if gear_top + measures::GENERAL_GEAR_SIDE < measures::CONTENT_TOP
+        || gear_top > window_height
+    {
+        hidden_icon(theme)
+    } else {
+        Icon {
+            x: center - measures::GENERAL_GEAR_SIDE / 2.0,
+            y: gear_top,
+            side: measures::GENERAL_GEAR_SIDE,
+            image: Some(dokka_scene::IconImage::Drawing(Arc::clone(gear))),
+            placeholder: theme.settings.card_text,
+            placeholder_radius: 0.0,
+        }
+    };
+    let title_y = gear_top
+        + measures::GENERAL_GEAR_SIDE
+        + measures::GENERAL_HEADER_GAP
+        + measures::GENERAL_HEADER_TITLE_SIZE / 2.0;
+    let help_y = title_y
+        + measures::GENERAL_HEADER_TITLE_SIZE / 2.0
+        + measures::GENERAL_HEADER_GAP
+        + measures::GENERAL_HEADER_SUBTITLE_SIZE / 2.0;
     let mut texts = Vec::new();
     if title_y >= measures::CONTENT_TOP && title_y <= window_height {
         texts.push(Text {
             x: center,
             center_y: title_y,
             content: "General".to_owned(),
-            size: GENERAL_HEADER_TITLE,
+            size: measures::GENERAL_HEADER_TITLE_SIZE,
             is_bold: true,
             color: theme.settings.row_text,
             align: TextAlign::Center,
@@ -170,7 +174,7 @@ fn header_pieces(
             x: center,
             center_y: help_y,
             content: GENERAL_HEADER_HELP.to_owned(),
-            size: GENERAL_HEADER_SUBTITLE,
+            size: measures::GENERAL_HEADER_SUBTITLE_SIZE,
             is_bold: false,
             color: theme.settings.card_text,
             align: TextAlign::Center,

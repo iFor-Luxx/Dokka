@@ -11,9 +11,7 @@ use dokka_model::{SystemSummary, bytes_in_gb};
 use dokka_scene::{Divider, Drawing, Icon, Text, TextAlign};
 use dokka_theme::{Theme, settings as measures};
 
-use super::super::logic::{
-    ABOUT_HERO_HEIGHT, ABOUT_MODEL_SIZE, ABOUT_PC_SIDE, about_main_rows, about_top,
-};
+use super::super::logic::{about_main_rows, about_top};
 use super::super::state::Settings;
 use super::about_buttons::{button_hover, button_pieces};
 use super::about_cards::{section_header, value_card};
@@ -40,7 +38,7 @@ pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing
     texts.extend(hero_texts);
 
     // Tarjeta principal con los cinco valores.
-    let main_top = top + ABOUT_HERO_HEIGHT + measures::GROUP_GAP;
+    let main_top = top + measures::ABOUT_HERO_HEIGHT + measures::GROUP_GAP;
     let main_labels = about_main_rows();
     let main_owned = main_values(&summary);
     let main_refs: Vec<&str> = main_owned.iter().map(|value| value.as_str()).collect();
@@ -61,8 +59,8 @@ pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing
     for section in about_sections(&summary) {
         let header = section_header(theme, cursor, section.title, width, window_height);
         texts.extend(header);
-        cursor += super::super::logic::ABOUT_SECTION_TITLE;
-        let labels: Vec<&'static str> = section.labels.iter().copied().collect();
+        cursor += measures::ABOUT_SECTION_TITLE_HEIGHT;
+        let labels: Vec<&'static str> = section.labels.to_vec();
         let values: Vec<String> = section.values.clone();
         let refs: Vec<&str> = values.iter().map(|value| value.as_str()).collect();
         let (panel, mut card_dividers, mut card_texts) =
@@ -72,11 +70,11 @@ pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing
         texts.append(&mut card_texts);
         cursor += labels.len() as f32 * measures::CONTENT_ROW_HEIGHT;
         if let Some(button) = section.button {
-            cursor += super::super::logic::ABOUT_BUTTON_GAP;
+            cursor += measures::ABOUT_BUTTON_GAP;
             let (panel, text) = button_pieces(theme, cursor, button, width, window_height);
             flats.push(panel);
             texts.push(text);
-            cursor += super::super::logic::ABOUT_BUTTON_HEIGHT;
+            cursor += measures::ABOUT_BUTTON_HEIGHT;
         }
         cursor += measures::GROUP_GAP;
     }
@@ -88,7 +86,7 @@ pub(crate) fn about_content(theme: &Theme, settings: &Settings, pc: &Arc<Drawing
 
     // Resaltado del botón bajo el cursor: siempre existe.
     flats.push(button_hover(theme, settings, top, width));
-    icons.push(hidden_icon());
+    icons.push(hidden_icon(theme));
     ContentScene {
         flats,
         dividers,
@@ -172,22 +170,25 @@ fn hero_pieces(
     pc: &Arc<Drawing>,
 ) -> (Vec<Divider>, Vec<Icon>, Vec<Text>) {
     let center = measures::CONTENT_LEFT + width / 2.0;
-    let pc_y = top + 12.0;
-    let model_y = pc_y + ABOUT_PC_SIDE + 12.0 + ABOUT_MODEL_SIZE / 2.0;
-    let line_y = model_y + ABOUT_MODEL_SIZE / 2.0 + 12.0;
+    let pc_y = top + measures::ABOUT_HERO_PC_TOP_GAP;
+    let model_y = pc_y
+        + measures::ABOUT_PC_SIDE
+        + measures::ABOUT_HERO_MODEL_GAP
+        + measures::ABOUT_MODEL_SIZE / 2.0;
+    let line_y = model_y + measures::ABOUT_MODEL_SIZE / 2.0 + measures::ABOUT_HERO_LINE_GAP;
     let visible = |y: f32| y >= measures::CONTENT_TOP && y <= window_height;
     let mut icons = Vec::new();
-    if visible(pc_y + ABOUT_PC_SIDE / 2.0) {
+    if visible(pc_y + measures::ABOUT_PC_SIDE / 2.0) {
         icons.push(Icon {
-            x: center - ABOUT_PC_SIDE / 2.0,
+            x: center - measures::ABOUT_PC_SIDE / 2.0,
             y: pc_y,
-            side: ABOUT_PC_SIDE,
+            side: measures::ABOUT_PC_SIDE,
             image: Some(dokka_scene::IconImage::Drawing(Arc::clone(pc))),
             placeholder: theme.settings.card_text,
             placeholder_radius: 0.0,
         });
     } else {
-        icons.push(hidden_icon());
+        icons.push(hidden_icon(theme));
     }
     let mut texts = Vec::new();
     if visible(model_y) {
@@ -195,7 +196,7 @@ fn hero_pieces(
             x: center,
             center_y: model_y,
             content: SystemSummary::display(&summary.model).to_owned(),
-            size: ABOUT_MODEL_SIZE,
+            size: measures::ABOUT_MODEL_SIZE,
             is_bold: true,
             color: theme.settings.row_text,
             align: TextAlign::Center,
@@ -205,10 +206,10 @@ fn hero_pieces(
     if visible(line_y) {
         dividers.push(Divider {
             bounds: dokka_scene::Rect {
-                x: center - 60.0,
+                x: center - measures::ABOUT_HERO_LINE_HALF,
                 y: line_y,
-                width: 120.0,
-                height: 1.0,
+                width: measures::ABOUT_HERO_LINE_WIDTH,
+                height: measures::HEADER_DIVIDER_HEIGHT,
             },
             color: theme.settings.divider,
         });

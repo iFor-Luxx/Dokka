@@ -24,7 +24,14 @@ pub(crate) fn paint_text(
 
     let pixels = |value: f32| (value * OVERSAMPLE) as u32;
     let align_left = text.align == TextAlign::Left;
-    let line_x = if align_left { 1.0 } else { width / 2.0 };
+    let align_right = text.align == TextAlign::Right;
+    let line_x = if align_left {
+        1.0
+    } else if align_right {
+        width - 1.0
+    } else {
+        width / 2.0
+    };
     let surface = paint_surface(device, pixels(width), pixels(height), |context, offset| {
         let transform = Matrix3x2 {
             M11: OVERSAMPLE,
@@ -46,6 +53,7 @@ pub(crate) fn paint_text(
             size: text.size,
             is_bold: text.is_bold,
             align_left,
+            align_right,
         };
         painter.draw(context, &solid_brush(context, text.color)?, line)
     })?;

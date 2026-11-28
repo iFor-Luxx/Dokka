@@ -47,16 +47,29 @@ pub(crate) fn row_labels(
 }
 
 /// Cuadritos, glifos y chevrones de las filas que empiezan en `top`.
-pub(crate) fn row_badges(
-    theme: &Theme,
-    top: f32,
-    base: usize,
-    badges: &[Arc<Drawing>],
-    glyphs: &[Arc<Drawing>],
-    chevron: &Arc<Drawing>,
-    width: f32,
-    window_height: f32,
-) -> Vec<Icon> {
+pub(crate) struct RowBadgeArgs<'a> {
+    pub theme: &'a Theme,
+    pub top: f32,
+    pub base: usize,
+    pub badges: &'a [Arc<Drawing>],
+    pub glyphs: &'a [Arc<Drawing>],
+    pub chevron: &'a Arc<Drawing>,
+    pub width: f32,
+    pub window_height: f32,
+}
+
+/// Cuadritos, glifos y chevrones de las filas que empiezan en `top`.
+pub(crate) fn row_badges(args: RowBadgeArgs<'_>) -> Vec<Icon> {
+    let RowBadgeArgs {
+        theme,
+        top,
+        base,
+        badges,
+        glyphs,
+        chevron,
+        width,
+        window_height,
+    } = args;
     let mut icons = Vec::new();
     let count = if base == 0 { 3 } else { 2 };
     for index in 0..count {
@@ -64,9 +77,9 @@ pub(crate) fn row_badges(
         let y = top + index as f32 * measures::CONTENT_ROW_HEIGHT;
         let middle = y + measures::CONTENT_ROW_HEIGHT / 2.0;
         if middle < measures::CONTENT_TOP || middle > window_height {
-            icons.push(hidden_icon());
-            icons.push(hidden_icon());
-            icons.push(hidden_icon());
+            icons.push(hidden_icon(theme));
+            icons.push(hidden_icon(theme));
+            icons.push(hidden_icon(theme));
             continue;
         }
         let badge_x = measures::CONTENT_LEFT + measures::CONTENT_PADDING;
@@ -97,9 +110,11 @@ pub(crate) fn row_badges(
             placeholder_radius: 0.0,
         });
         icons.push(Icon {
-            x: measures::CONTENT_LEFT + width - measures::CONTENT_PADDING - 16.0,
-            y: middle - 8.0,
-            side: 16.0,
+            x: measures::CONTENT_LEFT + width
+                - measures::CONTENT_PADDING
+                - measures::GENERAL_CHEVRON_SIDE,
+            y: middle - measures::GENERAL_CHEVRON_SIDE / 2.0,
+            side: measures::GENERAL_CHEVRON_SIDE,
             image: Some(dokka_scene::IconImage::Drawing(Arc::clone(chevron))),
             placeholder: theme.settings.card_text,
             placeholder_radius: 0.0,
@@ -168,18 +183,13 @@ pub(crate) fn hidden_panel(theme: &Theme) -> Panel {
     }
 }
 
-pub(crate) fn hidden_icon() -> Icon {
+pub(crate) fn hidden_icon(theme: &Theme) -> Icon {
     Icon {
         x: -1000.0,
         y: -1000.0,
         side: 16.0,
         image: None,
-        placeholder: dokka_scene::Color {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0,
-        },
+        placeholder: theme.tray.clear,
         placeholder_radius: 0.0,
     }
 }

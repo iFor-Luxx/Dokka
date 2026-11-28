@@ -65,7 +65,7 @@ fn general_scene(theme: &Theme, settings: &mut Settings) -> ContentScene {
             )
         }
         Page::About => {
-            let pc = std::sync::Arc::new(super::about_content::pc_drawing(theme));
+            let pc = std::sync::Arc::new(super::about_pc::pc_drawing(theme));
             super::about_content::about_content(theme, settings, &pc)
         }
         _ => coming_soon(theme, settings.content_width()),

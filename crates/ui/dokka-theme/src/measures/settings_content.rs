@@ -83,3 +83,45 @@ pub const REORDER_HINT_SIZE: f32 = 12.0;
 pub const REORDER_HINT_GAP: f32 = 8.0;
 /// Radio del resaltado de la fila arrastrada.
 pub const REORDER_HIGHLIGHT_RADIUS: f32 = 8.0;
+
+/// Alto de la tarjeta de cabecera de General: engranaje grande, título y ayuda.
+pub const GENERAL_HEADER_HEIGHT: f32 = 176.0;
+/// Lado del engranaje grande de la cabecera de General.
+pub const GENERAL_GEAR_SIDE: f32 = 56.0;
+/// Aire entre el engranaje y el título de General, y entre el título y la ayuda.
+pub const GENERAL_HEADER_GAP: f32 = 8.0;
+/// Tamaño del título "General" en su tarjeta.
+pub const GENERAL_HEADER_TITLE_SIZE: f32 = 20.0;
+/// Tamaño de la ayuda bajo el título de General.
+pub const GENERAL_HEADER_SUBTITLE_SIZE: f32 = 13.0;
+/// Lado del chevrón derecho de las filas de General.
+pub const GENERAL_CHEVRON_SIDE: f32 = 16.0;
+
+/// Alto del héroe de "Acerca de este PC": dibujo del PC, modelo y línea gris.
+pub const ABOUT_HERO_HEIGHT: f32 = 148.0;
+/// Lado del dibujo del PC en la ficha.
+pub const ABOUT_PC_SIDE: f32 = 72.0;
+/// Tamaño del nombre del modelo en grande.
+pub const ABOUT_MODEL_SIZE: f32 = 20.0;
+/// Alto de cada cabecera de sección de la ficha ("Windows", "Pantalla"...).
+pub const ABOUT_SECTION_TITLE_HEIGHT: f32 = 26.0;
+/// Tamaño del texto de cada cabecera de sección.
+pub const ABOUT_SECTION_TITLE_SIZE: f32 = 13.0;
+/// Alto de cada botón de la ficha.
+pub const ABOUT_BUTTON_HEIGHT: f32 = 32.0;
+/// Radio de cada botón, concéntrico con las tarjetas.
+pub const ABOUT_BUTTON_RADIUS: f32 = 16.0;
+/// Aire entre la tarjeta y su botón.
+pub const ABOUT_BUTTON_GAP: f32 = 8.0;
+/// Ancho fijo de cada botón de la ficha, centrado.
+pub const ABOUT_BUTTON_WIDTH: f32 = 220.0;
+/// Aire sobre el dibujo del PC dentro del héroe.
+pub const ABOUT_HERO_PC_TOP_GAP: f32 = 12.0;
+/// Aire entre el dibujo del PC y el modelo.
+pub const ABOUT_HERO_MODEL_GAP: f32 = 12.0;
+/// Aire entre el modelo y la línea gris.
+pub const ABOUT_HERO_LINE_GAP: f32 = 12.0;
+/// Mitad del ancho de la línea gris bajo el modelo.
+pub const ABOUT_HERO_LINE_HALF: f32 = 60.0;
+/// Ancho de la línea gris bajo el modelo.
+pub const ABOUT_HERO_LINE_WIDTH: f32 = 120.0;

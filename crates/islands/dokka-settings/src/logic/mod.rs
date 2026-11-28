@@ -18,12 +18,8 @@ pub(crate) use content_hit::{
 };
 pub(crate) use dock_position::{position_from_index, position_options, position_to_index};
 pub(crate) use general::{
-    ABOUT_BUTTON_GAP, ABOUT_BUTTON_HEIGHT, ABOUT_BUTTON_RADIUS, ABOUT_HERO_HEIGHT,
-    ABOUT_MODEL_SIZE, ABOUT_PC_SIDE, ABOUT_SECTION_SIZE, ABOUT_SECTION_TITLE, GENERAL_GEAR_SIDE,
-    GENERAL_HEADER_GAP, GENERAL_HEADER_HEIGHT, GENERAL_HEADER_HELP, GENERAL_HEADER_SUBTITLE,
-    GENERAL_HEADER_TITLE, GENERAL_ROWS, about_content_height, about_main_rows, about_top,
-    general_badge_color, general_card_top, general_control_at,
-    general_row_at as general_list_row_at, general_row_drawing, general_rows, general_scroll_max,
+    GENERAL_HEADER_HELP, GENERAL_ROWS, about_main_rows, about_top, general_badge_color,
+    general_card_top, general_row_drawing, general_rows, general_scroll_max,
 };
 pub use hit::drag_zone;
 pub(crate) use menubar_order::{

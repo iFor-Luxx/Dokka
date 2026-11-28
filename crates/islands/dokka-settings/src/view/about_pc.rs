@@ -47,18 +47,13 @@ pub(crate) fn pc_drawing(theme: &Theme) -> Drawing {
 }
 
 /// Icono oculto fuera de la vista, para no reconstruir capas.
-pub(crate) fn hidden_icon() -> Icon {
+pub(crate) fn hidden_icon(theme: &Theme) -> Icon {
     Icon {
         x: -1000.0,
         y: -1000.0,
         side: 16.0,
         image: None,
-        placeholder: dokka_scene::Color {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0,
-        },
+        placeholder: theme.tray.clear,
         placeholder_radius: 0.0,
     }
 }

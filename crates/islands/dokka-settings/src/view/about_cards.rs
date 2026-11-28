@@ -17,9 +17,7 @@ pub(crate) fn section_header(
     width: f32,
     window_height: f32,
 ) -> Vec<Text> {
-    use super::super::logic::ABOUT_SECTION_SIZE;
-    use super::super::logic::ABOUT_SECTION_TITLE;
-    let middle = top + ABOUT_SECTION_TITLE / 2.0;
+    let middle = top + measures::ABOUT_SECTION_TITLE_HEIGHT / 2.0;
     if middle < measures::CONTENT_TOP || middle > window_height {
         return Vec::new();
     }
@@ -28,7 +26,7 @@ pub(crate) fn section_header(
         x: measures::CONTENT_LEFT + measures::CONTENT_PADDING,
         center_y: middle,
         content: title.to_owned(),
-        size: ABOUT_SECTION_SIZE,
+        size: measures::ABOUT_SECTION_TITLE_SIZE,
         is_bold: false,
         color: theme.settings.card_text,
         align: TextAlign::Left,
@@ -78,7 +76,7 @@ pub(crate) fn value_card(
         dividers = dividers
             .into_iter()
             .map(|mut divider| {
-                let middle = divider.bounds.y + 0.5;
+                let middle = divider.bounds.y + divider.bounds.height / 2.0;
                 if middle < measures::CONTENT_TOP || middle > window_height {
                     divider.bounds = Rect {
                         x: 0.0,

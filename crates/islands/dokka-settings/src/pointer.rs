@@ -216,8 +216,8 @@ impl Settings {
         if self.selected() != super::logic::SECTION_GENERAL {
             return;
         }
-        // Un paso de rueda son 120 unidades: baja unos 44 lógicos.
-        let step = f32::from(delta) / 120.0 * -44.0;
+        // Un paso de rueda son 120 unidades: baja una fila de contenido.
+        let step = f32::from(delta) / 120.0 * -dokka_theme::settings::CONTENT_ROW_HEIGHT;
         self.scroll_by(step);
     }
 }

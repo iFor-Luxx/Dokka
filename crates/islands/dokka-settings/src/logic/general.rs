@@ -8,8 +8,6 @@
 use dokka_scene::{Color, Drawing};
 use dokka_theme::{Theme, settings as measures};
 
-use super::sections::SECTION_GENERAL;
-
 /// Filas de la lista de General: 3 + 2.
 pub(crate) const GENERAL_ROWS: usize = 5;
 
@@ -22,11 +20,6 @@ pub(crate) fn general_rows() -> [&'static str; GENERAL_ROWS] {
         "Fecha y hora",
         "Idioma y región",
     ]
-}
-
-/// Tarjetas de la lista: primera con 3 filas, segunda con 2.
-pub(crate) fn general_cards() -> [usize; 2] {
-    [3, 2]
 }
 
 /// Color del cuadrito de cada fila de General.
@@ -53,21 +46,6 @@ pub(crate) fn general_row_drawing(row: usize, color: Color) -> Drawing {
     }
 }
 
-/// Alto de la tarjeta de cabecera: engranaje grande, título y ayuda.
-pub(crate) const GENERAL_HEADER_HEIGHT: f32 = 176.0;
-
-/// Lado del engranaje grande de la cabecera.
-pub(crate) const GENERAL_GEAR_SIDE: f32 = 56.0;
-
-/// Aire entre el engranaje y el título, y entre el título y la ayuda.
-pub(crate) const GENERAL_HEADER_GAP: f32 = 8.0;
-
-/// Tamaño del título "General" en su tarjeta.
-pub(crate) const GENERAL_HEADER_TITLE: f32 = 20.0;
-
-/// Tamaño de la ayuda bajo el título.
-pub(crate) const GENERAL_HEADER_SUBTITLE: f32 = 13.0;
-
 /// Texto de ayuda de la cabecera de General.
 pub(crate) const GENERAL_HEADER_HELP: &str = "Ajustes generales de tu equipo y de Dokka: actualizaciones, almacenamiento, fecha, idioma y más.";
 
@@ -80,9 +58,9 @@ pub(crate) fn general_card_top(card: usize, scroll: f32) -> f32 {
     let top = header_top(scroll);
     match card {
         0 => top,
-        1 => top + GENERAL_HEADER_HEIGHT + measures::GROUP_GAP,
+        1 => top + measures::GENERAL_HEADER_HEIGHT + measures::GROUP_GAP,
         _ => {
-            top + GENERAL_HEADER_HEIGHT
+            top + measures::GENERAL_HEADER_HEIGHT
                 + measures::GROUP_GAP
                 + 3.0 * measures::CONTENT_ROW_HEIGHT
                 + measures::GROUP_GAP
@@ -127,30 +105,6 @@ pub(crate) fn general_control_at(
 
 // --- Ficha "Acerca de este PC" ---
 
-/// Alto del héroe: dibujo del PC, modelo y línea gris.
-pub(crate) const ABOUT_HERO_HEIGHT: f32 = 148.0;
-
-/// Lado del dibujo del PC.
-pub(crate) const ABOUT_PC_SIDE: f32 = 72.0;
-
-/// Tamaño del nombre del modelo en grande.
-pub(crate) const ABOUT_MODEL_SIZE: f32 = 20.0;
-
-/// Alto de cada cabecera de sección ("Windows", "Pantalla"...).
-pub(crate) const ABOUT_SECTION_TITLE: f32 = 26.0;
-
-/// Tamaño del texto de cada cabecera de sección.
-pub(crate) const ABOUT_SECTION_SIZE: f32 = 13.0;
-
-/// Alto de cada botón de la ficha.
-pub(crate) const ABOUT_BUTTON_HEIGHT: f32 = 32.0;
-
-/// Radio de cada botón, concéntrico con las tarjetas.
-pub(crate) const ABOUT_BUTTON_RADIUS: f32 = 16.0;
-
-/// Aire entre la tarjeta y su botón.
-pub(crate) const ABOUT_BUTTON_GAP: f32 = 8.0;
-
 /// Filas de la tarjeta principal: Nombre, Procesador, Gráfica, Memoria y Serie.
 pub(crate) fn about_main_rows() -> [&'static str; 5] {
     [
@@ -164,31 +118,31 @@ pub(crate) fn about_main_rows() -> [&'static str; 5] {
 
 /// Altura total del contenido de la ficha, sin recortar.
 pub(crate) fn about_content_height() -> f32 {
-    ABOUT_HERO_HEIGHT
+    measures::ABOUT_HERO_HEIGHT
         + measures::GROUP_GAP
         + 5.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
-        + ABOUT_BUTTON_GAP
-        + ABOUT_BUTTON_HEIGHT
+        + measures::ABOUT_BUTTON_GAP
+        + measures::ABOUT_BUTTON_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + measures::CONTENT_ROW_HEIGHT
-        + ABOUT_BUTTON_GAP
-        + ABOUT_BUTTON_HEIGHT
+        + measures::ABOUT_BUTTON_GAP
+        + measures::ABOUT_BUTTON_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_BUTTON_HEIGHT
+        + measures::ABOUT_BUTTON_HEIGHT
         + measures::GROUP_GAP
 }
 
 /// Lo que se puede bajar con la rueda en esta ventana.
 /// La lista cabe sin bajar; la ficha "Acerca" es la más alta.
 pub(crate) fn general_scroll_max(window_height: f32) -> f32 {
-    let visible = window_height - measures::CONTENT_TOP - 16.0;
+    let visible = window_height - measures::CONTENT_TOP - measures::GROUP_GAP;
     let needed = about_content_height();
     (needed - visible).max(0.0)
 }
@@ -207,37 +161,39 @@ pub(crate) fn about_button_at(width: f32, scroll: f32, x: f32, y: f32) -> Option
     let top = about_top(scroll);
     // Botón "Ajustes de pantalla…": bajo su tarjeta de 2 filas.
     let display_button = top
-        + ABOUT_HERO_HEIGHT
+        + measures::ABOUT_HERO_HEIGHT
         + measures::GROUP_GAP
         + 5.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + 2.0 * measures::CONTENT_ROW_HEIGHT
-        + ABOUT_BUTTON_GAP;
-    if (display_button..display_button + ABOUT_BUTTON_HEIGHT).contains(&y) {
+        + measures::ABOUT_BUTTON_GAP;
+    if (display_button..display_button + measures::ABOUT_BUTTON_HEIGHT).contains(&y) {
         return Some(0);
     }
     let storage_button = display_button
-        + ABOUT_BUTTON_HEIGHT
+        + measures::ABOUT_BUTTON_HEIGHT
         + measures::GROUP_GAP
-        + ABOUT_SECTION_TITLE
+        + measures::ABOUT_SECTION_TITLE_HEIGHT
         + measures::CONTENT_ROW_HEIGHT
-        + ABOUT_BUTTON_GAP;
-    if (storage_button..storage_button + ABOUT_BUTTON_HEIGHT).contains(&y) {
+        + measures::ABOUT_BUTTON_GAP;
+    if (storage_button..storage_button + measures::ABOUT_BUTTON_HEIGHT).contains(&y) {
         return Some(1);
     }
-    let report_button =
-        storage_button + ABOUT_BUTTON_HEIGHT + measures::GROUP_GAP + ABOUT_BUTTON_HEIGHT;
+    let report_button = storage_button
+        + measures::ABOUT_BUTTON_HEIGHT
+        + measures::GROUP_GAP
+        + measures::ABOUT_BUTTON_HEIGHT;
     // El informe va centrado abajo: ocupa el centro de la tarjeta.
     let center = left + width / 2.0;
-    let half = 110.0;
+    let half = measures::ABOUT_BUTTON_WIDTH / 2.0;
     if !(center - half..center + half).contains(&x) {
         return None;
     }
-    if (report_button..report_button + ABOUT_BUTTON_HEIGHT).contains(&y) {
+    if (report_button..report_button + measures::ABOUT_BUTTON_HEIGHT).contains(&y) {
         return Some(2);
     }
     None
